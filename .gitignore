@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+tcpl.Rproj
+NAMESPACE
+TCPL.log
+man/*.Rd
+vignettes/*.tex
+vignettes/*.aux
+vignettes/*.pdf
+vignettes/*.toc
+vignettes/*.bib
+vignettes/*.log
+vignettes/*.gz
+tcpl.Rcheck

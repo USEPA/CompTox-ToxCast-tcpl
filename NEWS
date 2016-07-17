@@ -1,0 +1,74 @@
+tcpl v1.2.1
+==============
+
+Changes from v1.2
+
+* A try-statement was added to the underlying function that draws the plot for 
+  tcplPlotHeat, so that the function does not return a figure margin error when
+  running the checks for the package. 
+
+
+tcpl v1.2 
+==============
+
+Changes from beta versions:
+
+* The tcpl4 function now checks the new 'fit_all' field in the 
+  assay_component_endpoint table, and will attempt to fit every curve when
+  'fit_all' is 1.
+* The TCPL_CHEM and TCPL_INT settings have been deprecated and are no longer 
+  needed. To facilitate easier use and understanding, chemical tables included 
+  in the tcpl database are restructured. 
+* The TCPL_LOG setting has been deprecated.
+* tcplUpdate is renamed to tcplSendQuery.
+* Single concentration screening is now implemented.
+* Added tcplRegister and tcplUpdate to make populating the database with new
+  data easier.
+* Changed the underlying database structure. The old database will not work
+  with beta versions of the package.
+* tcplPlotL4ID is now tcplPlotM4ID to match the new database structure.
+* The tcpl1, tcpl2, etc. functions have been renamed and are no longer 
+  exported. All processing is intended to occur through the tcplRun function. 
+* tcplRunPipe is now tcplRun, and no longer defaults to writing a log file. 
+  A log file can still be written using the 'outfile' setting, as previously. 
+* Level 5 multiple-concentration processing has changed -- there is no longer
+  a minimum cutoff. All cutoff values must be specified with the new level 5
+  methods. 
+* Level 6 multiple-concentration processing has changed -- some of the flag 
+  methodologies were updated.
+* tcplSetOpts renamed to tcplConf.
+* tcplSetOpts (now called tcplConf) can now be given only one or a subset of 
+  settings to change.
+* tcplListOpts renamed to tcplConfList.
+* tcplConfLoad, tcplConfSave, tcplConfDefault, and tcplConfReset added to make 
+  working with the package settings easier for the user.
+* Due a change in the underlying code for `rapply` the package now must use
+  R version 3.2.0 or higher.
+* Added processing methods. 
+* tcplWriteLvl0 now excludes loading data for acsn values that are not 
+  registered, but will load data for acsn values that are registered without
+  returning an error.
+* tcpl now imports RMySQL.
+* tcplACVal and tcplACXX renamed tcplHillConc and tcplHillACXX, respectively. 
+* tcplHillVal added.
+* Bug in tcplPlotPlate that caused incorrect coloring when the input data.table
+  contained multiple assays is fixed.
+* 'fname' paramter is added to tcplMakeAeidPlts, and the default filename is 
+  changed.
+* 'quant' parameter is added to tcplPlotPlate.
+* tcplLoadAsid deprecated, and is no longer exported.
+* tcplLoadUnit deprecated, and is no longer exported.
+* The call to 'browser' in tcplPlotFits is changed to skip the other lines 
+  in the loop to make scanning through plots a little easier.
+* Extensive updates to documentation and the vignette, now called 
+  "tcpl_Overview."
+* tcplAssignMthd, tcplLoadMthd, tcplListMthd, and tcplClearMthd functions are 
+  renamed as tcplMthd- (e.g. tcplMthdLoad instead of tcplLoadMthd).
+* tcplMthdClear no longer returns TRUE, matching the behavior of tcplMthdAssign.
+* Added tcplCytoPt function to calculate the cytotoxicity points for chemical
+  (this functionality used to be delivered by tcplVarMat, but is now separate).
+* 'argx' and 'srgx' parameters are removed from tcplPrepOtpt.
+* 'srgx' paramter is removed from tcplMakeAeidPlts.
+* tcplLoadAsidInfo & tcplLoadAeidInfo deprecated, and are no longer exported. 
+* tcplPrepOtpt longer contains the 'clib' parameter.
+

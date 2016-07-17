@@ -1,0 +1,6 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^inst/sql/create_example_vignette_data\.R$
+^inst/sql/create_sql_files\.R$
+man-roxygen
+tcpl.Rcheck
