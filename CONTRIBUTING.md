@@ -29,7 +29,6 @@ Please file an issue before creating PRs so that it can be discussed first *befo
 
 1. **[How to Github: Fork, Branch, Track, Squash and Pull request](https://gun.io/blog/how-to-github-fork-branch-and-pull-request/)**.
 2. **[Squashing Github pull requests into a single commit](http://eli.thegreenplace.net/2014/02/19/squashing-github-pull-requests-into-a-single-commit)**.
-3. **[Github help](https://help.github.com/articles/using-pull-requests/)** - you'll need the *fork and pull* model.
 
 *This guide was modified from the contributing guide for the [data.table](https://github.com/Rdatatable/data.table) repository*
 
