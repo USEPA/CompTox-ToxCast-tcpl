@@ -4,3 +4,5 @@
 ^inst/sql/create_sql_files\.R$
 man-roxygen
 tcpl.Rcheck
+README.md
+CONTRIBUTING.md
