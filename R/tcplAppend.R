@@ -58,6 +58,8 @@ tcplAppend <- function(dat, tbl, db) {
                                 paste(tmp_flds, collapse = ","),
                                 "FROM",
                                 tempTbl))
+    dbClearResult(status)
+    
     # Remove temporary table
     dbRemoveTable(dbcon, tempTbl)
     
