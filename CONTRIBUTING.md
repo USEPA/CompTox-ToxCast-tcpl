@@ -20,7 +20,7 @@ Please file an issue before creating PRs so that it can be discussed first *befo
 2. Create **one PR per feature/bug fix**. Each PR should be associated with an Issue.
 3. Create a branch for that feature/bug fix, named 'issue-N' where N is the Issue number, and use that as a base for your pull requests. Pull requests directly against your version of `master` will not be accepted.
 4. Please squash temporary stage commits together before issuing a PR.
-5. All commit message headers should begin with "issue-N:" and be less than 50 characters, with at least a sentence or two in the commit body detailing all changes and justifications. 
+5. All commit messages should have two components: (1) a headerer on the first line beginning with "issue-N:" and containing no more than 50 characters, and (2) a body with 1 empty line after the header then at least a sentence or two in the commit body detailing all changes and justifications. Lines in the commit body should be wrapped to no more than 72 characters per line, and can contain multiple paragraphs.<sup>[1](#myfootnote1)</sup>
 5. In your pull request's description, please state clearly as to what your PR does, i.e., what FR or bug your PR addresses, along with the issue number. For e.g, "Closes #717: tcplLoadData no longer errors with missing data."
 7. Please build and test the package using `R CMD check --as-cran` against your branch source package archive `.tar.gz` file. You may want to add `--no-manual`, `--no-build-vignettes` or `--ignore-vignettes` (R 3.3.0+) options to reduce dependencies required to perform check. PRs that fail `check` cannot be merged.
 8. The NEWS file also has to be updated while fixing or implementing an issue. It should mention the issue number and what the issue is being closed. Also add a "Thanks to @your_name for the PR".
@@ -32,3 +32,4 @@ Please file an issue before creating PRs so that it can be discussed first *befo
 
 *This guide was modified from the contributing guide for the [data.table](https://github.com/Rdatatable/data.table) repository*
 
+<a name="myfootnote1">1</a>: To make it easier to count the characters per line you can edit your $HOME/.vimrc ($HOME/_vimrc on Windows) to include ":set ruler" which will display the line and position numbers in the bottom right corner of the terminal when editing the commit messages.
