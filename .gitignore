@@ -2,9 +2,7 @@
 .Rhistory
 .RData
 tcpl.Rproj
-NAMESPACE
 TCPL.log
-man/*.Rd
 vignettes/*.tex
 vignettes/*.aux
 vignettes/*.pdf
