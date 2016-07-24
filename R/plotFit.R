@@ -270,9 +270,9 @@
     
     if (pars$hcov) {
       hsds <- with(pars, signif(c(hill_tp_sd, hill_ga_sd, hill_gw_sd), 3))
-      hsds[is.na(hsds)] <- NaN
+      hsds[is.na(hsds)] <- "NaN"
     } else {
-      hsds <- rep(NA, 3)
+      hsds <- rep("NA", 3)
     }
     
     hprs <- with(pars, signif(c(hill_tp, hill_ga, hill_gw), 3))
@@ -318,9 +318,9 @@
                             gnls_lw_sd),
                           3)
       )
-      gsds[is.na(gsds)] <- NaN
+      gsds[is.na(gsds)] <- "NaN"
     } else {
-      gsds <- rep(NA, 5)
+      gsds <- rep("NA", 5)
     }
     
     gprs <- with(pars, 
