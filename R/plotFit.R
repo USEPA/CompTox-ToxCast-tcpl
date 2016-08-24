@@ -260,7 +260,7 @@
     paste0("ASSAY:   ", aenm, "\n\n",
            "NAME:    ", chnm, "\n",
            "CHID:    ", chid, spaces(8 - nchar(chid)),
-           "CASRN: ", casn, "\n", # spaces(16-nchar(casn)),"AGBY: ",agby,"\n",
+           "CHID:    ", chid, spaces(8 - ifelse(is.na(chid), 2, nchar(chid))),
            "SPID(S): ", spid, "\n",
            "M4ID:    ", m4id, "  ", ifelse(brk, "BRK", ""), "\n\n"
     )
@@ -358,9 +358,15 @@
     
   }
   
-  aics <- with(pars, round(c(cnst_aic, hill_aic, gnls_aic), 2))
-  prob <- with(pars, round(c(cnst_prob, hill_prob, gnls_prob), 2))
-  rmse <- with(pars, round(c(cnst_rmse, hill_rmse, gnls_rmse), 2))
+  cvals <- function(x) {
+    x <- as.character(x)
+    x[is.na(x)] <- "NA"
+    x
+  }
+  
+  aics <- cvals(with(pars, round(c(cnst_aic, hill_aic, gnls_aic), 2)))
+  prob <- cvals(with(pars, round(c(cnst_prob, hill_prob, gnls_prob), 2)))
+  rmse <- cvals(with(pars, round(c(cnst_rmse, hill_rmse, gnls_rmse), 2)))
   models <- c("CNST", "HILL", "GNLS")
   
   atxt <- paste0(spaces(6), 
