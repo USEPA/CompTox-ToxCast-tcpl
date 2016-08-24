@@ -259,8 +259,8 @@
   itxt <- with(pars, {
     paste0("ASSAY:   ", aenm, "\n\n",
            "NAME:    ", chnm, "\n",
-           "CHID:    ", chid, spaces(8 - nchar(chid)),
            "CHID:    ", chid, spaces(8 - ifelse(is.na(chid), 2, nchar(chid))),
+           "CASRN: ", casn, "\n",
            "SPID(S): ", spid, "\n",
            "M4ID:    ", m4id, "  ", ifelse(brk, "BRK", ""), "\n\n"
     )
