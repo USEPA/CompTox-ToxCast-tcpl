@@ -67,6 +67,7 @@ tcplPlotPlate <- function(dat, apid, id = NULL, quant = c(0.001, 0.999)) {
   if ("m1id" %in% dnames) {lvl <- 1L; idnm <- "acid"; vlnm <- "rval"}
   if ("m2id" %in% dnames) {lvl <- 2L; idnm <- "acid"; vlnm <- "cval"}
   if ("m3id" %in% dnames) {lvl <- 3L; idnm <- "aeid"; vlnm <- "resp"}
+  if ("s1id" %in% dnames) {lvl <- 1L; idnm <- "acid"; vlnm <- "resp"}
   if (is.null(lvl)) stop("Invalid dat input.")
   
   sub <- dat[apid == ap]
