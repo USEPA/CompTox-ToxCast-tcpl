@@ -4,13 +4,13 @@ Filing issues
 Please read these points carefully and follow them while filing issues.
 
 - **One issue for one purpose**. Don't add more than one *bug*, *feature request*, or *documentation request* on to the same issue. Take the time to read through the current issues to ensure your issue is not already listed.
-- Label your issue accordingly
+- If you've found a *bug*, thank you for reporting! Please include a reproducible example of your bug in the issue. 
+- If you need *support* or have a general *question*, please consider asking the question on [StackOverflow](http://www.stackoverflow.com)
+- For the project contributors, please label new issues using the following rules:
   - *bugs* should be labeled "bug"
   - *feature requests* or *suggestions* should be labeled "enhancement"
   - *questions* or *requests for support* should be labeled "question"
-- If you've found a *bug*, thank you for reporting! Please include a reproducible example of your bug in the issue. 
-- If you need *support* or have a general *question*, please consider asking the question on [StackOverflow](http://www.stackoverflow.com)
-
+  
 Pull Requests
 -------------
 
