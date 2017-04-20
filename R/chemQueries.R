@@ -6,21 +6,23 @@
   
   qformat <- 
     "
-      SELECT * FROM 
-      (
-      SELECT 
-        spid, 
-        chemical.*
-      FROM chemical 
-      LEFT JOIN sample ON sample.chid = chemical.chid
-      UNION ALL
-      SELECT 
-        spid, 
-        chemical.*
-      FROM sample
-      LEFT JOIN chemical ON sample.chid = chemical.chid
-      WHERE  chemical.chid IS NULL
-      ) AS cs 
+      SELECT spid,chemical.chid,casn,chnm
+      FROM sample LEFT JOIN chemical ON chemical.chid=sample.chid
+      # SELECT * FROM 
+      # (
+      # SELECT 
+      #   spid, 
+      #   chemical.*
+      # FROM chemical 
+      # LEFT JOIN sample ON sample.chid = chemical.chid
+      # UNION ALL
+      # SELECT 
+      #   spid, 
+      #   chemical.*
+      # FROM sample
+      # LEFT JOIN chemical ON sample.chid = chemical.chid
+      # WHERE  chemical.chid IS NULL
+      # ) AS cs 
       "
       
   if (getOption("TCPL_DRVR") == "SQLite") exact <- TRUE
@@ -29,7 +31,7 @@
     
     nfld <- switch(field,
                    spid = "spid",
-                   chid = "chid",
+                   chid = "chemical.chid",
                    casn = "casn",
                    code = "casn",
                    "chnm")
