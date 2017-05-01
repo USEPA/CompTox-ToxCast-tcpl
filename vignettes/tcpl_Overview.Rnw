@@ -639,6 +639,7 @@ The first model fit in the fitting algorithm is a constant model at 0, abbreviat
 \mu_{i} = 0\mathrm{.}
 \end{equation}
 
+
 The second model in the fitting algorithm is a constrained Hill model (hill), where the bottom asymptote is forced to 0. Including the scale parameter, the Hill model has four parameters. Let $\mathit{tp}$ be the top asymptote, $\mathit{ga}$ be the AC$_{50}$\footnote{The AC$_{50}$ is the activity concentration at 50\%, or the concentration where the modeled activity equals 50\% of the top asymptote.} in the gain direction, $\mathit{gw}$ be the Hill coefficient in the gain direction, and $x_{i}$ be the log concentration at the $i^{th}$ observation. Then $\mu_{i}$ for the Hill model is given by
 \begin{equation}
 \label{eq:hill}
