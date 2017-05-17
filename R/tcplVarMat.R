@@ -114,7 +114,7 @@ tcplVarMat <- function(chid = NULL,
                        include.na.chid = FALSE,
                        odir = NULL,
                        file.prefix = NULL) {
-  
+  print(4)
   ## Variable-binding to pass R CMD Check
   sc_tst <- spid <- mc_tst <- acid <- cyto_pt <- global_mad <- zscore <- NULL
   modl_ga <- NULL
@@ -129,8 +129,9 @@ tcplVarMat <- function(chid = NULL,
   
   row.id <- row.id[1]
   if (!row.id %in% c("code", "casn", "chid", "chnm")) row.id <- "code"
-  
+  print(5)
   valid_var <- c(tcplListFlds("mc4"), tcplListFlds("mc5"))
+  print(6)
   if (!all(add.vars %in% valid_var)) stop("Invald add.vars value(s).")
   
   std.vars <- c("modl_ga", "hitc", "m4id", "zscore")
@@ -139,15 +140,16 @@ tcplVarMat <- function(chid = NULL,
   cform <- reformulate(termlabels = "aenm", response = row.id)
   
   ## Load all possibilities to create matrix dimensions
+  print(7)
   sc <- tcplQuery("SELECT DISTINCT acid, spid FROM sc0;")
   mc <- tcplQuery("SELECT DISTINCT acid, spid FROM mc0;")
-  
+  print(8)
   tst <- rbindlist(list(sc, mc))
   tst <- unique(tst)
   tst[ , sc_tst := spid %in% sc$spid]
   tst[ , mc_tst := spid %in% mc$spid]
   rm(sc, mc)
-  
+  print(3)
   ## Expand acid to aeid
   aeid_info <- tcplLoadAeid("acid", tst[ , unique(acid)])
   setkey(aeid_info, acid)
@@ -199,8 +201,9 @@ tcplVarMat <- function(chid = NULL,
   setkey(dat, chid)
   
   dat <- zdst[ , list(chid, cyto_pt, global_mad)][dat]
-  dat[ , zscore := -(modl_ga - cyto_pt)/global_mad]
-  
+  print(1)
+  dat[ , zscore := -((modl_ga*hitc) - cyto_pt)/global_mad]
+  print(2)
   mat.tested <- dcast(dat, 
                       formula = cform, 
                       fun.aggregate = lu,
