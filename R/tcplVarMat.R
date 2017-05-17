@@ -202,7 +202,8 @@ tcplVarMat <- function(chid = NULL,
   
   dat <- zdst[ , list(chid, cyto_pt, global_mad)][dat]
   print(1)
-  dat[ , zscore := -((modl_ga*hitc) - cyto_pt)/global_mad]
+  dat[hitc==1 , zscore := -(modl_ga - cyto_pt)/global_mad]
+  dat[hitc==0 , zscore := NA]
   print(2)
   mat.tested <- dcast(dat, 
                       formula = cform, 
