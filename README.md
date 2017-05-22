@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ### tcpl: An R package for processing high-throughput chemical screening data
 
 Welcome to the GitHub repository for the tcpl package.
@@ -10,6 +9,3 @@ If you are interested in contributing or want to report a bug, please see [CONTR
 To install the current development version run the following command:
 
     devtools::install_github("daynefiler/tcpl")
-=======
-# CompTox-Research
->>>>>>> 6eb621d6c1eeada8a2bbf2ae5db5cf047d2a1423
