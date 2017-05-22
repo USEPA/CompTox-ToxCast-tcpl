@@ -16,7 +16,7 @@ tcplLoadAeid <- function(fld = NULL, val = NULL, add.fld = NULL) {
                           fld = fld, 
                           val = val, 
                           add.fld = add.fld)
-  
+  print(qstring)
   dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
   
   dat[]
