@@ -24,7 +24,8 @@ Imports:
     stats,
     methods,
     graphics,
-    grDevices
+    grDevices,
+    sqldf
 Suggests:
     roxygen2
 License: GPL-2
