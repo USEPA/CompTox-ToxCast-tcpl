@@ -16,7 +16,6 @@
 #' This function is not exported and not intended to be used by the user.
 #' 
 #' @import DBI
-#' @importFrom sqldf sqldf
 #' @importFrom RSQLite SQLite
 #' @importMethodsFrom RSQLite dbConnect dbRemoveTable dbExistsTable 
 #' @importMethodsFrom RSQLite dbSendQuery dbDisconnect dbWriteTable

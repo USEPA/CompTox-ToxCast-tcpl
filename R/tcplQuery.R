@@ -9,10 +9,9 @@
 #' @importMethodsFrom RSQLite dbConnect dbDisconnect dbGetQuery 
 #' @import data.table
 #' @importFrom RMySQL MySQL
-#' @importMethodsFrom RMySQL dbConnect dbDisconnect 
+#' @importFrom sqldf sqldf
+#' @importMethodsFrom RMySQL dbConnect dbDisconnect
 #' @export
-
-library(sqldf) # ***** ADDED DEPENDENCY RIGHT HERE *****
 
 tcplQuery <- function(query, db = getOption("TCPL_DB"), 
                       drvr = getOption("TCPL_DRVR"), tbl=NULL) {
@@ -61,12 +60,8 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
       assign(t, read.table(fpath, header=T, sep=','))
     }
 
-    #print(head(chemical))
-    #print(head(sample))
     result <- as.data.table(sqldf(query, stringsAsFactors=F))
-    #result <- as.data.table(sqldf(query))
-    #print(result)
-    #result <- read.csv.sql(fpath, sql=query, header=T, sep=',')
+
     
   }
   

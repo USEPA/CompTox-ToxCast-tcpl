@@ -11,6 +11,7 @@
 #' @importFrom RMySQL MySQL
 #' @importMethodsFrom RMySQL dbSendQuery dbClearResult dbDisconnect dbConnect
 #' @importFrom methods is
+#' @importFrom sqldf sqldf
 #' @export
 
 tcplSendQuery <- function(query, db = getOption("TCPL_DB"), 
