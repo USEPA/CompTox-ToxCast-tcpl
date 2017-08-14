@@ -23,9 +23,14 @@ tcplLiteInit <- function () {
                     'mc2_acid' = c('mc2_mthd_id', 'acid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
                     'mc3_aeid' = c('mc3_mthd_id', 'aeid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
                     'mc5_aeid' = c('aeid', 'mc5_mthd_id', 'created_date', 'modified_date', 'modified_by'),
-                    'mc6_aeid' = c('aeid', 'mc6_mthd_id', 'created_date', 'modified_date', 'modified_by')
-                    #'mc2_methods' = c('mc2_mthd_id', 'mc2_mthd', 'desc', 'created_date', 'modified_date', 'modified_by')
+                    'mc6_aeid' = c('aeid', 'mc6_mthd_id', 'created_date', 'modified_date', 'modified_by'),
                     
+                    'sc0' = c('s0id', 'acid', 'spid', 'apid', 'rowi', 'coli', 'wllt', 'wllq', 'conc', 'rval', 'srcf', 'created_date', 'modified_date', 'modified_by'),
+                    'sc1' = c('s1id', 's0id', 'acid', 'aeid', 'logc', 'bval', 'pval', 'resp', 'created_date', 'modified_date', 'modified_by'),
+                    'sc2' = c('s2id', 'aeid', 'spid', 'bmad', 'max_med', 'coff', 'hitc', 'tmpi', 'created_date', 'modified_date', 'modified_by'),
+                    'sc2_agg' = c('aeid', 's0id', 's1id', 's2id'),
+                    'sc1_aeid' = c('sc1_mthd_id', 'aeid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
+                    'sc2_aeid' = c('sc2_mthd_id', 'aeid', 'created_date', 'modified_date', 'modified_by')
                     )
   for (k in names(all_files)) {
     v = all_files[[k]]
