@@ -43,4 +43,3 @@ normalization based on methods listed in sc1_aeid and sc1_methods tables.
 Other single-concentration data 
 processing functions: \code{\link{sc2}}
 }
-

@@ -5,7 +5,7 @@
 \title{Load sample/chemical information}
 \usage{
 tcplLoadChem(field = NULL, val = NULL, exact = TRUE,
-  include.spid = TRUE)
+  tcplLiteChem = NULL, include.spid = TRUE)
 }
 \arguments{
 \item{field}{Character of length 1, the field to query on}
@@ -56,4 +56,3 @@ tcplLoadChem(field = "chid", val = 1:5)
 options(conf_store)
 
 }
-

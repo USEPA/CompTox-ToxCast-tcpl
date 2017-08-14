@@ -26,4 +26,3 @@ plate flares.
 \code{\link{MC6_Methods}}, \code{\link{Method functions}}, 
 \code{\link{mc6}}
 }
-
