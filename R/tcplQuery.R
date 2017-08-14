@@ -12,9 +12,10 @@
 #' @importMethodsFrom RMySQL dbConnect dbDisconnect 
 #' @export
 
+library(sqldf) # ***** ADDED DEPENDENCY RIGHT HERE *****
 
 tcplQuery <- function(query, db = getOption("TCPL_DB"), 
-                      drvr = getOption("TCPL_DRVR")) {
+                      drvr = getOption("TCPL_DRVR"), tbl=NULL) {
   
   if (is.null(db)) db <- getOption("TCPL_DB")
   if (is.null(drvr)) drvr <- getOption("TCPL_DRVR")
@@ -51,6 +52,24 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
+  if (drvr == "tcplLite") {
+    #query <- "SELECT spid,chemical.chid,casn,chnm FROM sample LEFT JOIN chemical ON chemical.chid=sample.chid WHERE sample.chid is NULL  "
+    db_pars <- "Just running tcplLite, we're OK"
+    for (t in tbl) {
+      fpath <- paste(db, t, sep='/')
+      fpath <- paste(fpath, 'csv', sep='.')
+      assign(t, read.table(fpath, header=T, sep=','))
+    }
+
+    #print(head(chemical))
+    #print(head(sample))
+    result <- as.data.table(sqldf(query, stringsAsFactors=F))
+    #result <- as.data.table(sqldf(query))
+    #print(result)
+    #result <- read.csv.sql(fpath, sql=query, header=T, sep=',')
+    
+  }
+  
   if (is.null(db_pars)) {
     
     stop(getOption("TCPL_DRVR"), " is not a supported database system. See ",
@@ -58,12 +77,15 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
-  dbcon <- do.call(dbConnect, db_pars)
-  result <- dbGetQuery(dbcon, query)
+  if ((drvr == 'SQLite') | (drvr == 'MySQL')) {
+    dbcon <- do.call(dbConnect, db_pars)
+    result <- dbGetQuery(dbcon, query)
+    
+    dbDisconnect(dbcon)
+    
+    result <- as.data.table(result)
+  }
   
-  dbDisconnect(dbcon)
-  
-  result <- as.data.table(result)
   result[]
   
 }

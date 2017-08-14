@@ -50,9 +50,9 @@
 #' @import data.table
 #' @export
 
-tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE, 
+tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE, tcplLiteChem = NULL,
                          include.spid = TRUE) {
-  
+  tbl <- c("chemical", "sample")
   ## Variable-binding to pass R CMD Check
   code <- casn <- chid <- chnm <- NULL
   
@@ -66,10 +66,30 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
     exact <- TRUE
   }
   
+  #if (getOption("TCPL_DRVR") == "tcplLite") {
+  if (!is.null(tcplLiteChem)) {
+    # If the tcplLiteChem file is defined, preprocessing needs to occur
+    # Need to preprocess: Load in the SPID's from the current assay and map to the CHID in 'chemical'. Then write to 'sample'. Once written, tcplLoadChem will work
+    db <- getOption("TCPL_DB")
+    for (t in tbl) {
+      fpath <- paste(db, t, sep='/')
+      fpath <- paste(fpath, 'csv', sep='.')
+      assign(t, read.table(fpath, header=T, sep=',')) # Define the chemical and sample data tables
+    }
+    if (nrow(sample) > 0) {
+      warning("'sample' table is already populated, double check you need to init the chemical map")
+    }
+    else { # Write the whole sample using chemical AND the assay-specific file: tcplLiteChem
+      assayChem <- read.table(tcplLiteChem, header=T, sep=',')
+      tempDT <- as.data.table(merge(assayChem, chemical, by=c('casn')))
+      tcplRegister(what='spid', flds=tempDT[, list(spid, chid)]) # Add extra fields later
+    }
+  }
+  
   qstring <- .ChemQ(field = field, val = val, exact = exact)
     
-  dat <- tcplQuery(query = qstring)
-  
+  dat <- tcplQuery(query = qstring, tbl=tbl)
+  dat <- as.data.table(dat)
   if (nrow(dat) == 0) {
     warning("The given ", field,"(s) are not in the tcpl database.")
     return(dat[])

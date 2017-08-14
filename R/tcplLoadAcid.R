@@ -7,7 +7,7 @@
 #' @export
 
 tcplLoadAcid <- function(fld = NULL, val = NULL, add.fld = NULL) {
-  
+  tbl = c("assay_component", "assay_component_map", "assay")
   out <- c("assay_component.acid", 
            "assay_component.assay_component_name")
   
@@ -17,7 +17,7 @@ tcplLoadAcid <- function(fld = NULL, val = NULL, add.fld = NULL) {
                           val = val, 
                           add.fld = add.fld)
   
-  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
+  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
   
   dat[]
   

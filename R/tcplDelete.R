@@ -37,7 +37,7 @@ tcplDelete <- function(tbl, fld, val, db) {
   
   qstring <- do.call(sprintf, args = c(qformat, val))
   
-  tcplSendQuery(query = qstring, db = db)
+  tcplSendQuery(query = qstring, db = db, tbl=tbl)
   
 }
 

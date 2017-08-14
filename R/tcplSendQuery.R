@@ -14,7 +14,7 @@
 #' @export
 
 tcplSendQuery <- function(query, db = getOption("TCPL_DB"), 
-                          drvr = getOption("TCPL_DRVR")) {
+                          drvr = getOption("TCPL_DRVR"), tbl=NULL) {
   
   #Check for valid inputs
   if (length(query) != 1 | class(query) != "character") {
@@ -48,6 +48,17 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
+  if (getOption("TCPL_DRVR") == "tcplLite") {
+    db_pars <- "Just running tcplLite, we're OK"
+    for (t in tbl) {
+      fpath <- paste(db, t, sep='/')
+      fpath <- paste(fpath, 'csv', sep='.')
+      assign(t, read.table(fpath, header=T, sep=','))
+    }
+    temp <- as.data.table(sqldf(query, stringsAsFactors=F))
+    print(temp)
+  }
+  
   if (is.null(db_pars)) {
     
     stop(getOption("TCPL_DRVR"), " is not a supported database system. See ",
@@ -55,10 +66,12 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
-  dbcon <- do.call(dbConnect, db_pars)
-  temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
-  if (!is(temp, "try-error")) dbClearResult(temp)
-  dbDisconnect(dbcon)
+  if ((drvr == 'SQLite') | (drvr == 'MySQL')) {
+    dbcon <- do.call(dbConnect, db_pars)
+    temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
+    if (!is(temp, "try-error")) dbClearResult(temp)
+    dbDisconnect(dbcon)
+  }
   
   if (!is(temp, "try-error")) return(TRUE)
   
