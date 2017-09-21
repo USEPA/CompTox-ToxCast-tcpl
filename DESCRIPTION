@@ -27,7 +27,8 @@ Imports:
     grDevices,
     sqldf
 Suggests:
-    roxygen2
+    roxygen2,
+    knitr
 License: GPL-2
 LazyData: true
 RoxygenNote: 6.0.1
