@@ -1,1 +1,269 @@
-"m6id","m5id","m4id","aeid","mc6_mthd_id","flag","fval","fval_unit","created_date","modified_date","modified_by"
+m6id,m5id,m4id,aeid,mc6_mthd_id,flag,fval,fval_unit,created_date,modified_date,modified_by
+1,370,370,1,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+2,3,3,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+3,19,19,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+4,21,21,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+5,46,46,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+6,81,81,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+7,88,88,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+8,94,94,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+9,125,125,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+10,127,127,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+11,152,152,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+12,170,170,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+13,174,174,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+14,222,222,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+15,235,235,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+16,266,266,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+17,267,267,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+18,283,283,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+19,285,285,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+20,293,293,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+21,312,312,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+22,324,324,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+23,371,371,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+24,432,432,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+25,437,437,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+26,463,463,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+27,521,521,1,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+28,8,8,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+29,19,19,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+30,20,20,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+31,26,26,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+32,32,32,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+33,33,33,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+34,55,55,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+35,70,70,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+36,73,73,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+37,76,76,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+38,84,84,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+39,96,96,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+40,106,106,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+41,109,109,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+42,110,110,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+43,123,123,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+44,126,126,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+45,138,138,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+46,139,139,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+47,143,143,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+48,158,158,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+49,163,163,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+50,171,171,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+51,175,175,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+52,176,176,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+53,182,182,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+54,186,186,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+55,189,189,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+56,197,197,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+57,198,198,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+58,205,205,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+59,228,228,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+60,232,232,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+61,233,233,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+62,239,239,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+63,241,241,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+64,247,247,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+65,261,261,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+66,281,281,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+67,298,298,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+68,309,309,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+69,312,312,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+70,314,314,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+71,316,316,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+72,335,335,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+73,336,336,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+74,351,351,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+75,354,354,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+76,368,368,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+77,385,385,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+78,389,389,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+79,390,390,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+80,392,392,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+81,400,400,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+82,406,406,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+83,418,418,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+84,419,419,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+85,428,428,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+86,430,430,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+87,431,431,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+88,434,434,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+89,436,436,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+90,443,443,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+91,444,444,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+92,447,447,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+93,452,452,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+94,461,461,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+95,472,472,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+96,475,475,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+97,476,476,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+98,498,498,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+99,506,506,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+100,519,519,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+101,523,523,1,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+102,252,252,1,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+103,322,322,1,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+104,370,370,1,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+105,3,3,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+106,15,15,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+107,16,16,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+108,21,21,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+109,45,45,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+110,46,46,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+111,63,63,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+112,85,85,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+113,88,88,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+114,90,90,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+115,111,111,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+116,125,125,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+117,127,127,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+118,142,142,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+119,152,152,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+120,155,155,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+121,165,165,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+122,170,170,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+123,174,174,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+124,234,234,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+125,255,255,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+126,266,266,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+127,267,267,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+128,283,283,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+129,285,285,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+130,293,293,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+131,324,324,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+132,329,329,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+133,347,347,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+134,371,371,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+135,384,384,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+136,445,445,1,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+137,384,384,1,15,Gain AC50 < lowest conc & loss AC50 < mean conc,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+138,322,322,1,16,Hit-call potentially confounded by overfitting,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+139,529,529,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+140,548,548,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+141,554,554,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+142,563,563,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+143,605,605,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+144,622,622,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+145,637,637,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+146,657,657,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+147,673,673,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+148,677,677,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+149,683,683,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+150,688,688,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+151,711,711,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+152,715,715,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+153,719,719,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+154,744,744,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+155,747,747,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+156,767,767,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+157,793,793,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+158,805,805,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+159,812,812,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+160,833,833,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+161,836,836,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+162,879,879,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+163,880,880,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+164,930,930,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+165,972,972,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+166,984,984,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+167,988,988,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+168,1003,1003,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+169,1021,1021,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+170,1023,1023,2,6,"Only highest conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+171,842,842,2,7,"Only one conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+172,862,862,2,7,"Only one conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+173,888,888,2,7,"Only one conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+174,933,933,2,7,"Only one conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+175,947,947,2,7,"Only one conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+176,1020,1020,2,7,"Only one conc above baseline, active",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+177,566,566,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+178,598,598,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+179,638,638,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+180,665,665,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+181,692,692,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+182,708,708,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+183,739,739,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+184,743,743,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+185,750,750,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+186,768,768,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+187,798,798,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+188,834,834,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+189,850,850,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+190,863,863,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+191,910,910,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+192,951,951,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+193,953,953,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+194,963,963,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+195,966,966,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+196,1006,1006,2,8,"Multiple points above baseline, inactive",,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+197,697,697,2,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+198,962,962,2,10,Noisy data,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+199,567,567,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+200,637,637,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+201,683,683,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+202,719,719,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+203,734,734,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+204,780,780,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+205,797,797,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+206,812,812,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+207,842,842,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+208,874,874,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+209,879,879,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+210,880,880,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+211,888,888,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+212,902,902,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+213,933,933,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+214,936,936,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+215,947,947,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+216,972,972,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+217,984,984,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+218,1020,1020,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+219,1021,1021,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+220,1042,1042,2,11,Borderline active,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+221,526,526,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+222,542,542,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+223,566,566,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+224,586,586,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+225,598,598,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+226,604,604,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+227,610,610,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+228,613,613,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+229,623,623,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+230,624,624,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+231,629,629,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+232,638,638,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+233,639,639,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+234,656,656,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+235,658,658,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+236,665,665,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+237,674,674,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+238,692,692,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+239,707,707,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+240,718,718,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+241,727,727,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+242,739,739,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+243,750,750,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+244,754,754,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+245,768,768,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+246,794,794,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+247,798,798,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+248,834,834,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+249,837,837,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+250,839,839,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+251,850,850,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+252,863,863,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+253,867,867,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+254,870,870,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+255,882,882,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+256,886,886,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+257,887,887,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+258,901,901,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+259,910,910,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+260,921,921,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+261,927,927,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+262,966,966,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+263,978,978,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+264,982,982,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+265,1026,1026,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+266,1036,1036,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+267,1044,1044,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
+268,1046,1046,2,12,Borderline inactive,,,1449593068.01481,1449593068.01481,DFiler.DFiler.DFiler
