@@ -21,38 +21,6 @@ More information about the level 6 multiple-concentration processing is
 available in the package vignette, "Pipeline_Overview."
 
 \describe{
-  \item{row.dev.up}{The row.dev.up flag looks at the individual point data,
-  searching for row effects across an apid. To get flagged the point has to
-  be greater than 3 standard deviations above the mean response for the
-  plate, and the row mean must be greater than 3 standard deviations above
-  the row means for the plate.}
-  \item{row.dev.dn}{The row.dev.dn flag is identical to the row.dev.up flag, 
-  but identifies points falling in rows with decreased signals.}
-  \item{col.dev.up}{The col.dev.up flag is identical to the row.dev.up flag, 
-  but identifies points falling in columns with increased signals.}
-  \item{col.dev.dn}{The col.dev.up flag is identical to the row.dev.up flag, 
-  but identifies points falling in columns with decreased signals.}
-  \item{plate.flare}{The plate.flare flag looks at the individual point data,
-  searching for overly active regions across an apid. Intended for use in
-  fluorometric assays that are read by a plate-reader that measures the 
-  plate as a whole, rather than measuring individual wells. For each well
-  the flare value is calculated as a weighted mean a 5 well by 5 well box 
-  centered on the well where the weight given to each well in the box is the 
-  euclidian distance from the center well. The flag then identifies points 
-  with flare values greater than 3 standard deviations above the mean flare 
-  values for the plate.}
-  \item{plate.interlace}{The plate.interlace flag is specific to one 
-  experimental design that plates chemicals from a 386 well chemical plate 
-  to a 1536 well assay plate. The flag looks for any chemical-plate affects,
-  by looking for an increased signal in the wells originating from the same
-  chemical plate.}
-  \item{rep.mismatch}{The rep.mismatch flag is still in development and is
-  not suggested for use at this time.}
-  \item{pintool}{Deprecated. The pintool flag uses a complicated algorithm 
-  to look for signal potentially caused by residual in the pintool used to 
-  deliver the chemical to assay plates in some experimental designs. The 
-  gnls.lowconc is a faster and simpler way to identify where this problem 
-  may be driving the activity or hit-call.}
   \item{singlept.hit.high}{The singlept.hit.high flag identifies 
   concentration series where the median response was greater than 3*bmad 
   only at the highest tested concentration and the series had an active 
@@ -85,13 +53,14 @@ available in the package vignette, "Pipeline_Overview."
   gain-loss model won are automatically flagged.}
   \item{efficacy.50}{The efficacy.50 flag identifies concentration series 
   with efficacy values (either the modeled top parameter for the winning
-  model or the maximum median response) are less than 50. Intended for use
-  with biochemical assays where one might expect at least a 50\% change in 
-  real responses.}
+  model or the maximum median response) are less than 50 for percent activity
+  data or log2(1.5) for fold induction data}
+  \item{modlga.lowconc}{The modlga.lowconc flag identifies concentration series 
+  with modl_ga (AC50) values less than the minimum tested concentration.}
 }
 }
+
 \seealso{
 \code{\link{mc6}}, \code{\link{Method functions}} to query what
 methods get applied to each aeid
 }
-

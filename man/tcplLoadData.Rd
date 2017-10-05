@@ -80,4 +80,3 @@ options(conf_store)
 \seealso{
 \code{\link{tcplQuery}}, \code{\link{data.table}}
 }
-

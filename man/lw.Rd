@@ -22,4 +22,3 @@ The length of the \code{TRUE} values in \code{x}
 Other tcpl abbreviations: \code{\link{is.odd}},
   \code{\link{lu}}, \code{\link{sink.reset}}
 }
-

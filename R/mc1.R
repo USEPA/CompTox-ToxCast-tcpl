@@ -89,6 +89,7 @@ mc1 <- function(ac, wr = FALSE) {
   
   ## Define replicate index
   # Create temporary table containing the unique replicate ids
+
   trdt <- unique(dat[wllt %in% c("t", "c") , list(acid, spid, wllt, rpid)])
   trdt_rpid <- trdt[ , rpid]
   trdt[ , rpid := NULL]

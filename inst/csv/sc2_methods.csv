@@ -1,0 +1,11 @@
+sc2_mthd_id,sc2_mthd,desc,created_date,modified_date,modified_by
+1,bmad3,Add a cutoff value of 3*bmad.,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+2,pc20,Add a cutoff value of 20.,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+3,log2_1.2,Add a cutoff value of log2(1.2).,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+4,log10_1.2,Add a cutoff value of log10(1.2).,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+5,bmad5,Add a cutoff value of 5*bmad.,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+6,bmad6,Add a cutoff value of 6*bmad.,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+7,bmad10,Add a cutoff value of 10*bmad.,2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+8,pc30orbmad3,"Add a cutoff value of either 30 or 3*bmad, whichever is less.",2015-05-13 13:51:13,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+9,pc0.88,Add a cutoff value of 0.88.,2015-05-14 13:25:38,0000-00-00 00:00:00,dfiler.dfiler.dfiler
+10,log2_1.5,Add a cutoff value of log2(1.5).,2015-05-14 13:25:38,0000-00-00 00:00:00,dfiler.dfiler.dfiler

@@ -20,4 +20,3 @@ integers.
 Other tcpl abbreviations: \code{\link{lu}},
   \code{\link{lw}}, \code{\link{sink.reset}}
 }
-

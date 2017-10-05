@@ -85,8 +85,8 @@ available in the package vignette, "Pipeline_Overview."
   }
 }
 }
+
 \seealso{
 \code{\link{sc1}}, \code{\link{Method functions}} to query what
 methods get applied to each acid
 }
-

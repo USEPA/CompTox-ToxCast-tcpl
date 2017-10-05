@@ -4,7 +4,7 @@
 \alias{tcplAppend}
 \title{Append rows to a table}
 \usage{
-tcplAppend(dat, tbl, db)
+tcplAppend(dat, tbl, db, lvl = NULL)
 }
 \arguments{
 \item{dat}{data.table, the data to append to a table}
@@ -20,4 +20,3 @@ a database table.
 \note{
 This function is not exported and not intended to be used by the user.
 }
-

@@ -11,3 +11,4 @@ vignettes/*.bib
 vignettes/*.log
 vignettes/*.gz
 tcpl.Rcheck
+tcplLite.Rproj

@@ -6,6 +6,7 @@
   
   tmp <- mclapply(id, proc_func, mc.cores = ncores, mc.preschedule = FALSE)
   cat("Writing level", lvl, "data for", lw(sapply(tmp, "[[", 1)), "ids...\n")
+
   stime <- Sys.time()
   dat <- rbindlist(lapply(tmp, "[[", 2))
   if (nrow(dat) == 0) {

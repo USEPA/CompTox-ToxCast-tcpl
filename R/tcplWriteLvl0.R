@@ -113,6 +113,7 @@ tcplWriteLvl0 <- function(dat, type) {
     not_used <- names(dat)[!names(dat) %in% outcols]
     warning(paste(not_used, collapse = ","), " not inserted to databse.")
   }
+  
   tcplWriteData(dat = dat[ , .SD, .SDcols = outcols], lvl = 0L, type = type)
   
 }
