@@ -114,22 +114,23 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   if (!is.null(aeid) & !is.vector(aeid)) {
     stop("'aeid' must be NULL or a vector.")
   }
-  
+  print(1)
   if (!is.null(chid) & !is.vector(chid)) {
     stop("'chid' must be NULL or a vector.")
   }
-  
+  print(2)
   mt_type <- (is.numeric(min.test) | is.null(min.test) | is.logical(min.test))
   if (!(length(min.test) == 1 & mt_type)) {
     stop("Invalid 'min.test' input. See details.")
   }
-  
+  print(3)
   if (is.null(aeid)) {
+    print(3.1)
     ae <- suppressWarnings(tcplLoadAeid("burst_assay", 1)$aeid)
   } else {
     ae <- aeid
   }
-  
+  print(4)
   if (length(ae) == 0) stop("No burst assays defined.")
   
   if (is.null(min.test)) {
@@ -142,20 +143,22 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   } else {
     mtst <- 0
   }
-  
+  print(5)
   zdat <- tcplLoadData(lvl = 5L, fld = "aeid", val = ae, type = "mc") 
+  print(6)
   zdat <- tcplPrepOtpt(dat = zdat)
-  
+  print(7)
   if (!is.null(chid)) {ch <- chid; zdat <- zdat[chid %in% ch]}
-  
+  print(8)
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)  
-  
+  print(9)
   zdst <- zdat[ , 
                 list(med = median(modl_ga[hitc == 1]),
                      mad = mad(modl_ga[hitc == 1]),
                      ntst = .N,
                      nhit = lw(hitc == 1)),
                 by = list(chid, code, chnm, casn)]
+  print(10)
   zdst[ , use_global_mad := nhit > 1 & ntst > mtst]
   zdst[ , global_mad := median(mad[use_global_mad])]
   zdst[ , cyto_pt := med]

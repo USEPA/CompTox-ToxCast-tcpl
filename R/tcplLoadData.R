@@ -515,8 +515,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
     qstring <- qformat
 
   }
-
-  dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbls))
+  print(qstring)
+  dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB")))
 
   dat[]
 
