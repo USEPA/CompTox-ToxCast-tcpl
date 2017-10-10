@@ -61,10 +61,10 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE, tcplLiteChem = 
     if (!field %in% vfield) stop("Invalid 'field' value.")
   }
   
-  if (getOption("TCPL_DRVR") == "SQLite") {
-    if (!exact) warning("The exact = FALSE option is not supported in SQLite.")
-    exact <- TRUE
-  }
+  # if (getOption("TCPL_DRVR") == "SQLite") {
+  #   if (!exact) warning("The exact = FALSE option is not supported in SQLite.")
+  #   exact <- TRUE
+  # }
   
   #if (getOption("TCPL_DRVR") == "tcplLite") {
   if (!is.null(tcplLiteChem)) {
