@@ -7,7 +7,7 @@
 #' @export
 
 tcplLoadAeid <- function(fld = NULL, val = NULL, add.fld = NULL) {
-  
+  tbl = c("assay_component_endpoint", "assay", "assay_component")
   out <- c("assay_component_endpoint.aeid", 
            "assay_component_endpoint.assay_component_endpoint_name")
   
@@ -16,8 +16,8 @@ tcplLoadAeid <- function(fld = NULL, val = NULL, add.fld = NULL) {
                           fld = fld, 
                           val = val, 
                           add.fld = add.fld)
-  print(qstring)
-  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
+  
+  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
   
   dat[]
 
