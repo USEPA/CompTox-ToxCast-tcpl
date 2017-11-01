@@ -45,4 +45,3 @@ options(conf_store)
 \seealso{
 \code{\link{tcplPlotFits}}, \code{\link{tcplMakeAeidPlts}}
 }
-

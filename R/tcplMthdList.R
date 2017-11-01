@@ -12,7 +12,8 @@ tcplMthdList <- function(lvl, type = "mc") {
   
   ## Suppress warnings because the data fields are not recognized by R and 
   ## imported as character. 
-  dat <- suppressWarnings(tcplQuery(qstring, getOption("TCPL_DB")))
+  #dat <- suppressWarnings(tcplQuery(qstring, getOption("TCPL_DB"), tbl=c("mc2_methods")))
+  dat <- suppressWarnings(tcplQuery(qstring, getOption("TCPL_DB"), tbl=tbl))
   
   if (nrow(dat) == 0) {
     warning("No ", type, lvl, " methods in the tcpl databases.")

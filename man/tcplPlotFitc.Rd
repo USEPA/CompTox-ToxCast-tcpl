@@ -19,4 +19,3 @@ tcplPlotFitc(fitc = NULL, main = NULL, fitc_sub = NULL)
 \note{
 Suggested device size (inches): width = 10, height = 7.5, pointsize = 9
 }
-

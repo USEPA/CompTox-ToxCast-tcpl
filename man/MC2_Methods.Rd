@@ -47,8 +47,8 @@ available in the package vignette, "Pipeline_Overview."
   \item{mult6}{Multiply cval by 6.}
 }
 }
+
 \seealso{
 \code{\link{mc2}}, \code{\link{Method functions}} to query what
 methods get applied to each acid
 }
-

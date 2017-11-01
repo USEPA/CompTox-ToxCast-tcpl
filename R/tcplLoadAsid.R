@@ -7,7 +7,7 @@
 #' @export
 
 tcplLoadAsid <- function(fld = NULL, val = NULL, add.fld = NULL) {
-  
+  tbl = "assay_source"
   out <- c("assay_source.asid", 
            "assay_source.assay_source_name")
   
@@ -16,8 +16,7 @@ tcplLoadAsid <- function(fld = NULL, val = NULL, add.fld = NULL) {
                           fld = fld, 
                           val = val, 
                           add.fld = add.fld)
-  
-  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
+  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
   
   dat[]
   

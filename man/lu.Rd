@@ -22,4 +22,3 @@ The unique of the \code{TRUE} values in \code{x}
 Other tcpl abbreviations: \code{\link{is.odd}},
   \code{\link{lw}}, \code{\link{sink.reset}}
 }
-

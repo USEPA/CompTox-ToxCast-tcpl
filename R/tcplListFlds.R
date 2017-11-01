@@ -58,6 +58,16 @@ tcplListFlds <- function(tbl, db = getOption("TCPL_DB")) {
     
   }
   
+  if (getOption("TCPL_DRVR") == "tcplLite")  {
+    # return the data table by reading the file. No need to run tcplQuery, simply return data.table columns here
+    fpath <- paste(db, tbl, sep='/')
+    fpath <- paste(fpath, 'csv', sep='.')
+    DT <- read.table(fpath, header=T, sep=',', fill=T)
+    return(colnames(DT))
+
+    
+  }
+  
   stop(getOption("TCPL_DRVR"), " is not a supported database system. See ",
        "?tcplConf for more details.")
   

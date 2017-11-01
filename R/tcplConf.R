@@ -7,6 +7,12 @@
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 
                       db = NULL) {
+  #tcplConf(user='_dataminer', pass='pass', host='au.epa.gov', drvr = 'MySQL',db = 'invitrodb')
+  
+  # Notes for tcplLite
+  # ==================
+  # Allow drvr='tcplLite' for writing flat files for each level of analysis
+  # db=<local dir for writing files>
   
   check <- function(x) length(x) == 1 && is.character(x)
   setop <- function(x) {
@@ -20,6 +26,7 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
       warning("Invalid '", xn, ",' no changes made to TCPL_", toupper(xn))
     }
   }
+
   
   if (!is.null(user)) setop(user)
   if (!is.null(pass)) setop(pass)
@@ -28,14 +35,14 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   
   if (!is.null(drvr)) {
     
-    if (!drvr %in% c("SQLite", "MySQL")) {
+    if (!drvr %in% c( "MySQL", "tcplLite")) {   #"SQLite",
       stop(drvr, " is not a supported database driver. Must be 'SQLite' or ",
-           "'MySQL.'")
+           "'MySQL' or 'tcplLite.'")
     }
     
-    if (drvr == "SQLite") {
-      options("TCPL_DRVR" = "SQLite")
-    }
+    # if (drvr == "SQLite") {
+    #   options("TCPL_DRVR" = "SQLite")
+    # }
     
     if (drvr == "MySQL") {
       options("TCPL_DRVR" = "MySQL")
@@ -47,6 +54,11 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
                 "1073741824 bytes to ensure larger queries run without error.")
       }
     }
+    
+    if (drvr == "tcplLite") {
+      tcplLiteInit()
+      options("TCPL_DRVR" = "tcplLite")
+    } 
     
   }
   

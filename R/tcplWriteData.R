@@ -36,7 +36,7 @@ tcplWriteData <- function(dat, lvl, type) {
   
   ## Variable-binding to pass R CMD Check
   modified_by <- NULL
-  
+
   if (length(lvl) > 1 | !lvl %in% 0L:6L) {
     stop("Invalid lvl input - must be an integer of length 1 between 0 & 6.")
   }
@@ -117,12 +117,12 @@ tcplWriteData <- function(dat, lvl, type) {
     
     tcplAppend(dat = copy(dat[ , unique(.SD) , .SDcols = mc4_cols]), 
                tbl = "mc4", 
-               db = getOption("TCPL_DB"))
+               db = getOption("TCPL_DB"), lvl=lvl)
     
     qformat <- "SELECT m4id, aeid, tmpi FROM mc4 WHERE aeid IN (%s);"
     qstring <- sprintf(qformat, paste0("\"", ids, "\"", collapse = ","))
     
-    m4id_map <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
+    m4id_map <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=c("mc4"))
     setkeyv(m4id_map, c("aeid", "tmpi"))
     setkeyv(dat, c("aeid", "tmpi"))
     
@@ -147,12 +147,12 @@ tcplWriteData <- function(dat, lvl, type) {
     
     tcplAppend(dat = copy(dat[ , unique(.SD) , .SDcols = sc2_cols]), 
                tbl = "sc2", 
-               db = getOption("TCPL_DB"))
+               db = getOption("TCPL_DB"), lvl=lvl)
     
     qformat <- "SELECT s2id, aeid, tmpi FROM sc2 WHERE aeid IN (%s);"
     qstring <- sprintf(qformat, paste0("\"", ids, "\"", collapse = ","))
     
-    s2id_map <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
+    s2id_map <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=c('sc2'))
     setkeyv(s2id_map, c("aeid", "tmpi"))
     setkeyv(dat, c("aeid", "tmpi"))
     
@@ -170,12 +170,12 @@ tcplWriteData <- function(dat, lvl, type) {
     
     if (n <= 1e6) {
       
-      tcplAppend(dat = dat, tbl = tbl, db = db) 
+      tcplAppend(dat = dat, tbl = tbl, db = db, lvl=lvl) 
     
     } else {
      
       rbins <- split(1:n, ceiling(seq_along(1:n)/1e6))
-      lapply(rbins, function(x) tcplAppend(dat = dat[x], tbl = tbl, db = db))
+      lapply(rbins, function(x) tcplAppend(dat = dat[x], tbl = tbl, db = db, lvl=lvl))
       
     }
     

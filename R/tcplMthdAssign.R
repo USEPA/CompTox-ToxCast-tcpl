@@ -26,14 +26,14 @@ tcplMthdAssign <- function(lvl, id, mthd_id, ordr = NULL, type) {
       stop("'ordr' must be specified and the same length as 'mthd_id'")
     }
     
-    dat[ , "exec_ordr" := ordr[match(get("mthd"), mthd_id)], with = FALSE]
+    dat[ , "exec_ordr" := ordr[match(get("mthd"), mthd_id)]]
         
   }
   
   setnames(dat, old = c("id", "mthd"), flds)
   
   mb <- paste(Sys.info()[c("login", "user", "effective_user")], collapse = ".")
-  dat[ , "modified_by" := mb, with = FALSE]
+  dat[ , "modified_by" := mb]
   
   tcplAppend(dat = dat, 
              tbl = paste0(type, lvl, "_", flds[1]), 
