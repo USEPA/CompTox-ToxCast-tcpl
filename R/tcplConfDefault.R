@@ -7,8 +7,8 @@
 
 tcplConfDefault <- function () {
   
-  sqlite <- file.path(system.file(package = "tcpl"), "sql", "tcpldb.sqlite")
-  tcplConf(db = sqlite, user = NA, host = NA, drvr = "SQLite")
+  TCPLlite <- file.path(system.file(package = "tcpl"), "csv")
+  tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
   
 }
 
