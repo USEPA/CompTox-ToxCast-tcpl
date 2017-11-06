@@ -22,9 +22,9 @@ mc6 <- function(ae, wr = FALSE) {
   ## Variable-binding to pass R CMD Check
   mthd_id <- m4id <- m5id <- lval <- rval <- J <- mthd <- bmad <- NULL
   
-  owarn <- getOption("warn")
-  options(warn = 1)
-  on.exit(options(warn = owarn))
+  #owarn <- getOption("warn")
+  #options(warn = 1)
+  #on.exit(options(warn = owarn))
   
   ## Check the ae input
   if (length(ae) > 1) {
@@ -42,6 +42,9 @@ mc6 <- function(ae, wr = FALSE) {
     warning("No level 6 methods assigned to AEID", ae, ".")
     if(wr) return(TRUE) else return(list(TRUE, NULL))
   }
+  # TODO check that any methods that are included in ms are only present once per 
+  
+  
   setkey(ms, mthd_id)
   
   ## Load level 5 and, if needed, level 3 data 
@@ -73,7 +76,7 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Generate and evaluate flag expressions
   mthd_funcs <- mc6_mthds()
-  exprs <- lapply(ms$mthd_id, function(x) mthd_funcs[[ms[J(x), mthd]]](x))
+  exprs <- lapply(ms$mthd_id, function(x) mthd_funcs[[ms[J(x), mthd]]](x)) # XXX this breaks if functions appear more than once in mc6_mthds() 
   fenv <- environment()
   invisible(rapply(exprs, eval, envir = fenv))
   

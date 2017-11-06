@@ -88,8 +88,8 @@ tcplPlotFitc <- function(fitc = NULL, main = NULL, fitc_sub = NULL) {
   
   setkey(tree, fitc)
   for (i in tree[fitc != 1 & plt, fitc]) {
-    lines(x = c(tree[J(i), xloc], tree[tree[J(i), parent_fitc], xloc]),
-          y = c(tree[J(i), yloc], tree[tree[J(i), parent_fitc], yloc]))
+    lines(x = c(tree[J(i), xloc], tree[as.integer(tree[J(i), parent_fitc]), xloc]),
+          y = c(tree[J(i), yloc], tree[as.integer(tree[J(i), parent_fitc]), yloc]))
   }
   
   with(tree[which(plt)],
