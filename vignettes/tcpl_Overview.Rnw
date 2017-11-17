@@ -218,7 +218,7 @@ tcplRegister(what = "spid",
 \hfill \par
 Optionally, the user user can subdivide the chemcial IDs into different groups or libraries. For illustration, the chemical IDs will be arbitrarily divided into two chemical libraries, with the even numbered chemical IDs in group 1 and the odd numbered chemicals IDs in group 2.
 \hfill \newline
-<<>>=
+<<eval = FALSE>>=
 grp1 <- cmap[chid %% 2 == 0, unique(chid)]
 grp2 <- cmap[chid %% 2 == 1, unique(chid)]
 tcplRegister(what = "clib", 
@@ -229,7 +229,7 @@ tcplRegister(what = "clib",
 \hfill \par
 Chemical IDs can belong to more than one library, and will be listed as seperate entries when loading chemical library information.
 \hfill \newline
-<<>>=
+<<eval = FALSE>>=
 tcplRegister(what = "clib", 
              flds = list(clib = "other", chid = 1:2))
 tcplLoadClib(field = "chid", val = 1:2)
@@ -758,7 +758,7 @@ For active concentration series, two additional point-of-departure estimates are
 \hfill \newline
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h]
-<<eval = false, podplt,fig=true,strip.white=true,echo=FALSE,height=6,width=10>>=
+<<eval = FALSE, podplt,fig=true,strip.white=true,echo=FALSE,height=6,width=10>>=
 par(family = "mono", mar = rep(1, 4), pty = "m")
 plot.new()
 plot.window(xlim = c(0, 30), ylim = c(-30, 100))
