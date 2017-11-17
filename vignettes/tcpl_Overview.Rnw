@@ -40,7 +40,7 @@
                                               
 \newcommand{\Lagr}{\mathop{\mathcal{L}}}
 
-<<echo=FALSE, results=hide>>=
+<<echo=FALSE, eval=FALSE>>=
 options(continue = "  ", width = 60, warn = -1)
 pdf.options(pointsize = 10)
 library(tcpl)
@@ -100,17 +100,17 @@ Every time the package is loaded in a new R session, a message similar to the fo
 \begin{Schunk}
 \begin{Soutput}
 tcpl (v1.0) loaded with the following settings:
-  TCPL_DB:    /usr/local/lib64/R/library/tcpl/sql/xmpl.sqlite
+  TCPL_DB:    /path_to_package/tcplLite/inst/csv
   TCPL_USER:  NA
   TCPL_HOST:  NA
-  TCPL_DRVR:  SQLite
+  TCPL_DRVR:  tcplLite
 Default settings stored in TCPL.conf. See ?tcplConf for 
 more information.
 \end{Soutput}
 \end{Schunk}
 \hfill \par
 
-The package consists of five settings: (1) \texttt{\$TCPL\_DB} points to the \texttt{tcpl} database (either the SQLite file, as in the given example above, or the name of the MySQL database), (2) \texttt{\$TCPL\_USER} stores the username for accessing the database, (3) \texttt{\$TCPL\_PASS} stores the password for accessing the database, (4) \texttt{\$TCPL\_HOST} points to the MySQL server host, and (5) \texttt{\$TCPL\_DRVR} indicates which database driver to use (either ``MySQL'' or ``SQLite'').
+The package consists of five settings: (1) \texttt{\$TCPL\_DB} points to the \texttt{tcpl} database (either the CSV file, as in the given example above, or the name of the MySQL database), (2) \texttt{\$TCPL\_USER} stores the username for accessing the database, (3) \texttt{\$TCPL\_PASS} stores the password for accessing the database, (4) \texttt{\$TCPL\_HOST} points to the MySQL server host, and (5) \texttt{\$TCPL\_DRVR} indicates which database driver to use (either ``MySQL'' or ``tcplLite'').
 
 Refer to \texttt{?tcplConf} for more information. At any time users can check the settings using \texttt{tcplConfList()}. An example of database settings would be as follows:
 
@@ -157,7 +157,7 @@ The first step in registering new assays is to register the assay source. As dis
 <<>>=
 ## Add a new assay source, call it CTox,
 ## that produced the data
-tcplRegister(what = "asid", flds = list(asnm = "CTox"))
+tcplRegister(what = "asid", flds = list(asid = 1, asnm = "TOX21_ERa_BLA_Agonist"))
 tcplLoadAsid()
 @
 \hfill \par
@@ -166,8 +166,8 @@ The \texttt{tcplRegister} function takes the abbreviation for $\mathit{assay\_so
 <<>>=
 tcplRegister(what = "aid", 
              flds = list(asid = 1, 
-                         anm = "Steroidogenesis", 
-                         assay_footprint = "96 well"))
+                         anm = "TOX21_ERa_BLA_Agonist", 
+                         assay_footprint = "1536 well"))
 @
 \hfill \par
 When registering an assay ($\mathit{aid}$), the user must give an $\mathit{asid}$ to map the assay to the correct assay source. Registering an assay, in addition to an assay\_name ($\mathit{anm}$) and $\mathit{asid}$, requires $\mathit{assay\_footprint}$. The $\mathit{assay\_footprint}$ field is used in the assay plate visualization functions (discussed later) to define the appropriate plate size. The $\mathit{assay\_footprint}$ field can take most string values, but only the numeric value will be extracted, e.g. the text string ``hello 384'' would indicate to draw a 384-well microtitier plate. Values containing multiple numeric values in $\mathit{assay\_footprint}$ may cause errors in plotting plate diagrams.
@@ -176,15 +176,14 @@ With the assay registered, the next step is to register an assay component. The 
 \hfill \newline
 <<>>=
 tcplRegister(what = "acid", 
-             flds = list(aid = 1, acnm = "CTox_CORT"))
-tcplRegister(what = "aeid", 
+             flds = list(aid = 1, 
+                         acnm = "TOX21_ERa_BLA_Agonist_ratio"))
+tcplRegister(what = "aeid",
              flds = list(acid = c(1, 1), 
-                         aenm = c("CTox_CORT_up", 
-                                  "CTox_CORT_dn"),
-                         normalized_data_type = 
-                         rep("log2_fold_induction", 2),
-                         export_ready = c(1, 1),
-                         burst_assay = c(0, 0),
+                         aenm = c("TOX21_ERa_BLA_Agonist_ratio_gain", 
+                                  "TOX21_ERa_BLA_Agonist_ratio_loss"),
+                         normalized_data_type = rep("percent_activity", 1), 
+                         export_ready = c(1, 1), burst_assay = c(0, 0), 
                          fit_all = c(0, 0)))
 @
 \hfill \par
@@ -197,7 +196,7 @@ The final piece of assay information needed is the assay component source name (
 With the minimal assay information registered, the next step is to register the necessary chemical and sample information. The ``chdat.csv'' file included in the package contains the sample and chemical information for the data that will be loaded. The following shows an example of how to load chemical information. Similar to the order in registering assay information, the user must first register chemicals, then register samples that map to chemical.
 \hfill \newline
 <<>>=
-ch <- fread(file.path(pkg_dir, "sql", "chdat.csv"))
+ch <- fread(system.file("example/chdat.csv",package = "tcpl"))
 head(ch)
 
 ## Register the unique chemicals
@@ -239,29 +238,29 @@ tcplLoadClib(field = "chid", val = 1:2)
 After registering the chemical and assay information the data can be loaded into the \texttt{tcpl} database. The package includes two files from the ToxCast program, ``scdat.csv'' and ``mcdat.csv,'' with a subset of single- and multiple-concentration data, respectively. The single- and multiple-concentration processing require the same level 0 fields; more information about level 0 pre-processing in Appendix \ref{app:l0}.
 \hfill \newline
 <<>>=
-scdat <- fread(file.path(pkg_dir, "sql", "scdat.csv"))
-mcdat <- fread(file.path(pkg_dir, "sql", "mcdat.csv"))
-c(unique(scdat$acsn), unique(mcdat$acsn))
+#scdat <- fread(file.path(pkg_dir, "sql", "scdat.csv"))
+mcdat <- fread(system.file("example/mcdat.csv",package = "tcpl"))
+#c(unique(scdat$acsn), unique(mcdat$acsn))
 @
 \hfill \par
 As discussed above, the final step before loading data is mapping the assay component source name ($\mathit{acsn}$) to the correct $\mathit{acid}$. An assay component can have multiple $\mathit{acsn}$ values, but an $\mathit{acsn}$ must be unique to one assay component. Assay components can have multiple $\mathit{acsn}$ values to minimize the amount of data manipulation required (and therefore potential errors) during the level 0 pre-processing if assay source files change or are inconsistent. The example data presented here only has one $\mathit{acsn}$ value, ``cort.''
 \hfill \newline
 <<>>=
 tcplRegister(what = "acsn", 
-             flds = list(acid = 1, acsn = "cort"))
+             flds = list(acid = 1, acsn = "TCPL-MC-Demo"))
 @
 \hfill \par
 The data are now ready to be loaded with the \texttt{tcplWriteLvl0} function.
 \hfill \newline
 <<results=hide>>=
-tcplWriteLvl0(dat = scdat, type = "sc")
+#tcplWriteLvl0(dat = scdat, type = "sc")
 tcplWriteLvl0(dat = mcdat, type = "mc")
 @
 \hfill \par
 The \texttt{type} argument is used throughout the package to distinguish the type of data/processing: ``sc'' indicates single-concentration; ``mc'' indicates multiple-concentration. The \texttt{tcplLoadData} function can be used to load the data from the database.
 \hfill \newline
 <<>>=
-tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "sc")
+tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "mc")
 @
 \hfill \par
 Notice in the loaded data the \texttt{acsn} is replaced by the correct $\mathit{acid}$ and the $\mathit{s0id}$ field is added. The ``s\#'' fields, and corresponding ``m\#'' fields in the multiple-concentration data, are the primary keys for each level of data. These primary keys link the various levels of data. All of the keys are auto-generated and will change anytime data are reloaded or processed. Note, the primary keys only change for the levels affected, e.g. if the user reprocesses level 1, the level 0 keys will remain the same. 
@@ -318,7 +317,7 @@ The \texttt{tcpl} package provides three functions for easily modifying and load
 The following code blocks will give some examples of how to use the method-related functions.
 
 \hfill \newline
-<<>>=
+<<eval = FALSE, echo = FALSE>>=
 ## For illustrative purposes, assign level 2 MC methods to 
 ## ACIDs 98, 99. First check for available methods.
 mthds <- tcplMthdList(lvl = 2, type = "mc")
@@ -417,7 +416,7 @@ Before beginning the normalization process, all wells with well quality ($\mathi
 
 The first step in beginning the processing is to identify which assay endpoints stem from the assay component(s) being processed.
 \hfill \newline
-<<>>=
+<<eval = FALSE, echo = FALSE>>=
 tcplLoadAeid(fld = "acid", val = 1)
 @
 \hfill \par
@@ -425,7 +424,7 @@ tcplLoadAeid(fld = "acid", val = 1)
 With the corresponding endpoints identified, the appropriate methods can be assigned.
 
 \hfill \newline
-<<>>=
+<<eval = FALSE, echo = FALSE>>=
 tcplMthdAssign(lvl = 1, 
                id = 1:2,
                mthd_id = c(1, 11, 13), 
@@ -443,7 +442,7 @@ Above, methods 1, 11, and 13 were assigned for both endpoints. The method assign
 
 For a complete list of normalization methods see \texttt{tcplMthdList(lvl = 1, type = "sc")} or \texttt{?SC1\_Methods}. With the assay endpoints and normalization methods defined, the data are ready for level 1 processing. 
 \hfill \newline
-<<>>=
+<<eval = FALSE, echo = FALSE>>=
 ## Do level 1 processing for acid 1
 sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 @
@@ -461,7 +460,7 @@ To collapse the data by sample ID, the median response value is calculated at ea
 
 Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit-call, the $\mathit{max\_med}$ must be greater than an efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 5 methods see \texttt{tcplMthdList(lvl = 2, type = "sc")} or \texttt{?SC2\_Methods}.
 \hfill \newline
-<<>>=
+<<eval = FALSE, echo = FALSE>>=
 ## Assign a cutoff value of log2(1.2)
 tcplMthdAssign(lvl = 2,
                id = 1:2,
@@ -474,7 +473,7 @@ For the example data the cutoff value is $log_2(1.2)$. If the maximum median val
 With the methods assigned, the level 2 processing can be completed.
 
 \hfill \newline
-<<>>=
+<<eval = FALSE, echo = FALSE>>=
 ## Do level 1 processing for acid 1
 sc2_res <- tcplRun(id = 1:2, slvl = 2, elvl = 2, type = "sc")
 @
@@ -534,14 +533,14 @@ m1dat <- tcplLoadData(lvl = 1,
                       type = "mc")
 m1dat <- tcplPrepOtpt(m1dat)
 setkeyv(m1dat, c("repi", "cndx"))
-m1dat[chnm == "3-Phenylphenol", list(chnm, conc, cndx, repi)]
+m1dat[chnm == "4-Chloro-1,2-diaminobenzene", list(chnm, conc, cndx, repi)]
 @
 \hfill \par
 3-phenylphenol contains two replicates, each with six distinct concentrations. The package also contains a tool for visualizing the data at the assay plate level.
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h!]
 <<l1apid, fig=true, strip.white=true, echo=true, height=6.6667, width=10>>=
-tcplPlotPlate(dat = m1dat, apid = "09Apr2014.Plate.17")
+tcplPlotPlate(dat = m1dat, apid = "4009721")
 @
 \caption{An assay plate diagram. The color indicates the raw values according to the key on the right. The bold lines on the key show the distribution of values for the plate on the scale of values across the entire assay. The text inside each well shows the well type and concentration index. For example, ``t4'' indicates a test compound at the fourth concentration. The wells with an ``X'' have a well quality of 0.}
 \label{fig:l1apid}
@@ -557,10 +556,10 @@ For the example data used in this vignette, no transformations are necessary at 
 \hfill \newline
 <<>>=
 tcplMthdAssign(lvl = 2,
-               id = 1,
-               mthd_id = 1, 
-               ordr = 1, 
-               type = "mc")
+                id =1,
+                mthd_id = 1,
+                ordr = 1, 
+                type = "mc")
 @
 \hfill \par
 Every assay component needs at least one transformation method assigned to complete level 2 processing. With the method assigned, the processing can be completed.
@@ -586,16 +585,12 @@ tcplLoadAeid(fld = "acid", val = 1)
 \hfill \par
 With the corresponding assay endpoints listed, the normalization methods can be assigned.
 <<>>=
-tcplMthdAssign(lvl = 3,
-               id = 1:2,
-               mthd_id = c(17, 9, 7), 
-               ordr = 1:3, 
-               type = "mc")
 tcplMthdAssign(lvl = 3, 
-               id = 2,
-               mthd_id = 6, 
-               ordr = 4, 
+               id = 1:2,
+               mthd_id = c(24, 30, 5, 20),
+               ordr = 1:4,
                type = "mc")
+
 @
 Above, methods 17, 9, and 7 were assigned for both endpoints. The method assignments instruct the processing to: (1) calculate $\mathit{bval}$ for each assay plate ID by taking the median of all data where the well type equals ``n'' or the well type equals ``t'' and the concentration index is 1 or 2; (2) calculate a fold-change over $\mathit{bval}$; (3) log-transform the fold-change values with base 2. The second method assignment (only for AEID 2) tells the processing to multiply all response values by $-1$.
 
@@ -696,7 +691,7 @@ Level 4 does not utilize any assay endpoint-specific methods; the user only need
 \hfill \newline
 <<>>=
 ## Do level 4 processing for aeid 1 and load the data
-mc4_res <- tcplRun(id = 1:2, slvl = 4, elvl = 4, type = "mc")
+mc4_res <- tcplRun(id = 1, slvl = 4, elvl = 4, type = "mc")
 @
 \hfill \par
 The level 4 data include 52 variables, including the ID fields. A complete list of level 4 fields is available in Appendix \ref{app:dbstruc}. The level 4 data include the fields $\mathit{cnst}$, $\mathit{hill}$, and $\mathit{gnls}$ indicating the convergence of the model where a value of 1 means the model converged and a value of 0 means the model did not converge. N/A values indicate the fitting algorithm did not attempt to fit the model. $\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure \ref{fig:l4plt} the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the \texttt{tcplPlotL4ID} function.
@@ -712,8 +707,8 @@ m4dat[hill == 1 & aeid == 1, head(m4id)]
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h!]
 <<l4plt,fig=true,strip.white=true,echo=true,height=6,width=10>>=
-## Plot a fit for m4id 21
-tcplPlotM4ID(m4id = 686, lvl = 4)
+## Plot a fit for m4id 1
+tcplPlotM4ID(m4id = 1, lvl = 4)
 @
 \caption{An example level 4 plot for a single concentration series. The orange dashed line shows the constant model, the red dashed line shows the Hill model, and the blue dashed line shows the gain-loss model. The gray striped box shows the baseline region, $0 \pm 3\mathit{bmad}$. The summary panel shows assay endpoint and sample information, the parameter values (val) and standard deviations (sd) for the Hill and gain-loss models, and summary values for each model.} 
 \label{fig:l4plt}
@@ -748,8 +743,9 @@ The efficacy cutoff is defined by the level 5 methods. The efficacy cutoff value
 <<>>=
 ## Assign a cutoff value of bmad*6
 tcplMthdAssign(lvl = 5,
-               id = 1:2,
-               mthd_id = 6, 
+               id = 1,
+               mthd_id = c(1,2,7),
+               ordr = 1:3,
                type = "mc")
 @
 \hfill \par
@@ -762,7 +758,7 @@ For active concentration series, two additional point-of-departure estimates are
 \hfill \newline
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h]
-<<podplt,fig=true,strip.white=true,echo=FALSE,height=6,width=10>>=
+<<eval = false, podplt,fig=true,strip.white=true,echo=FALSE,height=6,width=10>>=
 par(family = "mono", mar = rep(1, 4), pty = "m")
 plot.new()
 plot.window(xlim = c(0, 30), ylim = c(-30, 100))
@@ -803,7 +799,7 @@ All concentration series fall into a single fit category ($\mathit{fitc}$), defi
 \setkeys{Gin}{width=1.2\textwidth}
 \begin{sidewaysfigure}[!p]
 \centering
-<<fitc1, fig=true, strip.white=true, echo=FALSE, height=5, width=8.5>>=
+<<eval = False, fitc1, fig=true, strip.white=true, echo=FALSE, height=5, width=8.5>>=
 tcplPlotFitc()
 @
 \caption{The categories used to bin each fit. Each fit falls into one leaf of the tree. The leaves are indicated by bold green font. (Figure created by calling \texttt{tcplPlotFitc()}.)}
@@ -824,7 +820,7 @@ mc5_res <- tcplRun(id = 1:2, slvl = 5, elvl = 5, type = "mc")
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h]
 <<l5plt1,fig=true,strip.white=true,echo=true,height=6,width=10>>=
-tcplPlotM4ID(m4id = 370, lvl = 5)
+tcplPlotM4ID(m4id = 7767, lvl = 5)
 @
 \caption{An example level 5 plot for a single concentration series. The solid line and model highlighting indicate the model winner. The horizontal line shows the cutoff value. In addition to the information from the level 4 plots, the summary panel includes the cutoff ($\mathit{coff}$), hit-call ($\mathit{hitc}$), fit category ($\mathit{fitc}$) and activity probability ($\mathit{actp}$) values.} 
 \label{fig:l5plt1}
@@ -835,6 +831,10 @@ Figure \ref{fig:l5plt1} shows an example of a concentration series in fit catego
 \begin{figure}[h]
 <<fitc2,fig=true,strip.white=true,echo=true,height=6,width=10>>=
 m5dat <- tcplLoadData(lvl = 5, type = "mc")
+mc5_fit_categories <-read.table(system.file("example/mc5_fit_categories.csv",
+                                            package = "tcpl"), 
+                                sep=",",
+                                header = TRUE)
 tcplPlotFitc(fitc = m5dat$fitc)
 @
 \caption{The distribution of concentration series by fit category for the example data. Both the size and color of the circles indicate the number of concentration series. The legend gives the range for number of concentration series by color.} 
@@ -843,7 +843,7 @@ tcplPlotFitc(fitc = m5dat$fitc)
 \hfill \par
 The distribution in Figure \ref{fig:fitc2} shows 24-40 concentration series fell into fit category 21. Following the logic discussed previously, fit category 21 indicates an inactive series where the Hill model was selected, the top asymptote for the Hill model was greater than $0.8\mathit{coff}$, and the gain-loss top asymptote was greater than or equal to the cutoff. The series in fit category 21 can be found easily in the level 5 data.
 \hfill \newline
-<<>>=
+<<eval = False>>=
 head(m5dat[fitc == 21, 
            list(m4id, hill_tp, gnls_tp, 
                 max_med, coff, hitc)])
@@ -854,7 +854,7 @@ The plot in Figure \ref{fig:l5plt2} shows a concentration series in fit category
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h]
 <<l5plt2,fig=true,strip.white=true,echo=true,height=6,width=10>>=
-tcplPlotM4ID(m4id = 45, lvl = 5)
+tcplPlotM4ID(m4id = 6500, lvl = 5)
 @
 \caption{Level 5 plot for m4id 45 showing an example series in fit category 21.} 
 \label{fig:l5plt2}
@@ -866,10 +866,13 @@ tcplPlotM4ID(m4id = 45, lvl = 5)
 Level 6 processing uses various methods to identify concentration series with etiologies that may suggest false positive/false negative results or explain apparent anomalies in the data. Each flag has is defined by a level 6 method that has to be assigned to each assay endpoint. Similar to level 5, an assay endpoint does not need any level 6 methods assigned to complete processing. 
 \hfill \newline
 <<>>=
-tcplMthdAssign(lvl = 6,
-               id = 1:2,
-               mthd_id = c(6:8, 10:12, 15:16), 
+#Clear old methods
+tcplMthdClear(lvl = 6, id = 1, type = "mc")
+
+tcplMthdAssign(lvl = 6, id = 1,
+               mthd_id = c(6:8, 10:12, 15:16),
                type = "mc")
+
 tcplMthdLoad(lvl = 6, id = 1, type = "mc")
 @
 \hfill \par
@@ -886,7 +889,7 @@ m6dat <- tcplLoadData(lvl = 6, type = "mc")
 For the two assay endpoints, \Sexpr{nrow(m6dat)} out of the \Sexpr{nrow(m5dat)} concentration series were flagged in the level 6 processing. Series not flagged in the level 6 processing do not get stored at level 6. Each series-flag combination is a separate entry in the level 6 data. Or, in other words, if a series has multiple flags it will show up on multiple rows in the output. For example, consider the following results:
 \hfill \newline
 <<>>=
-m6dat[m4id == 46]
+m6dat[m4id == 200]
 @
 \hfill \par
 The data above lists two flags: ``Multiple points above baseline, inactive'' and ``Borderline inactive.'' Without knowing much about the flags one might assume this concentration series had some evidence of activity but was not called a hit, and could potentially be a false negative. In cases of borderline results, plotting the curve is often helpful.
@@ -895,7 +898,7 @@ The data above lists two flags: ``Multiple points above baseline, inactive'' and
 \setkeys{Gin}{width=1\textwidth}
 \begin{figure}[h!]
 <<l6plt,fig=true,strip.white=true,echo=true,height=6,width=10>>=
-tcplPlotM4ID(m4id = 46, lvl = 6)
+tcplPlotM4ID(m4id = 200, lvl = 6)
 @
 \caption{An example level 6 plot for a single concentration series. All level 6 method ID ($\mathit{l6\_mthd\_id}$) values are concatenated in the flags section. If flags have an associated value ($\mathit{fval}$), the value will be shown in parentheses to the right of the level 6 method ID.} 
 \label{fig:l6plt}
