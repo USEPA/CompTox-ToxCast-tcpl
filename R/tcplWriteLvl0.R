@@ -66,25 +66,25 @@ tcplWriteLvl0 <- function(dat, type) {
   char_test <- dat[ , sapply(.SD, class) != "character", .SDcols = char]
   if (any(char_test)) {
     char <- char[char_test]
-    warning(paste(char, collapse = ";"), " coerced to character. May affect ",
-            "data integrity.")
-    dat[ , char := lapply(.SD, as.character), .SDcols = char, with = FALSE]
+    #warning(paste(char, collapse = ";"), " coerced to character. May affect ",
+           # "data integrity.")
+    dat[ , (char) := lapply(.SD, as.character), .SDcols = char]
   }
   intg <- c("acid", "rowi", "coli", "wllq")
   intg_test <- dat[ , sapply(.SD, class) != "integer", .SDcols = intg]
   if (any(intg_test)) {
     intg <- intg[intg_test]
-    warning(paste(intg, collapse = ";"), " coerced to integer. May affect ",
-            "data integrity.")
-    dat[ , intg := lapply(.SD, as.integer), .SDcols = intg, with = FALSE]
+    #warning(paste(intg, collapse = ";"), " coerced to integer. May affect ",
+     #       "data integrity.")
+    dat[ , (intg) := lapply(.SD, as.integer), .SDcols = intg]
   } 
   real <- c("conc", "rval")
   real_test <- dat[ , sapply(.SD, class) != "numeric", .SDcols = real]
   if (any(real_test)) {
     real <- real[real_test]
-    warning(paste(real, collapse = ";"), " coerced to numeric. May affect ",
-            "data integrity.")
-    dat[ , real := lapply(.SD, as.numeric), .SDcols = real, with = FALSE]
+    #warning(paste(real, collapse = ";"), " coerced to numeric. May affect ",
+     #       "data integrity.")
+    dat[ , (real) := lapply(.SD, as.numeric), .SDcols = real]
   } 
   
   ## Check for samples in inventorydb
