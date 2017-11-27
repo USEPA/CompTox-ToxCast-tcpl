@@ -55,8 +55,6 @@ tcplLiteInit <- function () {
     fpath <- paste(fpath, 'csv', sep='.')
     if (!file.exists(fpath)) {
       print(sprintf("Writing local %s table for future referencing.", m))
-      print(db)
-      print(tcpl_fpath)
       file.copy(tcpl_fpath, db)
     }
     
