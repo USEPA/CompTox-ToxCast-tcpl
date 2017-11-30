@@ -74,15 +74,13 @@ tcplSubsetChid <- function(dat, flag = TRUE) {
   dat[ , chit := mean(hitc[hitc %in% 0:1]) >= 0.5, by = list(aeid, chid)]
   dat <- dat[hitc == chit | (is.na(chit) & (hitc == -1 | is.na(m4id)))]
   
-  print(8.1)
   
   dat[ , fitc.ordr := NA_integer_]  
   dat[fitc %in% c(37, 41, 46, 50), fitc.ordr := 0]
   dat[fitc %in% c(38, 42, 47, 51), fitc.ordr := 1]
   dat[fitc %in% c(36, 40, 45, 49), fitc.ordr := 2]
-  print(8.2)
   if (is.null(flag)) flag <- TRUE
-  print(8.3)
+
   if (flag[1] | length(flag) > 1) {
     
     tst <- is.logical(flag)
@@ -99,13 +97,13 @@ tcplSubsetChid <- function(dat, flag = TRUE) {
     dat[ , nflg := FALSE]
     
   }
-  print(8.4)
+
   setkeyv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga"))
-  print(8.5)
+
   min_modl_ga <- dat[ , list(ind = .I[1]), by = list(aeid, casn)]
-  print(8.6)
+
   dat <- dat[min_modl_ga$ind]
-  print(8.7)
+
   dat[]
   
 }
