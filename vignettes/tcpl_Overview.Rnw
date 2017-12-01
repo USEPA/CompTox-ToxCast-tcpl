@@ -110,12 +110,13 @@ more information.
 \end{Schunk}
 \hfill \par
 
-The package consists of five settings: (1) \texttt{\$TCPL\_DB} points to the \texttt{tcpl} database (either the CSV file, as in the given example above, or the name of the MySQL database), (2) \texttt{\$TCPL\_USER} stores the username for accessing the database, (3) \texttt{\$TCPL\_PASS} stores the password for accessing the database, (4) \texttt{\$TCPL\_HOST} points to the MySQL server host, and (5) \texttt{\$TCPL\_DRVR} indicates which database driver to use (either ``MySQL'' or ``tcplLite'').
+The package consists of five settings: (1) \texttt{\$TCPL\_DB} points to the \texttt{tcpl} database (either the CSV file, as in the given example above, or the name of the MySQL database), (2) \texttt{\$TCPL\_USER} stores the username for accessing the database, (3) \texttt{\$TCPL\_PASS} stores the password for accessing the database, (4) \texttt{\$TCPL\_HOST} points to the MySQL server host, and (5) \texttt{\$TCPL\_DRVR} indicates which database driver to use (either ``MySQL'' or ``tcplLite''). We will be running tcpl package using CSV files in this vignette. To use the the database, the user will need to have access to a MySQL server with the database invitrodb_v2 installed on the server. The database can be downloaded from \url{https://www.epa.gov/chemical-research/toxicity-forecaster-toxcasttm-data}
 
 Refer to \texttt{?tcplConf} for more information. At any time users can check the settings using \texttt{tcplConfList()}. An example of database settings would be as follows:
 
 \hfill \newline
 <<eval=FALSE>>=
+#THIS IS AN EXAMPLE. DO NOT RUN
 tcplConf(drvr = "MySQL", 
          user = "root", 
          pass = "", 
@@ -155,7 +156,7 @@ The \texttt{tcpl} package provides three functions for adding new data: (1) \tex
 The first step in registering new assays is to register the assay source. As discussed in the previous section, the package refers to the levels of the assay hierarchy by their ID names, e.g. $\mathit{asid}$ for assay source.The following code shows how to register an assay source, then ensure the assay source was properly registered.
 \hfill \newline
 <<>>=
-## Add a new assay source, call it CTox,
+## Add a new assay source, call it TOX21_Era_BLA_Agonist,
 ## that produced the data
 tcplRegister(what = "asid", flds = list(asid = 1, 
                       asnm = "TOX21_ERa_BLA_Agonist"))
