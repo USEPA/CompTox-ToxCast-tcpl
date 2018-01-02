@@ -6,6 +6,6 @@ The tcpl pacakge provides a set of tools for processing and modeling high-throug
 
 If you are interested in contributing or want to report a bug, please see [CONTRIBUTING](CONTRIBUTING.md) for more information. 
 
-To install the current development version run the following command:
+To install the current development version run the following command: 
 
     devtools::install_github("daynefiler/tcpl")
