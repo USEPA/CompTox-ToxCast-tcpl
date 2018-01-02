@@ -35,14 +35,14 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   
   if (!is.null(drvr)) {
     
-    if (!drvr %in% c("SQLite", "MySQL", "tcplLite")) {
+    if (!drvr %in% c( "MySQL", "tcplLite")) {   #"SQLite",
       stop(drvr, " is not a supported database driver. Must be 'SQLite' or ",
            "'MySQL' or 'tcplLite.'")
     }
     
-    if (drvr == "SQLite") {
-      options("TCPL_DRVR" = "SQLite")
-    }
+    # if (drvr == "SQLite") {
+    #   options("TCPL_DRVR" = "SQLite")
+    # }
     
     if (drvr == "MySQL") {
       options("TCPL_DRVR" = "MySQL")

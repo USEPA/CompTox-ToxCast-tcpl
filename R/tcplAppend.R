@@ -30,40 +30,40 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
   
   db_pars <- NULL
   
-  if (getOption("TCPL_DRVR") == "SQLite") {
-    
-    tbl_flds <- tcplListFlds(tbl, db)
-    if ("created_date" %in% tbl_flds) dat[ , created_date := Sys.time()]
-    if ("modified_date" %in% tbl_flds) dat[ , modified_date := Sys.time()]
-        
-    db_pars <- list(drv = SQLite(),
-                    dbname = db)
-    
-    dbcon <- do.call(dbConnect, db_pars)
-    
-    tempTbl <- "temp_table"
-    if (dbExistsTable(dbcon, tempTbl)) dbRemoveTable(dbcon, tempTbl)
-    dbWriteTable(conn = dbcon, 
-                 name = tempTbl, 
-                 value = dat, 
-                 row.names = FALSE, 
-                 append = FALSE)
-    
-    # Add any columns to input data.frame that are in target table, then merge
-    tmp_flds <- names(dat)
-    status <- dbSendQuery(dbcon, 
-                          paste("INSERT INTO", tbl, 
-                                "(", paste(tmp_flds, collapse = ","), ")",
-                                "SELECT",
-                                paste(tmp_flds, collapse = ","),
-                                "FROM",
-                                tempTbl))
-    # Remove temporary table
-    dbRemoveTable(dbcon, tempTbl)
-    
-    dbDisconnect(dbcon)
-        
-  }
+  # if (getOption("TCPL_DRVR") == "SQLite") {
+  #   
+  #   tbl_flds <- tcplListFlds(tbl, db)
+  #   if ("created_date" %in% tbl_flds) dat[ , created_date := Sys.time()]
+  #   if ("modified_date" %in% tbl_flds) dat[ , modified_date := Sys.time()]
+  #       
+  #   db_pars <- list(drv = SQLite(),
+  #                   dbname = db)
+  #   
+  #   dbcon <- do.call(dbConnect, db_pars)
+  #   
+  #   tempTbl <- "temp_table"
+  #   if (dbExistsTable(dbcon, tempTbl)) dbRemoveTable(dbcon, tempTbl)
+  #   dbWriteTable(conn = dbcon, 
+  #                name = tempTbl, 
+  #                value = dat, 
+  #                row.names = FALSE, 
+  #                append = FALSE)
+  #   
+  #   # Add any columns to input data.frame that are in target table, then merge
+  #   tmp_flds <- names(dat)
+  #   status <- dbSendQuery(dbcon, 
+  #                         paste("INSERT INTO", tbl, 
+  #                               "(", paste(tmp_flds, collapse = ","), ")",
+  #                               "SELECT",
+  #                               paste(tmp_flds, collapse = ","),
+  #                               "FROM",
+  #                               tempTbl))
+  #   # Remove temporary table
+  #   dbRemoveTable(dbcon, tempTbl)
+  #   
+  #   dbDisconnect(dbcon)
+  #       
+  # }
   
   if (getOption("TCPL_DRVR") == "MySQL") {
     
@@ -106,7 +106,12 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
     #}
     
     tbl_cols <- colnames(read.table(fpath, header=T, sep=',', fill=T))
-    setDT(dat)[, setdiff(tbl_cols, names(dat)) := NA]
+    if (length(setdiff(tbl_cols,names(dat)))>0){
+      setDT(dat)[, setdiff(tbl_cols, names(dat)) := NA]
+    }else{
+      setDT(dat)
+    }
+    
     setcolorder(dat, tbl_cols)
 
     
