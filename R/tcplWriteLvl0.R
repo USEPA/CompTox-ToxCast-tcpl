@@ -68,7 +68,7 @@ tcplWriteLvl0 <- function(dat, type) {
     char <- char[char_test]
     warning(paste(char, collapse = ";"), " coerced to character. May affect ",
             "data integrity.")
-    dat[ , char := lapply(.SD, as.character), .SDcols = char, with = FALSE]
+    dat[ , (char) := lapply(.SD, as.character), .SDcols = char]
   }
   intg <- c("acid", "rowi", "coli", "wllq")
   intg_test <- dat[ , sapply(.SD, class) != "integer", .SDcols = intg]
@@ -76,7 +76,7 @@ tcplWriteLvl0 <- function(dat, type) {
     intg <- intg[intg_test]
     warning(paste(intg, collapse = ";"), " coerced to integer. May affect ",
             "data integrity.")
-    dat[ , intg := lapply(.SD, as.integer), .SDcols = intg, with = FALSE]
+    dat[ , (intg) := lapply(.SD, as.integer), .SDcols = intg]
   } 
   real <- c("conc", "rval")
   real_test <- dat[ , sapply(.SD, class) != "numeric", .SDcols = real]
@@ -84,7 +84,7 @@ tcplWriteLvl0 <- function(dat, type) {
     real <- real[real_test]
     warning(paste(real, collapse = ";"), " coerced to numeric. May affect ",
             "data integrity.")
-    dat[ , real := lapply(.SD, as.numeric), .SDcols = real, with = FALSE]
+    dat[ , (real) := lapply(.SD, as.numeric), .SDcols = real]
   } 
   
   ## Check for samples in inventorydb

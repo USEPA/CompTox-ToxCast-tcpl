@@ -218,7 +218,7 @@ mc5 <- function(ae, wr = FALSE) {
                  "modl_lw",
                  "modl_rmse",
                  "modl_prob")
-  dat[ , modl_pars := NA_real_, with = FALSE]
+  dat[ , (modl_pars) := NA_real_]
   dat[modl == "cnst", modl_er := cnst_er]
   dat[modl == "cnst", modl_rmse := cnst_rmse]
   dat[modl == "cnst", modl_prob := cnst_prob]
