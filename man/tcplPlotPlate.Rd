@@ -55,4 +55,3 @@ tcplPlotPlate(dat = d1, apid = "09Apr2014.Plate.17")
 options(conf_store)
  
 }
-

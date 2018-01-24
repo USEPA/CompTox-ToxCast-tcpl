@@ -44,4 +44,3 @@ tcplQuery("SELECT * FROM assay;")
 options(conf_store)
 
 }
-

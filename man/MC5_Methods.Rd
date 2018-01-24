@@ -33,8 +33,8 @@ available in the package vignette, "Pipeline_Overview."
   \item{neglog2_0.88}{Add a cutoff value of -1*log2(0.88).}
 }
 }
+
 \seealso{
 \code{\link{mc5}}, \code{\link{Method functions}} to query what
 methods get applied to each aeid
 }
-
