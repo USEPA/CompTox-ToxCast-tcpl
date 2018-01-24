@@ -29,4 +29,3 @@ non-random signals coming from the source plate
 \code{\link{MC6_Methods}}, \code{\link{Method functions}}, 
 \code{\link{mc6}}
 }
-

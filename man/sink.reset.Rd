@@ -19,4 +19,3 @@ all output and messages back to the console.
 Other tcpl abbreviations: \code{\link{is.odd}},
   \code{\link{lu}}, \code{\link{lw}}
 }
-

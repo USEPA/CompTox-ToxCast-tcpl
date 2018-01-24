@@ -42,4 +42,3 @@ call.
 Other single-concentration data 
 processing functions: \code{\link{sc1}}
 }
-

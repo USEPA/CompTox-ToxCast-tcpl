@@ -27,4 +27,3 @@ databases.
 the methods, ie. \code{mc2_mthds}. 'nddr' only applies to level 6 
 methods.
 }
-

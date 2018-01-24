@@ -115,4 +115,3 @@ options(conf_store)
 \seealso{
 \code{\link{tcplSubsetChid}}
 }
-

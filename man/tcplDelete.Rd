@@ -25,4 +25,3 @@ This function is not exported and not intended to be used by the user.
 \seealso{
 \code{\link{tcplSendQuery}}
 }
-

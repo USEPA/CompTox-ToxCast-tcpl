@@ -56,4 +56,3 @@ tcplLoadChem(field = "chid", val = 1:5)
 options(conf_store)
 
 }
-
