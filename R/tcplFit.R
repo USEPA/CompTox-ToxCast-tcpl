@@ -41,7 +41,7 @@ library(numDeriv)
 #' @importFrom methods is
 #' @export
 
-tcplFit <- function(logc, resp, bmad, force.fit = FALSE, bidirectional = TRUE, verbose = FALSE,...) {
+tcplFit <- function(logc, resp, bmad, force.fit = FALSE, bidirectional = FALSE, verbose = FALSE,...) {
 
   ## Variable-binding to pass R CMD Check
   hill_tp <- hill_ga <- hill_gw <- gnls_ga <- gnls_gw <- gnls_la <- NULL
