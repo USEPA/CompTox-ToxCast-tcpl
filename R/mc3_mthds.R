@@ -239,7 +239,7 @@ mc3_mthds <- function() {
                                       na.rm = TRUE),
                        by = list(aeid, apid, wllt, conc)])
       e2 <- bquote(dat[J(.(aeids)),
-                       pval := ifelse(length(temp),min(temp),Inf),
+                       pval := min(temp, na.rm = TRUE),
                        by = list(aeid, apid)])
       e3 <- bquote(dat[ , temp := NULL])
       list(e1, e2, e3)
@@ -253,7 +253,7 @@ mc3_mthds <- function() {
                                       na.rm = TRUE),
                        by = list(aeid, apid, wllt, conc)])
       e2 <- bquote(dat[J(.(aeids)),
-                       pval := ifelse(length(temp),min(temp),Inf),
+                       pval := min(temp, na.rm = TRUE),
                        by = list(aeid, apid)])
       e3 <- bquote(dat[ , temp := NULL])
       list(e1, e2, e3)
@@ -267,7 +267,7 @@ mc3_mthds <- function() {
                                       na.rm = TRUE),
                        by = list(aeid, apid, wllt, conc)])
       e2 <- bquote(dat[J(.(aeids)),
-                       pval := ifelse(length(temp),min(temp),Inf),
+                       pval := min(temp, na.rm = TRUE),
                        by = list(aeid, apid)])
       e3 <- bquote(dat[ , temp := NULL])
       list(e1, e2, e3)
@@ -307,7 +307,7 @@ mc3_mthds <- function() {
                        temp := median(cval[wllt == "f"], na.rm = TRUE),
                        by = list(aeid, apid, conc)])
       e2 <- bquote(dat[J(.(aeids)),
-                       pval := ifelse(length(temp),min(temp),Inf),
+                       pval := min(temp, na.rm = TRUE),
                        by = list(aeid, apid)])
       e3 <- bquote(dat[ , temp := NULL])
       list(e1, e2, e3)
@@ -333,7 +333,7 @@ mc3_mthds <- function() {
                        temp := median(cval[wllt == "p"], na.rm = TRUE),
                        by = list(aeid, apid, conc)])
       e2 <- bquote(dat[J(.(aeids)),
-                       pval := ifelse(length(temp),min(temp),Inf),
+                       pval := min(temp, na.rm = TRUE),
                        by = list(aeid, apid)])
       e3 <- bquote(dat[ , temp := NULL])
       list(e1, e2, e3)
@@ -346,7 +346,7 @@ mc3_mthds <- function() {
                        temp := median(cval[wllt == "v"], na.rm = TRUE),
                        by = list(aeid, apid, conc)])
       e2 <- bquote(dat[J(.(aeids)),
-                       pval := ifelse(length(temp),min(temp),Inf),
+                       pval := min(temp, na.rm = TRUE),
                        by = list(aeid, apid)])
       e3 <- bquote(dat[ , temp := NULL])
       list(e1, e2, e3)
