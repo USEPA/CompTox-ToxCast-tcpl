@@ -4,7 +4,8 @@
 \alias{tcplFit}
 \title{Fit the data with the constant, hill, and gain-loss models}
 \usage{
-tcplFit(logc, resp, bmad, force.fit = FALSE, ...)
+tcplFit(logc, resp, bmad, force.fit = FALSE, bidirectional = FALSE,
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{logc}{Numeric, log concentration values}
@@ -14,8 +15,16 @@ tcplFit(logc, resp, bmad, force.fit = FALSE, ...)
 \item{bmad}{Numeric, the baseline median absolute deviation for the entire
 assay}
 
-\item{force.fit}{Logical, TRUE indicates to attempt fitting every 
+\item{force.fit}{Logical, TRUE indicates to attempt fitting every
 concentration series}
+
+\item{bidirectional}{Boolean If TRUE, bidirectional negative data before fitting (default=FALSE)
+The original version of the code required the data to start at small
+values and rise, so that negative curves had to be bidirectionalped outside
+the function, and TOP was always positive. Setting bidirectional to TRUE
+allows both rising and falling curves}
+
+\item{verbose}{Boolean If TRUE print warning messages}
 
 \item{\dots}{Any other data to be included in list output.}
 }
@@ -27,7 +36,6 @@ List of summary values and fit parameters for the given data.
 and returns some summary statistics and the fit parameters in a list.
 }
 \details{
-By default, \code{tcplFit} will only attempt to fit concentration series
 when at least one median value is greater than 3*bmad.
 }
 \examples{
@@ -36,9 +44,9 @@ resp <- sapply(1:10, tcplHillVal, ga = 5, tp = 50, gw = 0.5)
 params <- tcplFit(logc = logc, resp = resp, bmad = 10)
 plot(resp ~ logc)
 tcplAddModel(pars = params, modl = "hill")
-            
+
 }
 \seealso{
-\code{\link{tcplObjCnst}}, \code{\link{tcplObjHill}}, 
+\code{\link{tcplObjCnst}}, \code{\link{tcplObjHill}},
 \code{\link{tcplObjGnls}}, \code{\link{constrOptim}}
 }

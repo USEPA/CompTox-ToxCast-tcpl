@@ -10,8 +10,8 @@
 #' @inheritParams tcplConf
 #' 
 #' @details
-#' Currently, the tcpl package only supports the "MySQL" and "SQLite" database
-#' drivers.
+#' Currently, the tcpl package only supports a "CSV" database. It can be accessed
+#' using the "tcplLite" driver.
 #' 
 #' \code{tcplQuery} returns a data.table object with the query results.
 #' \code{tcplSendQuery} sends a query, but does not fetch any results, and 

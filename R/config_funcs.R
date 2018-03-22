@@ -13,8 +13,8 @@
 #' @param show.pass Logical, should the password be returned
 #' 
 #' @details
-#' Currently, the tcpl package only supports the "MySQL" and "SQLite" database
-#' drivers.
+#' Currently, the tcpl package only supports a "CSV" database. It can be accessed
+#' using the "tcplLite" driver.
 #' 
 #' \code{tcplConf} changes \code{options} to set the tcpl-specific options, 
 #' most importantly to configure the connection to the tcpl databases. 
