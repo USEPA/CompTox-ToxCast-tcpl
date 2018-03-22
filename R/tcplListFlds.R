@@ -32,31 +32,31 @@ tcplListFlds <- function(tbl, db = getOption("TCPL_DB")) {
     stop("tbl and db must both be of length 1.")  
   } 
   
-  if (getOption("TCPL_DRVR") == "SQLite") {
-    
-    qformat <- "PRAGMA table_info(%s);" 
-    qstring <- sprintf(qformat, tbl)
-    return(tcplQuery(qstring, db)[ , name])
-    
-  }
-  
-  if (getOption("TCPL_DRVR") == "MySQL") {
-    
-    qformat <- 
-      "
-      SELECT 
-        `COLUMN_NAME` 
-      FROM 
-        `INFORMATION_SCHEMA`.`COLUMNS` 
-      WHERE 
-        `TABLE_SCHEMA` = '%s' 
-        AND 
-        `TABLE_NAME` = '%s';
-      "
-    
-    return(tcplQuery(sprintf(qformat, db, tbl), db)[ , COLUMN_NAME])
-    
-  }
+  # if (getOption("TCPL_DRVR") == "SQLite") {
+  #   
+  #   qformat <- "PRAGMA table_info(%s);" 
+  #   qstring <- sprintf(qformat, tbl)
+  #   return(tcplQuery(qstring, db)[ , name])
+  #   
+  # }
+  # 
+  # if (getOption("TCPL_DRVR") == "MySQL") {
+  #   
+  #   qformat <- 
+  #     "
+  #     SELECT 
+  #       `COLUMN_NAME` 
+  #     FROM 
+  #       `INFORMATION_SCHEMA`.`COLUMNS` 
+  #     WHERE 
+  #       `TABLE_SCHEMA` = '%s' 
+  #       AND 
+  #       `TABLE_NAME` = '%s';
+  #     "
+  #   
+  #   return(tcplQuery(sprintf(qformat, db, tbl), db)[ , COLUMN_NAME])
+  #   
+  # }
   
   if (getOption("TCPL_DRVR") == "tcplLite")  {
     # return the data table by reading the file. No need to run tcplQuery, simply return data.table columns here

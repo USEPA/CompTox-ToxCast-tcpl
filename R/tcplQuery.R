@@ -28,28 +28,28 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
   }
   
   db_pars <- NULL
-  
-  if (drvr == "SQLite") {
-    
-    db_pars <- list(drv = SQLite(),
-                    dbname = db)
-    
-  }
-  
-  if (drvr == "MySQL") {
-    
-    if (any(is.na(options()[c("TCPL_USER", "TCPL_HOST", "TCPL_PASS")]))) {
-      stop("Must configure TCPL_USER, TCPL_HOST, and TCPL_PASS options. See ",
-           "?tcplConf for more details.")
-    }
-    
-    db_pars <- list(drv = RMySQL::MySQL(),
-                    user = getOption("TCPL_USER"),
-                    password = getOption("TCPL_PASS"),
-                    host = getOption("TCPL_HOST"),
-                    dbname = db)
-    
-  }
+  # 
+  # if (drvr == "SQLite") {
+  #   
+  #   db_pars <- list(drv = SQLite(),
+  #                   dbname = db)
+  #   
+  # }
+  # 
+  # if (drvr == "MySQL") {
+  #   
+  #   if (any(is.na(options()[c("TCPL_USER", "TCPL_HOST", "TCPL_PASS")]))) {
+  #     stop("Must configure TCPL_USER, TCPL_HOST, and TCPL_PASS options. See ",
+  #          "?tcplConf for more details.")
+  #   }
+  #   
+  #   db_pars <- list(drv = RMySQL::MySQL(),
+  #                   user = getOption("TCPL_USER"),
+  #                   password = getOption("TCPL_PASS"),
+  #                   host = getOption("TCPL_HOST"),
+  #                   dbname = db)
+  #   
+  # }
   
   if (drvr == "tcplLite") {
     #query <- "SELECT spid,chemical.chid,casn,chnm FROM sample LEFT JOIN chemical ON chemical.chid=sample.chid WHERE sample.chid is NULL  "
@@ -72,14 +72,14 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
-  if ((drvr == 'SQLite') | (drvr == 'MySQL')) {
-    dbcon <- do.call(dbConnect, db_pars)
-    result <- dbGetQuery(dbcon, query)
-    
-    dbDisconnect(dbcon)
-    
-    result <- as.data.table(result)
-  }
+  # if ((drvr == 'SQLite') | (drvr == 'MySQL')) {
+  #   dbcon <- do.call(dbConnect, db_pars)
+  #   result <- dbGetQuery(dbcon, query)
+  #   
+  #   dbDisconnect(dbcon)
+  #   
+  #   result <- as.data.table(result)
+  # }
   
   result[]
   
