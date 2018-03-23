@@ -15,4 +15,13 @@
 tcplGetAeid <- function(name){
   # get all the aeid and aenm from the table
   query <- "Select aeid,assay_component_endpoint_name FROM assay_component_endpoint;"
+  all_aeid_tble <- tcplQuery(query,tbl = "assay_component_endpoint")
+  selected_aenm <- grep(name,all_aeid_tble$assay_component_endpoint_name,ignore.case = T,value =T)
+  selected_aeid <- all_aeid_tble$aeid[grep(name,
+                                           all_aeid_tble$assay_component_endpoint_name,
+                                           ignore.case = T,
+                                           value =F)
+                                      ]
+  selected_aeid_tble <- data.frame("aeid"=selected_aeid,"aenm"=selected_aenm,stringsAsFactors = F)
+  return(selected_aeid_tble)
 }
