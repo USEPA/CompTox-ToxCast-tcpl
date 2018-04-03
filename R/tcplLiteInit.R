@@ -22,7 +22,7 @@ tcplLiteInit <- function () {
                     
                     'mc2_acid' = c('mc2_mthd_id', 'acid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
                     'mc3_aeid' = c('mc3_mthd_id', 'aeid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
-                    'mc4_aeid' = c('mc4_mthd_id', 'aeid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
+                    'mc4_aeid' = c('mc4_mthd_id', 'aeid', 'created_date', 'modified_date', 'modified_by'),
                     'mc5_aeid' = c('aeid', 'mc5_mthd_id', 'created_date', 'modified_date', 'modified_by'),
                     'mc6_aeid' = c('aeid', 'mc6_mthd_id', 'created_date', 'modified_date', 'modified_by'),
                     
