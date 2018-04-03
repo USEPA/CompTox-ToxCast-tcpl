@@ -22,6 +22,7 @@ tcplLiteInit <- function () {
                     
                     'mc2_acid' = c('mc2_mthd_id', 'acid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
                     'mc3_aeid' = c('mc3_mthd_id', 'aeid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
+                    'mc4_aeid' = c('mc4_mthd_id', 'aeid', 'exec_ordr', 'created_date', 'modified_date', 'modified_by'),
                     'mc5_aeid' = c('aeid', 'mc5_mthd_id', 'created_date', 'modified_date', 'modified_by'),
                     'mc6_aeid' = c('aeid', 'mc6_mthd_id', 'created_date', 'modified_date', 'modified_by'),
                     
@@ -44,7 +45,7 @@ tcplLiteInit <- function () {
     }
   }
   
-  methods = c("mc2_methods", "mc3_methods", "mc5_methods", "mc6_methods", "sc1_methods", "sc2_methods")
+  methods = c("mc2_methods", "mc3_methods","mc4_methods", "mc5_methods", "mc6_methods", "sc1_methods", "sc2_methods")
   
   for (m in methods) {
     tcpl_path <- find.package('tcpl')
