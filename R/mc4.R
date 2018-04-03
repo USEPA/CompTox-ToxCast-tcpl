@@ -60,8 +60,22 @@ mc4 <- function(ae, wr = FALSE) {
   
   stime <- Sys.time()
   
-  ## Calculate the baseline mad
-  dat[ , bmad := mad(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)]
+  ## Load bmad functions
+  mthd_funcs <- mc4_mthds()
+  
+  ## Load cutoff methods
+  ms <- tcplMthdLoad(lvl = 4L, id = ae, type = "mc")
+  if (nrow(ms) == 0) {
+    warning("No level 4 methods for AEID", ae, ". DEAL WITH THIS!!!!")
+  }
+  
+  ## calculate bmad
+  exprs <- lapply(mthd_funcs[ms$mthd], do.call, args = list())
+  fenv <- environment()
+  invisible(rapply(exprs, eval, envir = fenv))
+  
+  # ## Calculate the baseline mad
+  # dat[ , bmad := mad(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)]
   
   ## Check to see if all samples should be fit
   fit_all <- as.logical(tcplLoadAeid("aeid", ae, "fit_all")$fit_all)
