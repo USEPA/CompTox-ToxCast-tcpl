@@ -27,27 +27,27 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
   
   db_pars <- NULL
   
-  # if (getOption("TCPL_DRVR") == "SQLite") {
-  #   
-  #   db_pars <- list(drv = SQLite(),
-  #                   dbname = db)
-  #   
-  # }
-  # 
-  # if (getOption("TCPL_DRVR") == "MySQL") {
-  #   
-  #   if (any(is.na(options()[c("TCPL_USER", "TCPL_HOST", "TCPL_PASS")]))) {
-  #     stop("Must configure TCPL_USER, TCPL_HOST, and TCPL_PASS options. See ",
-  #          "?tcplConf for more details.")
-  #   }
-  #   
-  #   db_pars <- list(drv = RMySQL::MySQL(),
-  #                   user = getOption("TCPL_USER"),
-  #                   password = getOption("TCPL_PASS"),
-  #                   host = getOption("TCPL_HOST"),
-  #                   dbname = db)
-  #   
-  # }
+  if (getOption("TCPL_DRVR") == "SQLite") {
+    
+    db_pars <- list(drv = SQLite(),
+                    dbname = db)
+    
+  }
+  
+  if (getOption("TCPL_DRVR") == "MySQL") {
+    
+    if (any(is.na(options()[c("TCPL_USER", "TCPL_HOST", "TCPL_PASS")]))) {
+      stop("Must configure TCPL_USER, TCPL_HOST, and TCPL_PASS options. See ",
+           "?tcplConf for more details.")
+    }
+    
+    db_pars <- list(drv = RMySQL::MySQL(),
+                    user = getOption("TCPL_USER"),
+                    password = getOption("TCPL_PASS"),
+                    host = getOption("TCPL_HOST"),
+                    dbname = db)
+    
+  }
   
   if (getOption("TCPL_DRVR") == "tcplLite") {
     db_pars <- "Just running tcplLite, we're OK"
