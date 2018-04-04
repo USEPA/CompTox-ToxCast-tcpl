@@ -44,7 +44,7 @@ mc4 <- function(ae, wr = FALSE) {
   
   ## Load level 3 data
   dat <- tcplLoadData(lvl = 3L, type = "mc", fld = "aeid", val = ae)
-  dat <- dat[wllt %in% c("t", "c", "o")]
+  dat <- dat[wllt %in% c("t", "c", "o","n")]
   
   ## Check if any level 3 data was loaded
   if (nrow(dat) == 0) {
