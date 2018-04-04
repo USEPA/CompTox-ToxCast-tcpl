@@ -66,7 +66,8 @@ mc4 <- function(ae, wr = FALSE) {
   ## Load cutoff methods
   ms <- tcplMthdLoad(lvl = 4L, id = ae, type = "mc")
   if (nrow(ms) == 0) {
-    warning("No level 4 methods for AEID", ae, ". DEAL WITH THIS!!!!")
+    warning(paste("No level 4 methods for AEID", ae,"Level 4 processing incomplete; no updates\n  made to the mc4 "))
+    if(wr) return(FALSE) else return(list(FALSE, NULL))
   }
   
   ## calculate bmad
@@ -137,7 +138,7 @@ mc4 <- function(ae, wr = FALSE) {
   
   ## Calculate the aic probabilities
   aic_probs <- c("cnst_prob", "hill_prob", "gnls_prob")
-  dat[ , (aic_probs) := tcplAICProb(cnst_aic, hill_aic, gnls_aic), with = FALSE]
+  dat[ , (aic_probs) := tcplAICProb(cnst_aic, hill_aic, gnls_aic)]
   
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
