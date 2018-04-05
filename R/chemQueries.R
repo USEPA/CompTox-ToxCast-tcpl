@@ -11,7 +11,6 @@
       "
       
   # if (getOption("TCPL_DRVR") == "SQLite") exact <- TRUE
-  
   if (!is.null(field)) {
     
     nfld <- switch(field,
@@ -19,6 +18,7 @@
                    chid = "chemical.chid",
                    casn = "casn",
                    code = "casn",
+                   chem.only = 'chem.only',
                    "chnm")
     
     if (field == "code") val <- suppressWarnings(sapply(val, tcplCode2CASN))
@@ -35,7 +35,13 @@
         val <- paste0("\"", paste(val, collapse = "|"), "\"")
         qstring <- sprintf(qformat, val, val)
       }
-    } else {
+    } else if (nfld == 'chem.only') {
+      qstring <- "
+                SELECT *
+                FROM chemical
+                "
+    }
+      else {
       qformat <- paste(qformat, nfld, "IN (%s)")
       qstring <- sprintf(qformat, paste0("\"", val, "\"", collapse = ","))
     }
