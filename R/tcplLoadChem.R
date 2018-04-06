@@ -53,7 +53,7 @@
 #' @import data.table
 #' @export
 
-tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,# tcplLiteChem = NULL,
+tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
                          include.spid = TRUE) {
   tbl <- c("chemical", "sample")
   ## Variable-binding to pass R CMD Check

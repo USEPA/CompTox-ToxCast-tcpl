@@ -7,7 +7,6 @@ tcplLiteInit <- function () {
                     'assay_component_endpoint'=c('aeid', 'acid', 'assay_component_endpoint_name', 'export_ready', 'internal_ready', 'assay_component_endpoint_desc', 'assay_function_type', 'normalized_data_type', 'analysis_direction', 'burst_assay', 'key_positive_control', 'signal_direction', 'intended_target_type', 'intended_target_type_sub', 'intended_target_family', 'intended_target_family_sub', 'fit_all'),
                     'assay_component_map'= c('acid', 'acsn'),
                     'sample'= c('spid', 'chid', 'stkc', 'stkc_unit', 'tested_conc_unit', 'spid_legacy'),
-                    #'chemical'= c('chid', 'casn', 'chnm'), 
                     'chemical_library'= c('chid', 'clib'),
                     
                     'mc0'= c('m0id', 'acid', 'spid', 'apid', 'rowi', 'coli', 'wllt', 'wllq', 'conc', 'rval', 'srcf', 'created_date', 'modified_date', 'modified_by'),
