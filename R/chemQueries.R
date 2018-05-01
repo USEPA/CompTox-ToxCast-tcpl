@@ -10,7 +10,6 @@
       FROM sample LEFT JOIN chemical ON chemical.chid=sample.chid
       "
       
-  # if (getOption("TCPL_DRVR") == "SQLite") exact <- TRUE
   if (!is.null(field)) {
     
     nfld <- switch(field,

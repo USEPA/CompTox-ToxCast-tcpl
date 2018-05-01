@@ -5,8 +5,6 @@
 #' @rdname query_funcs
 #' 
 #' @import DBI
-#' @importFrom RSQLite SQLite 
-#' @importMethodsFrom RSQLite dbConnect dbDisconnect dbGetQuery 
 #' @import data.table
 #' @importFrom RMySQL MySQL
 #' @importFrom sqldf sqldf
@@ -28,13 +26,6 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
   }
   
   db_pars <- NULL
-  
-  if (drvr == "SQLite") {
-    
-    db_pars <- list(drv = SQLite(),
-                    dbname = db)
-    
-  }
   
   if (drvr == "MySQL") {
     
@@ -72,7 +63,7 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
-  if ((drvr == 'SQLite') | (drvr == 'MySQL')) {
+  if (drvr == 'MySQL') {
     dbcon <- do.call(dbConnect, db_pars)
     result <- dbGetQuery(dbcon, query)
     

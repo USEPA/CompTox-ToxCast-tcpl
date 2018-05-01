@@ -16,9 +16,6 @@
 #' This function is not exported and not intended to be used by the user.
 #' 
 #' @import DBI
-#' @importFrom RSQLite SQLite
-#' @importMethodsFrom RSQLite dbConnect dbRemoveTable dbExistsTable 
-#' @importMethodsFrom RSQLite dbSendQuery dbDisconnect dbWriteTable
 #' @import data.table
 #' @importFrom RMySQL MySQL
 #' @importMethodsFrom RMySQL dbConnect dbWriteTable dbDisconnect 
@@ -30,40 +27,6 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
   
   db_pars <- NULL
   
-  # if (getOption("TCPL_DRVR") == "SQLite") {
-  #   
-  #   tbl_flds <- tcplListFlds(tbl, db)
-  #   if ("created_date" %in% tbl_flds) dat[ , created_date := Sys.time()]
-  #   if ("modified_date" %in% tbl_flds) dat[ , modified_date := Sys.time()]
-  #       
-  #   db_pars <- list(drv = SQLite(),
-  #                   dbname = db)
-  #   
-  #   dbcon <- do.call(dbConnect, db_pars)
-  #   
-  #   tempTbl <- "temp_table"
-  #   if (dbExistsTable(dbcon, tempTbl)) dbRemoveTable(dbcon, tempTbl)
-  #   dbWriteTable(conn = dbcon, 
-  #                name = tempTbl, 
-  #                value = dat, 
-  #                row.names = FALSE, 
-  #                append = FALSE)
-  #   
-  #   # Add any columns to input data.frame that are in target table, then merge
-  #   tmp_flds <- names(dat)
-  #   status <- dbSendQuery(dbcon, 
-  #                         paste("INSERT INTO", tbl, 
-  #                               "(", paste(tmp_flds, collapse = ","), ")",
-  #                               "SELECT",
-  #                               paste(tmp_flds, collapse = ","),
-  #                               "FROM",
-  #                               tempTbl))
-  #   # Remove temporary table
-  #   dbRemoveTable(dbcon, tempTbl)
-  #   
-  #   dbDisconnect(dbcon)
-  #       
-  # }
   
   if (getOption("TCPL_DRVR") == "MySQL") {
     
@@ -98,12 +61,6 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
     db_pars <- db
     fpath <- paste(db, tbl, sep='/') # Stitch together the dir path and the level table we're working on
     fpath <- paste(fpath, 'csv', sep='.')
-    
-    #if (file.exists(fpath)) {
-    #  write.table (dat, file=fpath, append=T, row.names=F, sep=',', col.names=F)
-    #} else {
-    #  write.table (dat, file=fpath, append=F, row.names=F, sep=',', col.names=T)
-    #}
     
     tbl_cols <- colnames(read.table(fpath, header=T, sep=',', fill=T))
     if (length(setdiff(tbl_cols,names(dat)))>0){
@@ -151,6 +108,7 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
     
     write.table(dat, file=fpath, append=T, row.names=F, sep=',', col.names=F)
     
+    return(TRUE)
   }
   
   if (is.null(db_pars)) {

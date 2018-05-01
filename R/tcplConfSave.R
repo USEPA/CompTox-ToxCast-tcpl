@@ -14,8 +14,8 @@ tcplConfSave <- function () {
   }
   
   drvr <- getOption("TCPL_DRVR")
-  if (!drvr %in% c("SQLite", "MySQL")) {
-    stop(drvr, " is not a supported database driver. Must be 'SQLite' or ",
+  if (!drvr %in% c("MySQL", "tcplLite")) {
+    stop(drvr, " is not a supported database driver. Must be 'tcplLite' or ",
          "'MySQL'.")
   }
   drvr <- shQuote(drvr)

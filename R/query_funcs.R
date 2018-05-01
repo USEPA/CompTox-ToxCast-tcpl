@@ -10,7 +10,7 @@
 #' @inheritParams tcplConf
 #' 
 #' @details
-#' Currently, the tcpl package only supports the "MySQL" and "SQLite" database
+#' Currently, the tcpl package only supports the "MySQL" and "tcplLite" database
 #' drivers.
 #' 
 #' \code{tcplQuery} returns a data.table object with the query results.

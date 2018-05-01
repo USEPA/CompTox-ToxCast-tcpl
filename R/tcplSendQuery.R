@@ -5,8 +5,6 @@
 #' @rdname query_funcs
 #' 
 #' @import DBI
-#' @importFrom RSQLite SQLite 
-#' @importMethodsFrom RSQLite dbSendQuery dbClearResult dbDisconnect dbConnect
 #' @import data.table
 #' @importFrom RMySQL MySQL
 #' @importMethodsFrom RMySQL dbSendQuery dbClearResult dbDisconnect dbConnect
@@ -27,12 +25,6 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
   
   db_pars <- NULL
   
-  if (getOption("TCPL_DRVR") == "SQLite") {
-    
-    db_pars <- list(drv = SQLite(),
-                    dbname = db)
-    
-  }
   
   if (getOption("TCPL_DRVR") == "MySQL") {
     
@@ -78,7 +70,7 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
-  if ((drvr == 'SQLite') | (drvr == 'MySQL')) {
+  if (drvr == 'MySQL') {
     dbcon <- do.call(dbConnect, db_pars)
     temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
     if (!is(temp, "try-error")) dbClearResult(temp)
