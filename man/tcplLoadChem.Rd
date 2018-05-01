@@ -5,7 +5,7 @@
 \title{Load sample/chemical information}
 \usage{
 tcplLoadChem(field = NULL, val = NULL, exact = TRUE,
-  tcplLiteChem = NULL, include.spid = TRUE)
+  include.spid = TRUE)
 }
 \arguments{
 \item{field}{Character of length 1, the field to query on}
@@ -27,11 +27,10 @@ information for the given field and values.
 The 'field' parameter is named differently from the 'fld' parameter seen
 in other functions because it only takes one input.
 
-The functionality of the 'exact' parameter cannot be demonstrated within
-the SQLite environment. However, in the MySQL environment the user should
-be able to give parital chemcial name strings, to find chemicals with 
-similar names. For example, setting 'val' to "phenol" when 'field' is "chnm"
-and 'exact' is \code{FALSE} might pull up the chemicals "Bisphenol A" and
+In the MySQL environment the user should be able to give parital
+chemcial name strings, to find chemicals with similar names. For example,
+setting 'val' to "phenol" when 'field' is "chnm" and 'exact' is
+\code{FALSE} might pull up the chemicals "Bisphenol A" and
 "4-Butylphenol". More technically, setting 'exact' to \code{FALSE} passes
 the string in 'val' to an RLIKE statement within the MySQL query.
 }
@@ -47,6 +46,9 @@ tcplLoadChem()
 
 ## Or the user can exclude spid and get a unique list of chemicals
 tcplLoadChem(include.spid = FALSE)
+
+## In addition, the user can retrieve only the registered chemicals from the chemical table
+tcplLoadChem(field = 'chem.only')
 
 ## Other examples:
 tcplLoadChem(field = "chnm", val = "Bisphenol A")

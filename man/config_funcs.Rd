@@ -42,7 +42,7 @@ tcplConfSave()
 These functions are used to configure the tcpl settings.
 }
 \details{
-Currently, the tcpl package only supports the "MySQL" and "SQLite" database
+Currently, the tcpl package only supports the "MySQL" and "tcplLite" database
 drivers.
 
 \code{tcplConf} changes \code{options} to set the tcpl-specific options, 
@@ -59,8 +59,8 @@ tcpl settings.
 configuration file.
 
 \code{tcplConfDefault} changes the \code{options} to reflect the default
-settings for the example SQLite database, but does not alter the 
-configuration file.
+settings for the example tcplLite database, i.e. local directory, but does  
+not alter the configuration file.
 
 \code{tcplConfReset} is used to generate the initial configuration script,
 and can be used to reset or regenerate the configuration script by the user.
