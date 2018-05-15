@@ -420,7 +420,7 @@ mc3_mthds <- function() {
                        md := max(abs(c(diff(c(q1, q2)), diff(c(q2, q3))))),
                        by = aeid])
       e3 <- bquote(dat[J(.(aeids)), resp := log2(1.2)/(0.2*md)*resp])
-      e4 <- bquote(dat[ , .(c("q1", "q2", "q3", "md")) := NULL, with = FALSE])
+      e4 <- bquote(dat[ , .(c("q1", "q2", "q3", "md")) := NULL])
       list(e1, e2, e3, e4)
       
     },

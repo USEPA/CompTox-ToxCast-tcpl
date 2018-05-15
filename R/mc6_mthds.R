@@ -68,12 +68,12 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[ , lstc := max_med_conc == logc_max])
       e3 <- bquote(ft[ , test := nmed_gtbl == 1 & hitc == 1 & lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "lstc")
-      e5 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e5 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5)
       
     },
@@ -84,12 +84,12 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[ , lstc := max_med_conc == logc_max])
       e3 <- bquote(ft[ , test := nmed_gtbl == 1 & hitc == 1 & !lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "lstc")
-      e5 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e5 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5)
       
     },
@@ -100,11 +100,11 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[ , test := nmed_gtbl > 1 & hitc == 0])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
-      e4 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e4 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4)
       
     },
@@ -115,13 +115,13 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       conc_cols <- c("logc_max", "logc_min")
       e2 <- bquote(ft[ , cmen := rowMeans(.SD), .SDcols = .(conc_cols)])
       e3 <- bquote(ft[ , test := modl_ga < logc_min & modl_la < cmen])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "cmen")
-      e5 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e5 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5)
       
     },
@@ -132,11 +132,11 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[ , test := modl_rmse > coff])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
-      e4 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e4 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4)
       
     },    
@@ -147,13 +147,13 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[ , t1 := actp < 0.9])
       e3 <- bquote(ft[ , t2 := modl_tp <= 1.2*coff | max_med <= 1.2*coff])
       e4 <- bquote(ft[ , test := hitc == 1 & (t1 | t2)])
       e5 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
-      e6 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e6 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5, e6)
       
     },
@@ -164,12 +164,12 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[ , tp.8 := gnls_tp >= 0.8*coff | hill_tp >= 0.8*coff])
       e3 <- bquote(ft[ , test := hitc == 0L & actp > 0.5 & tp.8])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "tp.8")
-      e5 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e5 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5)
       
     },
@@ -180,7 +180,7 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1  <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1  <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2  <- bquote(ft[modl == "hill" & npts < 5 & hitc == 1, test := TRUE])
       e3  <- bquote(ft[modl == "gnls" & npts < 7 & hitc == 1, test := TRUE])
       e4  <- bquote(ft[npts > 1, cna := cnst_aic +  4/(npts - 2)])
@@ -199,7 +199,7 @@ mc6_mthds <- function() {
       e15 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", 
               "cna", "hna", "gna", "nma", "nmdl", "nhc")
-      e16 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e16 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, 
            e11, e12, e13, e14, e15, e16)
       
@@ -211,14 +211,14 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[hitc == 1 & coff >= 5,
                       test := modl_tp < 50 | max_med < 50])
       e3 <- bquote(ft[hitc == 1 & coff < 5,
                       test := modl_tp < log2(1.5) | max_med < log2(1.5)])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
-      e5 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e5 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4, e5)
       
     },
@@ -229,11 +229,11 @@ mc6_mthds <- function() {
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init), with = FALSE])
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
       e2 <- bquote(ft[hitc == 1, test := modl_ga < logc_min])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
-      e4 <- bquote(ft[ , .(cr) := NULL, with = FALSE])
+      e4 <- bquote(ft[ , .((cr)) := NULL])
       list(e1, e2, e3, e4)
       
     }   

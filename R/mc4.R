@@ -118,12 +118,11 @@ mc4 <- function(ae, wr = FALSE) {
                                       resp = resp,
                                       bmad = bmad,
                                       force.fit = fit_all)),
-      by = spid,
-      with = FALSE]
+      by = spid]
   
   ## Calculate the aic probabilities
   aic_probs <- c("cnst_prob", "hill_prob", "gnls_prob")
-  dat[ , aic_probs := tcplAICProb(cnst_aic, hill_aic, gnls_aic), with = FALSE]
+  dat[ , (aic_probs) := tcplAICProb(cnst_aic, hill_aic, gnls_aic)]
   
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
