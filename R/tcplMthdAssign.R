@@ -7,6 +7,9 @@
 
 tcplMthdAssign <- function(lvl, id, mthd_id, ordr = NULL, type) {
   
+  ## Variable-binding to pass R CMD Check
+  exec_ordr <- modified_by <- NULL
+  
   if (length(lvl) > 1) stop("'lvl' must be an integer of length 1.")
   if (!type %in% c("mc", "sc")) stop("Invalid 'type' value.")
   if (type == "mc" & !lvl %in% c(2, 3, 5, 6)) stop("Invalid 'lvl' value.")
