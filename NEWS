@@ -1,4 +1,32 @@
-tcpl v1.2.1
+
+tcpl v1.4.0
+==============
+
+Changes from v1.2.2
+  
+* .plotFit (not exported) was updated to work with the new behavior of `nchar`
+  for R>3.3 (PR#10/#26)
+  
+* tcplPlotPlate now works with single-conc data. Previously it only worked with
+  the multi-conc data. (PR#14)
+  
+* Deleted out the 'nddr' level 6 methods. They were specific to one dataset and
+  are no longer used. (PR#16)
+  
+* Removed all instances of "with = FALSE" in data.table calls. (PR#25)
+
+* The package no longer writes to the installation directory. The vignette is 
+  now built in TMPDIR and the location of the configuration file must be 
+  specified by the user. This is to comply CRAN policies. The benefit to users
+  that share an installation, is they can now each have their own config file.
+  (PR#28)
+  
+* The specific method imports were removed for the RSQLite and RMySQL packages.
+  This change reflects the new behavior of the RSQLite package. The RMySQL
+  imports were removed to simplify the package, as they were found unnecessary.
+  (PR#29)
+
+tcpl v1.2.2
 ==============
 
 Changes from v1.2
