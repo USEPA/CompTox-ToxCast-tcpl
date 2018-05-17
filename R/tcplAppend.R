@@ -17,11 +17,8 @@
 #' 
 #' @import DBI
 #' @importFrom RSQLite SQLite
-#' @importMethodsFrom RSQLite dbConnect dbRemoveTable dbExistsTable 
-#' @importMethodsFrom RSQLite dbSendQuery dbDisconnect dbWriteTable
 #' @import data.table
 #' @importFrom RMySQL MySQL
-#' @importMethodsFrom RMySQL dbConnect dbWriteTable dbDisconnect 
 
 tcplAppend <- function(dat, tbl, db) {
   

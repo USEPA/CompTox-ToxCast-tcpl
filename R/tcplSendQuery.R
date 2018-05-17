@@ -6,10 +6,8 @@
 #' 
 #' @import DBI
 #' @importFrom RSQLite SQLite 
-#' @importMethodsFrom RSQLite dbSendQuery dbClearResult dbDisconnect dbConnect
 #' @import data.table
 #' @importFrom RMySQL MySQL
-#' @importMethodsFrom RMySQL dbSendQuery dbClearResult dbDisconnect dbConnect
 #' @importFrom methods is
 #' @export
 
