@@ -62,7 +62,7 @@ for (i in tbls[!keep]) tcplSendQuery(paste("DELETE FROM", i))
 tmpdir <- Sys.getenv("TMPDIR")
 dbfile <- file.path(system.file(package = "tcpl"), "sql", "tcpldb.sqlite")
 dbfile_temp <- file.path(tmpdir, "tcpldb.sqlite")
-file.copy(from = dfile, dbfile_temp)
+file.copy(from = dbfile, dbfile_temp)
 tcplConf(db = dbfile_temp)
 @
 
