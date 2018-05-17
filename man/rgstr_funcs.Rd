@@ -50,6 +50,7 @@ the registration process and all of the fields is available in the vignette.
 }
 \examples{
 
+\dontrun{
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
@@ -79,5 +80,6 @@ tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"))
 
 ## Reset configuration
 options(conf_store)
+}
 
 }
