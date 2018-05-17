@@ -56,6 +56,16 @@ for (i in tbls[!keep]) tcplSendQuery(paste("DELETE FROM", i))
 \hyphenpenalty=10000
 \tolerance=10000
 
+<<echo=FALSE>>=
+## This chunk copies the sqlite db to the temp directory used in installation
+## to comply with CRAN policies on not writing to the installation directory
+tmpdir <- Sys.getenv("TMPDIR")
+dbfile <- file.path(system.file(package = "tcpl"), "sql", "tcpldb.sqlite")
+dbfile_temp <- file.path(tmpdir, "tcpldb.sqlite")
+file.copy(from = dfile, dbfile_temp)
+tcplConf(db = dbfile_temp)
+@
+
 \title{The ToxCast\texttrademark{} Analysis Pipeline:\\ An R Package for Processing and Modeling Chemical Screening Data \\ \hfill \newline \large Version \Sexpr{packageVersion("tcpl")}}
 \author{Dayne L. Filer, Parth Kothiya, Woodrow R. Setzer,\\ Richard S. Judson, Matthew T. Martin}
 \maketitle
