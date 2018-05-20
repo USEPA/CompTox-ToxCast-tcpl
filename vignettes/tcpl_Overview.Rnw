@@ -47,9 +47,8 @@ library(tcpl)
 
 ## This chunk copies the sqlite db to the temp directory used in installation
 ## to comply with CRAN policies on not writing to the installation directory
-tmpdir <- Sys.getenv("TMPDIR")
 dbfile <- file.path(system.file(package = "tcpl"), "sql", "tcpldb.sqlite")
-dbfile_temp <- file.path(tmpdir, "tcpldb.sqlite")
+dbfile_temp <- file.path(tempdir(), "tcpldb.sqlite")
 file.copy(from = dbfile, dbfile_temp)
 tcplConf(db = dbfile_temp)
 tcpl:::.clearSQLite(dbfile_temp)
