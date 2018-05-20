@@ -46,6 +46,7 @@
 #' ## whether an ID exists before assigning/clearing methods. 
 #' tcplMthdLoad(lvl = 2, id = 55, type = "mc")
 #' 
+#' \dontrun{
 #' ## ACID 55 does not have any methods. Assign methods from the list above. 
 #' tcplMthdAssign(lvl = 2, 
 #'                id = 55, 
@@ -61,7 +62,7 @@
 #'                
 #' ## Cleanup example method assigments
 #' tcplMthdClear(lvl = 2, id = 53:55, type = "mc")
-#' 
+#' }
 #' ## Reset configuration
 #' options(conf_store)
 NULL
