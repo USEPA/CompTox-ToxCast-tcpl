@@ -41,7 +41,7 @@
 #' mc \tab 4 \tab mc4 \cr
 #' mc \tab 5 \tab mc4, mc5 \cr
 #' mc \tab 6 \tab mc4, mc6 \cr
-#' mc \tab 7 \tab mc7
+#' mc \tab 7 \tab mc4, mc7
 #' }
 #' 
 #' @examples
@@ -499,9 +499,12 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
     qformat <-
       "
     SELECT
-    *
+    mc7.*
     FROM
-    mc7
+      mc4,
+      mc7
+    WHERE
+      mc7.m4id = mc4.m4id
     "
     
   }
