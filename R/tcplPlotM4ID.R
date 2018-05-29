@@ -44,23 +44,28 @@
 
 tcplPlotM4ID <- function(m4id, lvl = 4L) {
   
-  if (length(lvl) > 1 | !lvl %in% 4:6) stop("invalid lvl input.")
+  if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   
   prs <- list(type = "mc", fld = "m4id", val = m4id)
   
   if (lvl == 4L) dat <- do.call(tcplLoadData, args = c(lvl = 4L, prs))
   if (lvl >= 5L) dat <- do.call(tcplLoadData, args = c(lvl = 5L, prs))
-  if (lvl == 6L) {
+  if (lvl >= 6L) {
     flg <- do.call(tcplLoadData, args = c(lvl = 6L, prs))
   } else {
     flg <- NULL
+  }
+  if (lvl == 7L) {
+    boot <- do.call(tcplLoadData, args = c(lvl = 7L, prs))
+  } else {
+    boot <- NULL
   }
   
   if (nrow(dat) == 0) stop("No data for m4id ", m4id)
   
   agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
   
-  tcplPlotFits(dat = dat, agg = agg, flg = flg)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
   
 }
 

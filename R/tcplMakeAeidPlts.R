@@ -46,7 +46,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   on.exit(graphics.off())
   
   if (length(aeid) > 1) stop("'aeid' must be of length 1.")
-  if (length(lvl) > 1 | !lvl %in% 4:6) stop("Invalid 'lvl' input.")
+  if (length(lvl) > 1 | !lvl %in% 4:7) stop("Invalid 'lvl' input.")
   
   prs <- list(type = "mc", fld = "aeid", val = aeid)
   
@@ -67,6 +67,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
   flg <- if (lvl < 6L) NULL else do.call(tcplLoadData, args = c(lvl = 6L, prs))
+  boot <- if (lvl < 7L) NULL else do.call(tcplLoadData, args = c(lvl = 7L, prs))
   
   if (is.null(fname)) {
     fname <- file.path(odir,
@@ -79,7 +80,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   graphics.off()
   pdf(file = fname, height = 6, width = 10, pointsize = 10)
-  tcplPlotFits(dat, agg, flg, ordr.fitc = ordr.fitc)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc)
   graphics.off()
   
   cat(fname, "complete.")

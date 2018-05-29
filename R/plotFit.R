@@ -177,6 +177,15 @@
     
   }
   
+  if (is.null(pars$toxboot)) pars$toxboot <- NA
+  #error bars plotting
+  if (!is.na(pars$toxboot) & pars$toxboot) {
+    y = pars$modl_tp/2 #50% resp
+    if(!is.na(pars$modl_ga_min) & !is.na(pars$modl_ga_max))
+      suppressWarnings(arrows(pars$modl_ga_min, y, pars$modl_ga_max, y, code=3, angle=90, length=0.1, lwd = 2))
+    
+  }
+  
   axis(side = 1, 
        at = axTicks(side = 1),
        labels = signif(10^axTicks(side = 1), digits = 1),
@@ -425,7 +434,7 @@
   
   if (!is.null(pars$flgo)) {
     
-    ftxt <- paste0("FLAGS:\n", ifelse(is.na(pars$flgo), "", pars$flgo))
+    ftxt <- paste0("FLAGS: ", ifelse(is.na(pars$flgo), "", pars$flgo),"\n\n")
     
   } else {
     
@@ -433,7 +442,20 @@
     
   }
   
-  plot_txt1 <- paste0(itxt, htxt, gtxt, atxt, ntxt, ctxt, ftxt)
+  if (!is.na(pars$toxboot)) {
+    
+    btxt <- paste0("HIT-PCT: ", pars$hit_pct, spaces(2),
+                   "MED-GA: ", round(pars$modl_ga_med,4), spaces(2),
+                   "GA-CI: ", round(pars$modl_ga_delta,4), spaces(2),
+                   "\n\n")
+    
+  } else {
+    
+    btxt <- NULL
+    
+  }
+  
+  plot_txt1 <- paste0(itxt, htxt, gtxt, atxt, ntxt, ctxt, ftxt, btxt)
   
   if (pars$modl != "none") {
     nlines <- sum(7,
