@@ -69,7 +69,7 @@
 #' @import data.table
 #' @export
 
-tcplPlotFits <- function(dat, agg, flg = NULL, ordr.fitc = FALSE, 
+tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE, 
                          browse = FALSE) {
   
   ## Variable-binding to pass R CMD Check
@@ -107,7 +107,14 @@ tcplPlotFits <- function(dat, agg, flg = NULL, ordr.fitc = FALSE,
     } else {
       dat[ , flgo := NA]
     }
-  } 
+  }
+  
+  if (!is.null(boot)) {
+    setkey(boot, m4id)
+    #Join boot table with dat table
+    dat <- boot[dat]
+    dat$toxboot <- 1
+  }
   
   for (i in m4ids) {
     

@@ -49,7 +49,8 @@ mc \tab 3 \tab mc0, mc1, mc3 \cr
 mc \tab agg \tab mc3, mc4_agg \cr
 mc \tab 4 \tab mc4 \cr
 mc \tab 5 \tab mc4, mc5 \cr
-mc \tab 6 \tab mc4, mc6
+mc \tab 6 \tab mc4, mc6 \cr
+mc \tab 7 \tab mc4, mc7
 }
 }
 \examples{

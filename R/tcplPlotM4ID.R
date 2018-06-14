@@ -23,6 +23,8 @@
 #' containing the summary statistics. Level 6 plots, in addition the all of the 
 #' level 4 and 5 information, include the positive flag IDs. If the flag has 
 #' an associated value, the value will be in parentheses follwing the flag ID.
+#' Level 7 plots in addition to all of the level 4, 5, and 6 informatoin, include
+#' the AC50 confidence interval and hit percentage information from bootstrapping.
 #' 
 #' @examples 
 #' ## Store the current config settings, so they can be reloaded at the end 
@@ -33,6 +35,7 @@
 #' tcplPlotM4ID(m4id = 686, lvl = 4) ## Create a level 4 plot
 #' tcplPlotM4ID(m4id = 370, lvl = 5) ## Create a level 5 plot
 #' tcplPlotM4ID(m4id = 322, lvl = 6) ## Create a level 6 plot
+#' tcplPlotM4ID(m4id = 322, lvl = 7) ## Create a level 7 plot
 #' 
 #' ## Reset configuration
 #' options(conf_store)
@@ -44,23 +47,28 @@
 
 tcplPlotM4ID <- function(m4id, lvl = 4L) {
   
-  if (length(lvl) > 1 | !lvl %in% 4:6) stop("invalid lvl input.")
+  if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   
   prs <- list(type = "mc", fld = "m4id", val = m4id)
   
   if (lvl == 4L) dat <- do.call(tcplLoadData, args = c(lvl = 4L, prs))
   if (lvl >= 5L) dat <- do.call(tcplLoadData, args = c(lvl = 5L, prs))
-  if (lvl == 6L) {
+  if (lvl >= 6L) {
     flg <- do.call(tcplLoadData, args = c(lvl = 6L, prs))
   } else {
     flg <- NULL
+  }
+  if (lvl == 7L) {
+    boot <- do.call(tcplLoadData, args = c(lvl = 7L, prs))
+  } else {
+    boot <- NULL
   }
   
   if (nrow(dat) == 0) stop("No data for m4id ", m4id)
   
   agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
   
-  tcplPlotFits(dat = dat, agg = agg, flg = flg)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
   
 }
 

@@ -4,7 +4,8 @@
 \alias{tcplPlotFits}
 \title{Plot summary fits based on fit and dose-response data}
 \usage{
-tcplPlotFits(dat, agg, flg = NULL, ordr.fitc = FALSE, browse = FALSE)
+tcplPlotFits(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
+  browse = FALSE)
 }
 \arguments{
 \item{dat}{data.table, level 4 or level 5 data, see details.}
