@@ -126,6 +126,14 @@ mc2_mthds <- function() {
       e1 <- bquote(dat[ , cval := 100 - cval])
       list(e1)
       
+    },
+    
+    zscore.npwlls = function() {
+      
+      e1 <- bquote(dat[ , cval := abs((cval - mean(cval[wllt %in% c("n","p")])) / sd(cval[wllt %in% c("n","p")],na.rm = TRUE)),
+                       by = list(acid, apid)])
+      list(e1)
+      
     }
     
   )
