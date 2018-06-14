@@ -107,7 +107,7 @@ sc2_mthds <- function() {
     
     pc0.88 = function() {
       
-      e1 <- bquote(coff <- c(coff, 20))
+      e1 <- bquote(coff <- c(coff, 0.88))
       list(e1)
       
     },
