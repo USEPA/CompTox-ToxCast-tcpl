@@ -52,42 +52,42 @@ mc2_mthds <- function() {
   list(
     
     log2 = function() {
-            
+      
       e1 <- bquote(dat[ , cval := log2(cval)])
       list(e1)
       
     },
     
     log10 = function() {
-            
+      
       e1 <- bquote(dat[ , cval := log10(cval)])
       list(e1)
       
     },
     
     rmneg = function() {
-            
+      
       e1 <- bquote(dat[cval < 0, c('cval', 'wllq') := list(NA_real_, 0)])
       list(e1)
       
     },
     
     rmzero = function() {
-            
+      
       e1 <- bquote(dat[cval == 0, c('cval', 'wllq') := list(NA_real_, 0)])
       list(e1)
       
     },
     
     mult25 = function() {
-            
+      
       e1 <- bquote(dat[ , cval := cval * 25])
       list(e1)
       
     },
     
     mult100 = function() {
-            
+      
       e1 <- bquote(dat[ , cval := cval * 100])
       list(e1)
       
@@ -108,14 +108,14 @@ mc2_mthds <- function() {
     },
     
     mult3 = function() {
-            
+      
       e1 <- bquote(dat[ , cval := cval * 3])
       list(e1)
       
     },
     
     mult6 = function() {
-            
+      
       e1 <- bquote(dat[ , cval := cval * 6])
       list(e1)
       
@@ -131,7 +131,13 @@ mc2_mthds <- function() {
     zscore.npwlls = function() {
       
       e1 <- bquote(dat[ , cval := abs((cval - mean(cval[wllt %in% c("n","p")])) / sd(cval[wllt %in% c("n","p")],na.rm = TRUE)),
-                       by = list(acid, apid)])
+                        by = list(acid, apid)])
+      list(e1)
+      
+    },
+    sub1 = function() {
+      
+      e1 <- bquote(dat[ , cval := 1 - cval])
       list(e1)
       
     }
