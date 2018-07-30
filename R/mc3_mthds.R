@@ -528,6 +528,24 @@ mc3_mthds <- function() {
                                       na.rm = TRUE),
                        by = list(aeid, apid)])
       list(e1)
+    },
+    
+        pval.apid.owlls.med = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), 
+                       pval := median(cval[wllt == "o"], na.rm = TRUE), 
+                       by = list(aeid, apid)])
+      list(e1)
+      
+    },
+    
+     pval.2bval = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), 
+                       pval := ((median(cval[wllt == "n"], na.rm = TRUE))*2), 
+                       by = list(aeid, apid)])
+      list(e1)
+      
     }
     
   )
