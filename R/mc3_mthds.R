@@ -546,6 +546,15 @@ mc3_mthds <- function() {
                        by = list(aeid, apid)])
       list(e1)
       
+    },
+    
+     pval.maxp = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), 
+                       pval := max(cval[wllt == "p"], na.rm = TRUE), 
+                       by = list(aeid)])
+      list(e1)
+      
     }
     
   )
