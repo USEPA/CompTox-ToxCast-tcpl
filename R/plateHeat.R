@@ -13,10 +13,9 @@
 #' @param wllq Logical, the well quality
 #' @param rown Integer, the number of rows on the plate
 #' @param coln Integer, the number of columns on the plate
+#' @param arng Numeric of length 2, the minimum and maximum values to constrain the color scale
 #' @param main Character of length 1, the title/main
-#' @param argn Numeric of length 2, the minimum and maximum values to constrain
-#' the color scale
-#' 
+#'
 #' @note
 #' Optimized for an output with height = 20/3, width = 10, and 
 #' pointsize = 10

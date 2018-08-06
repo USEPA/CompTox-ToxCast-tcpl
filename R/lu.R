@@ -8,7 +8,6 @@
 #' \code{lu} takes a logical vector, \code{x}, and returns 
 #' \code{length(unique(x))}.
 #' 
-#' @param x A logical
 #' 
 #' @return The unique of the \code{TRUE} values in \code{x}
 #' 

@@ -8,7 +8,6 @@
 #' \code{lw} takes a logical vector, \code{x}, and returns 
 #' \code{length(which(x))}.
 #' 
-#' @param x A logical
 #' 
 #' @return The length of the \code{TRUE} values in \code{x}
 #' 

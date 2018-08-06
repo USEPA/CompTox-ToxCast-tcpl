@@ -2,6 +2,8 @@
 # .load6DR: Load data for tcpl6
 #-------------------------------------------------------------------------------
 
+#' @param ae String aeid to query on
+#'
 #' @title Load data for tcpl6
 #' 
 #' @description

@@ -13,6 +13,7 @@
 #' @param flg data.table, level 6 data, see details.
 #' @param ordr.fitc Logical, should the fits be ordered by fit category?
 #' @param browse Logical, should \code{browser()} be called after every plot?
+#' @param boot data.table, level 7 data, see details.
 #' 
 #' @details
 #' The data for 'dat', 'agg', and 'flg' should be loaded using the 

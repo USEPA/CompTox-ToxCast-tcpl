@@ -2,6 +2,9 @@
 # tcplSendQuery: Send query to the tcpl databases
 #-------------------------------------------------------------------------------
 
+#' @param tbl Tables to be read queried
+#' @param delete Logical of length 1, execute delete on queried table
+#'
 #' @rdname query_funcs
 #' 
 #' @import DBI

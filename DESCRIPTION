@@ -28,7 +28,10 @@ Imports:
     sqldf
 Suggests:
     roxygen2,
-    knitr
+    knitr,
+    rmarkdown
 License: GPL-2
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+VignetteBuilder: knitr
+Encoding: UTF-8
