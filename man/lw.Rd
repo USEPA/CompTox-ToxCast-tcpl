@@ -2,7 +2,6 @@
 % Please edit documentation in R/lw.R, R/tcplFit.R
 \name{lw}
 \alias{lw}
-\alias{lw}
 \title{Abbreviation for \code{length(which(x))}}
 \usage{
 lw(x)
@@ -10,8 +9,6 @@ lw(x)
 lw(x)
 }
 \arguments{
-\item{x}{A logical}
-
 \item{x}{A logical}
 }
 \value{
@@ -37,3 +34,4 @@ Other tcpl abbreviations: \code{\link{is.odd}},
 Other tcpl abbreviations: \code{\link{is.odd}},
   \code{\link{lu}}, \code{\link{sink.reset}}
 }
+\concept{tcpl abbreviations}

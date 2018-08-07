@@ -45,3 +45,5 @@ processing functions: \code{\link{mc1}},
   \code{\link{mc2}}, \code{\link{mc4}}, \code{\link{mc5}},
   \code{\link{mc6}}
 }
+\concept{multiple-concentration data 
+processing functions}

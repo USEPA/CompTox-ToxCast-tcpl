@@ -14,6 +14,8 @@ tcplPlotFits(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
 
 \item{flg}{data.table, level 6 data, see details.}
 
+\item{boot}{data.table, level 7 data, see details.}
+
 \item{ordr.fitc}{Logical, should the fits be ordered by fit category?}
 
 \item{browse}{Logical, should \code{browser()} be called after every plot?}

@@ -6,9 +6,6 @@
 \alias{tcplObjCnst}
 \alias{tcplObjGnls}
 \alias{tcplObjHill}
-\alias{tcplObjCnst}
-\alias{tcplObjGnls}
-\alias{tcplObjHill}
 \title{Model objective functions}
 \usage{
 tcplObjCnst(p, resp)

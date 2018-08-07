@@ -52,3 +52,4 @@ The 'type' parameter specifies what type of processing to complete: "mc" for
 multiple-concentration processing, and "sc" for single-concentration 
 processing.
 }
+\concept{data processing functions}

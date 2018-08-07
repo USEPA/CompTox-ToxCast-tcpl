@@ -2,7 +2,6 @@
 % Please edit documentation in R/lu.R, R/tcplFit.R
 \name{lu}
 \alias{lu}
-\alias{lu}
 \title{Abbreviation for \code{length(unique(x))}}
 \usage{
 lu(x)
@@ -10,8 +9,6 @@ lu(x)
 lu(x)
 }
 \arguments{
-\item{x}{A logical}
-
 \item{x}{A logical}
 }
 \value{
@@ -37,3 +34,4 @@ Other tcpl abbreviations: \code{\link{is.odd}},
 Other tcpl abbreviations: \code{\link{is.odd}},
   \code{\link{lw}}, \code{\link{sink.reset}}
 }
+\concept{tcpl abbreviations}

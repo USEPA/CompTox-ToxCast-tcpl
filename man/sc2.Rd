@@ -42,3 +42,5 @@ call.
 Other single-concentration data 
 processing functions: \code{\link{sc1}}
 }
+\concept{single-concentration data 
+processing functions}

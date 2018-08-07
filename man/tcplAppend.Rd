@@ -12,6 +12,8 @@ tcplAppend(dat, tbl, db, lvl = NULL)
 \item{tbl}{Character of length 1, the table to append to}
 
 \item{db}{Character of length 1, the database containing \code{tbl}}
+
+\item{lvl}{Usually Integer to indicate what level to autoincriment}
 }
 \description{
 \code{tcplAppend} takes a data.table (dat) and appends the data.table into 

@@ -6,8 +6,8 @@
 \alias{tcplSendQuery}
 \title{Wrappers for sending queries and fetching results}
 \usage{
-tcplQuery(query, db = getOption("TCPL_DB"), drvr = getOption("TCPL_DRVR"),
-  tbl = NULL)
+tcplQuery(query, db = getOption("TCPL_DB"),
+  drvr = getOption("TCPL_DRVR"), tbl = NULL)
 
 tcplSendQuery(query, db = getOption("TCPL_DB"),
   drvr = getOption("TCPL_DRVR"), tbl = NULL, delete = F)
@@ -18,6 +18,10 @@ tcplSendQuery(query, db = getOption("TCPL_DB"),
 \item{db}{Character of length 1, the name of the tcpl database}
 
 \item{drvr}{Character of length 1, which database driver to use}
+
+\item{tbl}{Tables to be read queried}
+
+\item{delete}{Logical of length 1, execute delete on queried table}
 }
 \description{
 These functions send a query to the given database, and are the access point
