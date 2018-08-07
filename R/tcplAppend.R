@@ -19,6 +19,7 @@
 #' @import DBI
 #' @import data.table
 #' @importFrom RMySQL MySQL
+#' @importFrom utils read.csv read.table tail write.table
 #' @importMethodsFrom RMySQL dbConnect dbWriteTable dbDisconnect 
 
 tcplAppend <- function(dat, tbl, db, lvl=NULL) {

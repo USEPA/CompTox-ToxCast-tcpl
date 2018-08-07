@@ -116,7 +116,7 @@ tcplVarMat <- function(chid = NULL,
                        file.prefix = NULL) {
 
   ## Variable-binding to pass R CMD Check
-  sc_tst <- spid <- mc_tst <- acid <- cyto_pt <- global_mad <- zscore <- NULL
+  sc_tst <- spid <- mc_tst <- acid <- cyto_pt <- global_mad <- zscore <- hitc <- NULL
   modl_ga <- NULL
   
   if (length(file.prefix) > 1) {

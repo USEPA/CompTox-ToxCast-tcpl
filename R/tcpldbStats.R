@@ -14,6 +14,7 @@
 #' 
 #' @param type String either "all", "aeid" or "spid"
 #' @param val interger if type = "aeid" , string if type  = "spid"
+#' @importFrom stats setNames
 #' @export
 
 tcpldbStats <- function(type = "all", val = NULL){
@@ -50,7 +51,7 @@ tcpldbStats <- function(type = "all", val = NULL){
       mc_tble <- paste0("mc",x)
       query <- sprintf("Select count(distinct spid) as 'spid' From mc0 inner join %s on mc0.m0id = %s.m0id;",
                        mc_tble,mc_tble)
-      val <- tcplQuery(query, tble = c("mc0",mc_tble))
+      val <- tcplQuery(query, tbl = c("mc0",mc_tble))
       num_spid <- c(num_spid,val$spid)
     }
     # for level 4 processing 
@@ -76,7 +77,7 @@ tcpldbStats <- function(type = "all", val = NULL){
     #levels 3 through 6 have aeid 
     for (x in c(3:6)){
       mc_tble <- paste0("mc",x)
-      query <- sprint("Select count(distinct aeid) as 'num_aeid' from %s;",mc_tble)
+      query <- sprintf("Select count(distinct aeid) as 'num_aeid' from %s;",mc_tble)
       val <- tcplQuery(query, tbl = c("assay_component_endpoint",mc_tble))
       num_aeid <- c(num_aeid,val$num_aeid)
     }
