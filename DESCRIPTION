@@ -29,7 +29,8 @@ Imports:
 Suggests:
     roxygen2,
     knitr,
-    rmarkdown
+    rmarkdown,
+    htmlTable,
 License: GPL-2
 LazyData: true
 RoxygenNote: 6.1.0

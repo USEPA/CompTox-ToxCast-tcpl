@@ -1,8 +1,4 @@
 ## ----eval = TRUE, echo = FALSE, message = FALSE, warning = FALSE---------
-#library(devtools)
-library(knitr)
-library(kableExtra)
-library(magrittr)
 
 library(htmlTable)
 library(data.table)
