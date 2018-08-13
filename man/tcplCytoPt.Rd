@@ -89,6 +89,11 @@ The resulting data.table has the following fields:
 conf_store <- tcplConfList()
 tcplConfDefault()
 
+## Can only calculate the cytotox burst if using the MySQL database and
+## TCPL_DRVR == 'RMySQL'
+
+if (conf_store == 'RMySQL') {
+
 ## Load the "burst" endpoints -- none are defined in the example dataset
 tcplLoadAeid(fld = "burst_assay", val = 1)
 
@@ -105,6 +110,7 @@ tcplCytoPt(aeid = 1:2)
 
 ## Changing 'default.pt' will change cyto_pt in the resulting data.table
 tcplCytoPt(aeid = 1:2, default.pt = 6)
+}
 
 ## Reset configuration
 options(conf_store)
