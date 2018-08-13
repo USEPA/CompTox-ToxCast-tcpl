@@ -70,7 +70,7 @@
 #' if (conf_store$TCPL_DRVR == 'MySQL') {
 #'   tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"))
 #' } else {
-#'   tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"), tbl='assay_source')
+#'   tcplSendQuery(paste0("SELECT * FROM assay_source WHERE NOT asid = ", i1, ";"), tbl='assay_source', delete=T)
 #' }
 #' 
 #' ## Reset configuration
