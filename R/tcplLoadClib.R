@@ -59,7 +59,7 @@
 #' @export
 
 tcplLoadClib <- function(field = NULL, val = NULL) {
-  
+  tbl = c("chemical_library")
   if (!is.null(field)) {
     vfield <- c("chid", "clib")
     if (!field %in% vfield) stop("Invalid 'field' value.")
@@ -67,7 +67,7 @@ tcplLoadClib <- function(field = NULL, val = NULL) {
     
   qstring <- .ClibQ(field = field, val = val)
   
-  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"))
+  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
   
   
   if (!is.null(field)) {
