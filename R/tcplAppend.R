@@ -89,6 +89,8 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
           autoIncr <- "aeid"
       } else if (lvl == "aid") {
         autoIncr <- "aid"
+      } else if (lvl == "asid") {
+        autoIncr <- "asid"
       } else {
         autoFlag <- F
       }

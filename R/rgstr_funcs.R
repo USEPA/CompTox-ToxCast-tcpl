@@ -65,7 +65,13 @@
 #' 
 #' ## Remove the created ASID. Note: Manually deleting primary keys can cause
 #' ## serious database problems and should not generally be done. 
-#' tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"))
+#' 
+#' ## If using the tcplLite DRVR, must specify table name
+#' if (conf_store$TCPL_DRVR == 'MySQL') {
+#'   tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"))
+#' } else {
+#'   tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"), tbl='assay_source')
+#' }
 #' 
 #' ## Reset configuration
 #' options(conf_store)

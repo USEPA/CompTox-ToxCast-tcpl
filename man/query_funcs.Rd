@@ -43,7 +43,13 @@ conf_store <- tcplConfList()
 tcplConfDefault()
 
 tcplQuery("SELECT 'Hello World';")
-tcplQuery("SELECT * FROM assay;")
+
+## When using tcplLite, name of table must be passed into tcplQuery
+if (conf_store$TCPL_DRVR == 'MySQL') {
+  tcplQuery("SELECT * FROM assay;")
+} else {
+  tcplQuery("SELECT * FROM assay;", tbl='assay')
+}
  
 ## Reset configuration
 options(conf_store)

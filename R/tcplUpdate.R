@@ -25,7 +25,7 @@ tcplUpdate <- function(what, id, flds) {
               spid = "sample",
               chid = "chemical",
               clib = "chemical_library")
-  
+  tbl=i
   if (is.null(i)) stop("Not a valid 'what' input.")
   
   pot_flds <- tcplListFlds(tbl = i[[1]], db = getOption("TCPL_DB"))
@@ -46,8 +46,7 @@ tcplUpdate <- function(what, id, flds) {
     inst <- paste("SET", inst)
     qf[i] <- sprintf(qf[i], inst)
   }
-  
-  res <- lapply(qf, tcplSendQuery)
+  res <- lapply(qf, tcplSendQuery, tbl=tbl)
   
   test <- !sapply(res, isTRUE)
   if (any(test)) {
