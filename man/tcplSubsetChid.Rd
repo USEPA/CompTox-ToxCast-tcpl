@@ -40,6 +40,7 @@ considering any flags.
 \examples{
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
+\dontrun{
 conf_store <- tcplConfList()
 tcplConfDefault()
 
@@ -58,7 +59,7 @@ tcplSubsetChid(dat = d2, flag = FALSE)[ , list(m4id, modl_ga)]
 
 ## Reset configuration
 options(conf_store)
-
+}
 }
 \seealso{
 \code{\link{tcplPrepOtpt}}

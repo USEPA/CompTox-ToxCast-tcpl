@@ -35,11 +35,13 @@ the AC50 confidence interval and hit percentage information from bootstrapping.
 ## of the examples
 conf_store <- tcplConfList()
 tcplConfDefault()
- 
+
+if (conf_store$TCPL_DRVR == 'RMySQL') {  
 tcplPlotM4ID(m4id = 686, lvl = 4) ## Create a level 4 plot
 tcplPlotM4ID(m4id = 370, lvl = 5) ## Create a level 5 plot
 tcplPlotM4ID(m4id = 322, lvl = 6) ## Create a level 6 plot
 tcplPlotM4ID(m4id = 322, lvl = 7) ## Create a level 7 plot
+}
 
 ## Reset configuration
 options(conf_store)

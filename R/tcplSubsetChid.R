@@ -32,6 +32,7 @@
 #' @examples
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
+#' \dontrun{
 #' conf_store <- tcplConfList()
 #' tcplConfDefault()
 #' 
@@ -50,7 +51,7 @@
 #' 
 #' ## Reset configuration
 #' options(conf_store)
-#' 
+#' }
 #' @return A data.table with a single sample for every given chemical-assay 
 #' pair. 
 #' 

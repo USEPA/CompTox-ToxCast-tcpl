@@ -77,14 +77,13 @@ tcplLvlCount <- function(lvls = NULL, type = "mc") {
   df <- tcplLoadAeid(add.fld = "acid")
   
   for(l in lvls){
-    
     varname <- paste0(type,l)
     tblname <- paste0(strsplit(type,"")[[1]][1],l)
     identifier <- "acid"
     if( (l>2 & l<7) | (l==2 & type =="sc") )
       identifier <- "aeid"
 
-    dat <- suppressWarnings(tcplQuery(query = paste0("SELECT ",identifier,",",tblname,"id FROM ",varname), db = getOption("TCPL_DB")))
+    dat <- suppressWarnings(tcplQuery(query = paste0("SELECT ",identifier,",",tblname,"id FROM ",varname), db = getOption("TCPL_DB"), tbl=varname))
     df <- merge(df,dat[,.N, by = identifier], by = identifier, all.x = T)
     colnames(df)[colnames(df) == 'N'] <- varname
   

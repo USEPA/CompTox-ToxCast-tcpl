@@ -99,6 +99,8 @@ be modified by passing a separate 'flag' element in the list defined by the
 conf_store <- tcplConfList()
 tcplConfDefault()
 
+if (conf_store$TCPL_DRVR == 'RMySQL') {
+
 ## Demonstrate the returned values. Note with no "burst" assays defined in
 ## the example database, the user must provide which aeid values to use 
 ## in calculating the cytotoxicity distributions for the 'zscore' matrix.
@@ -107,7 +109,7 @@ tcplVarMat(chid = 1:5, cyto.pars = list(aeid = 1:2))
 ## Other changes can be made
 tcplVarMat(chid = 1:5, row.id = "chnm", cyto.pars = list(aeid = 1:2))
 tcplVarMat(chid = 1:5, add.vars = "max_med", cyto.pars = list(aeid = 1:2))
-
+}
 ## Reset configuration
 options(conf_store)
 
