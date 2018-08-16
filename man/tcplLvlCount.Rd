@@ -42,8 +42,6 @@ tcplLvlCount(lvls = 1)
 ## Get all counts for levels 4 through 6 for multiple-concentration
 tcplLvlCount(lvls = 4:6)
 
-## Get all counts for all levels for single-concentration
-tcplLvlCount(type = "sc")
 
 ## Reset configuration
 options(conf_store)
