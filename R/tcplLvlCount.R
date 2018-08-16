@@ -25,17 +25,18 @@
 #' conf_store <- tcplConfList()
 #' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
 #' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+#'  
+#' ## Get all counts for level 1 for multiple-concentration
+#' tcplLvlCount(lvls = 1)
+#' 
+#' \dontrun{
+#' ## Get all counts for levels 4 through 6 for multiple-concentration
+#' tcplLvlCount(lvls = 4:6)
 #' 
 #' ## Get all counts for multiple-concentration data, note 'mc' is the 
 #' ## default value for type
 #' tcplLvlCount()
-#' 
-#' ## Get all counts for level 1 for multiple-concentration
-#' tcplLvlCount(lvls = 1)
-#' 
-#' ## Get all counts for levels 4 through 6 for multiple-concentration
-#' tcplLvlCount(lvls = 4:6)
-#' 
+#' }
 #' 
 #' ## Reset configuration
 #' options(conf_store)

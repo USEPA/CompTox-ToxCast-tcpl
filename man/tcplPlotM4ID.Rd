@@ -34,8 +34,8 @@ the AC50 confidence interval and hit percentage information from bootstrapping.
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
-tcplConfDefault()
-
+TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 
 tcplPlotM4ID(m4id = 522, lvl = 4) ## Create a level 4 plot
 tcplPlotM4ID(m4id = 522, lvl = 5) ## Create a level 5 plot

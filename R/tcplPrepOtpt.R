@@ -34,15 +34,18 @@
 #' ## Check for chemical name in 'dat'
 #' "chnm" %in% names(d1) ## FALSE
 #' 
-#' ## Map chemical annotation only
-#' d2 <- tcplPrepOtpt(d1, ids = "spid")
-#' "chnm" %in% names(d2) ## TRUE
-#' "acnm" %in% names(d2) ## FALSE
 #' 
 #' ## Map all annotations 
 #' d3 <- tcplPrepOtpt(d1) ## Also works if function is given d2
 #' "chnm" %in% names(d2) ## TRUE
 #' "acnm" %in% names(d2) ## TRUE
+#' 
+#' \dontrun{
+#' ## Map chemical annotation only
+#' d2 <- tcplPrepOtpt(d1, ids = "spid")
+#' "chnm" %in% names(d2) ## TRUE
+#' "acnm" %in% names(d2) ## FALSE
+#' }
 #' 
 #' ## Reset configuration
 #' options(conf_store)
