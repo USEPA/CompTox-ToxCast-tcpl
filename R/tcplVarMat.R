@@ -142,8 +142,8 @@ tcplVarMat <- function(chid = NULL,
   
   ## Load all possibilities to create matrix dimensions
 
-  sc <- tcplQuery("SELECT DISTINCT acid, spid FROM sc0;")
-  mc <- tcplQuery("SELECT DISTINCT acid, spid FROM mc0;")
+  sc <- tcplQuery("SELECT DISTINCT acid, spid FROM sc0;", tbl=c('sc0'))
+  mc <- tcplQuery("SELECT DISTINCT acid, spid FROM mc0;", tbl=c('mc0'))
 
   tst <- rbindlist(list(sc, mc))
   tst <- unique(tst)
