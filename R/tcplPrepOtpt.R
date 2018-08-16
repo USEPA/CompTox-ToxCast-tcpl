@@ -21,11 +21,12 @@
 #' function will only attempt to map the ID fields given by 'ids.'
 #' 
 #' @examples
-#' \dontrun{
+#' 
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' tcplConfDefault()
+#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 #' 
 #' ## Load some example data
 #' d1 <- tcplLoadData(1)
@@ -45,7 +46,7 @@
 #' 
 #' ## Reset configuration
 #' options(conf_store)
-#' }
+#' 
 #' 
 #' @return The given data.table with chemical and assay information mapped
 #' @export

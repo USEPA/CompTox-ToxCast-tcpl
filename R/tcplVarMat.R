@@ -84,10 +84,9 @@
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' tcplConfDefault()
-#' 
-#' if (conf_store$TCPL_DRVR == 'RMySQL') {
-#' 
+#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+#' \dontrun{
 #' ## Demonstrate the returned values. Note with no "burst" assays defined in
 #' ## the example database, the user must provide which aeid values to use 
 #' ## in calculating the cytotoxicity distributions for the 'zscore' matrix.

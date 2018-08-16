@@ -40,7 +40,8 @@ returns 'TRUE' or the error message given by the database.
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
-tcplConfDefault()
+TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 
 tcplQuery("SELECT 'Hello World';")
 

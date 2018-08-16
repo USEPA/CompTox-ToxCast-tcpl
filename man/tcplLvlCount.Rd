@@ -29,7 +29,8 @@ Leaving \code{lvls} NULL will return all data.
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
-tcplConfDefault()
+TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 
 ## Get all counts for multiple-concentration data, note 'mc' is the 
 ## default value for type

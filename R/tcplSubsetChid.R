@@ -32,16 +32,16 @@
 #' @examples
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
-#' \dontrun{
 #' conf_store <- tcplConfList()
-#' tcplConfDefault()
+#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 #' 
 #' ## Load the example level 5 data
 #' d1 <- tcplLoadData(lvl = 5, fld = "aeid", val = 2)
 #' d1 <- tcplPrepOtpt(d1)
 #' 
 #' ## Subset to an example of a duplicated chid
-#' d2 <- d1[chid == 559]
+#' d2 <- d1[chid == 20205]
 #' d2[ , list(m4id, hitc, fitc, modl_ga)]
 #' 
 #' ## Here the consensus hit-call is 1 (active), and the fit categories are 
@@ -51,7 +51,7 @@
 #' 
 #' ## Reset configuration
 #' options(conf_store)
-#' }
+#' 
 #' @return A data.table with a single sample for every given chemical-assay 
 #' pair. 
 #' 

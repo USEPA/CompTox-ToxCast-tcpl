@@ -28,7 +28,8 @@
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' tcplConfDefault()
+#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
+#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 #' 
 #' ## Passing no parameters gives all of the registered chemicals with their
 #' ## sample IDs
@@ -42,7 +43,7 @@
 #' 
 #' ## Other examples:
 #' tcplLoadChem(field = "chnm", val = "Bisphenol A")
-#' tcplLoadChem(field = "chid", val = 1:5)
+#' tcplLoadChem(field = "chid", val = 44380:44385)
 #' 
 #' ## Reset configuration
 #' options(conf_store)
