@@ -33,9 +33,8 @@
 #' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
 #' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 #'
-#' tcplPlotM4ID(m4id = 522, lvl = 4) ## Create a level 4 plot
-#' 
 #' \dontrun{
+#' tcplPlotM4ID(m4id = 522, lvl = 4) ## Create a level 4 plot
 #' tcplPlotM4ID(m4id = 522, lvl = 5) ## Create a level 5 plot
 #' tcplPlotM4ID(m4id = 522, lvl = 6) ## Create a level 6 plot
 #' }
