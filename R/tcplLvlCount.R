@@ -30,8 +30,8 @@
 #' tcplLvlCount(lvls = 1)
 #' 
 #' \dontrun{
-#' ## Get all counts for levels 4 through 6 for multiple-concentration
-#' tcplLvlCount(lvls = 4:6)
+#' ## Get all counts for levels 4 through 7 for multiple-concentration
+#' tcplLvlCount(lvls = 4:7)
 #' 
 #' ## Get all counts for multiple-concentration data, note 'mc' is the 
 #' ## default value for type
@@ -62,7 +62,7 @@ tcplLvlCount <- function(lvls = NULL, type = "mc") {
     }
     
     else{
-      lvls  <-  0:6
+      lvls  <-  0:7
     }
   }
   
@@ -70,7 +70,7 @@ tcplLvlCount <- function(lvls = NULL, type = "mc") {
     lvls <- lvls[lvls %in% 0:2]
   }
   if(type=="mc"){
-    lvls <- lvls[lvls %in% 0:6]
+    lvls <- lvls[lvls %in% 0:7]
   }
   
   
@@ -80,7 +80,7 @@ tcplLvlCount <- function(lvls = NULL, type = "mc") {
     varname <- paste0(type,l)
     tblname <- paste0(strsplit(type,"")[[1]][1],l)
     identifier <- "acid"
-    if( (l>2 & l<7) | (l==2 & type =="sc") )
+    if( (l>2 & l<=7) | (l==2 & type =="sc") )
       identifier <- "aeid"
 
     dat <- suppressWarnings(tcplQuery(query = paste0("SELECT ",identifier,",",tblname,"id FROM ",varname), db = getOption("TCPL_DB"), tbl=varname))

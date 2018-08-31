@@ -35,14 +35,14 @@ conf_store <- tcplConfList()
 TCPLlite <- file.path(system.file(package = "tcpl"), "example")
 tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 
+\dontrun{
 ## Load some example data
 d1 <- tcplLoadData(1)
 
 ## Check for chemical name in 'dat'
 "chnm" \%in\% names(d1) ## FALSE
 
-\dontrun{
-## Map all annotations 
+#' ## Map all annotations 
 d2 <- tcplPrepOtpt(d1) ##
 "chnm" \%in\% names(d2) ## TRUE
 "acnm" \%in\% names(d2) ## TRUE
