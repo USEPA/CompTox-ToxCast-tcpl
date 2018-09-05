@@ -103,6 +103,8 @@
 #'     \item{resp.pc}{Calculate resp as \eqn{\frac{\mathit{cval} - 
 #'     \mathit{bval}}{\mathit{pval} - \mathit{bval}}100}{(cval - bval)/(pval 
 #'     - bval)*100}.}
+#'     \item{resp.pc.pval.cor}{Calculate resp as \eqn{\frac{\mathit{cval} - 
+#'     \mathit{bval}}{\mathit{pval}}100}{(cval - bval)/(pval)*100}.}
 #'     \item{resp.fc}{Calculate resp as \eqn{\mathit{cval}/\mathit{bval}}{
 #'     cval/bval}.}
 #'     \item{resp.logfc}{Calculate resp as \eqn{\mathit{cval} - \mathit{bval}}{
@@ -364,6 +366,14 @@ mc3_mthds <- function() {
       
       e1 <- bquote(dat[J(.(aeids)),
                        resp := (cval - bval)/(pval - bval)*100])
+      list(e1)
+      
+    },
+    
+    resp.pc.pval.cor = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)),
+                       resp := (cval - bval)/(pval)*100])
       list(e1)
       
     },
