@@ -1,3 +1,24 @@
+tcpl v2.0
+==============
+
+Major change for tcpl v2.0:
+* Incorporation of tcplLite into the package, a functionality that allows the user to work from local files formatted like invitrodb tables, rather than a MySQL database.
+	* Using tcplLite is ideal for handling smaller datasets. 
+	* The SQLite driver was removed from the package.
+	* tcplConf() default is now for tcplLite, which uses .csv files rather than tables in a MySQL database. 
+	* The MySQL driver is available and recommended for interacting with the entire dataset as a database. 
+	* The package vignettes run using tcplLite.
+Additional updates for tcpl v2.0
+* tcplLvlCount: function added to count the samples at each level of processing for each aeid.
+* Addition of mc4 methods: the baseline median absolute deviation can now be calculated based on the lowest two concentrations or on the neutral control wells. An mc4 method must now be assigned for analysis.
+* tcplGetAeid: function added to find assays based on matching a character string within any assay endpoint name.
+* tcplMakeAeidMultiPlts: 3x2 grid of plots on each page of a PDF, for a single aeid.
+* tcplMakeChidMultiPlts: 3x2 grid of plots on each page of a PDF, for a single chemical id (chid).
+* Vignettes are now posted as html from RMarkdown files for Introduction and appendices, data retrieval, and data processing.
+* Various bug fixes and additions to the methods tables.
+
+
+
 tcpl v1.2.1
 ==============
 
