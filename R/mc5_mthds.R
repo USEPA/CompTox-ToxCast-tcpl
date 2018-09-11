@@ -30,6 +30,8 @@
 #'   \item{log2_2}{Add a cutoff value of log2(2).}
 #'   \item{log10_2}{Add a cutoff value of log10(2).}
 #'   \item{neglog2_0.88}{Add a cutoff value of -1*log2(0.88).}
+#'   \item{coff_2.32}{Add a cutoff value of 2.32.}
+#'   
 #' }
 
 
@@ -124,6 +126,13 @@ mc5_mthds <- function() {
     neglog2_0.88 = function() {
       
       e1 <- bquote(coff <- c(coff, -1*log2(0.88)))
+      list(e1)
+      
+    },
+    
+    coff_2.32 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 2.32))
       list(e1)
       
     }
