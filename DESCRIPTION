@@ -19,7 +19,6 @@ Depends:
 Imports:
     DBI,
     RMySQL,
-    RSQLite,
     numDeriv,
     RColorBrewer,
     utils,
