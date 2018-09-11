@@ -50,6 +50,7 @@ the registration process and all of the fields is available in the vignette.
 }
 \examples{
 
+\dontrun{
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
@@ -86,5 +87,6 @@ if (conf_store$TCPL_DRVR == 'MySQL') {
 
 ## Reset configuration
 options(conf_store)
+}
 
 }

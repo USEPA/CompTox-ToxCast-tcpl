@@ -10,7 +10,6 @@
 #' @import DBI
 #' @import data.table
 #' @importFrom RMySQL MySQL
-#' @importMethodsFrom RMySQL dbSendQuery dbClearResult dbDisconnect dbConnect
 #' @importFrom methods is
 #' @importFrom sqldf sqldf
 #' @export
