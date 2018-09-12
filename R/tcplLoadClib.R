@@ -25,8 +25,7 @@
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+#' tcplConfExample()
 #' 
 #' ## Passing no parameters gives all of the chemical ISs that have a chemical
 #' ## library registered
@@ -47,8 +46,8 @@
 #' 
 #' ## Specifying a chemical library will not show what other libraries a 
 #' ## chemical might belong to.
-#' tcplLoadClib(field = "clib", val = "other")
-#' tcplLoadClib(field = "chid", val = 1:2)
+#' tcplLoadClib(field = "clib", val = "TOXCAST")
+#' tcplLoadClib(field = "chid", val = 20182)
 #' 
 #' ## Reset configuration
 #' options(conf_store)

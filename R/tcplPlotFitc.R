@@ -14,11 +14,21 @@
 #' @note
 #' Suggested device size (inches): width = 10, height = 7.5, pointsize = 9
 #' 
+#' @examples 
+#' 
+#' \dontrun{
+#' ## Plot visualization of fit categories for all level 5 data
+#' tcplPlotFitc(fitc = tcplLoadData(5)$fitc)
+#' }
+#' 
 #' @import data.table
 #' @importFrom grDevices col2rgb colorRampPalette rgb
 #' @importFrom stats quantile
 #' @importFrom graphics par plot lines text legend 
 #' @export
+#' 
+#' 
+#' 
 
 tcplPlotFitc <- function(fitc = NULL, main = NULL, fitc_sub = NULL) {
   

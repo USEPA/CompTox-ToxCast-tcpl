@@ -19,3 +19,11 @@ tcplPlotFitc(fitc = NULL, main = NULL, fitc_sub = NULL)
 \note{
 Suggested device size (inches): width = 10, height = 7.5, pointsize = 9
 }
+\examples{
+
+\dontrun{
+## Plot visualization of fit categories for all level 5 data
+tcplPlotFitc(fitc = tcplLoadData(5)$fitc)
+}
+
+}

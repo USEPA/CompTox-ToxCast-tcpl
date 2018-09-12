@@ -38,8 +38,7 @@ the string in 'val' to an RLIKE statement within the MySQL query.
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
-TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+tcplConfExample()
 
 ## Passing no parameters gives all of the registered chemicals with their
 ## sample IDs
@@ -53,7 +52,7 @@ tcplLoadChem(field = 'chem.only')
 
 ## Other examples:
 tcplLoadChem(field = "chnm", val = "Bisphenol A")
-tcplLoadChem(field = "chid", val = 44380:44385)
+tcplLoadChem(field = "chid", val = 20182)
 
 ## Reset configuration
 options(conf_store)

@@ -45,17 +45,17 @@ tcplConfDefault()
 
 ## tcplPlotFits needs data.tables supplying the concentration/response
 ## data stored in mc4_agg, as well as the fit information from mc4 or mc5.
-## Additionally, tcplPlotFits will take level 6 data from mc6 and add the
-## flag information to the plots. The following shows how to make level 6
-## plots. Omitting the 'flg' parameter would result in level 5 plots, and 
+## Additionally, tcplPlotFits can take level 6 data from mc6 and add the
+## flag information to the plots. The following shows how to make level 5
+## plots. Adding the 'flg' parameter would result in level 6 plots, and 
 ## loading level 4, rather than level 5 data, would result in level 4 plots.
  
-l5 <- tcplLoadData(lvl = 5, fld = "aeid", val = 1)
-l4_agg <- tcplLoadData(lvl = "agg", fld = "aeid", val = 1)
-l6 <- tcplLoadData(lvl = 6, fld = "aeid", val = 1)
+l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = 18609966)
+l4_agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = 18609966)
+
 \dontrun{
 pdf(file = "tcplPlotFits.pdf", height = 6, width = 10, pointsize = 10)
-tcplPlotFits(dat = l5, agg = l4_agg, flg = l6)
+tcplPlotFits(dat = l5, agg = l4_agg)
 graphics.off()
 }
 

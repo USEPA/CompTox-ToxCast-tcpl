@@ -44,7 +44,7 @@ tcplLiteInit <- function () {
     }
   }
   
-  methods = c("mc2_methods", "mc3_methods","mc4_methods", "mc5_methods", "mc6_methods", "sc1_methods", "sc2_methods", "chemical")
+  methods = c("mc2_methods", "mc3_methods","mc4_methods", "mc5_methods","mc5_fit_categories", "mc6_methods", "sc1_methods", "sc2_methods", "chemical")
   
   for (m in methods) {
     tcpl_path <- find.package('tcpl')

@@ -107,6 +107,8 @@ available in the package vignette, "Pipeline_Overview."
     \item{resp.pc}{Calculate resp as \eqn{\frac{\mathit{cval} - 
     \mathit{bval}}{\mathit{pval} - \mathit{bval}}100}{(cval - bval)/(pval 
     - bval)*100}.}
+    \item{resp.pc.pval.cor}{Calculate resp as \eqn{\frac{\mathit{cval} - 
+    \mathit{bval}}{\mathit{pval}}100}{(cval - bval)/(pval)*100}.}
     \item{resp.fc}{Calculate resp as \eqn{\mathit{cval}/\mathit{bval}}{
     cval/bval}.}
     \item{resp.logfc}{Calculate resp as \eqn{\mathit{cval} - \mathit{bval}}{

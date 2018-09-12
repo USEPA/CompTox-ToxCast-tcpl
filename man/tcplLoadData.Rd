@@ -57,7 +57,7 @@ mc \tab 7 \tab mc4, mc7
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
-tcplConfDefault()
+tcplConfExample()
 
 ## Load all of level 0 for multiple-concentration data, note 'mc' is the 
 ## default value for type

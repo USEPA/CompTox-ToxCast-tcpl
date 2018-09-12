@@ -36,8 +36,8 @@ tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 tcplLvlCount(lvls = 1)
 
 \dontrun{
-## Get all counts for levels 4 through 6 for multiple-concentration
-tcplLvlCount(lvls = 4:6)
+## Get all counts for levels 4 through 7 for multiple-concentration
+tcplLvlCount(lvls = 4:7)
 
 ## Get all counts for multiple-concentration data, note 'mc' is the 
 ## default value for type

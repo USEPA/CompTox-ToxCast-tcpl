@@ -25,10 +25,8 @@
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+#' tcplConfExample()
 #' 
-#' \dontrun{
 #' ## Load some example data
 #' d1 <- tcplLoadData(1)
 #' 
@@ -44,7 +42,6 @@
 #' d3 <- tcplPrepOtpt(d1, ids = "spid")
 #' "chnm" %in% names(d3) ## TRUE
 #' "acnm" %in% names(d3) ## FALSE
-#' }
 #' 
 #' ## Reset configuration
 #' options(conf_store)
