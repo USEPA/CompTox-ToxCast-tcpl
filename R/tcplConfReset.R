@@ -7,6 +7,8 @@
 
 tcplConfReset <- function () {
   
+  conf_file <- .getConfFile()
+  
   cat("###################################################################",
       "",
       "## Detailed information about this file available in the help file for",
@@ -21,7 +23,7 @@ tcplConfReset <- function () {
       "",
       "###################################################################",
       sep = "\n",
-      file = file.path(system.file(package = "tcpl"), "TCPL.config"),
+      file = file.path(conf_file),
       append = FALSE)
   
 }

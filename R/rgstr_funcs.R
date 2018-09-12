@@ -40,6 +40,7 @@
 #' 
 #' @examples
 #' 
+#' \dontrun{
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
@@ -76,5 +77,6 @@
 #' 
 #' ## Reset configuration
 #' options(conf_store)
+#' }
 #' 
 NULL
