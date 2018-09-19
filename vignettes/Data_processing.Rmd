@@ -1,5 +1,5 @@
 ---
-title: The ToxCast^TM^ Analysis Pipeline:<br /> An R Package for Processing and Modeling
+title: Data Processing With The ToxCast^TM^ Analysis Pipeline:<br /> An R Package for Processing and Modeling
   Chemical Screening Data<br /> <br />
  Version 2.0
 author: "National Center for Computational Toxicology, US EPA"
@@ -12,7 +12,7 @@ output:
       collapsed: yes
       smooth_scroll: no
 vignette: >
-  %\VignetteIndexEntry{The ToxCast Analysis Pipeline An R Package for Processing and Modeling Chemical Screening Data}
+  %\VignetteIndexEntry{Processing}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
@@ -33,8 +33,9 @@ $(document).ready(function() {
 });
 </script>
 
-```{r eval = TRUE, echo = FALSE, message = FALSE}
 
+```{r eval = TRUE, echo = FALSE, message = FALSE}
+rm(list=ls())
 library(htmlTable)
 library(tcpl)
 ```
@@ -42,7 +43,7 @@ library(tcpl)
 
 #Uploading and Processing Data
 
-This vignette explains in the first section how to register and upload new data into the  <font face="CMTT10"> tcpl </font> local directory using a small subset of ToxCast data showing changes in the intracellular cortisol hormone. The subset of data comes from an assay measuring steroidogenesis through cellular levels of mutliple steroid hormones. The following section discusses how to process the registered data through the data analysis pipeline.
+This vignette explains in the first section how to register and upload new data into the  <font face="CMTT10"> tcpl </font> local directory using a small subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor. The following section discusses how to process the registered data through the data analysis pipeline.
 
 The <font face="CMTT10"> tcpl </font>  package provides three functions for adding new data: (1)  <font face="CMTT10"> tcplRegister </font> to register a new assay or chemical ID, (2)  <font face="CMTT10"> tcplUpdate </font> to change or add additional information for existing assay or chemical IDs, and (3)  <font face="CMTT10"> tcplWriteLvl0 </font> for loading data. Before writing any data to the  <font face="CMTT10"> tcpl </font> database, the user has to register the assay and chemical information.
 
@@ -72,7 +73,7 @@ tcplRegister(what = "aid",
 
 When registering an assay ($\mathit{aid}$), the user must give an $\mathit{asid}$ to map the assay to the correct assay source. Registering an assay, in addition to an assay\_name ($\mathit{anm}$) and $\mathit{asid}$, requires $\mathit{assay\_footprint}$. The $\mathit{assay\_footprint}$ field is used in the assay plate visualization functions (discussed later) to define the appropriate plate size. The $\mathit{assay\_footprint}$ field can take most string values, but only the numeric value will be extracted, e.g. the text string "hello 384" would indicate to draw a 384-well microtitier plate. Values containing multiple numeric values in $\mathit{assay\_footprint}$ may cause errors in plotting plate diagrams.
 
-With the assay registered, the next step is to register an assay component. The example data presented here only contains data for one of the many steroids measured and only requires one assay component, but at this step the user could add multiple assay components to the "Steroidogenesis" assay.
+With the assay registered, the next step is to register an assay component. The example data presented here only contains data for one assay component, but at this step the user could add multiple assay components to the assay.
 
 ```{r eval = TRUE, message = FALSE}
 tcplRegister(what = "acid", 
@@ -94,30 +95,28 @@ The other three additional fields when registering an assay endpoint do not have
 
 The final piece of assay information needed is the assay component source name (abbreviated $\mathit{acsn}$), stored in the "assay_component_map" table. The assay component source name is intended to simplify level 0 pre-processing by defining unique character strings (concatenating information if necessary) from the source files that identify the specific assay components. The unique character strings ($\mathit{acsn}$) get mapped to $\mathit{acid}$. An example of how to register a new $\mathit{acsn}$ will be given later in this section. 
 
-With the minimal assay information registered, the next step is to register the necessary chemical and sample information. The "chdat.csv" file included in the package contains the sample and chemical information for the data that will be loaded. The following shows an example of how to load chemical information. Similar to the order in registering assay information, the user must first register chemicals, then register the samples that map to the corresponding chemical.
+With the minimal assay information registered, the next step is to register the necessary chemical and sample information. The "chdat" dataset included in the package contains the sample and chemical information for the data that will be loaded. The following shows an example of how to load chemical information. Similar to the order in registering assay information, the user must first register chemicals, then register the samples that map to the corresponding chemical.
 
 
 ```{r eval = TRUE}
-ch <- fread(system.file("/example/chdat.csv",
-                        package = "tcpl"), 
-                        sep = ",", 
-                        header = TRUE)
-head(ch)
+data(chdat, package = "tcpl")
+setDT(chdat)
+head(chdat)
 ```
 ```{r eval = TRUE, message = FALSE}
 ## Register the unique chemicals
 tcplRegister(what = "chid", 
-             flds = ch[ , 
+             flds = chdat[, 
                         unique(.SD), 
                         .SDcols = c("casn", "chnm")])
 ```
 
-The "chdat.csv" file contains a map of sample to chemical information, but chemical and sample information have to be registered separately because a chemical could potentially have multiple samples. Registering chemicals only takes a chemical CAS registry number ($\mathit{casn}$) and name ($\mathit{chnm}$). In the above example, only the unique chemicals were loaded. The $\mathit{casn}$ and $\mathit{chnm}$ fields have unique constraints; trying to register multiple chemicals with the same name or CAS registry number is not possible and will result in an error. With the chemicals loaded, the samples can be registered by mapping the sample ID ($\mathit{spid}$) to the chemical ID. Note, the user needs to load the chemical information to get the chemical IDs then merge the new chemical IDs with the sample IDs from the original file by chemical name or CASRN.
+The "chdat" dataset contains a map of sample to chemical information, but chemical and sample information have to be registered separately because a chemical could potentially have multiple samples. Registering chemicals only takes a chemical CAS registry number ($\mathit{casn}$) and name ($\mathit{chnm}$). In the above example, only the unique chemicals were loaded. The $\mathit{casn}$ and $\mathit{chnm}$ fields have unique constraints; trying to register multiple chemicals with the same name or CAS registry number is not possible and will result in an error. With the chemicals loaded, the samples can be registered by mapping the sample ID ($\mathit{spid}$) to the chemical ID. Note, the user needs to load the chemical information to get the chemical IDs then merge the new chemical IDs with the sample IDs from the original file by chemical name or CASRN.
 
 ```{r eval = TRUE, message = FALSE}
 cmap <- tcplLoadChem()
 tcplRegister(what = "spid", 
-             flds = merge(ch[ , list(spid, casn)], 
+             flds = merge(chdat[ , list(spid, casn)], 
                           cmap[ , list(casn, chid)], 
                           by = "casn")[ , list(spid, chid)])
 ```
@@ -145,13 +144,11 @@ tcplRegister(what = "clib",
 tcplLoadClib(field = "chid", val = 1:2)
 ```
 
-After registering the chemical and assay information, the data can be loaded into the <font face="CMTT10"> tcpl </font> local directory. The package includes two files from the ToxCast program, "scdat.csv" and "mcdat.csv," with a subset of single- and multiple-concentration data, respectively. The single- and multiple-concentration processing require the same level 0 fields; more information about level 0 pre-processing is in Appendix B.
+After registering the chemical and assay information, the data can be loaded into the <font face="CMTT10"> tcpl </font> local directory. The package includes two datasets from the ToxCast program, "scdat" and "mcdat", with a subset of single- and multiple-concentration data, respectively. The single- and multiple-concentration processing require the same level 0 fields; more information about level 0 pre-processing is in Appendix B.
 
 ```{r eval = TRUE}
-mcdat <- fread(system.file("/example/mcdat.csv",
-  package = "tcpl"), 
-  sep = ",", 
-  header = TRUE)
+data(mcdat, package = 'tcpl')
+setDT(mcdat)
 
 ```
 
@@ -454,11 +451,11 @@ m1dat <- tcplLoadData(lvl = 1,
                       type = "mc")
 m1dat <- tcplPrepOtpt(m1dat)
 setkeyv(m1dat, c("repi", "cndx"))
-m1dat[chnm == "4-Chloro-1,2-diaminobenzene", 
+m1dat[chnm == "Bisphenol A", 
       list(chnm, conc, cndx, repi)]
 ```
 
-4-Chloro-1,2-diaminobenzene contains two replicates, each with five distinct concentrations. The package also contains a tool for visualizing the data at the assay plate level.
+The package also contains a tool for visualizing the data at the assay plate level.
 
 ```{r eval = TRUE, warning = FALSE, message = FALSE, fig.width = 30, fig.height= 20}
 tcplPlotPlate(dat = m1dat, apid = "4009721")
@@ -617,8 +614,8 @@ m4dat[hill == 1 & aeid == 1, head(m4id)]
 ```
 
 ```{r eval = TRUE, fig.width = 15, fig.height= 10}
-## Plot a fit for m4id 15536
-tcplPlotM4ID(m4id = 15536, lvl = 4)
+## Plot a fit for m4id 7
+tcplPlotM4ID(m4id = 7, lvl = 4)
 
 ```
 
@@ -707,7 +704,7 @@ All concentration series fall into a single fit category ($\mathit{fitc}$), defi
 <!-- figure 4-->
 
 ```{r eval = TRUE}
-mc5_fit_categories <- fread(system.file("/csv/mc5_fit_categories.csv",
+mc5_fit_categories <- fread(system.file("/example/mc5_fit_categories.csv",
   package = "tcpl"), 
   sep = ",", 
   header = TRUE)
@@ -729,7 +726,7 @@ mc5_res <- tcplRun(id = 1:2, slvl = 5, elvl = 5, type = "mc")
 ```
 
 ```{r eval = TRUE, fig.width = 15, fig.height= 10}
-tcplPlotM4ID(m4id = 15444, lvl = 5)
+tcplPlotM4ID(m4id = 4, lvl = 5)
 ```
 
 Figure 5: An example level 5 plot for a single concentration series. The solid line and model highlighting indicate the model winner. The horizontal line shows the cutoff value. In addition to the information from the level 4 plots, the summary panel includes the cutoff ($\mathit{coff}$), hit call ($\mathit{hitc}$), fit category ($\mathit{fitc}$) and activity probability ($\mathit{actp}$) values.
@@ -759,10 +756,10 @@ head(m5dat[fitc == 21,
 The plot in Figure 7 shows a concentration series in fit category 21. In the example given by Figure 7, the $\mathit{hill\_tp}$ and $\mathit{gnls\_tp}$ parameters are equal and greater than $\mathit{coff}$; however, the maximum median value ($\mathit{max\_med}$) is not greater than the cutoff making the series inactive. 
 
 ```{r eval = TRUE, fig.width = 15, fig.height= 10}
-tcplPlotM4ID(m4id = 13, lvl = 5)
+tcplPlotM4ID(m4id = 3, lvl = 5)
 ```
 
-Figure 7: Level 5 plot for m4id 13 showing an example series in fit category 21.
+Figure 7: Level 5 plot for m4id 3 showing an example series in fit category 21.
 
 ###   Level 6
 
@@ -782,26 +779,58 @@ The example above assigns the most common flags. Some of the available flags onl
 The additional $\mathit{nddr}$ field in the "mc6\_methods"(and the output from <font face="CMTT10"> tcplMthdLoad() </font>/<font face="CMTT10"> tcplMthdList() </font> for level 6) indicates whether the method requires additional data. Methods with an $\mathit{nddr}$ value of 0 only require the modeled/summary information from levels 4 and 5. Methods with an $\mathit{nddr}$ value of 1 also require the individual response and concentration values from level 3. Methods requiring data from level 3 can greatly increase the processing time.
 
 ```{r eval = TRUE, warning = FALSE, error = TRUE}
+
 ## Do level 6 processing
-mc6_res <- tcplRun(id = 1:2, slvl = 6, elvl = 6, type = "mc")
+mc6_res <- tcplRun(id = 1:2, slvl = 5, elvl = 6, type = "mc")
 ```
 
-```{r eval = TRUE, warning = FALSE}
+```{r eval = FALSE, warning = FALSE}
 m6dat <- tcplLoadData(lvl = 6, type = "mc")
 ```
 For the two assay endpoints, concentration series were flagged in the level 6 processing. Series not flagged in the level 6 processing do not get stored at level 6. Each series-flag combination is a separate entry in the level 6 data. Or, in other words, if a series has multiple flags, it will show up on multiple rows in the output. For example, consider the following results:
 
 ```{r eval = TRUE}
-m6dat[m4id == 15529]
+m6dat[m4id == 6]
 ```
 
 The data above lists two flags: "Multiple points above baseline, inactive" and "Borderline inactive." Without knowing much about the flags, one might assume this concentration series had some evidence of activity, but was not called a hit, and could potentially be a false negative. In cases of borderline results, plotting the curve is often helpful.
 
 ```{r eval = TRUE, fig.width = 15, fig.height= 10}
-tcplPlotM4ID(m4id = 15529, lvl = 6)
+tcplPlotM4ID(m4id = 6, lvl = 6)
 ```
 
 Figure 8: An example level 6 plot for a single concentration series. All level 6 method ID (*l6_mthd_id*) values are concatenated in the flags section. If flags have an associated value (*fval*), the value will be shown in parentheses to the right of the level 6 method ID.
 
 <!--Figure 7-->
 The evidence of true activity shown in Figure 8 could be argued either way. Level 6 processing does not attempt to define truth in the matter of borderline compounds or data anomalies, but rather attempts to identify concentration series for closer consideration.
+
+```{r eval = TRUE, echo = FALSE, message = FALSE}
+
+knitr::opts_chunk$set(root.dir = normalizePath(".."))
+
+mc0 <- data.table(m0id = "", acid = "", spid = "", apid = "", rowi = "",
+                  coli = "", wllt = "", wllq = "", conc = "", rval = "",
+                  srcf ="", created_date = "", modified_date = "", 
+                  modified_by = "")
+mc1 <- data.table(m1id = "", m0id = "", acid = "", cndx = "", repi = "", created_date = "",
+                  modified_date = "", modified_by = "")
+mc2 <- data.table(m2id = "", m0id = "", acid = "", m1id = "", cval = "", created_date = "",
+                  modified_date = "", modified_by = "")
+mc3 <- data.table(m3id = "", aeid = "", m0id = "", acid = "", m1id = "", m2id = "", bval = "", pval = "",
+                  logc = "", resp = "", created_date = "", modified_date = "", modified_by = "")
+
+mc4 <- data.table(m4id = "", aeid = "",	spid = "",	bmad = "",	resp_max = "",	resp_min = "",	max_mean = "",	max_mean_conc = "",	max_med = "",	max_med_conc = "",	logc_max = "",	logc_min = "",	cnst = "",	hill = "",	hcov = "",	gnls = "",	gcov = "",	cnst_er = "",	cnst_aic = "",	cnst_rmse = "",	cnst_prob = "",	hill_tp = "",	hill_tp_sd = "",	hill_ga = "",	hill_ga_sd = "",	hill_gw = "",	hill_gw_sd = "",	hill_er = "",	hill_er_sd = "",	hill_aic = "",	hill_rmse = "",	hill_prob = "",	gnls_tp = "",	gnls_tp_sd = "",	gnls_ga = "",	gnls_ga_sd = "",	gnls_gw = "",	gnls_gw_sd = "",	gnls_la = "",	gnls_la_sd = "",	gnls_lw = "",	gnls_lw_sd = "",	gnls_er = "",	gnls_er_sd = "",	gnls_aic = "",	gnls_rmse = "",	gnls_prob = "",	nconc = "",	npts = "",	nrep = "",	nmed_gtbl = "",	tmpi = "",	created_date = "",	modified_date = "",	modified_by = "")
+
+mc5 <- data.table(m5id = "",	m4id = "",	aeid = "",	modl = "",	hitc = "",	fitc = "",	coff = "",	actp = "",	modl_er = "",	modl_tp = "",	modl_ga = "",	modl_gw = "",	modl_la = "",	modl_lw = "",	modl_prob = "",	modl_rmse = "",	modl_acc = "",	modl_acb = "",	modl_ac10 = "",	created_date = "",	modified_date = "",	modified_by = "")
+
+mc6 <- data.table (m6id = "",	m5id = "",	m4id = "",	aeid = "",	mc6_mthd_id = "",	flag = "",	fval = "",	fval_unit = "",	created_date = "",	modified_date = "",	modified_by = "")
+
+write.csv(mc0, file = "../inst/csv/mc0.csv", row.names = F)
+write.csv(mc1, file = "../inst/csv/mc1.csv", row.names = F)
+write.csv(mc2, file = "../inst/csv/mc2.csv", row.names = F)
+write.csv(mc3, file = "../inst/csv/mc3.csv", row.names = F)
+write.csv(mc4, file = "../inst/csv/mc4.csv", row.names = F)
+write.csv(mc5, file = "../inst/csv/mc5.csv", row.names = F)
+write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
+write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
+```

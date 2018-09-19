@@ -1,5 +1,5 @@
 ## ----eval = TRUE, echo = FALSE, message = FALSE--------------------------
-
+rm(list=ls())
 library(htmlTable)
 library(tcpl)
 
@@ -33,23 +33,21 @@ tcplRegister(what = "aeid",
                          fit_all = c(0, 0)))
 
 ## ----eval = TRUE---------------------------------------------------------
-ch <- fread(system.file("/example/chdat.csv",
-                        package = "tcpl"), 
-                        sep = ",", 
-                        header = TRUE)
-head(ch)
+data(chdat, package = "tcpl")
+setDT(chdat)
+head(chdat)
 
 ## ----eval = TRUE, message = FALSE----------------------------------------
 ## Register the unique chemicals
 tcplRegister(what = "chid", 
-             flds = ch[ , 
+             flds = chdat[, 
                         unique(.SD), 
                         .SDcols = c("casn", "chnm")])
 
 ## ----eval = TRUE, message = FALSE----------------------------------------
 cmap <- tcplLoadChem()
 tcplRegister(what = "spid", 
-             flds = merge(ch[ , list(spid, casn)], 
+             flds = merge(chdat[ , list(spid, casn)], 
                           cmap[ , list(casn, chid)], 
                           by = "casn")[ , list(spid, chid)])
 
@@ -71,10 +69,8 @@ tcplRegister(what = "spid",
 #  tcplLoadClib(field = "chid", val = 1:2)
 
 ## ----eval = TRUE---------------------------------------------------------
-mcdat <- fread(system.file("/example/mcdat.csv",
-  package = "tcpl"), 
-  sep = ",", 
-  header = TRUE)
+data(mcdat, package = 'tcpl')
+setDT(mcdat)
 
 
 ## ----eval = TRUE, message = FALSE----------------------------------------
@@ -243,7 +239,7 @@ m1dat <- tcplLoadData(lvl = 1,
                       type = "mc")
 m1dat <- tcplPrepOtpt(m1dat)
 setkeyv(m1dat, c("repi", "cndx"))
-m1dat[chnm == "4-Chloro-1,2-diaminobenzene", 
+m1dat[chnm == "Bisphenol A", 
       list(chnm, conc, cndx, repi)]
 
 ## ----eval = TRUE, warning = FALSE, message = FALSE, fig.width = 30, fig.height= 20----
@@ -289,8 +285,8 @@ m4dat <- tcplPrepOtpt(tcplLoadData(lvl = 4, type = "mc"))
 m4dat[hill == 1 & aeid == 1, head(m4id)]
 
 ## ----eval = TRUE, fig.width = 15, fig.height= 10-------------------------
-## Plot a fit for m4id 15536
-tcplPlotM4ID(m4id = 15536, lvl = 4)
+## Plot a fit for m4id 7
+tcplPlotM4ID(m4id = 7, lvl = 4)
 
 
 ## ----eval = TRUE, warning = FALSE----------------------------------------
@@ -336,7 +332,7 @@ points(x = c(8.46, 10.24, 12), y = c(15, 26, 40),
 
 
 ## ----eval = TRUE---------------------------------------------------------
-mc5_fit_categories <- fread(system.file("/csv/mc5_fit_categories.csv",
+mc5_fit_categories <- fread(system.file("/example/mc5_fit_categories.csv",
   package = "tcpl"), 
   sep = ",", 
   header = TRUE)
@@ -347,7 +343,7 @@ tcplPlotFitc(mc5_fit_categories)
 mc5_res <- tcplRun(id = 1:2, slvl = 5, elvl = 5, type = "mc")
 
 ## ----eval = TRUE, fig.width = 15, fig.height= 10-------------------------
-tcplPlotM4ID(m4id = 15444, lvl = 5)
+tcplPlotM4ID(m4id = 4, lvl = 5)
 
 ## ----eval = TRUE---------------------------------------------------------
 m5dat <- tcplLoadData(lvl = 5, type = "mc")
@@ -359,7 +355,7 @@ head(m5dat[fitc == 21,
                 max_med, coff, hitc)])
 
 ## ----eval = TRUE, fig.width = 15, fig.height= 10-------------------------
-tcplPlotM4ID(m4id = 13, lvl = 5)
+tcplPlotM4ID(m4id = 3, lvl = 5)
 
 ## ----eval = TRUE, warning = FALSE, message = FALSE, error = TRUE---------
 ## Clear old methods
@@ -370,15 +366,46 @@ tcplMthdAssign(lvl = 6, id = 1:2,
 tcplMthdLoad(lvl = 6, id = 1, type = "mc")
 
 ## ----eval = TRUE, warning = FALSE, error = TRUE--------------------------
+
 ## Do level 6 processing
-mc6_res <- tcplRun(id = 1:2, slvl = 6, elvl = 6, type = "mc")
+mc6_res <- tcplRun(id = 1:2, slvl = 5, elvl = 6, type = "mc")
 
 ## ----eval = TRUE, warning = FALSE----------------------------------------
 m6dat <- tcplLoadData(lvl = 6, type = "mc")
 
 ## ----eval = TRUE---------------------------------------------------------
-m6dat[m4id == 15529]
+m6dat[m4id == 6]
 
 ## ----eval = TRUE, fig.width = 15, fig.height= 10-------------------------
-tcplPlotM4ID(m4id = 15529, lvl = 6)
+tcplPlotM4ID(m4id = 6, lvl = 6)
+
+## ----eval = FALSE, echo = FALSE, message = FALSE--------------------------
+
+knitr::opts_chunk$set(root.dir = normalizePath(".."))
+
+mc0 <- data.table(m0id = "", acid = "", spid = "", apid = "", rowi = "",
+                  coli = "", wllt = "", wllq = "", conc = "", rval = "",
+                  srcf ="", created_date = "", modified_date = "", 
+                  modified_by = "")
+mc1 <- data.table(m1id = "", m0id = "", acid = "", cndx = "", repi = "", created_date = "",
+                  modified_date = "", modified_by = "")
+mc2 <- data.table(m2id = "", m0id = "", acid = "", m1id = "", cval = "", created_date = "",
+                  modified_date = "", modified_by = "")
+mc3 <- data.table(m3id = "", aeid = "", m0id = "", acid = "", m1id = "", m2id = "", bval = "", pval = "",
+                  logc = "", resp = "", created_date = "", modified_date = "", modified_by = "")
+
+mc4 <- data.table(m4id = "", aeid = "",	spid = "",	bmad = "",	resp_max = "",	resp_min = "",	max_mean = "",	max_mean_conc = "",	max_med = "",	max_med_conc = "",	logc_max = "",	logc_min = "",	cnst = "",	hill = "",	hcov = "",	gnls = "",	gcov = "",	cnst_er = "",	cnst_aic = "",	cnst_rmse = "",	cnst_prob = "",	hill_tp = "",	hill_tp_sd = "",	hill_ga = "",	hill_ga_sd = "",	hill_gw = "",	hill_gw_sd = "",	hill_er = "",	hill_er_sd = "",	hill_aic = "",	hill_rmse = "",	hill_prob = "",	gnls_tp = "",	gnls_tp_sd = "",	gnls_ga = "",	gnls_ga_sd = "",	gnls_gw = "",	gnls_gw_sd = "",	gnls_la = "",	gnls_la_sd = "",	gnls_lw = "",	gnls_lw_sd = "",	gnls_er = "",	gnls_er_sd = "",	gnls_aic = "",	gnls_rmse = "",	gnls_prob = "",	nconc = "",	npts = "",	nrep = "",	nmed_gtbl = "",	tmpi = "",	created_date = "",	modified_date = "",	modified_by = "")
+
+mc5 <- data.table(m5id = "",	m4id = "",	aeid = "",	modl = "",	hitc = "",	fitc = "",	coff = "",	actp = "",	modl_er = "",	modl_tp = "",	modl_ga = "",	modl_gw = "",	modl_la = "",	modl_lw = "",	modl_prob = "",	modl_rmse = "",	modl_acc = "",	modl_acb = "",	modl_ac10 = "",	created_date = "",	modified_date = "",	modified_by = "")
+
+mc6 <- data.table (m6id = "",	m5id = "",	m4id = "",	aeid = "",	mc6_mthd_id = "",	flag = "",	fval = "",	fval_unit = "",	created_date = "",	modified_date = "",	modified_by = "")
+
+write.csv(mc0, file = "../inst/csv/mc0.csv", row.names = F)
+write.csv(mc1, file = "../inst/csv/mc1.csv", row.names = F)
+write.csv(mc2, file = "../inst/csv/mc2.csv", row.names = F)
+write.csv(mc3, file = "../inst/csv/mc3.csv", row.names = F)
+write.csv(mc4, file = "../inst/csv/mc4.csv", row.names = F)
+write.csv(mc5, file = "../inst/csv/mc5.csv", row.names = F)
+write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
+write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
 
