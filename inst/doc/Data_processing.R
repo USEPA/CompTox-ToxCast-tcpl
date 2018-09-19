@@ -379,33 +379,33 @@ m6dat[m4id == 6]
 ## ----eval = TRUE, fig.width = 15, fig.height= 10-------------------------
 tcplPlotM4ID(m4id = 6, lvl = 6)
 
-## ----eval = FALSE, echo = FALSE, message = FALSE--------------------------
-
-knitr::opts_chunk$set(root.dir = normalizePath(".."))
-
-mc0 <- data.table(m0id = "", acid = "", spid = "", apid = "", rowi = "",
-                  coli = "", wllt = "", wllq = "", conc = "", rval = "",
-                  srcf ="", created_date = "", modified_date = "", 
-                  modified_by = "")
-mc1 <- data.table(m1id = "", m0id = "", acid = "", cndx = "", repi = "", created_date = "",
-                  modified_date = "", modified_by = "")
-mc2 <- data.table(m2id = "", m0id = "", acid = "", m1id = "", cval = "", created_date = "",
-                  modified_date = "", modified_by = "")
-mc3 <- data.table(m3id = "", aeid = "", m0id = "", acid = "", m1id = "", m2id = "", bval = "", pval = "",
-                  logc = "", resp = "", created_date = "", modified_date = "", modified_by = "")
-
-mc4 <- data.table(m4id = "", aeid = "",	spid = "",	bmad = "",	resp_max = "",	resp_min = "",	max_mean = "",	max_mean_conc = "",	max_med = "",	max_med_conc = "",	logc_max = "",	logc_min = "",	cnst = "",	hill = "",	hcov = "",	gnls = "",	gcov = "",	cnst_er = "",	cnst_aic = "",	cnst_rmse = "",	cnst_prob = "",	hill_tp = "",	hill_tp_sd = "",	hill_ga = "",	hill_ga_sd = "",	hill_gw = "",	hill_gw_sd = "",	hill_er = "",	hill_er_sd = "",	hill_aic = "",	hill_rmse = "",	hill_prob = "",	gnls_tp = "",	gnls_tp_sd = "",	gnls_ga = "",	gnls_ga_sd = "",	gnls_gw = "",	gnls_gw_sd = "",	gnls_la = "",	gnls_la_sd = "",	gnls_lw = "",	gnls_lw_sd = "",	gnls_er = "",	gnls_er_sd = "",	gnls_aic = "",	gnls_rmse = "",	gnls_prob = "",	nconc = "",	npts = "",	nrep = "",	nmed_gtbl = "",	tmpi = "",	created_date = "",	modified_date = "",	modified_by = "")
-
-mc5 <- data.table(m5id = "",	m4id = "",	aeid = "",	modl = "",	hitc = "",	fitc = "",	coff = "",	actp = "",	modl_er = "",	modl_tp = "",	modl_ga = "",	modl_gw = "",	modl_la = "",	modl_lw = "",	modl_prob = "",	modl_rmse = "",	modl_acc = "",	modl_acb = "",	modl_ac10 = "",	created_date = "",	modified_date = "",	modified_by = "")
-
-mc6 <- data.table (m6id = "",	m5id = "",	m4id = "",	aeid = "",	mc6_mthd_id = "",	flag = "",	fval = "",	fval_unit = "",	created_date = "",	modified_date = "",	modified_by = "")
-
-write.csv(mc0, file = "../inst/csv/mc0.csv", row.names = F)
-write.csv(mc1, file = "../inst/csv/mc1.csv", row.names = F)
-write.csv(mc2, file = "../inst/csv/mc2.csv", row.names = F)
-write.csv(mc3, file = "../inst/csv/mc3.csv", row.names = F)
-write.csv(mc4, file = "../inst/csv/mc4.csv", row.names = F)
-write.csv(mc5, file = "../inst/csv/mc5.csv", row.names = F)
-write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
-write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
+## ----eval = FALSE, echo = FALSE, message = FALSE-------------------------
+#  
+#  knitr::opts_chunk$set(root.dir = normalizePath(".."))
+#  
+#  mc0 <- data.table(m0id = "", acid = "", spid = "", apid = "", rowi = "",
+#                    coli = "", wllt = "", wllq = "", conc = "", rval = "",
+#                    srcf ="", created_date = "", modified_date = "",
+#                    modified_by = "")
+#  mc1 <- data.table(m1id = "", m0id = "", acid = "", cndx = "", repi = "", created_date = "",
+#                    modified_date = "", modified_by = "")
+#  mc2 <- data.table(m2id = "", m0id = "", acid = "", m1id = "", cval = "", created_date = "",
+#                    modified_date = "", modified_by = "")
+#  mc3 <- data.table(m3id = "", aeid = "", m0id = "", acid = "", m1id = "", m2id = "", bval = "", pval = "",
+#                    logc = "", resp = "", created_date = "", modified_date = "", modified_by = "")
+#  
+#  mc4 <- data.table(m4id = "", aeid = "",	spid = "",	bmad = "",	resp_max = "",	resp_min = "",	max_mean = "",	max_mean_conc = "",	max_med = "",	max_med_conc = "",	logc_max = "",	logc_min = "",	cnst = "",	hill = "",	hcov = "",	gnls = "",	gcov = "",	cnst_er = "",	cnst_aic = "",	cnst_rmse = "",	cnst_prob = "",	hill_tp = "",	hill_tp_sd = "",	hill_ga = "",	hill_ga_sd = "",	hill_gw = "",	hill_gw_sd = "",	hill_er = "",	hill_er_sd = "",	hill_aic = "",	hill_rmse = "",	hill_prob = "",	gnls_tp = "",	gnls_tp_sd = "",	gnls_ga = "",	gnls_ga_sd = "",	gnls_gw = "",	gnls_gw_sd = "",	gnls_la = "",	gnls_la_sd = "",	gnls_lw = "",	gnls_lw_sd = "",	gnls_er = "",	gnls_er_sd = "",	gnls_aic = "",	gnls_rmse = "",	gnls_prob = "",	nconc = "",	npts = "",	nrep = "",	nmed_gtbl = "",	tmpi = "",	created_date = "",	modified_date = "",	modified_by = "")
+#  
+#  mc5 <- data.table(m5id = "",	m4id = "",	aeid = "",	modl = "",	hitc = "",	fitc = "",	coff = "",	actp = "",	modl_er = "",	modl_tp = "",	modl_ga = "",	modl_gw = "",	modl_la = "",	modl_lw = "",	modl_prob = "",	modl_rmse = "",	modl_acc = "",	modl_acb = "",	modl_ac10 = "",	created_date = "",	modified_date = "",	modified_by = "")
+#  
+#  mc6 <- data.table (m6id = "",	m5id = "",	m4id = "",	aeid = "",	mc6_mthd_id = "",	flag = "",	fval = "",	fval_unit = "",	created_date = "",	modified_date = "",	modified_by = "")
+#  
+#  write.csv(mc0, file = "../inst/csv/mc0.csv", row.names = F)
+#  write.csv(mc1, file = "../inst/csv/mc1.csv", row.names = F)
+#  write.csv(mc2, file = "../inst/csv/mc2.csv", row.names = F)
+#  write.csv(mc3, file = "../inst/csv/mc3.csv", row.names = F)
+#  write.csv(mc4, file = "../inst/csv/mc4.csv", row.names = F)
+#  write.csv(mc5, file = "../inst/csv/mc5.csv", row.names = F)
+#  write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
+#  write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
 

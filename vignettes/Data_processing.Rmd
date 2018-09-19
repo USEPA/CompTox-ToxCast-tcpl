@@ -784,7 +784,7 @@ The additional $\mathit{nddr}$ field in the "mc6\_methods"(and the output from <
 mc6_res <- tcplRun(id = 1:2, slvl = 5, elvl = 6, type = "mc")
 ```
 
-```{r eval = FALSE, warning = FALSE}
+```{r eval = TRUE, warning = FALSE}
 m6dat <- tcplLoadData(lvl = 6, type = "mc")
 ```
 For the two assay endpoints, concentration series were flagged in the level 6 processing. Series not flagged in the level 6 processing do not get stored at level 6. Each series-flag combination is a separate entry in the level 6 data. Or, in other words, if a series has multiple flags, it will show up on multiple rows in the output. For example, consider the following results:
@@ -804,7 +804,7 @@ Figure 8: An example level 6 plot for a single concentration series. All level 6
 <!--Figure 7-->
 The evidence of true activity shown in Figure 8 could be argued either way. Level 6 processing does not attempt to define truth in the matter of borderline compounds or data anomalies, but rather attempts to identify concentration series for closer consideration.
 
-```{r eval = TRUE, echo = FALSE, message = FALSE}
+```{r eval = FALSE, echo = FALSE, message = FALSE}
 
 knitr::opts_chunk$set(root.dir = normalizePath(".."))
 
