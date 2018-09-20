@@ -38,7 +38,81 @@ $(document).ready(function() {
 rm(list=ls())
 library(htmlTable)
 library(tcpl)
+library(data.table)
 ```
+
+```{r eval = TRUE, echo = FALSE, message = FALSE}
+
+
+sample <- data.table (spid = c("Tox21_400088", "Tox21_303655", "Tox21_110011", "Tox21_400081",
+                               "DMSO", "Tox21_400037"),
+                      chid= c("20182", "22364", "23463", "24102", "21735", "20283"),
+                      stkc = c("", "", "", "", "", ""),
+                      stkc_unit = c("", "", "", "", "", ""),
+                      tested_conc_unit= c("", "", "", "", "", ""),
+                      spid_legacy = c("", "", "", "", "", ""))
+        
+assay <- data.table(aid=numeric(),	asid=numeric(),	assay_name= character(),	assay_desc= character(),	timepoint_hr=numeric(),	organism_id=numeric(),	organism= character(),	tissue= character(),	cell_format= character(),	cell_free_component_source= character(),	cell_short_name= character(),	cell_growth_mode= character(),	assay_footprint= character(),	assay_format_type= character(),	assay_format_type_sub= character(),	content_readout_type= character(),	dilution_solvent= character(),	dilution_solvent_percent_max= character()
+)
+
+assay_component <- data.table(acid=numeric(),	aid=numeric(),	assay_component_name= character(),	assay_component_desc= character(),	assay_component_target_desc= character(),	parameter_readout_type= character(),	assay_design_type= character(),	assay_design_type_sub	= character(),biological_process_target	= character(),detection_technology_type	= character(),detection_technology_type_sub= character(),	 detection_technology= character(),	signal_direction_type= character(),key_assay_reagent_type= character(),
+                      key_assay_reagent	= character(),technological_target_type= character(),	technological_target_type_sub= character() )
+
+assay_component_endpoint <- data.table(aeid=numeric(),	acid=numeric(),	assay_component_endpoint_name= character(),	export_ready=numeric(),	internal_ready= character(),	assay_component_endpoint_desc= character(),	assay_function_type= character(),	normalized_data_type= character(),	analysis_direction= character(),	burst_assay= character(),	key_positive_control= character(),	signal_direction= character(),	intended_target_type= character(),	intended_target_type_sub= character(),	intended_target_family= character(),	intended_target_family_sub= character(),	fit_all=numeric())
+
+assay_component_map <- data.table(acid =numeric(), acsn = character())
+
+
+
+assay_source <- data.table(asid=numeric(),	assay_source_name= character(),	assay_source_long_name= character(),	assay_source_desc= character())
+
+chemical <- data.table(chid = c("20182", "22364", "23463" , "24102", "21735","20283"),
+                       casn = c("80-05-7", "521-18-6", "150-30-1", "22224-92-6", "67-68-5", "95-83-0"),
+                       chnm = c("Bisphenol A", "5alpha-Dihydrotestosterone","Phenylalanine","Fenamiphos",
+"Dimethyl sulfoxide","4-Chloro-1,2-diaminobenzene"),
+                      dsstox_substance_id = c("DTXSID7020182", "DTXSID9022364",         "DTXSID9023463", "DTXSID3024102", "DTXSID2021735", "DTXSID5020283"),
+                    code = c("C80057", "C521186","C150301","C22224926", "C67685","C95830"))
+
+
+
+
+mc0 <- data.table(m0id =numeric(), acid =numeric(), spid = character(), apid = character(), rowi =numeric(),
+                  coli =numeric(), wllt = character(), wllq =numeric(), conc = character(), rval = character(),
+                  srcf =character(), created_date = character(), modified_date = character(), 
+                  modified_by = character())
+mc1 <- data.table(m1id = character(),m0id =numeric(), acid = character(), cndx = character(), repi = character(), created_date = character(),
+                  modified_date = character(), modified_by = character())
+mc2 <- data.table(m2id = character(),m0id =numeric(), acid = character(),m1id =numeric(), cval = character(), created_date = character(),
+                  modified_date = character(), modified_by = character())
+mc3 <- data.table(m3id =numeric(), aeid =numeric(),m0id =numeric(), acid = character(),m1id =numeric(),m2id =numeric(), bval = character(), pval = character(),
+                  logc = character(), resp = character(), created_date = character(), modified_date = character(), modified_by = character())
+
+mc4 <- data.table(m4id =numeric(), aeid =numeric(),	spid = character(),	bmad = character(),	resp_max = character(),	resp_min = character(),	max_mean = character(),	max_mean_conc = character(),	max_med = character(),	max_med_conc = character(),	logc_max = character(),	logc_min = character(),	cnst = character(),	hill = character(),	hcov = character(),	gnls = character(),	gcov = character(),	cnst_er = character(),	cnst_aic = character(),	cnst_rmse = character(),	cnst_prob = character(),	hill_tp = character(),	hill_tp_sd = character(),	hill_ga = character(),	hill_ga_sd = character(),	hill_gw = character(),	hill_gw_sd = character(),	hill_er = character(),	hill_er_sd = character(),	hill_aic = character(),	hill_rmse = character(),	hill_prob = character(),	gnls_tp = character(),	gnls_tp_sd = character(),	gnls_ga = character(),	gnls_ga_sd = character(),	gnls_gw = character(),	gnls_gw_sd = character(),	gnls_la = character(),	gnls_la_sd = character(),	gnls_lw = character(),	gnls_lw_sd = character(),	gnls_er = character(),	gnls_er_sd = character(),	gnls_aic = character(),	gnls_rmse = character(),	gnls_prob = character(),	nconc = character(),	npts = character(),	nrep = character(),	nmed_gtbl = character(),	tmpi = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
+
+mc5 <- data.table(m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	modl = character(),	hitc = character(),	fitc = character(),	coff = character(),	actp = character(),	modl_er = character(),	modl_tp = character(),	modl_ga = character(),	modl_gw = character(),	modl_la = character(),	modl_lw = character(),	modl_prob = character(),	modl_rmse = character(),	modl_acc = character(),	modl_acb = character(),	modl_ac10 = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
+
+mc6 <- data.table (m6id =numeric(),	m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	mc6_mthd_id = character(),	flag = character(),	fval = character(),	fval_unit = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
+
+
+
+dir <- file.path(system.file(package = "tcpl"))
+write.csv(mc0, file = file.path(dir,"csv/mc0.csv"), row.names = F)
+write.csv(mc1, file = file.path(dir,"csv/mc1.csv"), row.names = F)
+write.csv(mc2, file = file.path(dir,"csv/mc2.csv"), row.names = F)
+write.csv(mc3, file = file.path(dir,"csv/mc3.csv"), row.names = F)
+write.csv(mc4, file = file.path(dir,"csv/mc4.csv"), row.names = F)
+write.csv(mc5, file = file.path(dir,"csv/mc5.csv"), row.names = F)
+write.csv(mc6, file = file.path(dir,"csv/mc6.csv"), row.names = F)
+write.csv(sample, file = file.path(dir,"csv/sample.csv"), row.names = F)
+write.csv(assay, file = file.path(dir,"csv/assay.csv"), row.names = F)
+write.csv(assay_component, file = file.path(dir,"csv/assay_component.csv"), row.names = F)
+write.csv(assay_component_map, file = file.path(dir,"csv/assay_component_map.csv"), row.names = F)
+write.csv(assay_component_endpoint, file = file.path(dir,"csv/assay_component_endpoint.csv"), row.names = F)
+write.csv(assay_source, file = file.path(dir,"csv/assay_source.csv"), row.names = F)
+write.csv(chemical, file = file.path(dir,"csv/chemical.csv"), row.names = F)
+```
+
+
 
 
 #Uploading and Processing Data
@@ -804,33 +878,82 @@ Figure 8: An example level 6 plot for a single concentration series. All level 6
 <!--Figure 7-->
 The evidence of true activity shown in Figure 8 could be argued either way. Level 6 processing does not attempt to define truth in the matter of borderline compounds or data anomalies, but rather attempts to identify concentration series for closer consideration.
 
-```{r eval = FALSE, echo = FALSE, message = FALSE}
-
-knitr::opts_chunk$set(root.dir = normalizePath(".."))
-
-mc0 <- data.table(m0id = "", acid = "", spid = "", apid = "", rowi = "",
-                  coli = "", wllt = "", wllq = "", conc = "", rval = "",
-                  srcf ="", created_date = "", modified_date = "", 
-                  modified_by = "")
-mc1 <- data.table(m1id = "", m0id = "", acid = "", cndx = "", repi = "", created_date = "",
-                  modified_date = "", modified_by = "")
-mc2 <- data.table(m2id = "", m0id = "", acid = "", m1id = "", cval = "", created_date = "",
-                  modified_date = "", modified_by = "")
-mc3 <- data.table(m3id = "", aeid = "", m0id = "", acid = "", m1id = "", m2id = "", bval = "", pval = "",
-                  logc = "", resp = "", created_date = "", modified_date = "", modified_by = "")
-
-mc4 <- data.table(m4id = "", aeid = "",	spid = "",	bmad = "",	resp_max = "",	resp_min = "",	max_mean = "",	max_mean_conc = "",	max_med = "",	max_med_conc = "",	logc_max = "",	logc_min = "",	cnst = "",	hill = "",	hcov = "",	gnls = "",	gcov = "",	cnst_er = "",	cnst_aic = "",	cnst_rmse = "",	cnst_prob = "",	hill_tp = "",	hill_tp_sd = "",	hill_ga = "",	hill_ga_sd = "",	hill_gw = "",	hill_gw_sd = "",	hill_er = "",	hill_er_sd = "",	hill_aic = "",	hill_rmse = "",	hill_prob = "",	gnls_tp = "",	gnls_tp_sd = "",	gnls_ga = "",	gnls_ga_sd = "",	gnls_gw = "",	gnls_gw_sd = "",	gnls_la = "",	gnls_la_sd = "",	gnls_lw = "",	gnls_lw_sd = "",	gnls_er = "",	gnls_er_sd = "",	gnls_aic = "",	gnls_rmse = "",	gnls_prob = "",	nconc = "",	npts = "",	nrep = "",	nmed_gtbl = "",	tmpi = "",	created_date = "",	modified_date = "",	modified_by = "")
-
-mc5 <- data.table(m5id = "",	m4id = "",	aeid = "",	modl = "",	hitc = "",	fitc = "",	coff = "",	actp = "",	modl_er = "",	modl_tp = "",	modl_ga = "",	modl_gw = "",	modl_la = "",	modl_lw = "",	modl_prob = "",	modl_rmse = "",	modl_acc = "",	modl_acb = "",	modl_ac10 = "",	created_date = "",	modified_date = "",	modified_by = "")
-
-mc6 <- data.table (m6id = "",	m5id = "",	m4id = "",	aeid = "",	mc6_mthd_id = "",	flag = "",	fval = "",	fval_unit = "",	created_date = "",	modified_date = "",	modified_by = "")
-
-write.csv(mc0, file = "../inst/csv/mc0.csv", row.names = F)
-write.csv(mc1, file = "../inst/csv/mc1.csv", row.names = F)
-write.csv(mc2, file = "../inst/csv/mc2.csv", row.names = F)
-write.csv(mc3, file = "../inst/csv/mc3.csv", row.names = F)
-write.csv(mc4, file = "../inst/csv/mc4.csv", row.names = F)
-write.csv(mc5, file = "../inst/csv/mc5.csv", row.names = F)
-write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
-write.csv(mc6, file = "../inst/csv/mc6.csv", row.names = F)
+```{r eval = TRUE, echo = FALSE, message = FALSE}
+rm(list=ls())
+library(htmlTable)
+library(tcpl)
+library(data.table)
 ```
+
+```{r eval = TRUE, echo = FALSE, message = FALSE}
+
+
+sample <- data.table (spid = c("Tox21_400088", "Tox21_303655", "Tox21_110011", "Tox21_400081",
+                               "DMSO", "Tox21_400037"),
+                      chid= c("20182", "22364", "23463", "24102", "21735", "20283"),
+                      stkc = c("", "", "", "", "", ""),
+                      stkc_unit = c("", "", "", "", "", ""),
+                      tested_conc_unit= c("", "", "", "", "", ""),
+                      spid_legacy = c("", "", "", "", "", ""))
+        
+assay <- data.table(aid=numeric(),	asid=numeric(),	assay_name= character(),	assay_desc= character(),	timepoint_hr=numeric(),	organism_id=numeric(),	organism= character(),	tissue= character(),	cell_format= character(),	cell_free_component_source= character(),	cell_short_name= character(),	cell_growth_mode= character(),	assay_footprint= character(),	assay_format_type= character(),	assay_format_type_sub= character(),	content_readout_type= character(),	dilution_solvent= character(),	dilution_solvent_percent_max= character()
+)
+
+assay_component <- data.table(acid=numeric(),	aid=numeric(),	assay_component_name= character(),	assay_component_desc= character(),	assay_component_target_desc= character(),	parameter_readout_type= character(),	assay_design_type= character(),	assay_design_type_sub	= character(),biological_process_target	= character(),detection_technology_type	= character(),detection_technology_type_sub= character(),	 detection_technology= character(),	signal_direction_type= character(),key_assay_reagent_type= character(),
+                      key_assay_reagent	= character(),technological_target_type= character(),	technological_target_type_sub= character() )
+
+assay_component_endpoint <- data.table(aeid=numeric(),	acid=numeric(),	assay_component_endpoint_name= character(),	export_ready=numeric(),	internal_ready= character(),	assay_component_endpoint_desc= character(),	assay_function_type= character(),	normalized_data_type= character(),	analysis_direction= character(),	burst_assay= character(),	key_positive_control= character(),	signal_direction= character(),	intended_target_type= character(),	intended_target_type_sub= character(),	intended_target_family= character(),	intended_target_family_sub= character(),	fit_all=numeric())
+
+assay_component_map <- data.table(acid =numeric(), acsn = character())
+
+
+
+assay_source <- data.table(asid=numeric(),	assay_source_name= character(),	assay_source_long_name= character(),	assay_source_desc= character())
+
+chemical <- data.table(chid = c("20182", "22364", "23463" , "24102", "21735","20283"),
+                       casn = c("80-05-7", "521-18-6", "150-30-1", "22224-92-6", "67-68-5", "95-83-0"),
+                       chnm = c("Bisphenol A", "5alpha-Dihydrotestosterone","Phenylalanine","Fenamiphos",
+"Dimethyl sulfoxide","4-Chloro-1,2-diaminobenzene"),
+                      dsstox_substance_id = c("DTXSID7020182", "DTXSID9022364",         "DTXSID9023463", "DTXSID3024102", "DTXSID2021735", "DTXSID5020283"),
+                    code = c("C80057", "C521186","C150301","C22224926", "C67685","C95830"))
+
+
+
+
+mc0 <- data.table(m0id =numeric(), acid =numeric(), spid = character(), apid = character(), rowi =numeric(),
+                  coli =numeric(), wllt = character(), wllq =numeric(), conc = character(), rval = character(),
+                  srcf =character(), created_date = character(), modified_date = character(), 
+                  modified_by = character())
+mc1 <- data.table(m1id = character(),m0id =numeric(), acid = character(), cndx = character(), repi = character(), created_date = character(),
+                  modified_date = character(), modified_by = character())
+mc2 <- data.table(m2id = character(),m0id =numeric(), acid = character(),m1id =numeric(), cval = character(), created_date = character(),
+                  modified_date = character(), modified_by = character())
+mc3 <- data.table(m3id =numeric(), aeid =numeric(),m0id =numeric(), acid = character(),m1id =numeric(),m2id =numeric(), bval = character(), pval = character(),
+                  logc = character(), resp = character(), created_date = character(), modified_date = character(), modified_by = character())
+
+mc4 <- data.table(m4id =numeric(), aeid =numeric(),	spid = character(),	bmad = character(),	resp_max = character(),	resp_min = character(),	max_mean = character(),	max_mean_conc = character(),	max_med = character(),	max_med_conc = character(),	logc_max = character(),	logc_min = character(),	cnst = character(),	hill = character(),	hcov = character(),	gnls = character(),	gcov = character(),	cnst_er = character(),	cnst_aic = character(),	cnst_rmse = character(),	cnst_prob = character(),	hill_tp = character(),	hill_tp_sd = character(),	hill_ga = character(),	hill_ga_sd = character(),	hill_gw = character(),	hill_gw_sd = character(),	hill_er = character(),	hill_er_sd = character(),	hill_aic = character(),	hill_rmse = character(),	hill_prob = character(),	gnls_tp = character(),	gnls_tp_sd = character(),	gnls_ga = character(),	gnls_ga_sd = character(),	gnls_gw = character(),	gnls_gw_sd = character(),	gnls_la = character(),	gnls_la_sd = character(),	gnls_lw = character(),	gnls_lw_sd = character(),	gnls_er = character(),	gnls_er_sd = character(),	gnls_aic = character(),	gnls_rmse = character(),	gnls_prob = character(),	nconc = character(),	npts = character(),	nrep = character(),	nmed_gtbl = character(),	tmpi = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
+
+mc5 <- data.table(m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	modl = character(),	hitc = character(),	fitc = character(),	coff = character(),	actp = character(),	modl_er = character(),	modl_tp = character(),	modl_ga = character(),	modl_gw = character(),	modl_la = character(),	modl_lw = character(),	modl_prob = character(),	modl_rmse = character(),	modl_acc = character(),	modl_acb = character(),	modl_ac10 = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
+
+mc6 <- data.table (m6id =numeric(),	m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	mc6_mthd_id = character(),	flag = character(),	fval = character(),	fval_unit = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
+
+
+
+dir <- file.path(system.file(package = "tcpl"))
+write.csv(mc0, file = file.path(dir,"csv/mc0.csv"), row.names = F)
+write.csv(mc1, file = file.path(dir,"csv/mc1.csv"), row.names = F)
+write.csv(mc2, file = file.path(dir,"csv/mc2.csv"), row.names = F)
+write.csv(mc3, file = file.path(dir,"csv/mc3.csv"), row.names = F)
+write.csv(mc4, file = file.path(dir,"csv/mc4.csv"), row.names = F)
+write.csv(mc5, file = file.path(dir,"csv/mc5.csv"), row.names = F)
+write.csv(mc6, file = file.path(dir,"csv/mc6.csv"), row.names = F)
+write.csv(sample, file = file.path(dir,"csv/sample.csv"), row.names = F)
+write.csv(assay, file = file.path(dir,"csv/assay.csv"), row.names = F)
+write.csv(assay_component, file = file.path(dir,"csv/assay_component.csv"), row.names = F)
+write.csv(assay_component_map, file = file.path(dir,"csv/assay_component_map.csv"), row.names = F)
+write.csv(assay_component_endpoint, file = file.path(dir,"csv/assay_component_endpoint.csv"), row.names = F)
+write.csv(assay_source, file = file.path(dir,"csv/assay_source.csv"), row.names = F)
+write.csv(chemical, file = file.path(dir,"csv/chemical.csv"), row.names = F)
+```
+
+
