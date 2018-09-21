@@ -342,7 +342,7 @@ output <-
 library(htmlTable)
 htmlTable(output,
          
-         
+          rnames = FALSE,
           rgroup = c("Scheme 1",
                      "Scheme 2", "Scheme3"),
           n.rgroup = c(2,2),
