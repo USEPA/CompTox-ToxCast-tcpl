@@ -1,18 +1,13 @@
 ---
-title: Data Processing With The ToxCast^TM^ Analysis Pipeline:<br /> An R Package for Processing and Modeling
-  Chemical Screening Data<br /> <br />
- Version 2.0
+title: tcpl 2.0 <br />Data Processing<br />
 author: "National Center for Computational Toxicology, US EPA"
 output:
-  html_document:
-    fig_caption: yes
+  prettydoc::html_pretty:
+    theme: architect
     toc: yes
     toc_depth: 4
-    toc_float:
-      collapsed: yes
-      smooth_scroll: no
 vignette: >
-  %\VignetteIndexEntry{Processing}
+  %\VignetteIndexEntry{tcpl 2.0 <br />Data Processing<br />}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---

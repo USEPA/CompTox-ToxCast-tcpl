@@ -1,18 +1,13 @@
 ---
-title: The ToxCast^TM^ Analysis Pipeline:<br /> An R Package for Processing and Modeling
-  Chemical Screening Data<br /> <br />
- Version 2.0
+title: The ToxCast(TM) Analysis Pipeline(tcpl)<br /> An R Package for Processing and Modeling Chemical Screening Data (Version 2.0)<br />
 author: "National Center for Computational Toxicology, US EPA"
 output:
-  html_document:
-    fig_caption: yes
+  prettydoc::html_pretty:
+    theme: architect
     toc: yes
     toc_depth: 4
-    toc_float:
-      collapsed: yes
-      smooth_scroll: no
 vignette: >
-  %\VignetteIndexEntry{The ToxCast Analysis Pipeline An R Package for Processing and Modeling Chemical Screening Data}
+  %\VignetteIndexEntry{The ToxCast(TM) Analysis Pipeline(tcpl)<br /> An R Package for Processing and Modeling Chemical Screening Data (Version 2.0)<br />}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
@@ -928,7 +923,7 @@ In addition, the standard matrices, additional matrices can be defined by the 'a
 
 #Appendix E:  Curve Fitting Uncertainty
 
-The level 7 in the <font face="CMTT10"> tcpl</font> package provides a quantitative metric for assessing the uncertainty in identifying active chemicals in high-throughput chemical screening assays. Consequently, the pipeline will be able to better identify false positive, and false negative hit calls. This level uses the bootstrapping method used in the <font face="CMTT10"> toxboot </font> R package. Briefly, <font face="CMTT10"> toxboot </font> uses a smooth nonparametric bootstrap resampling to add random normally distributed noise to give a resampled set of concentration-response values. The resampled data are fit to the three ToxCast models, and repeated 1000 times. The resulting data are used to generate point estimates, the winning model, and a hit call for each of the 1000 resamples. Various summary statistics,  such as hit percent, median AC\_50, and AC\_50 confidence interval are generated based on the toxboot resampling. For more information on the <font face="CMTT10"> toxboot </font> package, the user can access the documentation available on the CRAN depository.^[https://CRAN.R-project.org/package=toxboot]
+The level 7 in the <font face="CMTT10"> tcpl</font> package provides a quantitative metric for assessing the uncertainty in identifying active chemicals in high-throughput chemical screening assays. Consequently, the pipeline will be able to better identify false positive, and false negative hit calls. This level uses the bootstrapping method used in the <font face="CMTT10"> toxboot </font> R package. Briefly, <font face="CMTT10"> toxboot </font> uses a smooth nonparametric bootstrap resampling to add random normally distributed noise to give a resampled set of concentration-response values. The resampled data are fit to the three ToxCast models, and repeated 1000 times. The resulting data are used to generate point estimates, the winning model, and a hit call for each of the 1000 resamples. Various summary statistics,  such as hit percent, median AC$_{50}$, and AC$_{50}$ confidence interval are generated based on the toxboot resampling. For more information on the <font face="CMTT10"> toxboot </font> package, the user can access the documentation available on the CRAN depository.^[https://CRAN.R-project.org/package=toxboot]
 
-The <font face="CMTT10"> tcpl</font> package provides a platform for identifying active chemicals from >1000 chemical-assay endpoint pairs. The curve fits for these pairs are prone to variabilities in the calculated parameters due to biological variance, and model fitting to name a few. The extent of uncertainty in the bioactivity values can propagate errors in estimating toxicological endpoints used for risk assessment. The quantitative strategy used in level 7 to assess the uncertainty in the fitted bioactivity values, such as AC\_50, can increase the predictive power of in vitro toxicity prediction.  The addition of level 7 allows the user to calculate the hit percent, a probabilistic metric for determining the hit call for a chemical-assay endpoint pair ranging from 0 to 1. Instead of the binary hit call, 0 or 1, the hit percent has a higher sensitivity to noise and artefacts in the fitted data. Level 7 data can be retrieved from the MySQL database using the <font face="CMTT10"> tcplLoadData </font> function. The user will need the m4id(s) corresponding to the sample(s) of interest.
+The <font face="CMTT10"> tcpl</font> package provides a platform for identifying active chemicals from >1000 chemical-assay endpoint pairs. The curve fits for these pairs are prone to variabilities in the calculated parameters due to biological variance, and model fitting to name a few. The extent of uncertainty in the bioactivity values can propagate errors in estimating toxicological endpoints used for risk assessment. The quantitative strategy used in level 7 to assess the uncertainty in the fitted bioactivity values, such as AC$_{50}$, can increase the predictive power of in vitro toxicity prediction.  The addition of level 7 allows the user to calculate the hit percent, a probabilistic metric for determining the hit call for a chemical-assay endpoint pair ranging from 0 to 1. Instead of the binary hit call, 0 or 1, the hit percent has a higher sensitivity to noise and artefacts in the fitted data. Level 7 data can be retrieved from the MySQL database using the <font face="CMTT10"> tcplLoadData </font> function. The user will need the m4id(s) corresponding to the sample(s) of interest.
 
