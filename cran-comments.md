@@ -20,5 +20,5 @@ Dayne Filer will need to approve the change <dayne.filer@gmail.com> .
 * There are 2 Downstream dependencies for this package.
 * toxboot: error related to increased table size in new version of tcpl.
            author is aware of issue (https://github.com/ericwatt/toxboot/issues/13)
-           but package does not appear to be currently maintained
-* toxplot: fit_curve_tcpl function fails.
+* toxplot: fit_curve_tcpl function fails due to additional columns in tcplFit.
+			Author notified 9/10 and is aware of changes.
