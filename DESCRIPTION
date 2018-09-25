@@ -30,8 +30,9 @@ Imports:
 Suggests:
     roxygen2,
     knitr,
+    prettydoc,
     rmarkdown,
-    htmlTable,
+    htmlTable
 License: GPL-2
 LazyData: true
 RoxygenNote: 6.1.0
