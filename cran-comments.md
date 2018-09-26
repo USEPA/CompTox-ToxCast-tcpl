@@ -22,3 +22,4 @@ Dayne Filer will need to approve the change <dayne.filer@gmail.com> .
            author is aware of issue (https://github.com/ericwatt/toxboot/issues/13)
 * toxplot: fit_curve_tcpl function fails due to additional columns in tcplFit.
 			Author notified 9/10 and is aware of changes.
+* prettydoc: the package is required to run the vignette. It is listed under 'suggests'.
