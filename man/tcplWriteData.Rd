@@ -28,7 +28,7 @@ into the level tables, whereas the single concentration will be loaded into
 the single tables.
 }
 \note{
-This function is not exported and is not inteded to be used by the user. 
+This function is not exported and is not intended to be used by the user. 
 The user should only write level 0 data, which is written with 
 \code{\link{tcplWriteLvl0}}.
 }

@@ -14,7 +14,7 @@
 #' @param id Integer, the id(s) to delete. See details for more information.
 #' 
 #' @details
-#' The data type can be either 'mc' for mutliple concentration data, or 'sc'
+#' The data type can be either 'mc' for multiple concentration data, or 'sc'
 #' for single concentration data. Multiple concentration data will be loaded
 #' into the level tables, whereas the single concentration will be loaded into
 #' the single tables. 

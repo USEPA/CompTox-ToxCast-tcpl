@@ -10,7 +10,7 @@ tcplMakeChidMultiPlts(chid, lvl = 4L, fname = NULL, odir = getwd(),
 \arguments{
 \item{chid}{Integer of length 1, the chemical id}
 
-\item{lvl}{Integer of lengh 1, the data level to use (4-7)}
+\item{lvl}{Integer of length 1, the data level to use (4-7)}
 
 \item{fname}{Character, the filename}
 

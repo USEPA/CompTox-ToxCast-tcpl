@@ -1,4 +1,4 @@
-#' @title Draw a tcpl Model onto an exisiting plot
+#' @title Draw a tcpl Model onto an existing plot
 #' 
 #' @description
 #' \code{tcplAddModel} draws a a line for one of the tcpl Models (see 

@@ -21,7 +21,7 @@ A numeric vector containing the shifted response values
 to 0 based on the window.
 }
 \note{
-This function is not exported and is not inteded to be used by the user.
+This function is not exported and is not intended to be used by the user.
 }
 \seealso{
 \code{\link{mc3_mthds}}, \code{\link{mc3}}

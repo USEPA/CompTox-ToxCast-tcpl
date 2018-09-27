@@ -26,8 +26,8 @@ Level 5 plots include the level 4 information with the activity call and
 model selection. The winning model will be highlighted red in the side panel
 containing the summary statistics. Level 6 plots, in addition the all of the 
 level 4 and 5 information, include the positive flag IDs. If the flag has 
-an associated value, the value will be in parentheses follwing the flag ID.
-Level 7 plots in addition to all of the level 4, 5, and 6 informatoin, include
+an associated value, the value will be in parentheses following the flag ID.
+Level 7 plots in addition to all of the level 4, 5, and 6 information, include
 the AC50 confidence interval and hit percentage information from bootstrapping.
 }
 \examples{

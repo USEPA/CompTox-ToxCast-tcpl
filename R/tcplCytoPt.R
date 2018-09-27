@@ -14,7 +14,7 @@
 #' @param flag Integer, mc6_mthd_id values to be passed to 
 #' \code{\link{tcplSubsetChid}}
 #' @param min.test Integer or Boolean, the number of tested assay endpoints
-#' required for a cheimcal to be used in calculating the "global MAD."
+#' required for a chemical to be used in calculating the "global MAD."
 #' @param default.pt Numeric of length 1, the default cytotoxicity point value
 #' 
 #' @details
@@ -53,14 +53,14 @@
 #' The resulting data.table has the following fields:
 #' \enumerate{
 #'  \item "chid" -- The chemical ID.
-#'  \item "code" -- The chemcial code.
+#'  \item "code" -- The chemical code.
 #'  \item "chnm" -- The chemical name.
 #'  \item "casn" -- The chemical CASRN.
 #'  \item "med" -- The median of the "burst" endpoint log(AC50) ("modl_ga" in 
 #'  the level 5 output) values.
 #'  \item "mad" -- The MAD of the "burst" endpoint log(AC50) values.
 #'  \item "ntst" -- The number of "burst" endpoints tested.
-#'  \item "nhit" -- The number of acive "burst" endpoints.
+#'  \item "nhit" -- The number of active "burst" endpoints.
 #'  \item "use_global_mad" -- TRUE/FALSE, whether the mad value was used in the
 #'  global MAD calculation.
 #'  \item "global_mad" -- The median of the "mad" values where "use_global_mad" 
@@ -92,7 +92,7 @@
 #' ## The above example does not calculate a global MAD, because no chemical
 #' ## hit both endpoints. (This makes sense, because both endpoints are 
 #' ## derived from one component, where one endpoint is acitivity in the
-#' ## up direction, and the other is acitivty in the down direction.)
+#' ## up direction, and the other is activity in the down direction.)
 #' ## Note, the cyto_pt is also 3 for all chemicals, because the function
 #' ## requires at least two endpoints to calculate a cytotoxicity point. If 
 #' ## the user wishes to use one assay, this function is not necessary. 

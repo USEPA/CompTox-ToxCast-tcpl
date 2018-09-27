@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcplAddModel.R
 \name{tcplAddModel}
 \alias{tcplAddModel}
-\title{Draw a tcpl Model onto an exisiting plot}
+\title{Draw a tcpl Model onto an existing plot}
 \usage{
 tcplAddModel(pars, modl = NULL, adj = NULL, ...)
 }

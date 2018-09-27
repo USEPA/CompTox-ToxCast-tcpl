@@ -6,7 +6,7 @@
 #' 
 #' @description
 #' \code{tcplLoadClib} queries the tcpl databases and returns information 
-#' about the chemial library.
+#' about the chemical library.
 #' 
 #' @param field Character of length 1, \code{'chid'} or \code{'clib'}, whether 
 #' to search by chemical id (chid), or chemical library (clib)

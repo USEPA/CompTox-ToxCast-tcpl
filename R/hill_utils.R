@@ -21,7 +21,7 @@
 #' @param tp Numeric, the top value from the Hill model
 #' @param ga Numeric, the logAC50 value from the Hill model
 #' @param gw Numeric, the Hill coefficient from the Hill model
-#' @param bt Numierc, the bottom value from the Hill model
+#' @param bt Numeric, the bottom value from the Hill model
 #' 
 #' @examples
 #' ## The following code gives examples for a Hill model with a top of 50, 

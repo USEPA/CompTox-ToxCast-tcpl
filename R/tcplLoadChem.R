@@ -17,7 +17,7 @@
 #' The 'field' parameter is named differently from the 'fld' parameter seen
 #' in other functions because it only takes one input.
 #' 
-#' In the MySQL environment the user should be able to give parital
+#' In the MySQL environment the user should be able to give partial
 #' chemcial name strings, to find chemicals with similar names. For example,
 #' setting 'val' to "phenol" when 'field' is "chnm" and 'exact' is
 #' \code{FALSE} might pull up the chemicals "Bisphenol A" and

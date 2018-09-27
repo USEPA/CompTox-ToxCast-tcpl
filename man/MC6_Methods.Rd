@@ -41,7 +41,7 @@ available in the package vignette, "Pipeline_Overview."
   is greater than the cutoff for the assay endpoint.}
   \item{border.hit}{The border.hit flag identifies active concentration 
   series where the top parameter of the winning model was less than or equal 
-  to 1.2*cut-off or the the activity probablity was less than 0.9.}
+  to 1.2*cut-off or the the activity probability was less than 0.9.}
   \item{border.miss}{The border.miss flag identifies inactive concentration
   series where either the Hill or gain-loss top parameter was greater than 
   or equal to 0.8*cut-off and the activity probability was greater than 0.5.}

@@ -10,10 +10,10 @@
 #'  When type = "aeid", the val parameter has to be a valid aeid in the database. The function returns a 
 #'  table consisting of the number of distinct spids at each level of processing for the aeid given in 'val'
 #'  When type = "spid", the val parameter has to be a valid spid in the database. The function returns a 
-#'  table consisiting of the number of distinct aeids at each level of processing for the given spid in 'val'
+#'  table consisting of the number of distinct aeids at each level of processing for the given spid in 'val'
 #' 
 #' @param type String either "all", "aeid" or "spid"
-#' @param val interger if type = "aeid" , string if type  = "spid"
+#' @param val integer if type = "aeid" , string if type  = "spid"
 #' @importFrom stats setNames
 #' @export
 

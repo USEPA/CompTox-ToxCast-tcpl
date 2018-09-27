@@ -14,7 +14,7 @@
 #' @param wndw Numeric, the threshold window 
 #' 
 #' @note
-#' This function is not exported and is not inteded to be used by the user.
+#' This function is not exported and is not intended to be used by the user.
 #' 
 #' @return A numeric vector containing the shifted response values
 #' 

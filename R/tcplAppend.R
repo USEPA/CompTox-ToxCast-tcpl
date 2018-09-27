@@ -11,7 +11,7 @@
 #' @param dat data.table, the data to append to a table
 #' @param tbl Character of length 1, the table to append to
 #' @param db Character of length 1, the database containing \code{tbl}
-#' @param lvl Usually Integer to indicate what level to autoincriment
+#' @param lvl Usually Integer to indicate what level to auto-increment
 #' 
 #' @note
 #' This function is not exported and not intended to be used by the user.

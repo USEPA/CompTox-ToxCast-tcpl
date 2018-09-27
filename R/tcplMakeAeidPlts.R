@@ -9,7 +9,7 @@
 #' the given aeid.
 #' 
 #' @param aeid Integer of length 1, the assay endpoint id
-#' @param lvl Integer of lengh 1, the data level to use (4-7)
+#' @param lvl Integer of length 1, the data level to use (4-7)
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
 #' @param clib Character, the chemical library to subset on, see 

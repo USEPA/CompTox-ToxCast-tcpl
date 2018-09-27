@@ -18,7 +18,7 @@ parameters.
 }
 \description{
 \code{tcplLoadClib} queries the tcpl databases and returns information 
-about the chemial library.
+about the chemical library.
 }
 \details{
 Chemicals are stored in different libraries by chemcial ID. Therefore, it 

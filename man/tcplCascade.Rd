@@ -19,7 +19,7 @@ the processing level given. The delete will cascade through all subsequent
 tables.
 }
 \details{
-The data type can be either 'mc' for mutliple concentration data, or 'sc'
+The data type can be either 'mc' for multiple concentration data, or 'sc'
 for single concentration data. Multiple concentration data will be loaded
 into the level tables, whereas the single concentration will be loaded into
 the single tables. 

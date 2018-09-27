@@ -16,7 +16,7 @@
 #' 
 #' @details
 #' The legend represents the range of the data supplied to dat, for the 
-#' applicable ID. The additional horizontal lines on the legend indcate the
+#' applicable ID. The additional horizontal lines on the legend indicate the
 #' range of the plotted plate, to show the relation of the plate to the assay
 #' as a whole. A plot with a legend specific for the given apid can be created
 #' by only supplying the data for the apid of interest to 'dat'.

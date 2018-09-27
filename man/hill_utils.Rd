@@ -23,7 +23,7 @@ tcplHillVal(logc, tp, ga, gw, bt = 0)
 
 \item{gw}{Numeric, the Hill coefficient from the Hill model}
 
-\item{bt}{Numierc, the bottom value from the Hill model}
+\item{bt}{Numeric, the bottom value from the Hill model}
 
 \item{val}{Numeric, the activity value}
 

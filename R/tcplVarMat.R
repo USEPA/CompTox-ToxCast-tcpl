@@ -25,7 +25,7 @@
 #' 
 #' @details
 #' The \code{tcplVarMat} function is used to create chemical by assay matrices
-#' for different paramters. The standard list of matrices returned includes:
+#' for different parameters. The standard list of matrices returned includes:
 #' 
 #' \enumerate{
 #'  \item "modl_ga" -- The logAC50 (in the gain direction) for the winning 
@@ -49,7 +49,7 @@
 #'  not tested, or tested and had a hitcall of 0 or -1 have the value 0. 
 #' }
 #' 
-#' To add addtitional matrices, the 'add.vars' parameter can be used to specify
+#' To add additional matrices, the 'add.vars' parameter can be used to specify
 #' the fields from the mc4 or mc5 tables to create matrices for.
 #' 
 #' When more than one sample is included for a chemical/assay pair, 
@@ -59,7 +59,7 @@
 #' By setting \code{odir} the function will write out a csv with, naming the 
 #' file with the convention: "var_Matrix_date.csv" where 'var' is the name 
 #' of the matrix. A prefix can be added to the output files using the 
-#' 'file.prefix' paramter. 
+#' 'file.prefix' parameter. 
 #' 
 #' When a concentration series has a sample id not listed in the \code{tcpl} 
 #' database, and 'include.na.chid' is TRUE, the rowname for that series will 
@@ -77,7 +77,7 @@
 #' 'cyto.pars' parameter.
 #' 
 #' @return A list of chemical by assay matrices where the rownames are given by
-#' the 'row.id' paramter, and the colnames are given by assay endpoint name 
+#' the 'row.id' parameter, and the colnames are given by assay endpoint name 
 #' (aenm).
 #' 
 #' @examples 

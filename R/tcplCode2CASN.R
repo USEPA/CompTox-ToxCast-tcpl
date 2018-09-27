@@ -11,10 +11,10 @@
 #' 
 #' @details
 #' The function checks for the validity of the CAS Registry Number. Also, 
-#' the ToxCast data includes chemcials for which there is no CASRN. The 
+#' the ToxCast data includes chemicals for which there is no CASRN. The 
 #' convention for these chemicals is to give them a CASRN as NOCAS_chid; the
 #' code for these compounds is CNOCASchid. The function handles the NOCAS 
-#' compounds as they are stored in the database, as shown in the exmaple below.
+#' compounds as they are stored in the database, as shown in the example below.
 #' 
 #' @examples
 #' tcplCode2CASN("C80057")

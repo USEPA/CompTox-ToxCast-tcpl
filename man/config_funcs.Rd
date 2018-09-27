@@ -61,7 +61,7 @@ does not exist, create it, and add the following line:
 TCPL_CONF=path/to/confFile.conf
 
 Here 'path/to/confFile.conf' can be any path to a file. One suggestion would
-be to include .tcplConf in the home directory, eg. TCPL_CONF=~/.tcplConf. 
+be to include .tcplConf in the home directory, e.g. TCPL_CONF=~/.tcplConf. 
 Note, '~' may not indicate the home directory on every operating system.
 Once the environment variable is added, the user can change the settings
 using \code{tcplConf}, then save the settings to the file given by the
