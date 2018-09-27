@@ -6,7 +6,7 @@
 #' 
 #' @description
 #' \code{tcplCytoPt} calculates the cytotoxicity point and average cytotoxicity 
-#' distribution based on the acitivty in the "burst" assay endpoints.
+#' distribution based on the activity in the "burst" assay endpoints.
 #' 
 #' @param chid Integer, chemical ID values to subset on
 #' @param aeid Integer, assay endpoint ID values to override the "burst assay"

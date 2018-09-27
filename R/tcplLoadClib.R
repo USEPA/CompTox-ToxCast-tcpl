@@ -13,9 +13,9 @@
 #' @param val The values to query on
 #' 
 #' @details
-#' Chemicals are stored in different libraries by chemcial ID. Therefore, it 
+#' Chemicals are stored in different libraries by chemical ID. Therefore, it 
 #' is not possible to delineate samples with the same chemical ID into two 
-#' distinct chemical libraries. However, it is possible for a chemcial ID to 
+#' distinct chemical libraries. However, it is possible for a chemical ID to 
 #' belong to more than one (or no) chemical libraries. 
 #' 
 #' When chemicals belong to more than one library, the chemical is listed 

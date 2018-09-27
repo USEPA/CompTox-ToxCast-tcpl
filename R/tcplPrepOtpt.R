@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------------
-# tcplPrepOtpt: Map assay/chemcial ID values to names
+# tcplPrepOtpt: Map assay/chemical ID values to names
 #-------------------------------------------------------------------------------
 
-#' @title Map assay/chemcial ID values to annotation information
+#' @title Map assay/chemical ID values to annotation information
 #' 
 #' @description
 #' \code{tcplPrepOtpt} queries the chemical and assay information from the tcpl

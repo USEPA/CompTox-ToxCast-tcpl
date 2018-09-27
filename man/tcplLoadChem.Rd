@@ -20,7 +20,7 @@ tcplLoadChem(field = NULL, val = NULL, exact = TRUE,
 A data.table with the chemical information for the given parameters
 }
 \description{
-\code{tcplLoadChem} queries the tcpl database and returns the chemcial 
+\code{tcplLoadChem} queries the tcpl database and returns the chemical 
 information for the given field and values.
 }
 \details{
@@ -28,7 +28,7 @@ The 'field' parameter is named differently from the 'fld' parameter seen
 in other functions because it only takes one input.
 
 In the MySQL environment the user should be able to give partial
-chemcial name strings, to find chemicals with similar names. For example,
+chemical name strings, to find chemicals with similar names. For example,
 setting 'val' to "phenol" when 'field' is "chnm" and 'exact' is
 \code{FALSE} might pull up the chemicals "Bisphenol A" and
 "4-Butylphenol". More technically, setting 'exact' to \code{FALSE} passes

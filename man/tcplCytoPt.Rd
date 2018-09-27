@@ -27,7 +27,7 @@ The definition of the field names are listed under "details."
 }
 \description{
 \code{tcplCytoPt} calculates the cytotoxicity point and average cytotoxicity 
-distribution based on the acitivty in the "burst" assay endpoints.
+distribution based on the activity in the "burst" assay endpoints.
 }
 \details{
 \code{tcplCytoPt} provides estimates for chemical-specific cytotoxicity 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcplPrepOtpt.R
 \name{tcplPrepOtpt}
 \alias{tcplPrepOtpt}
-\title{Map assay/chemcial ID values to annotation information}
+\title{Map assay/chemical ID values to annotation information}
 \usage{
 tcplPrepOtpt(dat, ids = NULL)
 }

@@ -5,7 +5,7 @@
 #' @title Load sample/chemical information
 #' 
 #' @description
-#' \code{tcplLoadChem} queries the tcpl database and returns the chemcial 
+#' \code{tcplLoadChem} queries the tcpl database and returns the chemical 
 #' information for the given field and values. 
 #' 
 #' @param field Character of length 1, the field to query on
@@ -18,7 +18,7 @@
 #' in other functions because it only takes one input.
 #' 
 #' In the MySQL environment the user should be able to give partial
-#' chemcial name strings, to find chemicals with similar names. For example,
+#' chemical name strings, to find chemicals with similar names. For example,
 #' setting 'val' to "phenol" when 'field' is "chnm" and 'exact' is
 #' \code{FALSE} might pull up the chemicals "Bisphenol A" and
 #' "4-Butylphenol". More technically, setting 'exact' to \code{FALSE} passes
