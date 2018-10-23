@@ -73,10 +73,10 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Load cutoff methods
   ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
-  if (13 %in% ms$mthd_id) {
+  if ('loec.coff' %in% ms$mthd) {
     # using the loec method
     loec.mthd = TRUE
-    ms <- ms[!mthd_id==13]
+    ms <- ms[!mthd=='loec.coff']
   }
   
   
@@ -261,10 +261,10 @@ mc5 <- function(ae, wr = FALSE) {
   ## Complete the loec calculations
   if (loec.mthd) {
     # Complete the todo list to adjust for the loec method by calling loec.coff in mc5_mthds
-    print('inside new method')
+    print(dim(dat))
     coff <- unique(dat$coff) # coff for aeid
     calc_z <-function(resp) {
-      if (length(resp) <= 1) {sdev=1}
+      if (length(resp) <= 1) {sdev=0.1}
       else {sdev=sd(resp)}
       mu = mean(resp)
       Z = (mu - coff)/sdev
@@ -285,8 +285,7 @@ mc5 <- function(ae, wr = FALSE) {
     dat$modl_acc <- tmp.mc3$loec
     #e1 <- bquote() # redefine acc
     dat[ , fitc := 52L] # Change to special fitc
-    dat[, c('hill', 'gnls')] <- NA_real_
-    dat[, cnst := 1] # Set to constan probability
+    dat[, cnst := 1] # Set to constant probability
     
     # ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
     # ms <- ms[mthd_id == 13]
