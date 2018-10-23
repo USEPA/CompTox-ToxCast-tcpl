@@ -133,9 +133,16 @@
            col = "darkorange",
            lty = ifelse(pars$modl == "cnst", "solid", "dashed"))
     
+    if (pars$fitc == 52L) {
+      # loec analysis
+      abline(v = pars$modl_acc,
+             lwd = 4,
+             col = 'tomato3')
+    }
+    
   }
   
-  if (!is.na(pars$hill) & pars$hill) {
+  if (!is.na(pars$hill) & pars$hill & pars$fitc != 52L) {
     
     hill.eq <- function(x) with(pars, hill_tp/(1 + 10^((hill_ga - x)*hill_gw)))
     curve(hill.eq, 
@@ -153,7 +160,7 @@
     
   }
   
-  if (!is.na(pars$gnls) & pars$gnls) {
+  if (!is.na(pars$gnls) & pars$gnls & pars$fitc != 52L) {
     
     gnls.eq <- function(x) {
       with(pars, {

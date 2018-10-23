@@ -35,7 +35,7 @@
 #' }
 
 
-mc5_mthds <- function() {
+mc5_mthds <- function(ae) {
 
   list(
 
@@ -134,6 +134,38 @@ mc5_mthds <- function() {
       
       e1 <- bquote(coff <- c(coff, 2.32))
       list(e1)
+      
+    },
+    
+    loec.coff = function(dat) {
+      coff <- unique(dat$coff) # coff for aeid
+      calc_z <-function(resp) {
+        if (length(resp) <= 1) {sdev=1}
+        else {sdev=sd(resp)}
+        mu = mean(resp)
+        Z = (mu - coff)/sdev
+        return(Z)
+        }
+      
+      
+      tmp.mc3 <- tcplLoadData(3L, fld='aeid', val=ae, type='mc')
+      
+      
+      tmp.mc3[, Z:=lapply(.SD, calc_z), by=.(spid, logc), .SDcols = c("resp")]
+      tmp.mc3[Z >= 1, loec_coff :=1]
+      tmp.mc3[Z < 1, loec_coff :=0]
+      tmp.mc3[, loec := min(logc[loec_coff == 1]), by = spid] # Define the loec for each SPID
+      tmp.mc3 <- tmp.mc3[dat, mult='first', on='spid', nomatch=0L]
+      is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
+      
+      dat$modl_acc <- tmp.mc3$loec
+      #e1 <- bquote() # redefine acc
+      e2 <- bquote(dat[ , fitc := 52L]) # Change to special fitc
+      e3 <- bquote(dat[, c('hill', 'gnls')] <- NA_real_)
+      e4 <- bquote(dat[, cnst := 1]) # Set to constan probability
+      
+      list(e2, e3, e4)
+      
       
     }
   )
