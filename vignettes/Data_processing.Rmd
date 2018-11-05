@@ -30,13 +30,23 @@ $(document).ready(function() {
 
 
 ```{r eval = TRUE, echo = FALSE, message = FALSE}
-rm(list=ls())
 library(htmlTable)
 library(tcpl)
-library(data.table)
+
+```
+```{r eval = TRUE, echo = FALSE, message = FALSE}
+## This chunk copies the tcplLite local directory to the temp directory used in installation
+## to comply with CRAN policies on not writing to the installation directory
+tmpdir <- tempdir()
+dbfile <- file.path(system.file(package = "tcpl"), "csv")
+file.copy(from = dbfile, tmpdir, recursive  = TRUE)
+dbfile_temp <- file.path(tmpdir, "csv")
+tcplConf(db = dbfile_temp)
+
 ```
 
 ```{r eval = TRUE, echo = FALSE, message = FALSE}
+
 
 
 sample <- data.table (spid = c("Tox21_400088", "Tox21_303655", "Tox21_110011", "Tox21_400081",
@@ -90,21 +100,21 @@ mc6 <- data.table (m6id =numeric(),	m5id =numeric(),	m4id =numeric(),	aeid =nume
 
 
 
-dir <- file.path(system.file(package = "tcpl"))
-write.csv(mc0, file = file.path(dir,"csv/mc0.csv"), row.names = F)
-write.csv(mc1, file = file.path(dir,"csv/mc1.csv"), row.names = F)
-write.csv(mc2, file = file.path(dir,"csv/mc2.csv"), row.names = F)
-write.csv(mc3, file = file.path(dir,"csv/mc3.csv"), row.names = F)
-write.csv(mc4, file = file.path(dir,"csv/mc4.csv"), row.names = F)
-write.csv(mc5, file = file.path(dir,"csv/mc5.csv"), row.names = F)
-write.csv(mc6, file = file.path(dir,"csv/mc6.csv"), row.names = F)
-write.csv(sample, file = file.path(dir,"csv/sample.csv"), row.names = F)
-write.csv(assay, file = file.path(dir,"csv/assay.csv"), row.names = F)
-write.csv(assay_component, file = file.path(dir,"csv/assay_component.csv"), row.names = F)
-write.csv(assay_component_map, file = file.path(dir,"csv/assay_component_map.csv"), row.names = F)
-write.csv(assay_component_endpoint, file = file.path(dir,"csv/assay_component_endpoint.csv"), row.names = F)
-write.csv(assay_source, file = file.path(dir,"csv/assay_source.csv"), row.names = F)
-write.csv(chemical, file = file.path(dir,"csv/chemical.csv"), row.names = F)
+
+write.csv(mc0, file = file.path(dbfile_temp,"mc0.csv"), row.names = F)
+write.csv(mc1, file = file.path(dbfile_temp,"mc1.csv"), row.names = F)
+write.csv(mc2, file = file.path(dbfile_temp,"mc2.csv"), row.names = F)
+write.csv(mc3, file = file.path(dbfile_temp,"mc3.csv"), row.names = F)
+write.csv(mc4, file = file.path(dbfile_temp,"mc4.csv"), row.names = F)
+write.csv(mc5, file = file.path(dbfile_temp,"mc5.csv"), row.names = F)
+write.csv(mc6, file = file.path(dbfile_temp,"mc6.csv"), row.names = F)
+write.csv(sample, file = file.path(dbfile_temp,"sample.csv"), row.names = F)
+write.csv(assay, file = file.path(dbfile_temp,"assay.csv"), row.names = F)
+write.csv(assay_component, file = file.path(dbfile_temp,"assay_component.csv"), row.names = F)
+write.csv(assay_component_map, file = file.path(dbfile_temp,"assay_component_map.csv"), row.names = F)
+write.csv(assay_component_endpoint, file = file.path(dbfile_temp,"assay_component_endpoint.csv"), row.names = F)
+write.csv(assay_source, file = file.path(dbfile_temp,"assay_source.csv"), row.names = F)
+write.csv(chemical, file = file.path(dbfile_temp,"chemical.csv"), row.names = F)
 ```
 
 
@@ -873,7 +883,7 @@ Figure 8: An example level 6 plot for a single concentration series. All level 6
 <!--Figure 7-->
 The evidence of true activity shown in Figure 8 could be argued either way. Level 6 processing does not attempt to define truth in the matter of borderline compounds or data anomalies, but rather attempts to identify concentration series for closer consideration.
 
-```{r eval = TRUE, echo = FALSE, message = FALSE}
+```{r eval = FALSE, echo = FALSE, message = FALSE}
 rm(list=ls())
 library(htmlTable)
 library(tcpl)
@@ -934,21 +944,21 @@ mc6 <- data.table (m6id =numeric(),	m5id =numeric(),	m4id =numeric(),	aeid =nume
 
 
 
-dir <- file.path(system.file(package = "tcpl"))
-write.csv(mc0, file = file.path(dir,"csv/mc0.csv"), row.names = F)
-write.csv(mc1, file = file.path(dir,"csv/mc1.csv"), row.names = F)
-write.csv(mc2, file = file.path(dir,"csv/mc2.csv"), row.names = F)
-write.csv(mc3, file = file.path(dir,"csv/mc3.csv"), row.names = F)
-write.csv(mc4, file = file.path(dir,"csv/mc4.csv"), row.names = F)
-write.csv(mc5, file = file.path(dir,"csv/mc5.csv"), row.names = F)
-write.csv(mc6, file = file.path(dir,"csv/mc6.csv"), row.names = F)
-write.csv(sample, file = file.path(dir,"csv/sample.csv"), row.names = F)
-write.csv(assay, file = file.path(dir,"csv/assay.csv"), row.names = F)
-write.csv(assay_component, file = file.path(dir,"csv/assay_component.csv"), row.names = F)
-write.csv(assay_component_map, file = file.path(dir,"csv/assay_component_map.csv"), row.names = F)
-write.csv(assay_component_endpoint, file = file.path(dir,"csv/assay_component_endpoint.csv"), row.names = F)
-write.csv(assay_source, file = file.path(dir,"csv/assay_source.csv"), row.names = F)
-write.csv(chemical, file = file.path(dir,"csv/chemical.csv"), row.names = F)
+dir <- dbfile_temp
+write.csv(mc0, file = file.path(dir,"mc0.csv"), row.names = F)
+write.csv(mc1, file = file.path(dir,"mc1.csv"), row.names = F)
+write.csv(mc2, file = file.path(dir,"mc2.csv"), row.names = F)
+write.csv(mc3, file = file.path(dir,"mc3.csv"), row.names = F)
+write.csv(mc4, file = file.path(dir,"mc4.csv"), row.names = F)
+write.csv(mc5, file = file.path(dir,"mc5.csv"), row.names = F)
+write.csv(mc6, file = file.path(dir,"mc6.csv"), row.names = F)
+write.csv(sample, file = file.path(dir,"sample.csv"), row.names = F)
+write.csv(assay, file = file.path(dir,"assay.csv"), row.names = F)
+write.csv(assay_component, file = file.path(dir,"assay_component.csv"), row.names = F)
+write.csv(assay_component_map, file = file.path(dir,"assay_component_map.csv"), row.names = F)
+write.csv(assay_component_endpoint, file = file.path(dir,"assay_component_endpoint.csv"), row.names = F)
+write.csv(assay_source, file = file.path(dir,"assay_source.csv"), row.names = F)
+write.csv(chemical, file = file.path(dir,"chemical.csv"), row.names = F)
 ```
 
 
