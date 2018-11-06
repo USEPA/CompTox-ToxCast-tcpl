@@ -34,7 +34,7 @@ library(htmlTable)
 library(tcpl)
 
 ```
-```{r eval = TRUE, echo = FALSE, message = FALSE}
+```{r eval = TRUE, echo = FALSE, message = FALSE, results = "hide"}
 ## This chunk copies the tcplLite local directory to the temp directory used in installation
 ## to comply with CRAN policies on not writing to the installation directory
 tmpdir <- tempdir()
