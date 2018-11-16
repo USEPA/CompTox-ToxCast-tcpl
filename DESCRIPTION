@@ -1,6 +1,6 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 2.0.0
+Version: 2.0.1
 Authors@R: c(
     person("Richard S", "Judson",role = c("cre","ths"), email = "Judson.Richard@epa.gov"),
     person("Dayne L", "Filer", role = "aut",email = "dayne.filer@gmail.com"),

@@ -1,3 +1,8 @@
+tcpl v2.0.1
+==============
+Updated vignettes to use tempdir and thus not write to install folder.
+
+
 tcpl v2.0
 ==============
 
