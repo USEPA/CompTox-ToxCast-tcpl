@@ -283,6 +283,9 @@ mc5 <- function(ae, wr = FALSE) {
     is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
     
     dat$modl_acc <- tmp.mc3$loec
+    dat$modl_acb <- NA_real_ # Set model ACB to NA so there's no confusion
+    dat$modl_ga <- NA_real_  # Set model AC50 to NA so there's no confusion
+    
     #e1 <- bquote() # redefine acc
     dat[ , fitc := 52L] # Change to special fitc
     dat[, cnst := 1] # Set to constant probability
