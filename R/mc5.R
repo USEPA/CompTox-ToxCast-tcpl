@@ -280,6 +280,8 @@ mc5 <- function(ae, wr = FALSE) {
     tmp.mc3[Z < 1, loec_coff :=0]
     tmp.mc3[, loec := min(logc[loec_coff == 1]), by = spid] # Define the loec for each SPID
     tmp.mc3 <- tmp.mc3[dat, mult='first', on='spid', nomatch=0L]
+    tmp.mc3[is.infinite(loec), loec_coff :=0]
+    tmp.mc3[is.finite(loec), loec_coff :=1]
     is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
     
     dat$modl_acc <- tmp.mc3$loec
