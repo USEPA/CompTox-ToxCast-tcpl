@@ -283,6 +283,7 @@ mc5 <- function(ae, wr = FALSE) {
     is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
     
     dat$modl_acc <- tmp.mc3$loec
+    dat$hitc <- tmp.mc3$loec_coff
     dat$modl_acb <- NA_real_ # Set model ACB to NA so there's no confusion
     dat$modl_ga <- NA_real_  # Set model AC50 to NA so there's no confusion
     
