@@ -286,11 +286,11 @@ mc5 <- function(ae, wr = FALSE) {
     
     dat$modl_acc <- tmp.mc3$loec
     dat$hitc <- tmp.mc3$loec_coff
-    dat$modl_acb <- NA_real_ # Set model ACB to NA so there's no confusion
-    dat$modl_ga <- NA_real_  # Set model AC50 to NA so there's no confusion
+    dat$modl_acb <- tmp.mc3$loec # Set model ACB to NA so there's no confusion
+    dat$modl_ga <- tmp.mc3$loec  # Set model AC50 to NA so there's no confusion
     
     #e1 <- bquote() # redefine acc
-    dat[ , fitc := 52L] # Change to special fitc
+    dat[ , fitc := 100L] # Change to special fitc
     dat[, cnst := 1] # Set to constant probability
     
     # ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
