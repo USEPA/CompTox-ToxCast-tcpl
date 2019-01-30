@@ -1,13 +1,14 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 2.0.1
+Version: 2.0.2
 Authors@R: c(
     person("Richard S", "Judson",role = c("cre","ths"), email = "Judson.Richard@epa.gov"),
     person("Dayne L", "Filer", role = "aut",email = "dayne.filer@gmail.com"),
     person("Jason","Brown",role = "ctb", email = "brown.jason@epa.gov"),
     person("Parth", "Kothiya", role = "ctb"),
     person("Woodrow R", "Setzer", role = "ctb"),
-    person("Matthew T", "Martin", role = c("ctb", "ths"),email = "martin.matthew@epa.gov")
+    person("Matthew T", "Martin", role = c("ctb", "ths")),
+    person("Katie", "Paul Friedman", role=c("ctb"), email = "paul-friedman.katie@epa.gov")
     )
 Description: A set of tools for processing and modeling high-throughput and
     high-content chemical screening data. The package was developed for the
