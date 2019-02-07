@@ -18,6 +18,7 @@
                    casn = "casn",
                    code = "casn",
                    chem.only = 'chem.only',
+                   dsstox_substance_id = "dsstox_substance_id",
                    "chnm")
     
     if (field == "code") val <- suppressWarnings(sapply(val, tcplCode2CASN))

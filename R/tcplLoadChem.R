@@ -59,7 +59,7 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
   code <- casn <- chid <- chnm <- NULL
   
   if (!is.null(field)) {
-    vfield <- c("chid", "spid", "chnm", "casn", "code", "chem.only")
+    vfield <- c("chid", "spid", "chnm", "casn", "code", "chem.only","dsstox_substance_id")
     if (!field %in% vfield) stop("Invalid 'field' value.")
   }
   
