@@ -81,7 +81,7 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
   
   if (include.spid) return (dat)
   
-  dat <- unique(dat[ , list(chid, chnm, casn, code)])
+  dat <- unique(dat[ , list(chid, chnm, casn, code, dsstox_substance_id)])
 
   dat[]
   

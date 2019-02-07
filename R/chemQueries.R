@@ -6,7 +6,7 @@
   
   qformat <- 
     "
-      SELECT spid,chemical.chid,casn,chnm
+      SELECT spid,chemical.chid,casn,chnm,dsstox_substance_id
       FROM sample LEFT JOIN chemical ON chemical.chid=sample.chid
       "
       
