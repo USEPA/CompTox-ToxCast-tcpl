@@ -45,7 +45,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   on.exit(graphics.off())
   
-  if (length(aeid) > 1) stop("'aeid' must be of length 1.")
+  if (length(aeid) > 2) stop("'aeid' must be of length 1 or 2.")
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("Invalid 'lvl' input.")
   
   prs <- list(type = "mc", fld = "aeid", val = aeid)
