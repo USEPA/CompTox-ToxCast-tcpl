@@ -123,6 +123,15 @@
     pars <- lapply(all.pars, `[[`, ii)
     pars[['scale.by']] <- pars[[scale.by]]
     
+    rect(xleft = par()$usr[1],
+         xright = par()$usr[2],
+         ybottom = min(-3 * all.pars$scl_bmad),
+         ytop = max(3 * all.pars$scl_bmad),
+         border = NA,
+         col = "gray70",
+         density = 15,
+         angle = 45)
+    
     ## Round all numeric values in 'pars' to 99 digits
     nind <- which(sapply(pars, is.numeric))
     pars[nind] <- lapply(pars[nind], round, digits = 99)
@@ -194,29 +203,7 @@
       
     }
     
-    rect(xleft = par()$usr[1],
-         xright = par()$usr[2], 
-         ybottom = min(-3 * all.pars$scl_bmad), 
-         ytop = max(3 * all.pars$scl_bmad),
-         border = NA, 
-         col = "gray70",
-         density = 15, 
-         angle = 45)
     
-    axis(side = 1, 
-         at = axTicks(side = 1),
-         labels = signif(10^axTicks(side = 1), digits = 1),
-         font = 1, 
-         lwd = 2, 
-         cex.axis = 1.2, 
-         col = "gray35")
-    axis(side = 2, 
-         at = axTicks(side = 2),
-         labels = axTicks(side = 2),
-         font = 1, 
-         lwd = 2, 
-         cex.axis = 1.2, 
-         col = "gray35")
       
     # points(x = pars$emax_conc,
     #        y = pars$emax,
@@ -227,56 +214,76 @@
     #        bg = "yellow2")
     
     points(resp[md.scl] ~ logc[md.scl], pch=sym[ii], cex = 1.5, lwd = 2.5, col = col[ii])
-    
-    if (brk) {
-      
-      if (hbrk) {
-        
-        hrng <- unique(range(resp.scale[hi]))
-        if (length(hrng) != 1) {
-          hlim <- with(pars, c(resp_max - diff(hrng)/pad, resp_max))
-        } else {
-          hlim <- with(pars, c(resp_max - (hrng - y0[2])/pad, resp_max))
-        }
-        
-        par(new = TRUE)
-        plot.window(xlim = par()$usr[1:2], ylim = hlim)
-        points(resp[hi] ~ logc[hi], cex = 0.5, lwd = 2.5, col = "gray60")
-        
-        axis(side = 4, 
-             at = hrng,
-             labels = signif(hrng, 2),
-             font = 1, 
-             lwd = 2, 
-             cex.axis = 0.5, 
-             col = "gray60")
-        
-      }
-      
-      if (lbrk) {
-        lrng <- unique(range(resp.scale[lo]))
-        if (length(lrng) != 1) {
-          llim <- with(pars, c(resp_min, resp_min + diff(lrng)/pad))
-        } else {
-          llim <- with(pars, c(resp_min, resp_min + (y0[1] - lrng)/pad))
-        }
-        
-        par(new = TRUE)
-        plot.window(xlim = par()$usr[1:2], ylim = llim)
-        points(resp[lo] ~ logc[lo], cex = 0.5, lwd = 2.5, col = "gray60")
-        
-        axis(side = 4, 
-             at = lrng,
-             labels = signif(lrng, 2),
-             font = 1, 
-             lwd = 2, 
-             cex.axis = 0.5, 
-             col = "gray60")
-        
-      }
-          
-    }
   }
+  
+  if (brk) {
+
+    if (hbrk) {
+
+      hrng <- unique(range(resp.scale[hi]))
+      if (length(hrng) != 1) {
+        hlim <- with(pars, c(resp_max - diff(hrng)/pad, resp_max))
+      } else {
+        hlim <- with(pars, c(resp_max - (hrng - y0[2])/pad, resp_max))
+      }
+
+      par(new = TRUE)
+      plot.window(xlim = par()$usr[1:2], ylim = hlim)
+      points(resp[hi] ~ logc[hi], cex = 0.5, lwd = 2.5, col = "gray60")
+
+      axis(side = 4, 
+           at = hrng,
+           labels = signif(hrng, 2),
+           font = 1,
+           lwd = 2,
+           cex.axis = 0.5,
+           col = "gray60")
+
+    }
+
+    if (lbrk) {
+      lrng <- unique(range(resp.scale[lo]))
+      if (length(lrng) != 1) {
+        llim <- with(pars, c(resp_min, resp_min + diff(lrng)/pad))
+      } else {
+        llim <- with(pars, c(resp_min, resp_min + (y0[1] - lrng)/pad))
+      }
+
+      par(new = TRUE)
+      plot.window(xlim = par()$usr[1:2], ylim = llim)
+      points(resp.scale[lo] ~ all.logc[lo], cex = 0.5, lwd = 2.5, col = "gray60")
+
+      axis(side = 4,
+           at = lrng,
+           labels = signif(lrng, 2),
+           font = 1,
+           lwd = 2,
+           cex.axis = 0.5,
+           col = "gray60")
+
+    } 
+
+  } 
+
+
+  
+  axis(side = 1, 
+       at = axTicks(side = 1),
+       labels = signif(10^axTicks(side = 1), digits = 1),
+       font = 1, 
+       lwd = 2, 
+       cex.axis = 1.2, 
+       col = "gray35")
+  axis(side = 2, 
+       at = axTicks(side = 2),
+       labels = axTicks(side = 2),
+       font = 1, 
+       lwd = 2, 
+       cex.axis = 1.2, 
+       col = "gray35")
+  
+  
+
   
 # Right Panel ----  
   ###--------------------- Prepare Text for Right Panel ---------------------###
@@ -288,7 +295,7 @@
            "NAME:    ", unique(chnm), "\n",
            "CHID:    ", unique(chid), spaces(8 - ifelse(is.na(unique(chid)), 2, nchar(unique(chid)))),
            "CASRN: ", unique(casn), "\n",
-           "SPID(S): ", unique(spid), "\n",
+           "SPID(S): ", paste(spid, collapse=', '), "  ", ifelse(brk, "BRK", ""), "\n",
            "M4ID(s):    ", paste(m4id, collapse=', '), "  ", ifelse(brk, "BRK", ""), "\n\n"
     )
   })
