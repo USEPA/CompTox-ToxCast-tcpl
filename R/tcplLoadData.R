@@ -303,6 +303,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       "
       SELECT
         mc4_agg.aeid,
+        mc4_agg.spid,
         mc4_agg.m4id,
         mc4_agg.m3id,
         mc4_agg.m2id,
