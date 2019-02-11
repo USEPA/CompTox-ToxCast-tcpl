@@ -166,7 +166,6 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
     }
     
     for (i in spids) {
-      print(i)
       resp <- agg[J(i), resp]
       logc <- agg[J(i), logc]
       aeids <- agg[J(i), aeid]

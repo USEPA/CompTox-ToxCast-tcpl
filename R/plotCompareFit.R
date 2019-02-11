@@ -4,6 +4,7 @@
 
 #' @importFrom graphics par layout plot rect abline curve axis axTicks points
 #' @importFrom graphics plot.window text arrows
+#' @importFrom caTools trapz
 
 .plotCompareFit <- function(all.resp, all.logc, aeids, all.pars,
                             scale.by = 'coff', sym=c(1, 4), col=c('tomato3', 'dodgerblue2'), desc_col=c('red', 'blue')
@@ -24,7 +25,7 @@
   # Set scaled parameters
   
   param.to.scale = c('bmad', 'coff', 'hill_tp', 'gnls_tp', 'resp_max', 'resp_min')
-  
+  all.pars[['auc']] = c(NA_real_,NA_real_)
   for (scl in param.to.scale) {
     orig.var <- all.pars[[scl]] # params to be scaled
     orig.scale <- all.pars[[scale.by]] # param to scale by
@@ -168,6 +169,9 @@
              lty = ifelse(pars$modl == "hill", "solid", "blank"),
              col = col[ii])
       
+      tmp.x <- seq(pars$logc_min,pars$logc_max,length=1000)
+      all.pars[['auc']][ii] = trapz(tmp.x, hill.eq(tmp.x))
+      
     }
     
     if (!is.na(pars$gnls) & pars$gnls) {
@@ -190,7 +194,10 @@
       abline(v = pars$gnls_ga,
              lwd = 2.5,
              lty = ifelse(pars$modl == "gnls", "solid", "blank"),
-             col = col[ii]) 
+             col = col[ii])
+      
+      tmp.x <- seq(pars$logc_min,pars$logc_max,length=1000)
+      all.pars[['auc']][ii] = trapz(tmp.x, gnls.eq(tmp.x))
       
     }
     
@@ -484,6 +491,7 @@
   accs <- cvals(with(all.pars, round(c(10^modl_acc), 2)))
   ac50s <- cvals(with(all.pars, round(c(10^modl_ga), 2)))
   tps <- cvals(with(all.pars, round(c(modl_tp), 2)))
+  aucs <- cvals(with(all.pars, round(c(auc), 2)))
   hitcs <- cvals(with(all.pars, c(hitc), 2))
   
   models <- c(paste0('AEID',all.pars$aeid[1]), paste0('AEID',all.pars$aeid[2]))
@@ -506,6 +514,11 @@
                         tps[1],
                         spaces(15 - nchar(tps[1])),
                         tps[2]),
+                 "\n",
+                 paste0("AUC:  ",
+                        aucs[1],
+                        spaces(15 - nchar(aucs[1])),
+                        aucs[2]),
                  "\n",
                  paste0("ACC:  ",
                         accs[1],
