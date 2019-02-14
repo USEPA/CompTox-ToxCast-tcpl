@@ -38,7 +38,7 @@
 #' @export
 
 tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(), 
-                             ordr.fitc = TRUE, clib = NULL) {
+                             ordr.fitc = TRUE, clib = NULL, cnst=NULL) {
   
   ## Variable-binding to pass R CMD Check
   spid <- m4id <- NULL
@@ -80,7 +80,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   graphics.off()
   pdf(file = fname, height = 6, width = 10, pointsize = 10)
-  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc, cnst=cnst)
   graphics.off()
   
   cat(fname, "complete.")

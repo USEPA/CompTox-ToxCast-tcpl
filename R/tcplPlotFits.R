@@ -71,7 +71,7 @@
 #' @export
 
 tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE, 
-                         browse = FALSE) {
+                         browse = FALSE, cnst=NULL) {
   
   ## Variable-binding to pass R CMD Check
   chid <- chnm <- spid <- aenm <- aeid <- m4id <- fitc <- fval <- NULL
@@ -171,7 +171,7 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
       aeids <- agg[J(i), aeid]
       pars <- as.list(dat[J(i)])
       #.plotFit(resp = resp, logc = logc, pars = pars)
-      .plotCompareFit(all.resp = resp, all.logc = logc, aeids = aeids, all.pars=pars)
+      .plotCompareFit(all.resp = resp, all.logc = logc, aeids = aeids, all.pars=pars, cnst=cnst)
       if (browse) browser(skipCalls = 4)
       
     }
