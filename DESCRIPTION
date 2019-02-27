@@ -16,9 +16,9 @@ Description: A set of tools for processing and modeling high-throughput and
     can be used for diverse chemical screening efforts.
 URL: https://github.com/USEPA/CompTox-ToxCast-tcpl
 Depends:
-    R (>= 3.2.0),
-    data.table (>= 1.9.4)
+    R (>= 3.2.0)
 Imports:
+    data.table (>= 1.9.4),
     DBI,
     RMySQL,
     numDeriv,

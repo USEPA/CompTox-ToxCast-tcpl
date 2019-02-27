@@ -32,6 +32,7 @@ $(document).ready(function() {
 ```{r eval = TRUE, echo = FALSE, message = FALSE}
 library(htmlTable)
 library(tcpl)
+library(data.table)
 
 ```
 ```{r eval = TRUE, echo = FALSE, message = FALSE, results = "hide"}

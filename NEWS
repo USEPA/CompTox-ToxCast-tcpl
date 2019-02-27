@@ -1,6 +1,7 @@
 tcpl v2.0.2
 ==============
-Updated tcplLoadChem to return dsstox substance ids
+* Updated tcplLoadChem to return dsstox substance ids
+* Moved data.table to imports instead of depends
 
 tcpl v2.0.1
 ==============

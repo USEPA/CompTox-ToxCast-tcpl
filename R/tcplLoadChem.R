@@ -56,7 +56,7 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
                          include.spid = TRUE) {
   tbl <- c("chemical", "sample")
   ## Variable-binding to pass R CMD Check
-  code <- casn <- chid <- chnm <- NULL
+  code <- casn <- chid <- chnm <- dsstox_substance_id <- NULL
   
   if (!is.null(field)) {
     vfield <- c("chid", "spid", "chnm", "casn", "code", "chem.only","dsstox_substance_id")
