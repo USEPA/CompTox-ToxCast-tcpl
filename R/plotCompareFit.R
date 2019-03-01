@@ -24,9 +24,12 @@
   
   # Set scaled parameters
   
-  param.to.scale = c('bmad', 'coff', 'hill_tp', 'gnls_tp', 'resp_max', 'resp_min', 'pos')
+  param.to.scale = c('bmad', 'coff', 'hill_tp', 'gnls_tp', 'resp_max', 'resp_min')
+  if (!is.null(cnst)) {
+    param.to.scale = c(param.to.scale, 'pos')
+    all.pars[['pos']] = cnst
+  }
   all.pars[['auc']] = c(NA_real_,NA_real_)
-  all.pars[['pos']] = cnst
   #all.pars[['coff']] = c(100,100)
   for (scl in param.to.scale) {
     orig.var <- all.pars[[scl]] # params to be scaled
@@ -55,7 +58,11 @@
     }
   }
   
-  fmax <- suppressWarnings(with(all.pars, 1.05*max(scl_hill_tp, scl_gnls_tp, scl_pos, na.rm = TRUE)))
+  if ("scl_pos" %in% names(all.pars)) {
+    fmax <- suppressWarnings(with(all.pars, 1.05*max(scl_hill_tp, scl_gnls_tp, scl_pos, na.rm = TRUE)))
+  } else {
+    fmax <- suppressWarnings(with(all.pars, 1.05*max(scl_hill_tp, scl_gnls_tp, na.rm = TRUE)))
+  }
   if (is.infinite(fmax)) fmax <- NA_real_
   view <- fmax/diff(range(resp.scale))
   hbrk <- max(all.pars$scl_resp_max) > y0[2]
@@ -96,8 +103,12 @@
         md <- rep(TRUE, length(resp.scale))
       }
     } else {
-      ylim <- with(all.pars, c(min(y0[1], 1.2*scl_resp_min), max(y0[2], 1.2*scl_resp_max, 1.2*scl_pos)))
-      md <- rep(TRUE, length(resp.scale))
+      if ("scl_pos" %in% names(all.pars)) { 
+        ylim <- with(all.pars, c(min(y0[1], 1.2*scl_resp_min), max(y0[2], 1.2*scl_resp_max, 1.2*scl_pos)))
+      } else {
+        ylim <- with(all.pars, c(min(y0[1], 1.2*scl_resp_min), max(y0[2], 1.2*scl_resp_max)))
+      } 
+     md <- rep(TRUE, length(resp.scale))
     }
   }
   
