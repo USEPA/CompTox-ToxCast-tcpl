@@ -123,7 +123,7 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
     resp <- agg[J(i), resp]
     logc <- agg[J(i), logc]
     pars <- as.list(dat[J(i)])
-    .plotFit(resp = resp, logc = logc, pars = pars)
+    try(.plotFit(resp = resp, logc = logc, pars = pars))
     if (browse) browser(skipCalls = 4)
     
   }
