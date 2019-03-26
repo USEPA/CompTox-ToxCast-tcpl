@@ -236,7 +236,22 @@ mc6_mthds <- function() {
       e4 <- bquote(ft[ , .(cr) := NULL])
       list(e1, e2, e3, e4)
       
-    }   
+    },
+    
+    viability.gnls = function(mthd) {
+      
+      flag <- "Cell viability assay fit with gnls winning model"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag", "fval", "fval_unit")
+      init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      e2 <- bquote(ft[hitc == 1, test := modl=="gnls" & cell_viability_assay == 1])
+      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
+      e4 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4)
+      
+    }
     
   )
   
