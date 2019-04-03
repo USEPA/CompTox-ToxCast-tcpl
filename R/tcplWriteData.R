@@ -113,7 +113,7 @@ tcplWriteData <- function(dat, lvl, type) {
                   "tmpi",
                   "modified_by") 
     
-    mc4_agg_cols <- c(paste0("m", 0:4, "id"), "aeid", "spid")
+    mc4_agg_cols <- c(paste0("m", 0:4, "id"), "aeid")
     
     tcplAppend(dat = copy(dat[ , unique(.SD) , .SDcols = mc4_cols]), 
                tbl = "mc4", 

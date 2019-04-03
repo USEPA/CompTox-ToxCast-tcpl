@@ -15,7 +15,7 @@ tcplLiteInit <- function () {
                     
                     'mc3' = c('m3id', 'aeid', 'm0id', 'acid', 'm1id', 'm2id', 'bval', 'pval', 'logc', 'resp', 'created_date', 'modified_date', 'modified_by'),
                     'mc4' = c('m4id', 'aeid', 'spid', 'bmad', 'resp_max', 'resp_min', 'max_mean', 'max_mean_conc', 'max_med', 'max_med_conc', 'logc_max', 'logc_min', 'cnst', 'hill', 'hcov', 'gnls', 'gcov', 'cnst_er', 'cnst_aic', 'cnst_rmse', 'cnst_prob', 'hill_tp', 'hill_tp_sd', 'hill_ga', 'hill_ga_sd', 'hill_gw', 'hill_gw_sd', 'hill_er', 'hill_er_sd', 'hill_aic', 'hill_rmse', 'hill_prob', 'gnls_tp', 'gnls_tp_sd', 'gnls_ga', 'gnls_ga_sd', 'gnls_gw', 'gnls_gw_sd', 'gnls_la', 'gnls_la_sd', 'gnls_lw', 'gnls_lw_sd', 'gnls_er', 'gnls_er_sd', 'gnls_aic', 'gnls_rmse', 'gnls_prob', 'nconc', 'npts', 'nrep', 'nmed_gtbl', 'tmpi', 'created_date', 'modified_date', 'modified_by'),
-                    'mc4_agg' = c('aeid', 'spid', 'm0id', 'm1id', 'm2id', 'm3id', 'm4id'),
+                    'mc4_agg' = c('aeid', 'm0id', 'm1id', 'm2id', 'm3id', 'm4id'),
                     'mc5' = c('m5id', 'm4id', 'aeid', 'modl', 'hitc', 'fitc', 'coff', 'actp', 'modl_er', 'modl_tp', 'modl_ga', 'modl_gw', 'modl_la', 'modl_lw', 'modl_prob', 'modl_rmse', 'modl_acc', 'modl_acb', 'modl_ac10', 'created_date', 'modified_date', 'modified_by'),
                     'mc6' = c('m6id', 'm5id', 'm4id', 'aeid', 'mc6_mthd_id', 'flag', 'fval', 'fval_unit', 'created_date', 'modified_date', 'modified_by'),
                     
