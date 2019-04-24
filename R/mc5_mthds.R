@@ -137,9 +137,9 @@ mc5_mthds <- function() {
       
     },
     
-    fc0.2 = function() {
+    fc1.2 = function() {
 
-      e1 <- bquote(coff <- c(coff, 0.2))
+      e1 <- bquote(coff <- c(coff, 1.2))
       list(e1)
 
     }
