@@ -71,7 +71,7 @@
 #' @export
 
 tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE, 
-                         browse = FALSE, cnst=NULL) {
+                         browse = FALSE, cnst=NULL, orig.aeid=NULL) {
   
   ## Variable-binding to pass R CMD Check
   chid <- chnm <- spid <- aenm <- aeid <- m4id <- fitc <- fval <- NULL
@@ -132,8 +132,8 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
     }
   } else {
     # Compare AIED plotting for 2 endpoints
-    setkey(dat, spid)
-    setkey(agg, spid)
+    
+    
     
     ## Set the plotting order
     if (ordr.fitc && "fitc" %in% names(dat)) {
@@ -143,6 +143,7 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
     }
     
     if (!is.null(flg)) {
+      setkey(dat, m4id)
       if (nrow(flg) > 0) {
         flg[is.na(fval),  flgo := as.character(mc6_mthd_id)]
         flg[!is.na(fval), 
@@ -165,15 +166,25 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
       dat$toxboot <- 1
     }
     
+    # Make sure the order is correct for 'dat' and 'agg'
+    dat <- dat[order(match(aeid, orig.aeid))]
+    setkey(dat, spid)
+    agg <- agg[order(match(aeid, orig.aeid))]
+    setkey(agg, spid)
+    
     for (i in spids) {
       resp <- agg[J(i), resp]
       logc <- agg[J(i), logc]
       aeids <- agg[J(i), aeid]
+      #tmp <- dat[J(i)]
+      #pars <- as.list(tmp[match(orig.aeid,tmp$aeid),]) # maintain order of user aeid input
       pars <- as.list(dat[J(i)])
       #.plotFit(resp = resp, logc = logc, pars = pars)
-      .plotCompareFit(all.resp = resp, all.logc = logc, aeids = aeids, all.pars=pars, cnst=cnst)
-      if (browse) browser(skipCalls = 4)
       
+      if (!any(is.na(pars$spid)) & all(orig.aeid %in% aeids)) {
+        .plotCompareFit(all.resp = resp, all.logc = logc, aeids = aeids, all.pars=pars, cnst=cnst, orig.aeid=orig.aeid)
+        if (browse) browser(skipCalls = 4)
+      }
     }
   }
   

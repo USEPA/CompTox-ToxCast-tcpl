@@ -8,7 +8,7 @@
 
 .plotCompareFit <- function(all.resp, all.logc, aeids, all.pars,
                             scale.by = 'coff', sym=c(1, 4), col=c('tomato3', 'dodgerblue2'), desc_col=c('red', 'blue'),
-                            cnst=NULL) {
+                            cnst=NULL, orig.aeid=NULL) {
   
   ###--------------------------- Draw Left Panel ----------------------------###
   
@@ -38,7 +38,8 @@
   }
   
   
-  aeid <- unique(aeids)
+  #aeid <- unique(aeids)
+  aeid <- orig.aeid
   len.aeid1 <- length(aeids[aeids==aeid[1]])
   len.aeid2 <- length(aeids[aeids==aeid[2]])
   scale <- c(rep(all.pars$coff[1], len.aeid1), rep(all.pars$coff[2], len.aeid2))
@@ -113,7 +114,7 @@
   }
   
   p <- list(ylim = ylim,
-            xlim = range(logc),
+            xlim = range(all.logc),
             cex.lab = 1.2,
             cex.axis = 1.2,
             font.lab = 2,
@@ -129,7 +130,8 @@
   
   
 
-  do.call(what = plot, args = c(resp[md] ~ logc[md], p), quote = TRUE)
+  #do.call(what = plot, args = c(resp[md] ~ logc[md], p), quote = TRUE)
+  do.call(what = plot, args = c(resp.scale[md] ~ all.logc[md], p), quote = TRUE)
   
   for (ii in seq(length(aeid))) {
     resp <- resp.scale[aeids==aeid[ii]]
@@ -184,7 +186,7 @@
              col = col[ii])
       
       tmp.x <- seq(pars$logc_min,pars$logc_max,length=1000)
-      all.pars[['auc']][ii] = trapz(tmp.x, hill.eq(tmp.x))
+      #all.pars[['auc']][ii] = trapz(tmp.x, hill.eq(tmp.x))
       
     }
     
@@ -211,7 +213,7 @@
              col = col[ii])
       
       tmp.x <- seq(pars$logc_min,pars$logc_max,length=1000)
-      all.pars[['auc']][ii] = trapz(tmp.x, gnls.eq(tmp.x))
+      #all.pars[['auc']][ii] = trapz(tmp.x, gnls.eq(tmp.x))
       
     }
     
@@ -505,7 +507,7 @@
   accs <- cvals(with(all.pars, round(c(10^modl_acc), 2)))
   ac50s <- cvals(with(all.pars, round(c(10^modl_ga), 2)))
   tps <- cvals(with(all.pars, round(c(modl_tp), 2)))
-  aucs <- cvals(with(all.pars, round(c(auc), 2)))
+  #aucs <- cvals(with(all.pars, round(c(auc), 2)))
   hitcs <- cvals(with(all.pars, c(hitc), 2))
   
   models <- c(paste0('AEID',all.pars$aeid[1]), paste0('AEID',all.pars$aeid[2]))
@@ -529,11 +531,11 @@
                         spaces(15 - nchar(tps[1])),
                         tps[2]),
                  "\n",
-                 paste0("AUC:  ",
-                        aucs[1],
-                        spaces(15 - nchar(aucs[1])),
-                        aucs[2]),
-                 "\n",
+                # paste0("AUC:  ",
+                #        aucs[1],
+                #        spaces(15 - nchar(aucs[1])),
+                #        aucs[2]),
+                # "\n",
                  paste0("ACC:  ",
                         accs[1],
                         spaces(15 - nchar(accs[1])),

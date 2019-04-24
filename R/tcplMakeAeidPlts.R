@@ -80,7 +80,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   graphics.off()
   pdf(file = fname, height = 6, width = 10, pointsize = 10)
-  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc, cnst=cnst)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc, cnst=cnst, orig.aeid=aeid)
   graphics.off()
   
   cat(fname, "complete.")
