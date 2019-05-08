@@ -124,10 +124,10 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
     setkeyv(dat, c("aeid", "chid", "max_med"))
     
     #select top max_med per casn
-    min_modl_ga <- dat[ , list(ind = .I[.N]), by = list(aeid, casn)]
+    min_max_med <- dat[ , list(ind = .I[.N]), by = list(aeid, casn)]
     
     #filter out all others
-    dat <- dat[min_modl_ga$ind]
+    dat <- dat[min_max_med$ind]
     
     dat[]  
   }
