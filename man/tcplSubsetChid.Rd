@@ -4,13 +4,15 @@
 \alias{tcplSubsetChid}
 \title{Subset level 5 data to a single sample per chemical}
 \usage{
-tcplSubsetChid(dat, flag = TRUE)
+tcplSubsetChid(dat, flag = TRUE, type = "mc")
 }
 \arguments{
 \item{dat}{data.table, a data.table with level 5 data}
 
 \item{flag}{Integer, the mc6_mthd_id values to go into the flag count, see
 details for more information}
+
+\item{type}{Character of length 1, the data type, "sc" or "mc"}
 }
 \value{
 A data.table with a single sample for every given chemical-assay 

@@ -3,6 +3,7 @@ tcpl v2.0.2
 * Updated tcplLoadChem to return dsstox substance ids
 * Moved data.table to imports instead of depends
 * Added new level 6 method for flagging viability gnls winners
+* Added single concentration option for tcplSubsetChid
 
 tcpl v2.0.1
 ==============

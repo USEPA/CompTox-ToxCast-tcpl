@@ -13,6 +13,7 @@
 #' @param dat data.table, a data.table with level 5 data
 #' @param flag Integer, the mc6_mthd_id values to go into the flag count, see
 #' details for more information
+#' @param type Character of length 1, the data type, "sc" or "mc"
 #'  
 #' @details
 #' \code{tcplSubsetChid} is intended to work with level 5 data that has 
@@ -65,6 +66,10 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
   chid <- NULL
   
+  if (!type %in% c("mc","sc")) {
+    stop("type must be sc (single concentration) or mc (multi-concentration)")
+  }
+  
   if(type == "mc"){
   if (!"m5id" %in% names(dat)) {
     stop("'dat' must be a data.table with level 5 data. See ?tcplLoadData for",
@@ -105,7 +110,7 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
 
   dat <- dat[min_modl_ga$ind]
 
-  dat[]
+  return(dat[])
   }
   
   if(type == "sc"){
@@ -129,8 +134,11 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
     #filter out all others
     dat <- dat[min_max_med$ind]
     
-    dat[]  
+    return(dat[]  )
   }
+  
+  
+  
   
 }
 
