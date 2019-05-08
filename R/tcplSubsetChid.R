@@ -123,9 +123,16 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
     dat[ , chit := mean(hitc[hitc %in% 0:1]) >= 0.5, by = list(aeid, chid)]
     dat <- dat[hitc == chit ]
     
+    #select those that are at lowest concentration in the consensus hitc
+    dat1 <- tcplLoadData("agg",fld = "s2id", val = dat$s2id,type = "sc")
+    setkey(dat1,"s2id")
+    setkey(dat,"s2id")
+    dat <- dat[dat1]
     
-    #rank by max_med
-    
+    setkeyv(dat,c("aeid","chid","logc"))
+    dat[ , minc := min(logc), by = list(aeid, chid)]
+    dat <- dat[logc == minc ]
+    dat <- unique(dat[,c("spid","chid","casn","chnm","dsstox_substance_id","code","aeid","aenm","s2id","bmad","max_med","hitc","coff","resp_unit")])
     setkeyv(dat, c("aeid", "chid", "max_med"))
     
     #select top max_med per casn
