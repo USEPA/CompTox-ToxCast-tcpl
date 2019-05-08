@@ -59,12 +59,13 @@
 #' @import data.table
 #' @export
 
-tcplSubsetChid <- function(dat, flag = TRUE) {
+tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
   
   ## Variable-binding to pass R CMD Check
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
   chid <- NULL
   
+  if(type == "mc"){
   if (!"m5id" %in% names(dat)) {
     stop("'dat' must be a data.table with level 5 data. See ?tcplLoadData for",
          " more information.")
@@ -105,6 +106,31 @@ tcplSubsetChid <- function(dat, flag = TRUE) {
   dat <- dat[min_modl_ga$ind]
 
   dat[]
+  }
+  
+  if(type == "sc"){
+    if (!"s2id" %in% names(dat)) {
+      stop("'dat' must be a single concentration data.table with level 2 data. See ?tcplLoadData for",
+           " more information.")
+    }
+    if (!"casn" %in% names(dat)) dat <- tcplPrepOtpt(dat)
+    
+    dat[ , chit := mean(hitc[hitc %in% 0:1]) >= 0.5, by = list(aeid, chid)]
+    dat <- dat[hitc == chit ]
+    
+    
+    #rank by max_med
+    
+    setkeyv(dat, c("aeid", "chid", "max_med"))
+    
+    #select top max_med per casn
+    min_modl_ga <- dat[ , list(ind = .I[.N]), by = list(aeid, casn)]
+    
+    #filter out all others
+    dat <- dat[min_modl_ga$ind]
+    
+    dat[]  
+  }
   
 }
 
