@@ -140,14 +140,14 @@
     pars <- lapply(all.pars, `[[`, ii)
     pars[['scale.by']] <- pars[[scale.by]]
     
-    rect(xleft = par()$usr[1],
-         xright = par()$usr[2],
-         ybottom = min(-3 * all.pars$scl_bmad),
-         ytop = max(3 * all.pars$scl_bmad),
-         border = NA,
-         col = "gray70",
-         density = 15,
-         angle = 45)
+    # rect(xleft = par()$usr[1],
+    #      xright = par()$usr[2],
+    #      ybottom = min(-3 * all.pars$scl_bmad),
+    #      ytop = max(3 * all.pars$scl_bmad),
+    #      border = NA,
+    #      col = "gray70",
+    #      density = 15,
+    #      angle = 45)
     
     ## Round all numeric values in 'pars' to 99 digits
     nind <- which(sapply(pars, is.numeric))
