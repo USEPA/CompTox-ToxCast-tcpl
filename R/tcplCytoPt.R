@@ -150,30 +150,35 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
     mtst <- 0
   }
   print(5)
-  zdat <- tcplLoadData(lvl = 5L, fld = "aeid", val = ae, type = "mc") 
+  zdat <- tcplLoadData(lvl = 5L, fld = "aeid", val = ae, type = "mc")
   print(6)
   zdat <- tcplPrepOtpt(dat = zdat)
   print(7)
-  if (!is.null(chid)) {ch <- chid; zdat <- zdat[chid %in% ch]}
+  if (!is.null(chid)) {
+    ch <- chid
+    zdat <- zdat[chid %in% ch]
+  }
   print(8)
-  zdat <- tcplSubsetChid(dat = zdat, flag = flag)  
+  zdat <- tcplSubsetChid(dat = zdat, flag = flag)
   print(9)
-  zdst <- zdat[ , 
-                list(med = median(modl_ga[hitc == 1]),
-                     mad = mad(modl_ga[hitc == 1]),
-                     ntst = .N,
-                     nhit = lw(hitc == 1)),
-                by = list(chid, code, chnm, casn)]
+  zdst <- zdat[, list(med = median(modl_ga[hitc == 1]), mad = mad(modl_ga[hitc == 
+                                                                            1]), 
+                      ntst = .N, 
+                      nhit = lw(hitc == 1), 
+                      burstpct = (lw(hitc==1)/.N)), # added burst percent as condition instead of number of hits
+               by = list(chid,code, chnm, casn)]
   print(10)
-  zdst[ , use_global_mad := nhit > 1 & ntst > mtst]
-  zdst[ , global_mad := median(mad[use_global_mad])]
-  zdst[ , cyto_pt := med]
-  zdst[nhit < 2, cyto_pt := default.pt]
-  zdst[ , cyto_pt_um := 10^cyto_pt]
-  zdst[ , lower_bnd_um := 10^(cyto_pt - 3*global_mad)]
-  
+  zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
+  gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
+  zdst[,global_mad := gb_mad] # add column for global mad
+  #zdst[, `:=`(global_mad, median(mad[use_global_mad]))] #old calculation for global mad
+  zdst[, `:=`(cyto_pt, med)] #set cyto_pt to the median value
+  zdst[burstpct < 0.05, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 use the default pt instead
+  zdst[, `:=`(cyto_pt_um, 10^cyto_pt)]
+  zdst[, `:=`(lower_bnd_um, 10^(cyto_pt - 3 * global_mad))]
+  zdst[,burstpct:=NULL] # remove burstpct from final results to match previous iterations of tcplCytopt
   zdst[]
-  
+
 }
 
 #-------------------------------------------------------------------------------
