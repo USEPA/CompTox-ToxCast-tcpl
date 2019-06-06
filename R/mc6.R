@@ -20,7 +20,7 @@
 mc6 <- function(ae, wr = FALSE) {
   
   ## Variable-binding to pass R CMD Check
-  mthd_id <- m4id <- m5id <- lval <- rval <- J <- mthd <- bmad <- NULL
+  mthd_id <- m4id <- m5id <- lval <- rval <- J <- mthd <- bmad <- cell_viability_assay <- NULL
   
   #owarn <- getOption("warn")
   #options(warn = 1)
@@ -64,6 +64,17 @@ mc6 <- function(ae, wr = FALSE) {
     if(wr) return(FALSE) else return(list(FALSE, NULL))
   }
   
+  ## Load assay information to check for cell viability. Fill with 0 if unavailable.
+  tbl <- "assay_component_endpoint"
+  flds <- tcplQuery(paste0("DESCRIBE ", tbl, ";"))$Field
+  if("cell_viability_assay" %in% flds){
+    cell_viability <- tcplLoadAeid(fld = "aeid",val = ae,add.fld = "cell_viability_assay")
+    ft <- cell_viability[ft, on = "aeid"]
+    setkey(ft,m4id)
+  } else{
+    ft[,cell_viability_assay:=0]
+  }
+  
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
   
@@ -88,7 +99,7 @@ mc6 <- function(ae, wr = FALSE) {
       " rows; ", ttime, ")\n", sep = "")
   
   res <- TRUE
-    
+  
   ## Load into mc6 table -- else return results
   if (wr) {
     
