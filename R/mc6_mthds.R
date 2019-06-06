@@ -236,7 +236,7 @@ mc6_mthds <- function() {
       e4 <- bquote(ft[ , .(cr) := NULL])
       list(e1, e2, e3, e4)
       
-    }
+    },
     
     viability.gnls = function(mthd) {
       
