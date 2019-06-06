@@ -31,7 +31,7 @@ mc5 <- function(ae, wr = FALSE) {
   modl_prob <- cnst_prob <- hill_er <- modl_tp <- modl_ga <- modl_gw <- NULL
   hill_rmse <- hill_prob <- modl_acb <- modl_acc <- gnls_er <- modl_la <- NULL
   gnls_la <- modl_lw <- gnls_lw <- gnls_rmse <- gnls_prob <- actp <- NULL
-  modl_ac10 <- NULL
+  modl_ac10 <- model_type <- NULL 
   
   owarn <- getOption("warn")
   options(warn = 1)
@@ -66,6 +66,7 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Initialize coff vector
   coff <- 0
+  model_type <- 0
   loec.mthd <- FALSE
   
   ## Load cutoff functions
@@ -91,6 +92,9 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Determine final cutoff
   dat[ , coff := max(coff)]
+  
+  ## Apply the model type
+  dat[ , model_type := model_type]
   
   ## Determine winning model
   dat[ , maic := pmin(cnst_aic, hill_aic, gnls_aic, na.rm = TRUE)]
@@ -261,13 +265,25 @@ mc5 <- function(ae, wr = FALSE) {
   ## Complete the loec calculations
   if (loec.mthd) {
     # Complete the todo list to adjust for the loec method by calling loec.coff in mc5_mthds
-    print(dim(dat))
+
     coff <- unique(dat$coff) # coff for aeid
     calc_z <-function(resp) {
-      if (length(resp) <= 1) {sdev=0.1}
-      else {sdev=sd(resp)}
-      mu = mean(resp)
-      Z = (mu - coff)/sdev
+      
+      # Original Z-score methodology
+      #if (length(resp) <= 1) {sdev=0.1}
+      #else {sdev=sd(resp)}
+      #mu = mean(resp)
+      #Z = (mu - coff)/sdev
+      
+      # New methodology where all resp > coff
+      above.coff <- all(resp>coff) # All responses must be greater than coff
+      if (above.coff == T){
+        Z = 1
+      } else {
+        Z = 0
+      }
+      
+      
       return(Z)
     }
     
@@ -284,14 +300,36 @@ mc5 <- function(ae, wr = FALSE) {
     tmp.mc3[is.finite(loec), loec_coff :=1]
     is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
     
-    dat$modl_acc <- tmp.mc3$loec
-    dat$hitc <- tmp.mc3$loec_coff
-    dat$modl_acb <- tmp.mc3$loec # Set model ACB to NA so there's no confusion
-    dat$modl_ga <- tmp.mc3$loec  # Set model AC50 to NA so there's no confusion
     
-    #e1 <- bquote() # redefine acc
-    dat[ , fitc := 100L] # Change to special fitc
-    dat[, cnst := 1] # Set to constant probability
+
+    
+    #dat$modl_acc <- tmp.mc3$loec
+    #dat$hitc <- tmp.mc3$loec_coff
+    #dat$modl_acb <- tmp.mc3$loec # Set model ACB to NA so there's no confusion
+    #dat$modl_ga <- tmp.mc3$loec  # Set model AC50 to NA so there's no confusion
+    #dat[ , fitc := 100L] # Change to special fitc
+    
+    # Only change values if modl is hill or gnls
+    dat[, modl_acc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
+                                                        dat[spid == x, modl_acc])}), .SDcols = "spid"]
+    
+    dat[, modl_acb := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
+                                                        dat[spid == x, modl_acb])}), .SDcols = "spid"]
+    
+    dat[, modl_ga := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
+                                                        dat[spid == x, modl_ga])}), .SDcols = "spid"]
+    dat[, fitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 100L, 
+                                                        dat[spid == x, fitc])}), .SDcols = "spid"]
+    
+    dat[, model_type := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 1, 
+                                                         dat[spid == x, model_type])}), .SDcols = "spid"]
+    
+    dat[, hitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec_coff],
+                                                    dat[spid == x, hitc])}), .SDcols = "spid"]
+    
+    #dat[, cnst := 1] # Set to constant probability
+    
+    
     
     # ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
     # ms <- ms[mthd_id == 13]
@@ -310,7 +348,7 @@ mc5 <- function(ae, wr = FALSE) {
   res <- TRUE
   
   outcols <- c("m4id", "aeid", "modl", "hitc", "fitc", 
-               "coff", "actp", modl_pars)
+               "coff", "actp", "model_type", modl_pars) # Added model_type here
   dat <- dat[ , .SD, .SDcols = outcols]
   
   ## Load into mc5 table -- else return results
