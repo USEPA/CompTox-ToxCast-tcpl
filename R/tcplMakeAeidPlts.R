@@ -8,8 +8,8 @@
 #' \code{tcplMakeAeidPlts} creates a .pdf file with the dose-response plots for 
 #' the given aeid.
 #' 
-#' @param aeid Integer of length 1, the assay endpoint id
-#' @param lvl Integer of length 1, the data level to use (4-7)
+#' @param aeid Integer of length 1 or 2, the assay endpoint id
+#' @param lvl Integer of length 1, the data level to use (4-7). Only level 5-6 valid for compare aeids.
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
 #' @param clib Character, the chemical library to subset on, see 
@@ -27,10 +27,17 @@
 #' Note, the default value for ordr.fitc is \code{TRUE} in 
 #' \code{tcplMakeAeidPlts}, but \code{FALSE} in \code{tcplPlotFits}
 #' 
+#' Note, only level 5 or level 6 is valid for comparing 2 aeids.
+#' 
 #' @examples
 #' \dontrun{
 #' ## Will produce the same result as the example for tcplPlotFits
 #' tcplMakeAeidPlts(aeid = 1, lvl = 6, ordr.fitc = FALSE)
+#' }
+#' 
+#' \dontrun{
+#' ## Compare two aeids on same plots
+#' tcplMakeAeidPlts(aeid = c(1,2), lvl = 6)
 #' }
 #' 
 #' @import data.table
@@ -38,14 +45,14 @@
 #' @export
 
 tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(), 
-                             ordr.fitc = TRUE, clib = NULL) {
+                             ordr.fitc = TRUE, clib = NULL, cnst=NULL) {
   
   ## Variable-binding to pass R CMD Check
   spid <- m4id <- NULL
   
   on.exit(graphics.off())
   
-  if (length(aeid) > 1) stop("'aeid' must be of length 1.")
+  if (length(aeid) > 2) stop("'aeid' must be of length 1 or 2.")
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("Invalid 'lvl' input.")
   
   prs <- list(type = "mc", fld = "aeid", val = aeid)
@@ -80,7 +87,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   graphics.off()
   pdf(file = fname, height = 6, width = 10, pointsize = 10)
-  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc, cnst=cnst, orig.aeid=aeid)
   graphics.off()
   
   cat(fname, "complete.")

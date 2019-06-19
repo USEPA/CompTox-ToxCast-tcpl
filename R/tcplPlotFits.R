@@ -71,7 +71,7 @@
 #' @export
 
 tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE, 
-                         browse = FALSE) {
+                         browse = FALSE, cnst=NULL, orig.aeid=NULL) {
   
   ## Variable-binding to pass R CMD Check
   chid <- chnm <- spid <- aenm <- aeid <- m4id <- fitc <- fval <- NULL
@@ -85,47 +85,107 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
   dat[is.na(chid), chnm := paste(spid, "(spid not in DB)")]
   dat[ , aenm := paste0("AEID", aeid, " (", aenm, ")")]
   
-  setkey(dat, m4id)
-  setkey(agg, m4id)
+  if (length(unique(dat$aeid)) == 1) {
+    # Original plot using unique panel for each m4id
   
-  ## Set the plotting order
-  if (ordr.fitc && "fitc" %in% names(dat)) {
-    m4ids <- dat[order(aeid, fitc, chid), unique(m4id)]
-  } else {
-    m4ids <- dat[order(aeid, chid), unique(m4id)]
-  }
-  
-  if (!is.null(flg)) {
-    if (nrow(flg) > 0) {
-      flg[is.na(fval),  flgo := as.character(mc6_mthd_id)]
-      flg[!is.na(fval), 
-          flgo := paste0(mc6_mthd_id, " (", signif(fval, 3), ")")]
-      #LINE BELOW THIS IS WHERE DATA.TABLE ERRORS
-      flg <- flg[ , 
-                 list(flgo = paste(unique(flgo), collapse = "; ")), 
-                 by = m4id]
-      setkey(flg, m4id)
-      dat <- flg[dat]
+    setkey(dat, m4id)
+    setkey(agg, m4id)
+    
+    ## Set the plotting order
+    if (ordr.fitc && "fitc" %in% names(dat)) {
+      m4ids <- dat[order(aeid, fitc, chid), unique(m4id)]
     } else {
-      dat[ , flgo := NA]
+      m4ids <- dat[order(aeid, chid), unique(m4id)]
     }
-  }
-  
-  if (!is.null(boot)) {
-    setkey(boot, m4id)
-    #Join boot table with dat table
-    dat <- boot[dat]
-    dat$toxboot <- 1
-  }
-  
-  for (i in m4ids) {
     
-    resp <- agg[J(i), resp]
-    logc <- agg[J(i), logc]
-    pars <- as.list(dat[J(i)])
-    try(.plotFit(resp = resp, logc = logc, pars = pars))
-    if (browse) browser(skipCalls = 4)
+    if (!is.null(flg)) {
+      if (nrow(flg) > 0) {
+        flg[is.na(fval),  flgo := as.character(mc6_mthd_id)]
+        flg[!is.na(fval), 
+            flgo := paste0(mc6_mthd_id, " (", signif(fval, 3), ")")]
+        #LINE BELOW THIS IS WHERE DATA.TABLE ERRORS
+        flg <- flg[ , 
+                   list(flgo = paste(unique(flgo), collapse = "; ")), 
+                   by = m4id]
+        setkey(flg, m4id)
+        dat <- flg[dat]
+      } else {
+        dat[ , flgo := NA]
+      }
+    }
     
+    if (!is.null(boot)) {
+      setkey(boot, m4id)
+      #Join boot table with dat table
+      dat <- boot[dat]
+      dat$toxboot <- 1
+    }
+    
+    for (i in m4ids) {
+      
+      resp <- agg[J(i), resp]
+      logc <- agg[J(i), logc]
+      pars <- as.list(dat[J(i)])
+      .plotFit(resp = resp, logc = logc, pars = pars)
+      if (browse) browser(skipCalls = 4)
+      
+    }
+  } else {
+    # Compare AIED plotting for 2 endpoints
+    
+    
+    
+    ## Set the plotting order
+    if (ordr.fitc && "fitc" %in% names(dat)) {
+      spids <- dat[order(aeid, fitc, chid), unique(spid)]
+    } else {
+      spids <- dat[order(aeid, chid), unique(spid)]
+    }
+    
+    if (!is.null(flg)) {
+      setkey(dat, m4id)
+      if (nrow(flg) > 0) {
+        flg[is.na(fval),  flgo := as.character(mc6_mthd_id)]
+        flg[!is.na(fval), 
+            flgo := paste0(mc6_mthd_id, " (", signif(fval, 3), ")")]
+        #LINE BELOW THIS IS WHERE DATA.TABLE ERRORS
+        flg <- flg[ , 
+                    list(flgo = paste(unique(flgo), collapse = "; ")), 
+                    by = m4id]
+        setkey(flg, m4id)
+        dat <- flg[dat]
+      } else {
+        dat[ , flgo := NA]
+      }
+    }
+    
+    if (!is.null(boot)) {
+      setkey(boot, m4id)
+      #Join boot table with dat table
+      dat <- boot[dat]
+      dat$toxboot <- 1
+    }
+    
+    # Make sure the order is correct for 'dat' and 'agg'
+    dat <- dat[order(match(aeid, orig.aeid))]
+    setkey(dat, spid)
+    agg <- agg[order(match(aeid, orig.aeid))]
+    setkey(agg, spid)
+    
+    for (i in spids) {
+      resp <- agg[J(i), resp]
+      logc <- agg[J(i), logc]
+      aeids <- agg[J(i), aeid]
+      #tmp <- dat[J(i)]
+      #pars <- as.list(tmp[match(orig.aeid,tmp$aeid),]) # maintain order of user aeid input
+      pars <- as.list(dat[J(i)])
+      #.plotFit(resp = resp, logc = logc, pars = pars)
+      
+      if (!any(is.na(pars$spid)) & all(orig.aeid %in% aeids)) {
+        .plotCompareFit(all.resp = resp, all.logc = logc, aeids = aeids, all.pars=pars, cnst=cnst, orig.aeid=orig.aeid)
+        if (browse) browser(skipCalls = 4)
+      }
+    }
   }
   
   

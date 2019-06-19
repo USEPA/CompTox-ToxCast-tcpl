@@ -297,7 +297,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
 
   if (lvl == "agg" && type == "mc") {
 
-    tbls <- c("mc3", "mc4_agg")
+    tbls <- c("mc3", "mc4_agg", "mc4")
 
     qformat <-
       "
@@ -308,13 +308,17 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
         mc4_agg.m2id,
         mc4_agg.m1id,
         mc4_agg.m0id,
+        mc4.spid,
         logc,
         resp
       FROM
         mc3,
-        mc4_agg
+        mc4_agg,
+        mc4
       WHERE
-        mc3.m3id = mc4_agg.m3id
+        mc3.m3id = mc4_agg.m3id 
+        AND
+        mc4.m4id = mc4_agg.m4id
       "
 
   }
