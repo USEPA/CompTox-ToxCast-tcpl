@@ -301,37 +301,6 @@ mc5 <- function(ae, wr = FALSE) {
     is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
     
     
-
-    
-    #dat$modl_acc <- tmp.mc3$loec
-    #dat$hitc <- tmp.mc3$loec_coff
-    #dat$modl_acb <- tmp.mc3$loec # Set model ACB to NA so there's no confusion
-    #dat$modl_ga <- tmp.mc3$loec  # Set model AC50 to NA so there's no confusion
-    #dat[ , fitc := 100L] # Change to special fitc
-    
-    # Only change values if modl is hill or gnls
-    
-    
-    # dat[, modl_acc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
-    #                                                     dat[spid == x, modl_acc])}), .SDcols = "spid"]
-    # 
-    # dat[, modl_acb := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
-    #                                                     dat[spid == x, modl_acb])}), .SDcols = "spid"]
-    # 
-    # dat[, modl_ga := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
-    #                                                     dat[spid == x, modl_ga])}), .SDcols = "spid"]
-    # 
-    # dat[, fitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 100L, 
-    #                                                     dat[spid == x, fitc])}), .SDcols = "spid"]
-    # 
-    # dat[, model_type := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 1, 
-    #                                                      dat[spid == x, model_type])}), .SDcols = "spid"]
-    # 
-    # dat[, hitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec_coff],
-    #                                                 dat[spid == x, hitc])}), .SDcols = "spid"]
-    
-    #dat[, cnst := 1] # Set to constant probability
-    
     dat <- dat[tmp.mc3[,c("spid","loec","loec_coff")],on = "spid"]
     dat[(!cnst_win), modl_acc := loec]
     dat[(!cnst_win), modl_acb := loec]
