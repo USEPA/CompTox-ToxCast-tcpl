@@ -314,7 +314,7 @@
   spaces <- function(x) paste(rep(" ", x), collapse = "")
 
   itxt <- with(all.pars, {
-    paste0("ASSAY:   ", paste(aenm, collapse=' VS.\n         '), "\n\n",
+    paste0("ASSAY:   ", paste(aenm, collapse='VS.\n         '), "\n\n",
            "NAME:    ", unique(chnm), "\n",
            "CHID:    ", unique(chid), spaces(8 - ifelse(is.na(unique(chid)), 2, nchar(unique(chid)))),
            "CASRN: ", unique(casn), "\n",
@@ -342,7 +342,9 @@
   
       hprs <- with(pars, signif(c(hill_tp, hill_ga, hill_gw), 3))
 
-      lbl <- with(pars, paste0(aenm, ' (', desc_col[ii], '): ',"HILL MODEL:\n"))
+      #lbl <- with(pars, paste0(aenm, ' (', desc_col[ii], '): ',"HILL MODEL:\n"))
+      lbl <- with(pars, paste(strwrap(paste0(aenm, ' (', desc_col[ii], '): ',"HILL MODEL:\n"), width=45), collapse = '\n'))
+      
       htxt1 <- paste(lbl, "tp",
                      " ga",
                      " gw\n",
@@ -393,7 +395,10 @@
                    signif(c(gnls_tp, gnls_ga, gnls_gw, gnls_la, gnls_lw), 3))
   
       
-      lbl <- with(pars, paste0(aenm, ' (', desc_col[ii], '): ',"GAIN-LOSS MODEL:\n"))
+      #lbl <- with(pars, paste0(aenm, ' (', desc_col[ii], '): ',"GAIN-LOSS MODEL:\n"))
+      lbl <- with(pars, paste(strwrap(paste0(aenm, ' (', desc_col[ii], '): ',"GAIN-LOSS MODEL:\n"), width=45), collapse = '\n'))
+      
+      
       gtxt1 <- paste(lbl, 
                      "tp",
                      " ga",
@@ -482,10 +487,14 @@
     # }
     
     # Select correct text based on winning model and store in vector
+    with(pars, paste(strwrap(paste0(aenm, ' (', desc_col[ii], '): ',"HILL MODEL:\n"), width=45), collapse = '\n'))
     if (is.na(pars$modl)) {
-      aeid_txt = with(pars, paste0(aenm, ' (', desc_col[ii], '): No Model Fit'))
+      #aeid_txt = with(pars, paste0(aenm, ' (', desc_col[ii], '): No Model Fit'))
+      aeid_txt = with(pars, paste(strwrap(paste0(aenm, ' (', desc_col[ii], '): No Model Fit'), width=45), collapse = '\n'))
+      
     } else if (pars$modl == 'cnst') {
-      aeid_txt = with(pars, paste0(aenm, ' (', desc_col[ii], '): Constant Model'))
+      #aeid_txt = with(pars, paste0(aenm, ' (', desc_col[ii], '): Constant Model'))
+      aeid_txt = with(pars, paste(strwrap(paste0(aenm, ' (', desc_col[ii], '): Constant Model'), width=45), collapse = '\n'))
     } else if (pars$modl == 'hill') {
       aeid_txt = htxt
     } else if (pars$modl == 'gnls') {

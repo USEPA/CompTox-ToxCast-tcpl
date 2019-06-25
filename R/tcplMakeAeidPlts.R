@@ -85,10 +85,10 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
                                format(Sys.Date(), "%y%m%d.pdf"),
                                sep = "_"))
     } else if (length(aeid) == 2) {
+      tmp.aenm <- tcplLoadAeid("aeid", aeid)$aenm
       fname <- file.path(odir,
-                         paste(paste0("AEID", aeid, collapse = '_vs_'),
+                         paste(sprintf("AEID%s_%s_VS_AEID%s_%s", aeid[1], tmp.aenm[1], aeid[2], tmp.aenm[2]),
                                paste0("L", lvl),
-                               paste0(tcplLoadAeid("aeid", aeid)$aenm, collapse = '_vs_'),
                                format(Sys.Date(), "%y%m%d.pdf"),
                                sep = "_"))
     }
