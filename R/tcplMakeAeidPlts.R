@@ -77,12 +77,21 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   boot <- if (lvl < 7L) NULL else do.call(tcplLoadData, args = c(lvl = 7L, prs))
   
   if (is.null(fname)) {
-    fname <- file.path(odir,
-                       paste(paste0("AEID", aeid),
-                             paste0("L", lvl),
-                             tcplLoadAeid("aeid", aeid)$aenm,
-                             format(Sys.Date(), "%y%m%d.pdf"),
-                             sep = "_"))
+    if (length(aeid) == 1) {
+      fname <- file.path(odir,
+                         paste(paste0("AEID", aeid),
+                               paste0("L", lvl),
+                               tcplLoadAeid("aeid", aeid)$aenm,
+                               format(Sys.Date(), "%y%m%d.pdf"),
+                               sep = "_"))
+    } else if (length(aeid) == 2) {
+      fname <- file.path(odir,
+                         paste(paste0("AEID", aeid, collapse = '_vs_'),
+                               paste0("L", lvl),
+                               paste0(tcplLoadAeid("aeid", aeid)$aenm, collapse = '_vs_'),
+                               format(Sys.Date(), "%y%m%d.pdf"),
+                               sep = "_"))
+    }
   }
   
   graphics.off()
