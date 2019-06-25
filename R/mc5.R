@@ -294,7 +294,7 @@ mc5 <- function(ae, wr = FALSE) {
     tmp.mc3[, Z:=lapply(.SD, calc_z), by=.(spid, logc), .SDcols = c("resp")]
     tmp.mc3[Z >= 1, loec_coff :=1]
     tmp.mc3[Z < 1, loec_coff :=0]
-    tmp.mc3[, loec := min(logc[loec_coff == 1]), by = spid] # Define the loec for each SPID
+    suppressWarnings(tmp.mc3[, loec := min(logc[loec_coff == 1]), by = spid]) # Define the loec for each SPID
     tmp.mc3 <- tmp.mc3[dat, mult='first', on='spid', nomatch=0L]
     tmp.mc3[is.infinite(loec), loec_coff :=0]
     tmp.mc3[is.finite(loec), loec_coff :=1]
@@ -310,24 +310,37 @@ mc5 <- function(ae, wr = FALSE) {
     #dat[ , fitc := 100L] # Change to special fitc
     
     # Only change values if modl is hill or gnls
-    dat[, modl_acc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
-                                                        dat[spid == x, modl_acc])}), .SDcols = "spid"]
     
-    dat[, modl_acb := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
-                                                        dat[spid == x, modl_acb])}), .SDcols = "spid"]
     
-    dat[, modl_ga := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
-                                                        dat[spid == x, modl_ga])}), .SDcols = "spid"]
-    dat[, fitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 100L, 
-                                                        dat[spid == x, fitc])}), .SDcols = "spid"]
-    
-    dat[, model_type := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 1, 
-                                                         dat[spid == x, model_type])}), .SDcols = "spid"]
-    
-    dat[, hitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec_coff],
-                                                    dat[spid == x, hitc])}), .SDcols = "spid"]
+    # dat[, modl_acc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
+    #                                                     dat[spid == x, modl_acc])}), .SDcols = "spid"]
+    # 
+    # dat[, modl_acb := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
+    #                                                     dat[spid == x, modl_acb])}), .SDcols = "spid"]
+    # 
+    # dat[, modl_ga := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec], 
+    #                                                     dat[spid == x, modl_ga])}), .SDcols = "spid"]
+    # 
+    # dat[, fitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 100L, 
+    #                                                     dat[spid == x, fitc])}), .SDcols = "spid"]
+    # 
+    # dat[, model_type := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", 1, 
+    #                                                      dat[spid == x, model_type])}), .SDcols = "spid"]
+    # 
+    # dat[, hitc := apply(.SD, 1, function(x) {ifelse(dat[spid == x, modl] != "cnst", tmp.mc3[spid == x, loec_coff],
+    #                                                 dat[spid == x, hitc])}), .SDcols = "spid"]
     
     #dat[, cnst := 1] # Set to constant probability
+    
+    dat <- dat[tmp.mc3[,c("spid","loec","loec_coff")],on = "spid"]
+    dat[(!cnst_win), modl_acc := loec]
+    dat[(!cnst_win), modl_acb := loec]
+    dat[(!cnst_win), modl_ga := loec]
+    dat[(!cnst_win), fitc := 100L]
+    dat[(!cnst_win), model_type := 1]
+    dat[(!cnst_win), hitc := loec_coff]
+    dat <- dat[,-c("loec","loec_coff")]
+    
     
     
     
