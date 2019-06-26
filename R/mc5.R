@@ -31,7 +31,7 @@ mc5 <- function(ae, wr = FALSE) {
   modl_prob <- cnst_prob <- hill_er <- modl_tp <- modl_ga <- modl_gw <- NULL
   hill_rmse <- hill_prob <- modl_acb <- modl_acc <- gnls_er <- modl_la <- NULL
   gnls_la <- modl_lw <- gnls_lw <- gnls_rmse <- gnls_prob <- actp <- NULL
-  modl_ac10 <- NULL
+  modl_ac10 <- model_type <- NULL 
   
   owarn <- getOption("warn")
   options(warn = 1)
@@ -66,12 +66,21 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Initialize coff vector
   coff <- 0
+  model_type <- 0
+  loec.mthd <- FALSE
   
   ## Load cutoff functions
-  mthd_funcs <- mc5_mthds()
+  mthd_funcs <- mc5_mthds(ae)
   
   ## Load cutoff methods
   ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
+  if ('loec.coff' %in% ms$mthd) {
+    # using the loec method
+    loec.mthd = TRUE
+    ms <- ms[!mthd=='loec.coff']
+  }
+  
+  
   if (nrow(ms) == 0) {
     warning("No level 5 methods for AEID", ae, " -- cutoff will be 0.")
   }
@@ -83,6 +92,9 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Determine final cutoff
   dat[ , coff := max(coff)]
+  
+  ## Apply the model type
+  dat[ , model_type := model_type]
   
   ## Determine winning model
   dat[ , maic := pmin(cnst_aic, hill_aic, gnls_aic, na.rm = TRUE)]
@@ -250,6 +262,66 @@ mc5 <- function(ae, wr = FALSE) {
   ## Add activity probability
   dat[ , actp := 1 - cnst_prob]
   
+  ## Complete the loec calculations
+  if (loec.mthd) {
+    # Complete the todo list to adjust for the loec method by calling loec.coff in mc5_mthds
+
+    coff <- unique(dat$coff) # coff for aeid
+    calc_z <-function(resp) {
+      
+      # Original Z-score methodology
+      #if (length(resp) <= 1) {sdev=0.1}
+      #else {sdev=sd(resp)}
+      #mu = mean(resp)
+      #Z = (mu - coff)/sdev
+      
+      # New methodology where all resp > coff
+      above.coff <- all(resp>coff) # All responses must be greater than coff
+      if (above.coff == T){
+        Z = 1
+      } else {
+        Z = 0
+      }
+      
+      
+      return(Z)
+    }
+    
+    
+    tmp.mc3 <- tcplLoadData(3L, fld='aeid', val=ae, type='mc')
+    
+    
+    tmp.mc3[, Z:=lapply(.SD, calc_z), by=.(spid, logc), .SDcols = c("resp")]
+    tmp.mc3[Z >= 1, loec_coff :=1]
+    tmp.mc3[Z < 1, loec_coff :=0]
+    suppressWarnings(tmp.mc3[, loec := min(logc[loec_coff == 1]), by = spid]) # Define the loec for each SPID
+    tmp.mc3 <- tmp.mc3[dat, mult='first', on='spid', nomatch=0L]
+    tmp.mc3[is.infinite(loec), loec_coff :=0]
+    tmp.mc3[is.finite(loec), loec_coff :=1]
+    is.na(tmp.mc3$loec) <- !is.finite(tmp.mc3$loec) # change
+    
+    
+    dat <- dat[tmp.mc3[,c("spid","loec","loec_coff")],on = "spid"]
+    dat[(!cnst_win), modl_acc := loec]
+    dat[(!cnst_win), modl_acb := loec]
+    dat[(!cnst_win), modl_ga := loec]
+    dat[(!cnst_win), fitc := 100L]
+    dat[(!cnst_win), model_type := 1]
+    dat[(!cnst_win), hitc := loec_coff]
+    dat <- dat[,-c("loec","loec_coff")]
+    
+    
+    
+    
+    # ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
+    # ms <- ms[mthd_id == 13]
+    # 
+    # exprs <- lapply(mthd_funcs[ms$mthd], do.call, args = list(dat))
+    # fenv <- environment()
+    # invisible(rapply(exprs, eval, envir = fenv))
+    
+  }
+  
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
   cat("Processed L5 AEID", ae, " (", nrow(dat), 
@@ -258,7 +330,7 @@ mc5 <- function(ae, wr = FALSE) {
   res <- TRUE
   
   outcols <- c("m4id", "aeid", "modl", "hitc", "fitc", 
-               "coff", "actp", modl_pars)
+               "coff", "actp", "model_type", modl_pars) # Added model_type here
   dat <- dat[ , .SD, .SDcols = outcols]
   
   ## Load into mc5 table -- else return results

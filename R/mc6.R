@@ -99,7 +99,7 @@ mc6 <- function(ae, wr = FALSE) {
       " rows; ", ttime, ")\n", sep = "")
   
   res <- TRUE
-    
+  
   ## Load into mc6 table -- else return results
   if (wr) {
     

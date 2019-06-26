@@ -35,7 +35,7 @@
 #' }
 
 
-mc5_mthds <- function() {
+mc5_mthds <- function(ae) {
 
   list(
 
