@@ -4,7 +4,9 @@ tcpl v2.0.2
 * Moved data.table to imports instead of depends
 * Added new level 6 method for flagging viability gnls winners
 * Added single concentration option for tcplSubsetChid
-* Updated tcplyCytoPt methodology
+* Updated tcplCytoPt methodology
+* Added ability to determine lowest effective concentration (loec) as level 5 method
+* Added new AEID plot functionality to visualize 2 aeids on same plot through tcplMakeAeidPlts
 
 tcpl v2.0.1
 ==============
