@@ -49,6 +49,7 @@
     }
   }
   
+  if (!("fitc" %in% names(pars))) pars$fitc = -10000L # Create placeholder fitc for lvl 4
   fmax <- suppressWarnings(with(pars, 1.05*max(hill_tp, gnls_tp, na.rm = TRUE)))
   if (is.infinite(fmax)) fmax <- NA_real_
   view <- fmax/diff(range(resp))
