@@ -4,7 +4,6 @@
 
 #' @importFrom graphics par layout plot rect abline curve axis axTicks points
 #' @importFrom graphics plot.window text arrows
-#' @importFrom caTools trapz
 
 .plotCompareFit <- function(all.resp, all.logc, aeids, all.pars,
                             scale.by = 'coff', sym=c(1, 4), col=c('tomato3', 'dodgerblue2'), desc_col=c('red', 'blue'),
