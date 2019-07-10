@@ -17,6 +17,7 @@
 #' 
 #' @import data.table
 
+utils::globalVariables(c(".", "Z", "loec", "loec_coff", "logc", "mthd", "spid"))
 mc5 <- function(ae, wr = FALSE) {
   
   ## Variable-binding to pass R CMD Check

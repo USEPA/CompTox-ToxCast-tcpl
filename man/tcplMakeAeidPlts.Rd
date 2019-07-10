@@ -20,7 +20,9 @@ tcplMakeAeidPlts(aeid, compare = F, lvl = 4L, fname = NULL,
 
 \item{ordr.fitc}{Logical, should the fits be ordered by fit category?}
 
-\item{clib}{Character, the chemical library to subset on, see 
+\item{clib}{Character, the chemical library to subset on, see}
+
+\item{cnst}{Constant hline to draw on plot
 \code{\link{tcplLoadClib}} for more information.}
 }
 \description{

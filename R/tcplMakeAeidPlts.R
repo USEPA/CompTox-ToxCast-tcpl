@@ -13,7 +13,8 @@
 #' @param lvl Integer of length 1, the data level to use (4-7). Only level 5-6 valid for compare aeids.
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
-#' @param clib Character, the chemical library to subset on, see 
+#' @param clib Character, the chemical library to subset on, see
+#' @param cnst Constant hline to draw on plot
 #' \code{\link{tcplLoadClib}} for more information. 
 #' @inheritParams tcplPlotFits
 #' 

@@ -20,6 +20,10 @@ tcplPlotFits(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
 
 \item{browse}{Logical, should \code{browser()} be called after every plot?}
 
+\item{cnst}{Constant hline to draw on plot}
+
+\item{orig.aeid}{Original aeid list from tcplMakeAeidPlts to maintain order}
+
 \item{compare}{boolean to determine if aeids should be compared on same plot}
 }
 \description{

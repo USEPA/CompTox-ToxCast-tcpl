@@ -14,6 +14,8 @@
 #' @param ordr.fitc Logical, should the fits be ordered by fit category?
 #' @param browse Logical, should \code{browser()} be called after every plot?
 #' @param boot data.table, level 7 data, see details.
+#' @param cnst Constant hline to draw on plot
+#' @param orig.aeid Original aeid list from tcplMakeAeidPlts to maintain order
 #' @param compare boolean to determine if aeids should be compared on same plot
 #' 
 #' @details

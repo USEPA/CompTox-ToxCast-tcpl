@@ -9,6 +9,8 @@
 #' \code{mc5_mthds} returns a list of additional activity cutoff methods
 #' to be used during level 5 multiple-concentration processing.
 #'
+#' @param ae Integer of length 1, the assay endpoint id
+#'
 #' @return A list of functions
 #'
 #' @seealso \code{\link{mc5}}, \code{\link{Method functions}} to query what
