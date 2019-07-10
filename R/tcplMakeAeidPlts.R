@@ -9,6 +9,7 @@
 #' the given aeid.
 #' 
 #' @param aeid Integer of length 1 or 2, the assay endpoint id
+#' @param compare Boolean to for comparison of aeids if length(aeid)>1
 #' @param lvl Integer of length 1, the data level to use (4-7). Only level 5-6 valid for compare aeids.
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
@@ -37,14 +38,14 @@
 #' 
 #' \dontrun{
 #' ## Compare two aeids on same plots
-#' tcplMakeAeidPlts(aeid = c(1,2), lvl = 6)
+#' tcplMakeAeidPlts(aeid = c(1,2), compare=T, lvl = 6)
 #' }
 #' 
 #' @import data.table
 #' @importFrom grDevices graphics.off pdf
 #' @export
 
-tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(), 
+tcplMakeAeidPlts <- function(aeid, compare=F, lvl = 4L, fname = NULL, odir = getwd(), 
                              ordr.fitc = TRUE, clib = NULL, cnst=NULL) {
   
   ## Variable-binding to pass R CMD Check
@@ -77,14 +78,14 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   boot <- if (lvl < 7L) NULL else do.call(tcplLoadData, args = c(lvl = 7L, prs))
   
   if (is.null(fname)) {
-    if (length(aeid) == 1) {
+    if (!compare) {
       fname <- file.path(odir,
                          paste(paste0("AEID", aeid),
                                paste0("L", lvl),
                                tcplLoadAeid("aeid", aeid)$aenm,
                                format(Sys.Date(), "%y%m%d.pdf"),
                                sep = "_"))
-    } else if (length(aeid) == 2) {
+    } else {
       tmp.aenm <- tcplLoadAeid("aeid", aeid)$aenm
       fname <- file.path(odir,
                          paste(sprintf("AEID%s_%s_VS_AEID%s_%s", aeid[1], tmp.aenm[1], aeid[2], tmp.aenm[2]),
@@ -96,7 +97,7 @@ tcplMakeAeidPlts <- function(aeid, lvl = 4L, fname = NULL, odir = getwd(),
   
   graphics.off()
   pdf(file = fname, height = 6, width = 10, pointsize = 10)
-  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc, cnst=cnst, orig.aeid=aeid)
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot, ordr.fitc = ordr.fitc, cnst=cnst, orig.aeid=aeid, compare=compare)
   graphics.off()
   
   cat(fname, "complete.")
