@@ -14,6 +14,7 @@
 #' @param ordr.fitc Logical, should the fits be ordered by fit category?
 #' @param browse Logical, should \code{browser()} be called after every plot?
 #' @param boot data.table, level 7 data, see details.
+#' @param compare boolean to determine if aeids should be compared on same plot
 #' 
 #' @details
 #' The data for 'dat', 'agg', and 'flg' should be loaded using the 
@@ -71,7 +72,7 @@
 #' @export
 
 tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE, 
-                         browse = FALSE, cnst=NULL, orig.aeid=NULL) {
+                         browse = FALSE, cnst=NULL, orig.aeid=NULL,compare=F) {
   
   ## Variable-binding to pass R CMD Check
   chid <- chnm <- spid <- aenm <- aeid <- m4id <- fitc <- fval <- NULL
@@ -85,7 +86,7 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
   dat[is.na(chid), chnm := paste(spid, "(spid not in DB)")]
   dat[ , aenm := paste0("AEID", aeid, " (", aenm, ")")]
   
-  if (length(unique(dat$aeid)) == 1) {
+  if (!compare) {
     # Original plot using unique panel for each m4id
   
     setkey(dat, m4id)
