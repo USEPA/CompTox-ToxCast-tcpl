@@ -5,7 +5,7 @@
 \title{Plot summary fits based on fit and dose-response data}
 \usage{
 tcplPlotFits(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
-  browse = FALSE)
+  browse = FALSE, cnst = NULL, orig.aeid = NULL, compare = F)
 }
 \arguments{
 \item{dat}{data.table, level 4 or level 5 data, see details.}
@@ -19,6 +19,8 @@ tcplPlotFits(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
 \item{ordr.fitc}{Logical, should the fits be ordered by fit category?}
 
 \item{browse}{Logical, should \code{browser()} be called after every plot?}
+
+\item{compare}{boolean to determine if aeids should be compared on same plot}
 }
 \description{
 \code{tcplPlotFits} takes the dose-response and fit data and produces
