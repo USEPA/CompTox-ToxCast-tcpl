@@ -8,12 +8,12 @@
 #' @import data.table
 #' @importFrom RMySQL MySQL
 #' @importFrom sqldf sqldf
-#' @importMethodsFrom RMySQL dbConnect dbDisconnect
+#' @importMethodsFrom RMySQL dbConnect dbDisconnect 
 #' @export
+
 
 tcplQuery <- function(query, db = getOption("TCPL_DB"), 
                       drvr = getOption("TCPL_DRVR"), tbl=NULL) {
-  
   if (is.null(db)) db <- getOption("TCPL_DB")
   if (is.null(drvr)) drvr <- getOption("TCPL_DRVR")
   

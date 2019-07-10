@@ -4,13 +4,15 @@
 \alias{tcplMakeAeidPlts}
 \title{Create a .pdf with dose-response plots}
 \usage{
-tcplMakeAeidPlts(aeid, lvl = 4L, fname = NULL, odir = getwd(),
-  ordr.fitc = TRUE, clib = NULL)
+tcplMakeAeidPlts(aeid, compare = F, lvl = 4L, fname = NULL,
+  odir = getwd(), ordr.fitc = TRUE, clib = NULL, cnst = NULL)
 }
 \arguments{
-\item{aeid}{Integer of length 1, the assay endpoint id}
+\item{aeid}{Integer of length 1 or 2, the assay endpoint id}
 
-\item{lvl}{Integer of length 1, the data level to use (4-7)}
+\item{compare}{Boolean to for comparison of aeids if length(aeid)>1}
+
+\item{lvl}{Integer of length 1, the data level to use (4-7). Only level 5-6 valid for compare aeids.}
 
 \item{fname}{Character, the filename}
 
@@ -35,11 +37,18 @@ assay information.
 
 Note, the default value for ordr.fitc is \code{TRUE} in 
 \code{tcplMakeAeidPlts}, but \code{FALSE} in \code{tcplPlotFits}
+
+Note, only level 5 or level 6 is valid for comparing 2 aeids.
 }
 \examples{
 \dontrun{
 ## Will produce the same result as the example for tcplPlotFits
 tcplMakeAeidPlts(aeid = 1, lvl = 6, ordr.fitc = FALSE)
+}
+
+\dontrun{
+## Compare two aeids on same plots
+tcplMakeAeidPlts(aeid = c(1,2), compare=T, lvl = 6)
 }
 
 }
