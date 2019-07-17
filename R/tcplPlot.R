@@ -30,7 +30,7 @@
 #' @export
 #'
 #' @examples
-tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc") {
+tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL) {
   
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   
@@ -49,6 +49,14 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc") {
     boot <- NULL
   }
   
-  dat
+  if (nrow(dat) == 0) stop("No data for fld/val provided ", m4id)
+  
+  agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
+  
+  if(nrow(dat) == 1 & is.null(output)){
+  tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
+  }
+  if (nrow(dat) > 1 & is.null(output)) stop("More than 1 concentration series returned for given field/val combination.  Set output to PDF or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
+  
   
 }
