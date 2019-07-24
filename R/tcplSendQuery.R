@@ -9,7 +9,7 @@
 #' 
 #' @import DBI
 #' @import data.table
-#' @importFrom RMySQL MySQL
+#' @importFrom RMariaDB MariaDB
 #' @importFrom methods is
 #' @importFrom sqldf sqldf
 #' @export
@@ -35,7 +35,7 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
            "?tcplConf for more details.")
     }
     
-    db_pars <- list(drv = RMySQL::MySQL(),
+    db_pars <- list(drv = RMariaDB::MariaDB(),
                     user = getOption("TCPL_USER"),
                     password = getOption("TCPL_PASS"),
                     host = getOption("TCPL_HOST"),
