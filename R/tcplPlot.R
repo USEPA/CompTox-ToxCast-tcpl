@@ -58,5 +58,21 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
   }
   if (nrow(dat) > 1 & is.null(output)) stop("More than 1 concentration series returned for given field/val combination.  Set output to PDF or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
   
+  if(!is.null(output)){
+    graphics.off()
+    pdf(
+      file = file.path(
+        getwd(),
+        paste(output)
+      ),
+      height = 6,
+      width = 10,
+      pointsize = 10
+    )
+    tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
+    graphics.off()
+  }
+  
+  
   
 }
