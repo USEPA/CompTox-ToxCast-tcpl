@@ -8,4 +8,4 @@ If you are interested in contributing or want to report a bug, please see [CONTR
 
 To install the current development version run the following command: 
 
-    devtools::install_github("USEPA/ComptTox-ToxCast-tcpl")
+    devtools::install_github("USEPA/CompTox-ToxCast-tcpl")
