@@ -41,10 +41,8 @@ fits each sample separately.
 \seealso{
 \code{\link{tcplFit}}, \code{\link{Models}}
 
-Other multiple-concentration data 
-processing functions: \code{\link{mc1}},
+Other multiple-concentration: \code{\link{mc1}},
   \code{\link{mc2}}, \code{\link{mc3}}, \code{\link{mc5}},
   \code{\link{mc6}}
 }
-\concept{multiple-concentration data 
-processing functions}
+\concept{multiple-concentration}
