@@ -13,6 +13,8 @@
 #' @param fld Character, the field(s) to query on
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
+#' @param output filename to output plots
+#' @param multi Boolean, if multi is TRUE output 6 plots per page
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -30,7 +32,7 @@
 #' @export
 #'
 #' @examples
-tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL) {
+tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL, multi = FALSE) {
   
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   
@@ -49,7 +51,7 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
     boot <- NULL
   }
   
-  if (nrow(dat) == 0) stop("No data for fld/val provided ", m4id)
+  if (nrow(dat) == 0) stop("No data for fld/val provided")
   
   agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
   
@@ -58,7 +60,7 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
   }
   if (nrow(dat) > 1 & is.null(output)) stop("More than 1 concentration series returned for given field/val combination.  Set output to PDF or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
   
-  if(!is.null(output)){
+  if(!is.null(output) & !multi){
     graphics.off()
     pdf(
       file = file.path(
@@ -72,6 +74,19 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
     tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
     graphics.off()
   }
+  
+
+  #plotting if using multiplot function
+  hitc.all = TRUE
+  if(multi){
+    graphics.off()
+    pdf(file = file.path(getwd(),paste(output)), height = 10, width = 6, pointsize = 10)
+    par(mfrow=c(3,2))
+    tcplMultiplot(dat = dat, agg = agg, flg = flg, boot = boot, hitc.all = hitc.all, browse = TRUE)
+    graphics.off()
+  }
+  
+  
   
   
   
