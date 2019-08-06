@@ -78,11 +78,12 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
 
   #plotting if using multiplot function
   hitc.all = TRUE
+  #browser()
   if(multi){
     graphics.off()
     pdf(file = file.path(getwd(),paste(output)), height = 10, width = 6, pointsize = 10)
     par(mfrow=c(3,2))
-    tcplMultiplot(dat = dat, agg = agg, flg = flg, boot = boot, hitc.all = hitc.all, browse = TRUE)
+    tcplMultiplot(dat = dat, agg = agg, flg = flg, boot = boot, hitc.all = hitc.all)
     graphics.off()
   }
   
