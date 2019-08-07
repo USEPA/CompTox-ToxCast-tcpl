@@ -6,7 +6,7 @@
  Generic Plotting Function for tcpl}
 \usage{
 tcplPlot(lvl = 4, fld = NULL, val = NULL, type = "mc",
-  output = NULL)
+  output = NULL, multi = FALSE)
 }
 \arguments{
 \item{lvl}{Integer of length 1, the level of data to load}
@@ -17,6 +17,10 @@ tcplPlot(lvl = 4, fld = NULL, val = NULL, type = "mc",
 the same order as 'fld'.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
+
+\item{output}{filename to output plots}
+
+\item{multi}{Boolean, if multi is TRUE output 6 plots per page}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot
@@ -33,4 +37,17 @@ with the concentration-response data and m3id to map back to well-level
 information.
 
 Leaving \code{fld} NULL will return all data.
+}
+\examples{
+## Store the current config settings, so they can be reloaded at the end 
+## of the examples
+conf_store <- tcplConfList()
+tcplConfExample()
+
+tcplPlot(lvl = 4, fld = "m4id", val = c(18609966))## Create a level 4 plot
+
+#' ## Reset configuration
+options(conf_store)
+
+
 }

@@ -28,10 +28,20 @@
 #'
 #' Leaving \code{fld} NULL will return all data.
 #'
-#' @return
 #' @export
 #'
 #' @examples
+#' ## Store the current config settings, so they can be reloaded at the end 
+#' ## of the examples
+#' conf_store <- tcplConfList()
+#' tcplConfExample()
+#' 
+#' tcplPlot(lvl = 4, fld = "m4id", val = c(18609966))## Create a level 4 plot
+#' 
+#' ## Reset configuration
+#' options(conf_store)
+#' 
+#' 
 tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL, multi = FALSE) {
   
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
