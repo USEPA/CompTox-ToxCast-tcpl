@@ -35,7 +35,8 @@ Suggests:
     knitr,
     prettydoc,
     rmarkdown,
-    htmlTable
+    htmlTable,
+    testthat (>= 2.1.0)
 License: GPL-2
 LazyData: true
 RoxygenNote: 6.1.1
