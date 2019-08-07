@@ -37,7 +37,8 @@ tcplMultiplot <- function (dat, agg, flg = NULL, boot = NULL, browse = FALSE, hi
   }
   
   dat <- tcplPrepOtpt(dat)
-  dat <- dat[!is.na(modl)]
+  #the following line only works if lvl is >5
+  #dat <- dat[!is.na(modl)]
   dat[is.na(chid), `:=`(chnm, paste(spid, "(spid not in DB)"))]
   dat[, `:=`(aenm, paste0(aenm, " (", "AEID:",aeid, ")"))]
   
@@ -72,7 +73,7 @@ tcplMultiplot <- function (dat, agg, flg = NULL, boot = NULL, browse = FALSE, hi
     resp <- agg[J(i), resp]
     logc <- agg[J(i), logc]
     pars <- as.list(dat[J(i)])
-    multiPlotfit(resp = resp, logc = logc, pars = pars)
+    try(multiPlotfit(resp = resp, logc = logc, pars = pars))
     if (browse) 
       browser(skipCalls = 4)
   }
