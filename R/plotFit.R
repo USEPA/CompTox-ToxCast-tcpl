@@ -51,6 +51,9 @@
   if (pars$conc_unit == "CF") {
     xlab <- "Concentration (CF)"
   }
+  if (is.na(pars$conc_unit)) {
+    xlab <- expression(bold(paste("Concentration (",mu,"M)")))
+  }
   if (is.null(xlab)) {
     xlab <- paste0("Concentration (",pars$conc_unit,")")
   }
