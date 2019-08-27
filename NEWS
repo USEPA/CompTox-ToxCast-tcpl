@@ -1,5 +1,7 @@
 tcpl v2.0.3
 ==============
+*Created tcplPlot a generic plotting function with call similar to tcplLoadData
+*added option for concentration units to be different during plotting.
 *
 
 tcpl v2.0.2
