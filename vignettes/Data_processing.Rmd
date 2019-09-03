@@ -39,83 +39,26 @@ library(data.table)
 ## This chunk copies the tcplLite local directory to the temp directory used in installation
 ## to comply with CRAN policies on not writing to the installation directory
 tmpdir <- tempdir()
-dbfile <- file.path(system.file(package = "tcpl"), "csv")
-file.copy(from = dbfile, tmpdir, recursive  = TRUE)
+#dbfile <- file.path(system.file(package = "tcpl"), "csv")
+#file.copy(from = dbfile, tmpdir, recursive  = TRUE)
 dbfile_temp <- file.path(tmpdir, "csv")
-tcplConf(db = dbfile_temp)
+dir.create(dbfile_temp, showWarnings = F)
+tcplConf(db = dbfile_temp, drvr = 'tcplLite')
 
 ```
 
 ```{r eval = TRUE, echo = FALSE, message = FALSE}
-
-
-
-sample <- data.table (spid = c("Tox21_400088", "Tox21_303655", "Tox21_110011", "Tox21_400081",
-                               "DMSO", "Tox21_400037"),
-                      chid= c("20182", "22364", "23463", "24102", "21735", "20283"),
-                      stkc = c("", "", "", "", "", ""),
-                      stkc_unit = c("", "", "", "", "", ""),
-                      tested_conc_unit= c("", "", "", "", "", ""),
-                      spid_legacy = c("", "", "", "", "", ""))
-        
-assay <- data.table(aid=numeric(),	asid=numeric(),	assay_name= character(),	assay_desc= character(),	timepoint_hr=numeric(),	organism_id=numeric(),	organism= character(),	tissue= character(),	cell_format= character(),	cell_free_component_source= character(),	cell_short_name= character(),	cell_growth_mode= character(),	assay_footprint= character(),	assay_format_type= character(),	assay_format_type_sub= character(),	content_readout_type= character(),	dilution_solvent= character(),	dilution_solvent_percent_max= character()
-)
-
-assay_component <- data.table(acid=numeric(),	aid=numeric(),	assay_component_name= character(),	assay_component_desc= character(),	assay_component_target_desc= character(),	parameter_readout_type= character(),	assay_design_type= character(),	assay_design_type_sub	= character(),biological_process_target	= character(),detection_technology_type	= character(),detection_technology_type_sub= character(),	 detection_technology= character(),	signal_direction_type= character(),key_assay_reagent_type= character(),
-                      key_assay_reagent	= character(),technological_target_type= character(),	technological_target_type_sub= character() )
-
-assay_component_endpoint <- data.table(aeid=numeric(),	acid=numeric(),	assay_component_endpoint_name= character(),	export_ready=numeric(),	internal_ready= character(),	assay_component_endpoint_desc= character(),	assay_function_type= character(),	normalized_data_type= character(),	analysis_direction= character(),	burst_assay= character(),	key_positive_control= character(),	signal_direction= character(),	intended_target_type= character(),	intended_target_type_sub= character(),	intended_target_family= character(),	intended_target_family_sub= character(),	fit_all=numeric())
-
-assay_component_map <- data.table(acid =numeric(), acsn = character())
-
-
-
-assay_source <- data.table(asid=numeric(),	assay_source_name= character(),	assay_source_long_name= character(),	assay_source_desc= character())
-
-chemical <- data.table(chid = c("20182", "22364", "23463" , "24102", "21735","20283"),
-                       casn = c("80-05-7", "521-18-6", "150-30-1", "22224-92-6", "67-68-5", "95-83-0"),
-                       chnm = c("Bisphenol A", "5alpha-Dihydrotestosterone","Phenylalanine","Fenamiphos",
+tcplRegister(what='spid', flds = list(spid=c("Tox21_303655", "Tox21_110011", "Tox21_400081", "DMSO", "Tox21_400037"),
+                                      chid=c("22364", "23463", "24102", "21735", "20283"),
+                                      tested_conc_unit=c('uM', 'uM', 'uM', 'uM', 'uM')
+                                      
+                                      ) )
+tcplRegister(what='chid', flds=list(chid = c("22364", "23463" , "24102", "21735","20283"),
+                       casn = c("521-18-6", "150-30-1", "22224-92-6", "67-68-5", "95-83-0"),
+                       chnm = c("5alpha-Dihydrotestosterone","Phenylalanine","Fenamiphos",
 "Dimethyl sulfoxide","4-Chloro-1,2-diaminobenzene"),
-                      dsstox_substance_id = c("DTXSID7020182", "DTXSID9022364",         "DTXSID9023463", "DTXSID3024102", "DTXSID2021735", "DTXSID5020283"),
-                    code = c("C80057", "C521186","C150301","C22224926", "C67685","C95830"))
-
-
-
-
-mc0 <- data.table(m0id =numeric(), acid =numeric(), spid = character(), apid = character(), rowi =numeric(),
-                  coli =numeric(), wllt = character(), wllq =numeric(), conc = character(), rval = character(),
-                  srcf =character(), created_date = character(), modified_date = character(), 
-                  modified_by = character())
-mc1 <- data.table(m1id = character(),m0id =numeric(), acid = character(), cndx = character(), repi = character(), created_date = character(),
-                  modified_date = character(), modified_by = character())
-mc2 <- data.table(m2id = character(),m0id =numeric(), acid = character(),m1id =numeric(), cval = character(), created_date = character(),
-                  modified_date = character(), modified_by = character())
-mc3 <- data.table(m3id =numeric(), aeid =numeric(),m0id =numeric(), acid = character(),m1id =numeric(),m2id =numeric(), bval = character(), pval = character(),
-                  logc = character(), resp = character(), created_date = character(), modified_date = character(), modified_by = character())
-
-mc4 <- data.table(m4id =numeric(), aeid =numeric(),	spid = character(),	bmad = character(),	resp_max = character(),	resp_min = character(),	max_mean = character(),	max_mean_conc = character(),	max_med = character(),	max_med_conc = character(),	logc_max = character(),	logc_min = character(),	cnst = character(),	hill = character(),	hcov = character(),	gnls = character(),	gcov = character(),	cnst_er = character(),	cnst_aic = character(),	cnst_rmse = character(),	cnst_prob = character(),	hill_tp = character(),	hill_tp_sd = character(),	hill_ga = character(),	hill_ga_sd = character(),	hill_gw = character(),	hill_gw_sd = character(),	hill_er = character(),	hill_er_sd = character(),	hill_aic = character(),	hill_rmse = character(),	hill_prob = character(),	gnls_tp = character(),	gnls_tp_sd = character(),	gnls_ga = character(),	gnls_ga_sd = character(),	gnls_gw = character(),	gnls_gw_sd = character(),	gnls_la = character(),	gnls_la_sd = character(),	gnls_lw = character(),	gnls_lw_sd = character(),	gnls_er = character(),	gnls_er_sd = character(),	gnls_aic = character(),	gnls_rmse = character(),	gnls_prob = character(),	nconc = character(),	npts = character(),	nrep = character(),	nmed_gtbl = character(),	tmpi = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
-
-mc5 <- data.table(m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	modl = character(),	hitc = character(),	fitc = character(),	coff = character(),	actp = character(),	modl_er = character(),	modl_tp = character(),	modl_ga = character(),	modl_gw = character(),	modl_la = character(),	modl_lw = character(),	modl_prob = character(),	modl_rmse = character(),	modl_acc = character(),	modl_acb = character(),	modl_ac10 = character(), model_type = numeric(),	created_date = character(),	modified_date = character(),	modified_by = character())
-
-mc6 <- data.table (m6id =numeric(),	m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	mc6_mthd_id = character(),	flag = character(),	fval = character(),	fval_unit = character(),	created_date = character(),	modified_date = character(),	modified_by = character())
-
-
-
-
-write.csv(mc0, file = file.path(dbfile_temp,"mc0.csv"), row.names = F)
-write.csv(mc1, file = file.path(dbfile_temp,"mc1.csv"), row.names = F)
-write.csv(mc2, file = file.path(dbfile_temp,"mc2.csv"), row.names = F)
-write.csv(mc3, file = file.path(dbfile_temp,"mc3.csv"), row.names = F)
-write.csv(mc4, file = file.path(dbfile_temp,"mc4.csv"), row.names = F)
-write.csv(mc5, file = file.path(dbfile_temp,"mc5.csv"), row.names = F)
-write.csv(mc6, file = file.path(dbfile_temp,"mc6.csv"), row.names = F)
-write.csv(sample, file = file.path(dbfile_temp,"sample.csv"), row.names = F)
-write.csv(assay, file = file.path(dbfile_temp,"assay.csv"), row.names = F)
-write.csv(assay_component, file = file.path(dbfile_temp,"assay_component.csv"), row.names = F)
-write.csv(assay_component_map, file = file.path(dbfile_temp,"assay_component_map.csv"), row.names = F)
-write.csv(assay_component_endpoint, file = file.path(dbfile_temp,"assay_component_endpoint.csv"), row.names = F)
-write.csv(assay_source, file = file.path(dbfile_temp,"assay_source.csv"), row.names = F)
-write.csv(chemical, file = file.path(dbfile_temp,"chemical.csv"), row.names = F)
+                      dsstox_substance_id = c("DTXSID9022364",         "DTXSID9023463", "DTXSID3024102", "DTXSID2021735", "DTXSID5020283"),
+                    code = c("C521186","C150301","C22224926", "C67685","C95830")))
 ```
 
 
@@ -185,19 +128,21 @@ head(chdat)
 ```
 ```{r eval = TRUE, message = FALSE}
 ## Register the unique chemicals
+cmap <- tcplLoadChem() # Chemicals already registered
+chdat.register <- chdat[!(chdat$code %in% cmap$code)] # Chemicals in chdat that are not registered yet
+
 tcplRegister(what = "chid", 
-             flds = chdat[, 
+             flds = chdat.register[, 
                         unique(.SD), 
-                        .SDcols = c("casn", "chnm")])
+                        .SDcols = c("casn", "chnm", "dsstox_substance_id", "code", "chid")])
 ```
 
 The "chdat" dataset contains a map of sample to chemical information, but chemical and sample information have to be registered separately because a chemical could potentially have multiple samples. Registering chemicals only takes a chemical CAS registry number ($\mathit{casn}$) and name ($\mathit{chnm}$). In the above example, only the unique chemicals were loaded. The $\mathit{casn}$ and $\mathit{chnm}$ fields have unique constraints; trying to register multiple chemicals with the same name or CAS registry number is not possible and will result in an error. With the chemicals loaded, the samples can be registered by mapping the sample ID ($\mathit{spid}$) to the chemical ID. Note, the user needs to load the chemical information to get the chemical IDs then merge the new chemical IDs with the sample IDs from the original file by chemical name or CASRN.
 
 ```{r eval = TRUE, message = FALSE}
-cmap <- tcplLoadChem()
 tcplRegister(what = "spid", 
              flds = merge(chdat[ , list(spid, casn)], 
-                          cmap[ , list(casn, chid)], 
+                          chdat.register[ , list(casn, chid)], 
                           by = "casn")[ , list(spid, chid)])
 ```
 Optionally, the user can subdivide the chemcial IDs into different groups or libraries. For illustration, the chemical IDs will be arbitrarily divided into two chemical libraries, with the even numbered chemical IDs in group 1 and the odd numbered chemical IDs in group 2.
