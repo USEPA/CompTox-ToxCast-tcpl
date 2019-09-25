@@ -46,7 +46,7 @@ tcplConfExample()
 
 tcplPlot(lvl = 4, fld = "m4id", val = c(18609966))## Create a level 4 plot
 
-#' ## Reset configuration
+## Reset configuration
 options(conf_store)
 
 
