@@ -35,13 +35,13 @@ tcplLoadConcUnit <- function(spid) {
   dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=c("sample"))
   
   if (nrow(dat) == 0) {
-    warning("The given spid(s) do not have concentration units.")
+    #warning("The given spid(s) do not have concentration units.")
     return(dat)
   }
   
   len_miss <- lw(!spid %in% dat$spid)
   if (len_miss > 0) {
-    warning(len_miss, " of the given spid(s) do not have concentration units.")
+    #warning(len_miss, " of the given spid(s) do not have concentration units.")
   }
   
   dat[]
