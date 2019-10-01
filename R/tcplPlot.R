@@ -43,7 +43,7 @@
 #' options(conf_store)
 #' 
 #' 
-tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = c("console","pdf"), fileprefix = paste0("tcplPlot_",Sys.Date()), multi = FALSE) {
+tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", by = NULL, output = c("console","pdf"), fileprefix = paste0("tcplPlot_",Sys.Date()), multi = FALSE) {
   
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   if (length(output) > 1) output <- output[1]
@@ -72,6 +72,8 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = c("c
   }
   if (nrow(dat) > 1 & output=="console") stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
   
+  
+  if(is.null(by)){
   if(output == "pdf" & !multi){
     graphics.off()
     pdf(
@@ -86,9 +88,7 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = c("c
     tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
     graphics.off()
   }
-  
-
-  #plotting if using multiplot function
+  # plotting if using multiplot function
   hitc.all = TRUE
   #browser()
   if(multi){
@@ -98,7 +98,38 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = c("c
     tcplMultiplot(dat = dat, agg = agg, flg = flg, boot = boot, hitc.all = hitc.all)
     graphics.off()
   }
-  
+  }else{
+    if(!by %in% names(dat)) stop("grouping variable unavailable.")
+    subset <- unlist(unique(dat[,..by]))
+    for(s in subset){
+      if(output == "pdf" & !multi){
+        graphics.off()
+        pdf(
+          file = file.path(
+            getwd(),
+            paste0(fileprefix,"_",by,"_",s,".",output)
+          ),
+          height = 6,
+          width = 10,
+          pointsize = 10
+        )
+        tcplPlotFits(dat = dat[get(by) == s], agg = agg, flg = flg, boot = boot)
+        graphics.off()
+      }
+      # plotting if using multiplot function
+      hitc.all = TRUE
+      #browser()
+      if(multi){
+        graphics.off()
+        pdf(file = file.path(getwd(),paste0(fileprefix,"_",by,"_",s,".",output)), height = 10, width = 6, pointsize = 10)
+        par(mfrow=c(3,2))
+        tcplMultiplot(dat = dat[get(by) == s], agg = agg, flg = flg, boot = boot, hitc.all = hitc.all)
+        graphics.off()
+      }
+      
+    }
+    
+  }
   
   
   
