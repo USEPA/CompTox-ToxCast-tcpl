@@ -13,8 +13,9 @@
 #' @param fld Character, the field(s) to query on
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
-#' @param output filename to output plots
+#' @param output how should the output be presnted
 #' @param multi Boolean, if multi is TRUE output 6 plots per page
+#' @param fileprefix prefix of filename
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -42,9 +43,10 @@
 #' options(conf_store)
 #' 
 #' 
-tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL, multi = FALSE) {
+tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = c("console","pdf"), fileprefix = paste0("tcplPlot_",Sys.Date()), multi = FALSE) {
   
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
+  if (length(output) > 1) output <- output[1]
   
   prs <- list(type = "mc", fld = fld, val = val)
   
@@ -65,17 +67,17 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
   
   agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
   
-  if(nrow(dat) == 1 & is.null(output)){
+  if(nrow(dat) == 1 & output=="console"){
   tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
   }
-  if (nrow(dat) > 1 & is.null(output)) stop("More than 1 concentration series returned for given field/val combination.  Set output to PDF or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
+  if (nrow(dat) > 1 & output=="console") stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
   
-  if(!is.null(output) & !multi){
+  if(output == "pdf" & !multi){
     graphics.off()
     pdf(
       file = file.path(
         getwd(),
-        paste(output)
+        paste0(fileprefix,".",output)
       ),
       height = 6,
       width = 10,
@@ -91,7 +93,7 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", output = NULL
   #browser()
   if(multi){
     graphics.off()
-    pdf(file = file.path(getwd(),paste(output)), height = 10, width = 6, pointsize = 10)
+    pdf(file = file.path(getwd(),paste0(fileprefix,".",output)), height = 10, width = 6, pointsize = 10)
     par(mfrow=c(3,2))
     tcplMultiplot(dat = dat, agg = agg, flg = flg, boot = boot, hitc.all = hitc.all)
     graphics.off()
