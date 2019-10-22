@@ -124,7 +124,7 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
       dat$toxboot <- 1
     }
     
-    for (i in m4ids) {
+    for (i in as.numeric(m4ids)) {
       
       resp <- agg[J(i), resp]
       logc <- agg[J(i), logc]
