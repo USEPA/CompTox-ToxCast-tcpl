@@ -1,3 +1,4 @@
+Reduced size of concepts to align with CRAN requirements
 New release includes additional functionality for package, and moves data.table to suggests.
 
 ## Test environments

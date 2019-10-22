@@ -129,7 +129,7 @@ tcplVarMat <- function(chid = NULL,
   if (!is.null(chid) & !is.vector(chid)) stop("'chid' must be a vector.")
   
   row.id <- row.id[1]
-  if (!row.id %in% c("code", "casn", "chid", "chnm")) row.id <- "code"
+  if (!row.id %in% c("code", "casn", "chid", "chnm", "dsstox_substance_id")) row.id <- "code"
 
   valid_var <- c(tcplListFlds("mc4"), tcplListFlds("mc5"))
 

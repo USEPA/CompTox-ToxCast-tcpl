@@ -19,5 +19,4 @@
 #' the success of processing and the second element is a data.table containing 
 #' the processed data
 #' 
-#' @family <%= if (type == "mc") "multiple" else "single" %>-concentration data 
-#' processing functions
+#' @family <%= if (type == "mc") "multiple" else "single" %>-concentration

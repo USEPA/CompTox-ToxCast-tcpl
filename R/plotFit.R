@@ -39,6 +39,27 @@
     ylab <- pars$resp_unit
     #y0 <- c(-50, 150)
   }
+  
+  #new labels for x axis
+  xlab <- NULL
+  if (is.na(pars$conc_unit)) {
+    xlab <- expression(bold(paste("Concentration (",mu,"M)")))
+  }else{
+    if (pars$conc_unit == "uM") {
+      xlab <- expression(bold(paste("Concentration (",mu,"M)")))
+    }
+    if (pars$conc_unit == "mg/l") {
+      xlab <- "Concentration (mg/l)"
+    }
+    if (pars$conc_unit == "CF") {
+      xlab <- "Concentration (CF)"
+    }
+  }
+  if (is.null(xlab)) {
+    xlab <- paste0("Concentration (",pars$conc_unit,")")
+  }
+  
+  
   if(pars$bmad != 0){
     y0 <- c(signif(-10*pars$bmad,2), signif(20*pars$bmad,2))
   }else{
@@ -103,7 +124,7 @@
             font.lab = 2,
             col = "black",
             cex = 2,
-            xlab = expression(bold(paste("Concentration (",mu,"M)"))),
+            xlab = xlab,
             ylab = ylab,
             main = "",
             bty = "n",

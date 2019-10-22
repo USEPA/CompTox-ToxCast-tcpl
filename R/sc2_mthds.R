@@ -117,6 +117,13 @@ sc2_mthds <- function() {
       e1 <- bquote(coff <- c(coff, log2(1.5)))
       list(e1)
       
+    },
+  	
+    pc25 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 25))
+      list(e1)
+      
     }
     
   )

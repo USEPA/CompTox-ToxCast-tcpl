@@ -40,8 +40,6 @@ normalization based on methods listed in sc1_aeid and sc1_methods tables.
 \seealso{
 \code{\link{Method functions}}, \code{\link{SC1_Methods}}
 
-Other single-concentration data 
-processing functions: \code{\link{sc2}}
+Other single-concentration: \code{\link{sc2}}
 }
-\concept{single-concentration data 
-processing functions}
+\concept{single-concentration}

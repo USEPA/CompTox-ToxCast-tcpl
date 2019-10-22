@@ -8,6 +8,7 @@ tcplLiteInit <- function () {
                     'assay_component_map'= c('acid', 'acsn'),
                     'sample'= c('spid', 'chid', 'stkc', 'stkc_unit', 'tested_conc_unit', 'spid_legacy'),
                     'chemical_library'= c('chid', 'clib'),
+                    'chemical' = c('chid', 'casn', 'chnm', 'dsstox_substance_id', 'code'),
                     
                     'mc0'= c('m0id', 'acid', 'spid', 'apid', 'rowi', 'coli', 'wllt', 'wllq', 'conc', 'rval', 'srcf', 'created_date', 'modified_date', 'modified_by'),
                     'mc1' = c('m1id', 'm0id', 'acid', 'cndx', 'repi', 'created_date', 'modified_date', 'modified_by'),
@@ -44,11 +45,10 @@ tcplLiteInit <- function () {
     }
   }
   
-  methods = c("mc2_methods", "mc3_methods","mc4_methods", "mc5_methods","mc5_fit_categories", "mc6_methods", "sc1_methods", "sc2_methods", "chemical")
+  methods = c("mc2_methods", "mc3_methods","mc4_methods", "mc5_methods","mc5_fit_categories", "mc6_methods", "sc1_methods", "sc2_methods")#, "chemical")
   
   for (m in methods) {
-    tcpl_path <- find.package('tcpl')
-    tcpl_fpath <- paste(tcpl_path,'csv',sep='/')
+    tcpl_fpath <- file.path(system.file(package = "tcpl"), "csv")
     tcpl_fpath <- paste(tcpl_fpath, m, sep='/')
     tcpl_fpath <- paste(tcpl_fpath, 'csv', sep='.')
     fpath <- paste(db, m, sep='/')

@@ -9,3 +9,4 @@ tcpl.Rcheck
 README.md
 CONTRIBUTING.md
 cran-comments.md
+^CRAN-RELEASE$
