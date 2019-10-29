@@ -151,7 +151,7 @@ mc5_mthds <- function(ae) {
       e1 <- bquote(coff <- c(coff, 0.3))
       list(e1)
 
-    }
+    },
     pc25 = function() {
 
       e1 <- bquote(coff <- c(coff, 25))
