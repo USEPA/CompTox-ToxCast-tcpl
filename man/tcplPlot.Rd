@@ -5,8 +5,9 @@
 \title{#-------------------------------------------------------------------------------
  Generic Plotting Function for tcpl}
 \usage{
-tcplPlot(lvl = 4, fld = NULL, val = NULL, type = "mc",
-  output = NULL, multi = FALSE)
+tcplPlot(lvl = 4, fld = NULL, val = NULL, type = "mc", by = NULL,
+  output = c("console", "pdf"), fileprefix = paste0("tcplPlot_",
+  Sys.Date()), multi = FALSE)
 }
 \arguments{
 \item{lvl}{Integer of length 1, the level of data to load}
@@ -18,7 +19,9 @@ the same order as 'fld'.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
 
-\item{output}{filename to output plots}
+\item{output}{how should the output be presnted}
+
+\item{fileprefix}{prefix of filename}
 
 \item{multi}{Boolean, if multi is TRUE output 6 plots per page}
 }
