@@ -29,7 +29,10 @@ Imports:
     methods,
     graphics,
     grDevices,
-    sqldf
+    sqldf,
+    httr,
+    dplyr,
+    tidyr
 Suggests:
     roxygen2,
     knitr,
