@@ -56,11 +56,9 @@ tcplspidAPIsearch <- function(spid, verbose = FALSE){
   }
 
   #could do some formatting here to match sample table in invitrodb  
-<<<<<<< HEAD
   data.table::as.data.table(df)
-=======
-  datatable::as.data.table(df)
->>>>>>> a52c0c9b9634a2805558f254b718ff4d0393547b
+
+
 
   
 }
