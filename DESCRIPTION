@@ -29,7 +29,8 @@ Imports:
     methods,
     graphics,
     grDevices,
-    sqldf
+    sqldf,
+    httr
 Suggests:
     roxygen2,
     knitr,
