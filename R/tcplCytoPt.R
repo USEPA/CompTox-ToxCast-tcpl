@@ -79,9 +79,9 @@
 #' tcplConfDefault()
 #' 
 #' ## Can only calculate the cytotox burst if using the MySQL database and
-#' ## TCPL_DRVR == 'RMySQL'
+#' ## TCPL_DRVR == 'MySQL'
 #' 
-#' if (conf_store == 'RMySQL') {
+#' if (getOption("TCPL_DRVR") == "MySQL") {
 #' 
 #' ## Load the "burst" endpoints -- none are defined in the example dataset
 #' tcplLoadAeid(fld = "burst_assay", val = 1)
