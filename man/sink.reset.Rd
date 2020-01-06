@@ -16,7 +16,9 @@ all output and messages back to the console.
 \seealso{
 \code{\link{sink}}, \code{\link{sink.number}}
 
-Other tcpl abbreviations: \code{\link{is.odd}},
-  \code{\link{lu}}, \code{\link{lw}}
+Other tcpl abbreviations: 
+\code{\link{is.odd}()},
+\code{\link{lu}()},
+\code{\link{lw}()}
 }
 \concept{tcpl abbreviations}

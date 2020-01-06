@@ -40,8 +40,11 @@ normalization based on methods listed in mc3_aeid and mc3_methods tables.
 \seealso{
 \code{\link{Method functions}}, \code{\link{MC3_Methods}}
 
-Other multiple-concentration: \code{\link{mc1}},
-  \code{\link{mc2}}, \code{\link{mc4}}, \code{\link{mc5}},
-  \code{\link{mc6}}
+Other multiple-concentration: 
+\code{\link{mc1}()},
+\code{\link{mc2}()},
+\code{\link{mc4}()},
+\code{\link{mc5}()},
+\code{\link{mc6}()}
 }
 \concept{multiple-concentration}

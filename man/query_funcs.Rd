@@ -6,11 +6,20 @@
 \alias{tcplSendQuery}
 \title{Wrappers for sending queries and fetching results}
 \usage{
-tcplQuery(query, db = getOption("TCPL_DB"),
-  drvr = getOption("TCPL_DRVR"), tbl = NULL)
+tcplQuery(
+  query,
+  db = getOption("TCPL_DB"),
+  drvr = getOption("TCPL_DRVR"),
+  tbl = NULL
+)
 
-tcplSendQuery(query, db = getOption("TCPL_DB"),
-  drvr = getOption("TCPL_DRVR"), tbl = NULL, delete = F)
+tcplSendQuery(
+  query,
+  db = getOption("TCPL_DB"),
+  drvr = getOption("TCPL_DRVR"),
+  tbl = NULL,
+  delete = F
+)
 }
 \arguments{
 \item{query}{Character of length 1, the query string}

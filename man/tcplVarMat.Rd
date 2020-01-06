@@ -4,9 +4,17 @@
 \alias{tcplVarMat}
 \title{Create chemical by assay matrices}
 \usage{
-tcplVarMat(chid = NULL, aeid = NULL, add.vars = NULL,
-  row.id = "code", flag = TRUE, cyto.pars = list(),
-  include.na.chid = FALSE, odir = NULL, file.prefix = NULL)
+tcplVarMat(
+  chid = NULL,
+  aeid = NULL,
+  add.vars = NULL,
+  row.id = "code",
+  flag = TRUE,
+  cyto.pars = list(),
+  include.na.chid = FALSE,
+  odir = NULL,
+  file.prefix = NULL
+)
 }
 \arguments{
 \item{chid}{Integer, chemical ID values to subset on}

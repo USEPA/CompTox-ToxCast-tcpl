@@ -16,6 +16,7 @@
 #' @param output how should the output be presnted
 #' @param multi Boolean, if multi is TRUE output 6 plots per page
 #' @param fileprefix prefix of filename
+#' @param by Paramater to divide files into e.g. aeid
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -28,7 +29,7 @@
 #' information.
 #'
 #' Leaving \code{fld} NULL will return all data.
-#'
+#' @import data.table
 #' @export
 #'
 #' @examples
@@ -100,7 +101,7 @@ tcplPlot <- function(lvl = 4, fld = NULL, val = NULL, type = "mc", by = NULL, ou
   }
   }else{
     if(!by %in% names(dat)) stop("grouping variable unavailable.")
-    subset <- unlist(unique(dat[,..by]))
+    subset <- unlist(unique(dat[,by, with = FALSE]))
     for(s in subset){
       if(output == "pdf" & !multi){
         graphics.off()

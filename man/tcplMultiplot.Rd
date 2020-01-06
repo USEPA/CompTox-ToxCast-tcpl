@@ -4,8 +4,7 @@
 \alias{tcplMultiplot}
 \title{Plot summary fits based on fit and dose-response data}
 \usage{
-tcplMultiplot(dat, agg, flg = NULL, boot = NULL, browse = FALSE,
-  hitc.all)
+tcplMultiplot(dat, agg, flg = NULL, boot = NULL, browse = FALSE, hitc.all)
 }
 \arguments{
 \item{dat}{data.table, level 4 or level 5 data, see details.}

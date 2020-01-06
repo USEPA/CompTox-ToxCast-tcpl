@@ -4,8 +4,7 @@
 \alias{tcplLoadChem}
 \title{Load sample/chemical information}
 \usage{
-tcplLoadChem(field = NULL, val = NULL, exact = TRUE,
-  include.spid = TRUE)
+tcplLoadChem(field = NULL, val = NULL, exact = TRUE, include.spid = TRUE)
 }
 \arguments{
 \item{field}{Character of length 1, the field to query on}

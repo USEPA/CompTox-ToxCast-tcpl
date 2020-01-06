@@ -39,6 +39,7 @@ call.
 \seealso{
 \code{\link{Method functions}}, \code{\link{SC2_Methods}}
 
-Other single-concentration: \code{\link{sc1}}
+Other single-concentration: 
+\code{\link{sc1}()}
 }
 \concept{single-concentration}

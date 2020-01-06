@@ -28,10 +28,14 @@ The unique of the \code{TRUE} values in \code{x}
 
 \code{\link{unique}}, \code{\link{which}}
 
-Other tcpl abbreviations: \code{\link{is.odd}},
-  \code{\link{lw}}, \code{\link{sink.reset}}
+Other tcpl abbreviations: 
+\code{\link{is.odd}()},
+\code{\link{lw}()},
+\code{\link{sink.reset}()}
 
-Other tcpl abbreviations: \code{\link{is.odd}},
-  \code{\link{lw}}, \code{\link{sink.reset}}
+Other tcpl abbreviations: 
+\code{\link{is.odd}()},
+\code{\link{lw}()},
+\code{\link{sink.reset}()}
 }
 \concept{tcpl abbreviations}

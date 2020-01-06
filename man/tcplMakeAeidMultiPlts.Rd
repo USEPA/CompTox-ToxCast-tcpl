@@ -4,8 +4,14 @@
 \alias{tcplMakeAeidMultiPlts}
 \title{Create a .pdf with all dose-response plots for a given aeid, 6 per page}
 \usage{
-tcplMakeAeidMultiPlts(aeid, lvl = 4L, fname = NULL, odir = getwd(),
-  clib = NULL, hitc.all = TRUE)
+tcplMakeAeidMultiPlts(
+  aeid,
+  lvl = 4L,
+  fname = NULL,
+  odir = getwd(),
+  clib = NULL,
+  hitc.all = TRUE
+)
 }
 \arguments{
 \item{aeid}{Integer of length 1, the assay endpoint id}

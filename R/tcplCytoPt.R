@@ -114,7 +114,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                        min.test = TRUE, default.pt = 3) {
   
   ## Variable-binding to pass R CMD Check
-  modl_ga <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- NULL
+  modl_ga <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- modl <- NULL
   ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
   
   if (!is.null(aeid) & !is.vector(aeid)) {

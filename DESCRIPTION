@@ -42,6 +42,6 @@ Suggests:
     testthat (>= 2.1.0)
 License: GPL-2
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr
 Encoding: UTF-8

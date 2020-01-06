@@ -4,8 +4,15 @@
 \alias{tcplFit}
 \title{Fit the data with the constant, hill, and gain-loss models}
 \usage{
-tcplFit(logc, resp, bmad, force.fit = FALSE, bidirectional = FALSE,
-  verbose = FALSE, ...)
+tcplFit(
+  logc,
+  resp,
+  bmad,
+  force.fit = FALSE,
+  bidirectional = FALSE,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{logc}{Numeric, log concentration values}

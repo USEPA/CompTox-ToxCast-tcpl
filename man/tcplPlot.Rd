@@ -5,9 +5,16 @@
 \title{#-------------------------------------------------------------------------------
  Generic Plotting Function for tcpl}
 \usage{
-tcplPlot(lvl = 4, fld = NULL, val = NULL, type = "mc", by = NULL,
-  output = c("console", "pdf"), fileprefix = paste0("tcplPlot_",
-  Sys.Date()), multi = FALSE)
+tcplPlot(
+  lvl = 4,
+  fld = NULL,
+  val = NULL,
+  type = "mc",
+  by = NULL,
+  output = c("console", "pdf"),
+  fileprefix = paste0("tcplPlot_", Sys.Date()),
+  multi = FALSE
+)
 }
 \arguments{
 \item{lvl}{Integer of length 1, the level of data to load}
@@ -18,6 +25,8 @@ tcplPlot(lvl = 4, fld = NULL, val = NULL, type = "mc", by = NULL,
 the same order as 'fld'.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
+
+\item{by}{Paramater to divide files into e.g. aeid}
 
 \item{output}{how should the output be presnted}
 

@@ -39,8 +39,11 @@ mc2_acid and mc2_methods tables.
 \seealso{
 \code{\link{Method functions}}, \code{\link{MC2_Methods}}
 
-Other multiple-concentration: \code{\link{mc1}},
-  \code{\link{mc3}}, \code{\link{mc4}}, \code{\link{mc5}},
-  \code{\link{mc6}}
+Other multiple-concentration: 
+\code{\link{mc1}()},
+\code{\link{mc3}()},
+\code{\link{mc4}()},
+\code{\link{mc5}()},
+\code{\link{mc6}()}
 }
 \concept{multiple-concentration}

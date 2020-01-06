@@ -4,8 +4,13 @@
 \alias{tcplCytoPt}
 \title{Calculate the cytotoxicity point based on the "burst" endpoints}
 \usage{
-tcplCytoPt(chid = NULL, aeid = NULL, flag = TRUE, min.test = TRUE,
-  default.pt = 3)
+tcplCytoPt(
+  chid = NULL,
+  aeid = NULL,
+  flag = TRUE,
+  min.test = TRUE,
+  default.pt = 3
+)
 }
 \arguments{
 \item{chid}{Integer, chemical ID values to subset on}

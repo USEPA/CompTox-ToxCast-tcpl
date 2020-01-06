@@ -4,8 +4,14 @@
 \alias{tcplMakeChidMultiPlts}
 \title{Create a .pdf with all dose-response plots for a given chid, 6 per page}
 \usage{
-tcplMakeChidMultiPlts(chid, lvl = 4L, fname = NULL, odir = getwd(),
-  clib = NULL, hitc.all = TRUE)
+tcplMakeChidMultiPlts(
+  chid,
+  lvl = 4L,
+  fname = NULL,
+  odir = getwd(),
+  clib = NULL,
+  hitc.all = TRUE
+)
 }
 \arguments{
 \item{chid}{Integer of length 1, the chemical id}

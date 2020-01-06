@@ -4,8 +4,16 @@
 \alias{tcplRun}
 \title{Perform data processing}
 \usage{
-tcplRun(asid = NULL, slvl, elvl, id = NULL, type = "mc",
-  mc.cores = NULL, outfile = NULL, runname = NULL)
+tcplRun(
+  asid = NULL,
+  slvl,
+  elvl,
+  id = NULL,
+  type = "mc",
+  mc.cores = NULL,
+  outfile = NULL,
+  runname = NULL
+)
 }
 \arguments{
 \item{asid}{Integer, assay source id}

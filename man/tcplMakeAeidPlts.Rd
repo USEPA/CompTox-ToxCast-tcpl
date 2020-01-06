@@ -4,8 +4,16 @@
 \alias{tcplMakeAeidPlts}
 \title{Create a .pdf with dose-response plots}
 \usage{
-tcplMakeAeidPlts(aeid, compare = F, lvl = 4L, fname = NULL,
-  odir = getwd(), ordr.fitc = TRUE, clib = NULL, cnst = NULL)
+tcplMakeAeidPlts(
+  aeid,
+  compare = F,
+  lvl = 4L,
+  fname = NULL,
+  odir = getwd(),
+  ordr.fitc = TRUE,
+  clib = NULL,
+  cnst = NULL
+)
 }
 \arguments{
 \item{aeid}{Integer of length 1 or 2, the assay endpoint id}

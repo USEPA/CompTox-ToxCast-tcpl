@@ -39,8 +39,11 @@ false positives and false negative results.
 \seealso{
 \code{\link{Method functions}}, \code{\link{MC6_Methods}}
 
-Other multiple-concentration: \code{\link{mc1}},
-  \code{\link{mc2}}, \code{\link{mc3}}, \code{\link{mc4}},
-  \code{\link{mc5}}
+Other multiple-concentration: 
+\code{\link{mc1}()},
+\code{\link{mc2}()},
+\code{\link{mc3}()},
+\code{\link{mc4}()},
+\code{\link{mc5}()}
 }
 \concept{multiple-concentration}
