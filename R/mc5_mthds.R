@@ -156,7 +156,12 @@ mc5_mthds <- function(ae) {
 
       e1 <- bquote(coff <- c(coff, 25))
       list(e1)
+    },
+      
+	pc30 = function() {
 
+      e1 <- bquote(coff <- c(coff, 30))
+      list(e1)
     }
   )
 }

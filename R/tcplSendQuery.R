@@ -39,7 +39,8 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
                     user = getOption("TCPL_USER"),
                     password = getOption("TCPL_PASS"),
                     host = getOption("TCPL_HOST"),
-                    dbname = db)
+                    dbname = db,
+                    bigint = "numeric")
     
   }
   
