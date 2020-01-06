@@ -112,7 +112,7 @@ multiPlotfit <- function(resp, logc, pars) {
   if(pars$modl == "hill") AC50 <- signif(10^pars$hill_ga,4) 
   if(pars$modl == "gnls") AC50 <- signif(10^pars$gnls_ga,4) 
   if(pars$modl == "cnst") AC50 <- NA
-  
+  if(pars$modl == "none") AC50 <- NA
   
   legend("topleft", bty="n", text.font=2,
          legend = paste(paste0("AC50: ",AC50), 
