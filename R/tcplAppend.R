@@ -40,7 +40,8 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
                     user = getOption("TCPL_USER"),
                     password = getOption("TCPL_PASS"),
                     host = getOption("TCPL_HOST"),
-                    dbname = db)
+                    dbname = db,
+                    bigint = "numeric")
     
     dbcon <- do.call(dbConnect, db_pars)
 
