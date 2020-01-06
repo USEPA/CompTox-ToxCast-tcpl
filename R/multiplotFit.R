@@ -106,6 +106,9 @@ multiPlotfit <- function(resp, logc, pars) {
   
   do.call(what = plot, args = c(resp[md] ~ logc[md], p), quote = TRUE)
   
+  if (is.null(pars$modl)) pars$modl <- "none"
+  if (is.na(pars$modl)) pars$modl <- "none"
+  
   if(pars$modl == "hill") AC50 <- signif(10^pars$hill_ga,4) 
   if(pars$modl == "gnls") AC50 <- signif(10^pars$gnls_ga,4) 
   if(pars$modl == "cnst") AC50 <- NA
