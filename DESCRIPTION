@@ -21,7 +21,7 @@ Depends:
 Imports:
     data.table (>= 1.9.4),
     DBI,
-    RMySQL,
+    RMariaDB,
     numDeriv,
     RColorBrewer,
     utils,

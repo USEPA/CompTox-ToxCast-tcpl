@@ -18,9 +18,8 @@
 #' 
 #' @import DBI
 #' @import data.table
-#' @importFrom RMySQL MySQL
+#' @importFrom RMariaDB MariaDB
 #' @importFrom utils read.csv read.table tail write.table
-#' @importMethodsFrom RMySQL dbConnect dbWriteTable dbDisconnect 
 
 tcplAppend <- function(dat, tbl, db, lvl=NULL) {
   
@@ -37,7 +36,7 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
            "?tcplConf for more details.")
     }
     
-    db_pars <- list(drv = RMySQL::MySQL(),
+    db_pars <- list(drv = RMariaDB::MariaDB(),
                     user = getOption("TCPL_USER"),
                     password = getOption("TCPL_PASS"),
                     host = getOption("TCPL_HOST"),
