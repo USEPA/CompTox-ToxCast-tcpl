@@ -160,6 +160,8 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   }
   print(8)
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
+  #filter out gnls curves
+  zdat <- zdat[modl != "gnls",]
   print(9)
   zdst <- zdat[, list(med = median(modl_ga[hitc == 1]), mad = mad(modl_ga[hitc == 
                                                                             1]), 
