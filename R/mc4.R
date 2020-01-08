@@ -100,7 +100,7 @@ mc4 <- function(ae, wr = FALSE) {
   ## Check to see if we are using the v3 schema
   if (check_tcpl_db_schema()) {
     # if we're using v3 schema we want to tcplfit2
-    print("yay")
+    dat <- tcplFit2(dat)
   } else {
     # Legacy fitting
     fitpars <- c(
