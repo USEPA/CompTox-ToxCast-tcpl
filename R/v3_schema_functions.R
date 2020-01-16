@@ -40,21 +40,65 @@ write_lvl_4 <- function(dat){
   
   dat <- m4id_map[dat]
   param <- dat[,c("m4id","fitparams")]
-  res <- param[, list(model_param = as.character(names(unlist(fitparams))), model_val = as.character(unlist(fitparams))), by = m4id]
+  unnested_param <- rbindlist(setNames(lapply(param$fitparams,tcplFit2_unnest),param$m4id),idcol = "m4id")
+  unnested_param$m4id <- as.numeric(unnested_param$m4id)
+  setkey(unnested_param,"m4id")
+  setkey(param,"m4id")
+  dat1 <- param[unnested_param]
+  dat_param <- dat1[,c("m4id","model","model_param","model_val")]
+  
+  # get l3 dat for agg columns
+  dat_agg <- dat[, .(aeid,m4id,m3id = m3ids)][, lapply(.SD,unlist),m4id]
+  l3_dat <- tcplLoadData(lvl = 3L, type = "mc", fld = "m3id", val = dat_agg$m3id)[,c("m0id","m1id","m2id","m3id")]
+  setkey(dat_agg,"m3id")
+  setkey(l3_dat,"m3id")
+  dat_agg <- dat_agg[l3_dat]
+  
   
   # append agg columns
-  tcplAppend(
-    dat = dat[, .SD, .SDcols = mc4_agg_cols],
+  tcpl:::tcplAppend(
+    dat = dat_agg[, .SD, .SDcols = mc4_agg_cols],
     tbl = "mc4_agg",
     db = getOption("TCPL_DB")
   )
   
   # append param dat
   tcpl:::tcplAppend(
-    dat = res,
+    dat = dat_param,
     tbl = "mc4_param",
     db = getOption("TCPL_DB")
   )
   
     
 }
+
+
+library(dplyr)
+library(tidyr)
+test <- param %>%
+  unnest_longer(fitparams) %>%
+  filter(fitparams_id != "modelnames") %>%
+  rename(model = fitparams_id) %>%
+  unnest_longer(fitparams) %>% 
+  select(m4id,model,model_param = fitparams_id,model_val = fitparams) %>% 
+  filter(!model_param %in% c("pars","sds")) %>% 
+  unnest_longer(model_val)
+# test1 <- test %>% group_by(m4id,model,model_param) %>% chop(model_val)
+# test2 <- test1 %>% filter(!length(model_val[[1]])>1)
+# rej <- test1 %>% filter(length(model_val[[1]])>1)
+# rej1 <- rej %>% group_by(m4id,model) %>% summarise(l = list(as.list(setNames(model_val,unlist(model_param)))))
+# test3 <- test2 %>% group_by(m4id) %>% chop(c(model_param,model_val)) %>% group_by(m4id,model) %>% summarise(l = list(as.list(setNames(unlist(model_val),unlist(model_param)))))
+# test4 <- bind_rows(rej1,test3) %>% group_by(m4id,model) %>% summarise(l = ifelse(n()>1,list(append(last(l),first(l))),l))
+# test5 <- test4 %>% summarise(output = list(as.list(setNames(l,model))))
+# test6 <- test5 %>% mutate(output = list(append(output,list(modelnames = names(output)))) )
+
+re_list <-
+  bind_rows(
+    test %>% group_by(m4id, model, model_param) %>% tidyr::chop(model_val) %>% filter(!length(model_val[[1]]) > 1) %>% group_by(m4id) %>% chop(c(model_param, model_val)) %>% group_by(m4id, model) %>% summarise(l = list(as.list(setNames(unlist(model_val), unlist(model_param))))),
+    test %>% group_by(m4id, model, model_param) %>% tidyr::chop(model_val) %>% filter(length(model_val[[1]]) > 1) %>% group_by(m4id, model) %>% summarise(l = list(as.list(setNames(model_val, unlist(model_param)))))
+  ) %>%
+  group_by(m4id, model) %>%
+  summarise(l = ifelse(n() > 1, list(append(last(l), first(l))), l)) %>%
+  summarise(output = list(as.list(setNames(l, model)))) %>%
+  rowwise() %>%
+  mutate(output = list(append(output, list(modelnames = names(output)))))
