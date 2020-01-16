@@ -39,13 +39,13 @@ write_lvl_4 <- function(dat){
   setkeyv(dat, c("aeid", "tmpi"))
   
   dat <- m4id_map[dat]
-  param <- dat[,c("m4id","fitparams")]
+  param <- dat[,c("m4id","aeid","fitparams")]
   unnested_param <- rbindlist(setNames(lapply(param$fitparams,tcplFit2_unnest),param$m4id),idcol = "m4id")
   unnested_param$m4id <- as.numeric(unnested_param$m4id)
   setkey(unnested_param,"m4id")
   setkey(param,"m4id")
   dat1 <- param[unnested_param]
-  dat_param <- dat1[,c("m4id","model","model_param","model_val")]
+  dat_param <- dat1[,c("m4id","aeid","model","model_param","model_val")]
   
   # get l3 dat for agg columns
   dat_agg <- dat[, .(aeid,m4id,m3id = m3ids)][, lapply(.SD,unlist),m4id]
