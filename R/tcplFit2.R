@@ -33,3 +33,48 @@ tcplFit2 <- function(dat) {
   # return dat with fitted curves in fitparams
   res
 }
+
+
+#' Title
+#'
+#' @param output 
+#'
+#' @return
+#'
+#' @examples
+tcplFit2_unnest <- function(output){
+  #unnest for use in invitrodb
+  modelnames <- output$modelnames
+  for(m in modelnames){
+    assign(m,output[[m]][!names(output[[m]]) %in% c("pars","sds","modl")])
+  }
+  res <- mget(modelnames)
+  
+  test <- NULL
+  for(m in modelnames){
+    test <- rbind(test,data.frame(model = m,model_param = names(res[[m]]),model_val = unlist(res[[m]]), stringsAsFactors = FALSE, row.names = NULL))
+  }
+  test
+}
+
+
+#' Title
+#'
+#' @param test 
+#'
+#' @return
+#'
+#' @examples
+tcplFit2_nest <- function(test){
+  # renest
+  modelnames <- unique(test$model)
+  for(m in modelnames){
+    assign(m,split(test[test$model == m,]$model_val,test[test$model == m,]$model_param))
+  }
+  
+  out1 <- c(
+    mget(modelnames),
+    list(modelnames = modelnames)
+  )
+  
+}
