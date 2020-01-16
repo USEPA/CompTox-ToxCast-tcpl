@@ -72,33 +72,3 @@ write_lvl_4 <- function(dat){
     
 }
 
-
-library(dplyr)
-library(tidyr)
-test <- param %>%
-  unnest_longer(fitparams) %>%
-  filter(fitparams_id != "modelnames") %>%
-  rename(model = fitparams_id) %>%
-  unnest_longer(fitparams) %>% 
-  select(m4id,model,model_param = fitparams_id,model_val = fitparams) %>% 
-  filter(!model_param %in% c("pars","sds")) %>% 
-  unnest_longer(model_val)
-# test1 <- test %>% group_by(m4id,model,model_param) %>% chop(model_val)
-# test2 <- test1 %>% filter(!length(model_val[[1]])>1)
-# rej <- test1 %>% filter(length(model_val[[1]])>1)
-# rej1 <- rej %>% group_by(m4id,model) %>% summarise(l = list(as.list(setNames(model_val,unlist(model_param)))))
-# test3 <- test2 %>% group_by(m4id) %>% chop(c(model_param,model_val)) %>% group_by(m4id,model) %>% summarise(l = list(as.list(setNames(unlist(model_val),unlist(model_param)))))
-# test4 <- bind_rows(rej1,test3) %>% group_by(m4id,model) %>% summarise(l = ifelse(n()>1,list(append(last(l),first(l))),l))
-# test5 <- test4 %>% summarise(output = list(as.list(setNames(l,model))))
-# test6 <- test5 %>% mutate(output = list(append(output,list(modelnames = names(output)))) )
-
-re_list <-
-  bind_rows(
-    test %>% group_by(m4id, model, model_param) %>% tidyr::chop(model_val) %>% filter(!length(model_val[[1]]) > 1) %>% group_by(m4id) %>% chop(c(model_param, model_val)) %>% group_by(m4id, model) %>% summarise(l = list(as.list(setNames(unlist(model_val), unlist(model_param))))),
-    test %>% group_by(m4id, model, model_param) %>% tidyr::chop(model_val) %>% filter(length(model_val[[1]]) > 1) %>% group_by(m4id, model) %>% summarise(l = list(as.list(setNames(model_val, unlist(model_param)))))
-  ) %>%
-  group_by(m4id, model) %>%
-  summarise(l = ifelse(n() > 1, list(append(last(l), first(l))), l)) %>%
-  summarise(output = list(as.list(setNames(l, model)))) %>%
-  rowwise() %>%
-  mutate(output = list(append(output, list(modelnames = names(output)))))
