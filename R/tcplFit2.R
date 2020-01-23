@@ -19,7 +19,7 @@ tcplFit2 <- function(dat) {
     max_med = max(rmds), max_med_conc = logc[which.max(rmds)],
     logc_max = max(logc), logc_min = min(logc), nconc = length(unique(logc)),
     npts = .N, nrep = median(as.numeric(nconcs)), nmed_gtbl = sum(med_rmds) / first(nconcs),
-    concentration_unlogged = list(exp(logc)), response = list(resp), m3ids = list(m3id)
+    concentration_unlogged = list(10^(logc)), response = list(resp), m3ids = list(m3id)
   ),
   keyby = .(aeid, spid)
   ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
