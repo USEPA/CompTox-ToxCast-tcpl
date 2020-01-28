@@ -41,6 +41,7 @@ tcplFit2 <- function(dat) {
 #' @return
 #' @import dplyr
 #' @import tidyr
+#' @importFrom tcplfit2 tcplhit2_core
 #'
 #' @examples
 tcplHit2 <- function(mc4){
