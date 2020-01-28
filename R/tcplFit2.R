@@ -64,7 +64,7 @@ tcplHit2 <- function(mc4){
   mc5_param <- res %>% left_join(mc4 %>% select(m4id,aeid) %>% unique,by = "m4id") %>% select(m4id,aeid,top_over_cutoff:bmd)
   mc5_param <- mc5_param %>% tidyr::pivot_longer(cols = top_over_cutoff:bmd, names_to = "hit_param", values_to = "hit_val") %>% filter(!is.na(hit_val))
   
-  list(mc5 = mc5,mc5_param = mc5_param)
+  mc5 %>% inner_join(mc5_param,by = c("m4id","aeid")) %>% as.data.table
 }
 
 

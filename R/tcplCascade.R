@@ -52,6 +52,7 @@ tcplCascade <- function(lvl, type, id) {
     if (lvl <= 4) tcplDelete(tbl = "mc4_agg", fld = "aeid", val = id, db = db)
     if (lvl <= 4  && check_tcpl_db_schema()) tcplDelete(tbl = "mc4_param", fld = "aeid", val = id, db = db)
     if (lvl <= 5) tcplDelete(tbl = "mc5", fld = "aeid", val = id, db = db)
+    if (lvl <= 5  && check_tcpl_db_schema()) tcplDelete(tbl = "mc5_param", fld = "aeid", val = id, db = db)
     if (lvl <= 6) tcplDelete(tbl = "mc6", fld = "aeid", val = id, db = db)
     
   }

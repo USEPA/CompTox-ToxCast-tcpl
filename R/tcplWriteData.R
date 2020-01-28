@@ -172,6 +172,27 @@ tcplWriteData <- function(dat, lvl, type) {
       tbl = "sc2_agg",
       db = getOption("TCPL_DB")
     )
+  } else if (lvl == 5 & check_tcpl_db_schema()) {
+    tcplAppend(
+      dat = unique(dat[,c("m4id","aeid","modl","hitc","coff","model_type","modified_by")]),
+      tbl = "mc5",
+      db = getOption("TCPL_DB")
+    )
+    # get m5id for mc5_param
+    qformat <- "SELECT m5id, m4id, aeid FROM mc5 WHERE aeid IN (%s);"
+    qstring <- sprintf(qformat, paste0("\"", ids, "\"", collapse = ","))
+    
+    m5id_map <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = c("mc5"))
+    setkeyv(m5id_map, c("aeid","m4id"))
+    setkeyv(dat, c("aeid","m4id"))
+    
+    dat <- m4id_map[dat]
+    
+    tcplAppend(
+      dat = dat[,c("m5id","aeid","hit_param","hit_val")],
+      tbl = "mc5",
+      db = getOption("TCPL_DB")
+    )
   } else {
     n <- nrow(dat)
     tbl <- paste0(if (type == "mc") "mc" else "sc", lvl)
