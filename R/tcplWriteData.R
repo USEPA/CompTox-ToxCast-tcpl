@@ -186,11 +186,11 @@ tcplWriteData <- function(dat, lvl, type) {
     setkeyv(m5id_map, c("aeid","m4id"))
     setkeyv(dat, c("aeid","m4id"))
     
-    dat <- m4id_map[dat]
+    dat <- m5id_map[dat]
     
     tcplAppend(
       dat = dat[,c("m5id","aeid","hit_param","hit_val")],
-      tbl = "mc5",
+      tbl = "mc5_param",
       db = getOption("TCPL_DB")
     )
   } else {
