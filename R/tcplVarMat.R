@@ -142,8 +142,8 @@ tcplVarMat <- function(chid = NULL,
   
   ## Load all possibilities to create matrix dimensions
 
-  sc <- tcplQuery("SELECT DISTINCT acid, spid FROM sc0;", tbl=c('sc0'))
-  mc <- tcplQuery("SELECT DISTINCT acid, spid FROM mc0;", tbl=c('mc0'))
+  mc <- tcplQuery("SELECT DISTINCT mc5.aeid, spid FROM mc5 inner join mc4 on mc4.m4id = mc5.m4id;")
+  sc <- tcplQuery("SELECT DISTINCT aeid, spid FROM sc2;")
 
   tst <- rbindlist(list(sc, mc))
   tst <- unique(tst)
@@ -152,9 +152,9 @@ tcplVarMat <- function(chid = NULL,
   rm(sc, mc)
 
   ## Expand acid to aeid
-  aeid_info <- tcplLoadAeid("acid", tst[ , unique(acid)])
-  setkey(aeid_info, acid)
-  setkey(tst, acid)
+  aeid_info <- tcplLoadAeid("aeid", tst[ , unique(aeid)], add.fld = "acid")
+  setkey(aeid_info, aeid)
+  setkey(tst, aeid)
   tst <- aeid_info[ , list(acid, aeid)][tst, allow.cartesian = TRUE]
   
   ## Subset by aeid
