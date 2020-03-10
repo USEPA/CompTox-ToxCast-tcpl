@@ -24,18 +24,17 @@
 
 blineShift <- function(resp, logc, wndw) {
   
-  wndw <- unique(wndw)[1]
+  if (any(is.na(resp))) return(resp)
+  if (length(unique(logc)) < 4) return(resp)
   
+  wndw <- unique(wndw)[1]
   ordr <- order(logc)
   resp <- resp[ordr]
   logc <- logc[ordr]
   
   uconc <- unique(logc)
   nconc <- length(uconc)
-  
-  if (any(is.na(resp))) return(resp)
-  if (nconc < 4) return(resp)
-  
+
   low <- 1:max(ceiling(nconc/4), 2)
   rsub <- resp[which(logc %in% uconc[low])]
   csub <- logc[which(logc %in% uconc[low])]
