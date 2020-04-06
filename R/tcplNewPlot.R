@@ -31,30 +31,42 @@ hill_curve <- function(hill_tp, hill_ga, hill_gw, lconc){
   hill_tp/(1+10^((hill_ga - lconc)*hill_gw))
 }
 
+exp2_a <- l4_dat %>% pull(exp2_a)
+exp2_b <- l4_dat %>% pull(exp2_b)
+#function definition for exp2
+exp2_curve <- function(a, b, lconc){
+  return(a*(exp(lconc/b) - 1)  )
+}
 
 
-ggplot(l3_dat,
+
+p <- ggplot(l3_dat,
        aes(x=logc, 
            y=resp)) +
   stat_function(fun = hill_curve, 
                 args=list(hill_tp = hill_tp, 
                           hill_ga = hill_ga, 
                           hill_gw = hill_gw),
-                alpha = 1,
-                color = "red", 
-                size = 1) +
+                aes(color = "Hill")) +
   stat_function(fun = gnls_curve, 
                 args=list(top = gnls_tp, 
                           ga = gnls_ga, 
                           gw = gnls_gw, 
                           la = gnls_la, 
                           lw = gnls_lw),
-                alpha = 1, 
-                color = "blue", 
-                size = 1,
-                linetype = 2) +
+                aes(color = "Gnls")) +
+  stat_function(fun = exp2_curve, 
+                args=list(a = exp2_a, 
+                          b = exp2_b),
+                aes(color = "Exp2")) +
   theme_bw() +
-  geom_point(size=5,alpha=1) +
+  scale_color_viridis_d() +
+  geom_point(size=1,alpha=1) +
   theme(legend.position="none", legend.title=element_blank()) +
   ylab("Percent Activity") +
   xlab("Log Concentration")
+
+p
+library(plotly)
+ggplotly(p)
+htmlwidgets::saveWidget(as_widget(ggplotly(p)), "exampleplot.html")

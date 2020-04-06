@@ -57,7 +57,15 @@ mc4_mthds <- function() {
       e1 <- bquote(dat[ , bmad := mad(resp[wllt == "n"], na.rm = TRUE)])
       list(e1)
       
+    },
+    
+    onesd.aeid.lowconc.twells = function() {
+      
+      e1 <- bquote(dat[ , osd := sd(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
+      list(e1)
+      
     }
+    
   )
 }
 

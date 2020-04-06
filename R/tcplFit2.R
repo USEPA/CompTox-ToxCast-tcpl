@@ -14,7 +14,7 @@ tcplFit2 <- function(dat) {
     med_rmds <- rmds >= (3 * bmad)
     .(rmns, rmds, nconcs, med_rmds)
   }), keyby = .(aeid, spid, logc)][, .(
-    bmad = min(bmad), resp_max = max(resp),
+    bmad = min(bmad), resp_max = max(resp), osd = min(osd),
     resp_min = min(resp), max_mean = max(rmns), max_mean_conc = logc[which.max(rmns)],
     max_med = max(rmds), max_med_conc = logc[which.max(rmds)],
     logc_max = max(logc), logc_min = min(logc), nconc = length(unique(logc)),
