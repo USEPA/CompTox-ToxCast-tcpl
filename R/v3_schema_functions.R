@@ -6,6 +6,8 @@
 #'
 #' @examples
 write_lvl_4 <- function(dat){
+  
+  
   mc4_cols <- c("aeid",
                 "spid",
                 "bmad",
@@ -41,9 +43,10 @@ write_lvl_4 <- function(dat){
   dat <- m4id_map[dat]
   param <- dat[,c("m4id","aeid","fitparams")]
   #get one standard deviation to save in similar way to fit params
-  onesd <- dat[,c("m4id","aeid","osd")][, .("model_val" = "osd")]
+  onesd <- dat[,c("m4id","aeid","osd")]
+  setnames(onesd, "osd", "model_val")
   onesd[,"model" := "all"]
-  onesd[,"model_parm" := "onesd"]
+  onesd[,"model_param" := "onesd"]
 
   #unnest fit2 params
   unnested_param <- rbindlist(setNames(lapply(param$fitparams,tcplFit2_unnest),param$m4id),idcol = "m4id")
@@ -74,6 +77,7 @@ write_lvl_4 <- function(dat){
     tbl = "mc4_param",
     db = getOption("TCPL_DB")
   )
+  
   
   tcpl:::tcplAppend(
     dat = onesd,
