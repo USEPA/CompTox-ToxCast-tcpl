@@ -39,8 +39,8 @@ tcplFit2 <- function(dat) {
 #' @param mc4 
 #'
 #' @return
-#' @import dplyr
-#' @import tidyr
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select
+#' @importFrom tidyr pivot_longer
 #' @importFrom tcplfit2 tcplhit2_core
 #'
 #' @examples

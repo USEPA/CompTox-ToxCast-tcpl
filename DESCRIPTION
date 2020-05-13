@@ -30,9 +30,8 @@ Imports:
     graphics,
     grDevices,
     sqldf,
-    httr,
-    dplyr,
-    tidyr
+	dplyr,
+	tidyr
 Suggests:
     roxygen2,
     knitr,
