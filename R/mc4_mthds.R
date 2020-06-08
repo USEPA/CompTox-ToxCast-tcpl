@@ -70,6 +70,12 @@ mc4_mthds <- function() {
       e1 <- bquote(dat[ , bmed := median(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
       list(e1)
       
+    },
+    no.gnls.fit = function() {
+      
+      e1 <- bquote(dat[ ,fitmodels := list(c("cnst", "hill",  "poly1", "poly2", "pow", "exp2", "exp3","exp4", "exp5"))])
+      list(e1)
+      
     }
     
   )

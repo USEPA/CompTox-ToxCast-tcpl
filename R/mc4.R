@@ -100,7 +100,17 @@ mc4 <- function(ae, wr = FALSE) {
   ## Check to see if we are using the v3 schema
   if (check_tcpl_db_schema()) {
     # if we're using v3 schema we want to tcplfit2
-    dat <- tcplFit2(dat)
+
+    # check to see if we specified fit models for tcplfit2
+    if ("fitmodels" %in% names(dat)) {
+      #extract the fitmodels from dat and pass to fitting
+      dat <- tcplFit2(dat, fitmodels = unique(dat$fitmodels)[[1]])
+
+    } else {
+      dat <- tcplFit2(dat)
+    }
+    
+    
   } else {
     # Legacy fitting
     fitpars <- c(
