@@ -5,7 +5,8 @@
 #' @return
 #' @importFrom tcplfit2 tcplfit2_core
 #' @examples
-tcplFit2 <- function(dat) {
+tcplFit2 <- function(dat,fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4",
+                                       "exp5")) {
   # do all the regular fitting things that still need to be done
   res <- dat[, `:=`(c("rmns", "rmds", "nconcs", "med_rmds"), {
     rmns <- mean(resp)
@@ -25,7 +26,8 @@ tcplFit2 <- function(dat) {
   ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
     `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
       unlist(response), 0,
-      verbose = FALSE, force.fit = TRUE
+      verbose = FALSE, force.fit = TRUE,
+      fitmodels = fitmodels
     ))),
     keyby = .(spid)
   ]
@@ -120,4 +122,14 @@ tcplFit2_nest <- function(test){
     list(modelnames = modelnames)
   )
   
+}
+
+log_model_params <- function(datc){
+  datc %>% mutate(model_val = case_when(model_param == "ac50" ~ log10(model_val),
+                                        TRUE ~ model_val)) %>% as.data.table()
+}
+
+unlog_model_params <- function(datc){
+  datc %>% mutate(model_val = case_when(model_param == "ac50" ~ 10^(model_val),
+                                        TRUE ~ model_val)) %>% as.data.table()
 }
