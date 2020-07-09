@@ -1,3 +1,8 @@
+tcpl v2.1.0
+==============
+*updated for release with toxcast invitrodb data
+*added option to allow change in single conc bmad calculation
+
 tcpl v2.0.3
 ==============
 *Created tcplPlot a generic plotting function with call similar to tcplLoadData
