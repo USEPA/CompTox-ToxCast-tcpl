@@ -136,9 +136,13 @@ sc2_mthds <- function() {
       e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*2]))
       list(e1)
       
+    },
+    
+    log2fc_0.76 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 0.76))
+      list(e1)
     }
-    
-    
   )
 }
 
