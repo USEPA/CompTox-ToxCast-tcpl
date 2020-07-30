@@ -581,6 +581,14 @@ mc3_mthds <- function() {
                        resp := 1-(cval/bval)])
       list(e1)
       
+    },
+    
+    bval.aeid.nwlls.med = function(aeids) {
+      e1 <- bquote(dat[J(.(aeids)), 
+                       bval := median(cval[wllt == "n"], na.rm = TRUE), 
+                       by = list(aeid)])
+      list(e1)
+      
     }
     
   )
