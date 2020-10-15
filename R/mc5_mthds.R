@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# mc5_mthds: Load list of cutoff methods (to be used at level 5)
+# mc5_mthds: Load list of cutoff methods (to be used at level 5).
 #-------------------------------------------------------------------------------
 
 #' @name MC5_Methods
@@ -164,12 +164,24 @@ mc5_mthds <- function(ae) {
       list(e1)
     },
     
-    bmad1 = function() {
-
+  bmad1 = function() {
+      
       e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)]))
       list(e1)
-
-    }
+    }, 
+	
+  bmad2 = function() {
+  	  
+	  e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*2]))
+	  list(e1)
+	},
+	
+	pc10 = function() {
+	    
+	  e1 <- bquote(coff <- c(coff, 10))
+	  list(e1)
+	}
+	
   )
 }
 
