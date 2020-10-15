@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# mc5_mthds: Load list of cutoff methods (to be used at level 5)
+# mc5_mthds: Load list of cutoff methods (to be used at level 5).
 #-------------------------------------------------------------------------------
 
 #' @name MC5_Methods
