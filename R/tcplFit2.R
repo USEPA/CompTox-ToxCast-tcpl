@@ -25,8 +25,8 @@ tcplFit2 <- function(dat,fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2",
   keyby = .(aeid, spid)
   ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
     `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
-      unlist(response), 0,
-      verbose = FALSE, force.fit = TRUE,
+      unlist(response),cutoff = bmad,
+      verbose = FALSE, force.fit = FALSE,
       fitmodels = fitmodels
     ))),
     keyby = .(spid)
