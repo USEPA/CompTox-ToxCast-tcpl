@@ -76,6 +76,15 @@ mc4_mthds <- function() {
       e1 <- bquote(dat[ ,fitmodels := list(c("cnst", "hill",  "poly1", "poly2", "pow", "exp2", "exp3","exp4", "exp5"))])
       list(e1)
       
+    },
+    nmad.apid.null.zwells = function() {
+      
+      e1 <- bquote(dat[J(.(aeids)), 
+                       bmad := mad(resp[wllt == "z"], constant=1.4826,
+                                      na.rm = TRUE),
+                       by = list(aeid, apid)])
+      list(e1)
+      
     }
     
   )
