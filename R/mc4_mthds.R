@@ -79,7 +79,7 @@ mc4_mthds <- function() {
     },
     nmad.apid.null.zwells = function() {
       
-      e1 <- bquote(dat[J(.(aeids)), 
+      e1 <- bquote(dat[, 
                        bmad := mad(resp[wllt == "z"], constant=1.4826,
                                       na.rm = TRUE),
                        by = list(aeid, apid)])
