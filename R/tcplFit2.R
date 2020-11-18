@@ -26,7 +26,7 @@ tcplFit2 <- function(dat,fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2",
   ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
     `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
       unlist(response),cutoff = bmad,
-      verbose = FALSE, force.fit = FALSE,
+      verbose = FALSE, force.fit = TRUE,
       fitmodels = fitmodels
     ))),
     keyby = .(spid)
@@ -41,7 +41,7 @@ tcplFit2 <- function(dat,fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2",
 #' @param mc4 
 #'
 #' @return
-#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise
 #' @importFrom tidyr pivot_longer
 #' @importFrom tcplfit2 tcplhit2_core
 #'
@@ -65,12 +65,12 @@ tcplHit2 <- function(mc4,coff){
   #add the cutoff
   #nested_mc4$cutoff <- coff
   
-  test <- nested_mc4 %>% rowwise %>% mutate(df = list(tcplhit2_core(params = params, conc = conc, resp = resp, bmed = bmed, cutoff = coff, onesd = onesd))) %>% select(-conc,-resp)
+  test <- nested_mc4 %>% rowwise %>% mutate(df = list(tcplhit2_core(params = params, conc = unlist(conc), resp = unlist(resp), bmed = bmed, cutoff = coff, onesd = onesd))) %>% select(-conc,-resp)
   
   res <- cbind(test %>% as.data.table(),test %>% as.data.table %>% pull(df) %>% rbindlist())
   
   # mc5 table
-  mc5 <- res %>% left_join(mc4 %>% select(m4id,aeid) %>% unique,by = "m4id") %>% select(m4id,aeid,modl = fit_method,hitc = hitcall,coff = cutoff) %>% mutate(model_type = 3)
+  mc5 <- res %>% left_join(mc4 %>% select(m4id,aeid) %>% unique,by = "m4id") %>% select(m4id,aeid,modl = fit_method,hitc = hitcall,coff = cutoff) %>% mutate(model_type = 2)
   
   # mc5 param table
   mc5_param <- res %>% left_join(mc4 %>% select(m4id,aeid) %>% unique,by = "m4id") %>% select(m4id,aeid,top_over_cutoff:bmd)
