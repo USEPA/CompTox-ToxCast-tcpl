@@ -5,8 +5,9 @@
 #' @return
 #' @importFrom tcplfit2 tcplfit2_core
 #' @examples
-tcplFit2 <- function(dat,fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4",
-                                       "exp5")) {
+tcplFit2 <- function(dat,
+                     fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4","exp5"),
+                     bmed = NULL){
   # do all the regular fitting things that still need to be done
   res <- dat[, `:=`(c("rmns", "rmds", "nconcs", "med_rmds"), {
     rmns <- mean(resp)
@@ -15,7 +16,7 @@ tcplFit2 <- function(dat,fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2",
     med_rmds <- rmds >= (3 * bmad)
     .(rmns, rmds, nconcs, med_rmds)
   }), keyby = .(aeid, spid, logc)][, .(
-    bmad = min(bmad), resp_max = max(resp), osd = min(osd), bmed = max(bmed),
+    bmad = min(bmad), resp_max = max(resp), osd = min(osd), bmed = ifelse(is.null(bmed),0,max(bmed)),
     resp_min = min(resp), max_mean = max(rmns), max_mean_conc = logc[which.max(rmns)],
     max_med = max(rmds), max_med_conc = logc[which.max(rmds)],
     logc_max = max(logc), logc_min = min(logc), nconc = length(unique(logc)),

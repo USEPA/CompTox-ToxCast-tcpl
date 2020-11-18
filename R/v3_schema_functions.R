@@ -47,12 +47,16 @@ write_lvl_4 <- function(dat){
   setnames(onesd, "osd", "model_val")
   onesd[,"model" := "all"]
   onesd[,"model_param" := "onesd"]
-  
-  #get bmed to save in similar way to fit params
-  bmed <- dat[,c("m4id","aeid","bmed")]
-  setnames(bmed, "bmed", "model_val")
-  bmed[,"model" := "all"]
-  bmed[,"model_param" := "bmed"]
+
+  # get bmed to save in similar way to fit params
+  if ("bmed" %in% colnames(dat)) {
+    bmed <- dat[, c("m4id", "aeid", "bmed")]
+    setnames(bmed, "bmed", "model_val")
+    bmed[, "model" := "all"]
+    bmed[, "model_param" := "bmed"]
+  } else {
+    bmed <- 0
+  }
 
   #unnest fit2 params
   unnested_param <- rbindlist(setNames(lapply(param$fitparams,tcplFit2_unnest),param$m4id),idcol = "m4id")
