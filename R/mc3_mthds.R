@@ -591,6 +591,24 @@ mc3_mthds <- function() {
                          by = list(aeid, apid)])
         list(e1)
       
+    },
+    bval.apid.lowconc.nmad = function(aeids) {
+      #nMad = mad(d, constant=1.4826, na.rm=T)
+      e1 <- bquote(dat[J(.(aeids)),
+                       bval := mad(cval[cndx %in% 1:2 & wllt == "t"],
+                                   constant = 1.4826,
+                                   na.rm = TRUE),
+                       by = list(aeid, apid)])
+      list(e1)
+    },
+    
+    resp.apid.lowconc.bmed= function(aeids) {
+      #Median = median(d, na.rm=T)
+      e1 <- bquote(dat[J(.(aeids)),
+                       resp := cval - median(cval[cndx %in% 1:2 & wllt == "t"],na.rm = TRUE),
+                       by = list(aeid, apid)])
+      list(e1)
+      
     }
     
   )
