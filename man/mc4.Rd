@@ -32,10 +32,10 @@ typically more convenient and suggested to use the \code{\link{tcplRun}}
 wrapper function.
 }
 \details{
-Level 4 multiple-concentration modeling takes the dose-response data for 
-chemical-assay pairs, and fits three models to the data: constant, hill, 
-and gain-loss. For more information about the models see 
-\code{\link{Models}}. When a chemical has more than one sample, the function 
+Level 4 multiple-concentration modeling takes the dose-response data for
+chemical-assay pairs, and fits three models to the data: constant, hill,
+and gain-loss. For more information about the models see
+\code{\link{Models}}. When a chemical has more than one sample, the function
 fits each sample separately.
 }
 \seealso{

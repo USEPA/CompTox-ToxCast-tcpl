@@ -70,7 +70,7 @@ tcplHit2 <- function(mc4, coff) {
 
   # add the cutoff
   # nested_mc4$cutoff <- coff
-
+  # browser()
   test <- nested_mc4 %>%
     dplyr::rowwise() %>%
     mutate(df = list(tcplhit2_core(params = params, conc = unlist(conc), resp = unlist(resp), bmed = bmed, cutoff = coff, onesd = onesd))) %>%

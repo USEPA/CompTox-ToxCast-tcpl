@@ -14,12 +14,12 @@ tcplWriteData(dat, lvl, type)
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
 }
 \description{
-\code{tcplWriteData} takes a data.table with screening data and writes the 
+\code{tcplWriteData} takes a data.table with screening data and writes the
 data into the given level table in the tcpl databases.
 }
 \details{
-This function appends data onto the existing table. It also deletes all the 
-data for any acids or aeids dat contains from the given and all downstream 
+This function appends data onto the existing table. It also deletes all the
+data for any acids or aeids dat contains from the given and all downstream
 tables.
 
 The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -28,8 +28,8 @@ into the level tables, whereas the single concentration will be loaded into
 the single tables.
 }
 \note{
-This function is not exported and is not intended to be used by the user. 
-The user should only write level 0 data, which is written with 
+This function is not exported and is not intended to be used by the user.
+The user should only write level 0 data, which is written with
 \code{\link{tcplWriteLvl0}}.
 }
 \seealso{
