@@ -58,15 +58,15 @@ tcplHit2 <- function(mc4,coff){
   nested_mc4 <- nested_mc4 %>% left_join(l3_dat %>% group_by(m4id) %>% summarise(conc = list(10^(logc)), resp = list(resp)), by = "m4id")
   
   #rejoin the onesd for tcplfit2
-  nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "onesd") %>% select(m4id,onesd = model_val))
+  nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "onesd", by = "m4id") %>% select(m4id,onesd = model_val))
   
   #rejoin for bmed
-  nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "bmed") %>% select(m4id,bmed = model_val))
+  nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "bmed", by = "m4id") %>% select(m4id,bmed = model_val))
   
   #add the cutoff
   #nested_mc4$cutoff <- coff
   
-  test <- nested_mc4 %>% rowwise %>% mutate(df = list(tcplhit2_core(params = params, conc = unlist(conc), resp = unlist(resp), bmed = bmed, cutoff = coff, onesd = onesd))) %>% select(-conc,-resp)
+  test <- nested_mc4 %>% dplyr::rowwise %>% mutate(df = list(tcplhit2_core(params = params, conc = unlist(conc), resp = unlist(resp), bmed = bmed, cutoff = coff, onesd = onesd))) %>% select(-conc,-resp)
   
   res <- cbind(test %>% as.data.table(),test %>% as.data.table %>% pull(df) %>% rbindlist())
   
