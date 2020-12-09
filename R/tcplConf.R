@@ -6,7 +6,7 @@
 #' @export
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 
-                      db = NULL) {
+                      db = NULL,...) {
   #tcplConf(user='_dataminer', pass='pass', host='au.epa.gov', drvr = 'MySQL',db = 'invitrodb')
   
   # Notes for tcplLite
@@ -32,6 +32,13 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   if (!is.null(pass)) setop(pass)
   if (!is.null(host)) setop(host)
   if (!is.null(db))   setop(db)
+  
+  
+  additional_pars <- list(...)
+  if(length(additional_pars)>0){
+  names(additional_pars) <- paste0("TCPL_", toupper(names(additional_pars)))
+  do.call(what = options, additional_pars)
+  }
   
   if (!is.null(drvr)) {
     
