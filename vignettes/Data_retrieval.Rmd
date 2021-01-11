@@ -31,7 +31,7 @@ $(document).ready(function() {
 # Data Retrieval
 This vignette describes how the user can retrieve data from the csv files using tcplLite or from the ToxCast databases using tcpl. Listed below are case examples that extract summary information about the chemical, *Bisphenol A*, and  the assay, *NVS_NR_hTRa*. The multiple concentration table for level 5 can be downloaded from the publicly available ToxCast data https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data. 
 
-##A. Using TcplLite
+## A. Using TcplLite
 
 
 In this example, we will identify the positive responses for the chemical *Bisphenol A*. 
@@ -75,7 +75,7 @@ dat5dat6 <- merge(x = mc6_flags,
 
 
 
-##B. Using Tcpl
+## B. Using Tcpl
 We illustrate here the necessary steps for extracting information about *Bisphenol A* using tcpl rather than tcplLite.
 
 First, we change the driver in tcpl settings to MySQL, and the database to invitrodb :

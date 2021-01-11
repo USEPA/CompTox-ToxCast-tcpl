@@ -64,13 +64,13 @@ tcplRegister(what='chid', flds=list(chid = c("22364", "23463" , "24102", "21735"
 
 
 
-#Uploading and Processing Data
+# Uploading and Processing Data
 
 This vignette explains in the first section how to register and upload new data into the  <font face="CMTT10"> tcpl </font> local directory using a small subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor. The following section discusses how to process the registered data through the data analysis pipeline.
 
 The <font face="CMTT10"> tcpl </font>  package provides three functions for adding new data: (1)  <font face="CMTT10"> tcplRegister </font> to register a new assay or chemical ID, (2)  <font face="CMTT10"> tcplUpdate </font> to change or add additional information for existing assay or chemical IDs, and (3)  <font face="CMTT10"> tcplWriteLvl0 </font> for loading data. Before writing any data to the  <font face="CMTT10"> tcpl </font> database, the user has to register the assay and chemical information.
 
-##A. Register and Upload New Data
+## A. Register and Upload New Data
 
 
 The first step in registering new assays is to register the assay source. As discussed in the previous section, the package refers to the levels of the assay hierarchy by their ID names, e.g. $\mathit{asid}$ for assay source.The following code shows how to register an assay source, then ensure the assay source was properly registered.
@@ -200,7 +200,7 @@ Notice in the loaded data, the  $\mathit{acsn}$ is replaced by the correct $\mat
 fields in the multiple-concentration data are the primary keys for each level of data. These primary keys link the various levels of data. All of the keys are auto-generated and will change anytime data are reloaded or processed. Note, the primary keys only change for the levels affected, e.g. if the user reprocesses level 1, the level 0 keys will remain the same. 
 
 
-##B. Data Processing and the tcplRun Function
+## B. Data Processing and the tcplRun Function
 
 
 This section is intended to help the user understand the general aspects of how the data are processed before diving into the specifics of each processing level for both screening paradigms. The details of the two screening paradigms are provided in later sections.
@@ -264,7 +264,7 @@ tcplMthdLoad(lvl = 2, id = 97:98, type = "mc")
 ```
 
 
-##C. Data Normalization
+## C. Data Normalization
 
 Data normalization occurs in both single- and multiple-concentration processing at levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. However, **data must be zero-centered and will only be fit in the positive direction**.
 
@@ -410,7 +410,7 @@ With the methods assigned, the level 2 processing can be completed.
 sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 ```
 
-##E. Multiple-concentration Screening
+## E. Multiple-concentration Screening
 
 This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six levels (Table 4).
 

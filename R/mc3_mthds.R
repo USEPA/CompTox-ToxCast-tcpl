@@ -580,7 +580,6 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)),
                        resp := 1-(cval/bval)])
       list(e1)
-      
     },    
     
       bval.apid.nullconc.med = function(aeids) {
@@ -607,6 +606,12 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)),
                        resp := cval - median(cval[cndx %in% 1:2 & wllt == "t"],na.rm = TRUE),
                        by = list(aeid, apid)])
+    },
+    
+    bval.aeid.nwlls.med = function(aeids) {
+      e1 <- bquote(dat[J(.(aeids)), 
+                       bval := median(cval[wllt == "n"], na.rm = TRUE), 
+                       by = list(aeid)])
       list(e1)
       
     }
