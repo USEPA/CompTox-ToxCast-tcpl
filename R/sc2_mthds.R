@@ -39,6 +39,9 @@
 #'   \item{bmad10}{Add a cutoff value of 10*bmad.}
 #'   \item{pc30orbmad3}{Add a cutoff value of either 30 or 3*bmad, whichever
 #'   is less.}
+#'   \item{ow_bmad_nwells}{Overwrite method to calculate bmad based on nwells for aeid.}
+#'   \item{bmad2}{Add a cutoff value of 2*bmad.}
+#'   \item{bmad1}{Add a cutoff value of 1*bmad.}
 #' }
 #' 
 #' @note
