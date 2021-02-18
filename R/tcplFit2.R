@@ -24,13 +24,10 @@ tcplFit2 <- function(dat,
     concentration_unlogged = list(10^(logc)), response = list(resp), m3ids = list(m3id)
   ),
   keyby = .(aeid, spid)
-  ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
-    `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
-      unlist(response),
-      cutoff = bmad,
-      verbose = FALSE, force.fit = TRUE,
-      fitmodels = ifelse(resp_min == resp_max,c("cnst"),fitmodels) # testing for edge case where all same response, may run into residual error with 0 and fails model (untested)
-    ))),
+  ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,fitparams := ifelse(max(unlist(response))!=min(unlist(response)),
+    list(list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),unlist(response), cutoff = bmad, verbose = FALSE, force.fit = TRUE, fitmodels = fitmodels))),
+    list(list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),unlist(response), cutoff = bmad, verbose = FALSE, force.fit = TRUE, fitmodels = c("cnst"))))
+    ),
     keyby = .(spid)
   ]
 
