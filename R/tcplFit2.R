@@ -29,7 +29,7 @@ tcplFit2 <- function(dat,
       unlist(response),
       cutoff = bmad,
       verbose = FALSE, force.fit = TRUE,
-      fitmodels = ifelse(resp_min == resp_max,c("cnst"),fitmodels) # testing for edge case where all same response, may run into residual error with 0 and fails model (untested)
+      fitmodels = fitmodels
     ))),
     keyby = .(spid)
   ]
