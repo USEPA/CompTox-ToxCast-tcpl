@@ -39,6 +39,9 @@
 #'   \item{bmad10}{Add a cutoff value of 10*bmad.}
 #'   \item{pc30orbmad3}{Add a cutoff value of either 30 or 3*bmad, whichever
 #'   is less.}
+#'   \item{ow_bmad_nwells}{Overwrite method to calculate bmad based on nwells for aeid.}
+#'   \item{bmad2}{Add a cutoff value of 2*bmad.}
+#'   \item{bmad1}{Add a cutoff value of 1*bmad.}
 #' }
 #' 
 #' @note
@@ -123,9 +126,34 @@ sc2_mthds <- function() {
       
       e1 <- bquote(coff <- c(coff, 25))
       list(e1)
+
+    },    
+    
+    ow_bmad_nwells = function() {
+      
+      e1 <- bquote(dat[ , bmad := mad(resp[wllt == "n"], na.rm = TRUE)])
+      list(e1)
+    },
+     bmad2 = function() {
+      
+      e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*2]))
+      list(e1)
+      
+    },
+    
+    log2_0.76 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 0.76))
+      list(e1)
+    },
+    
+    bmad1 = function() {
+      
+      e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)]))
+      list(e1)
       
     }
-    
+
   )
 }
 

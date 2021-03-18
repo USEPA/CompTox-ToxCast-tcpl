@@ -74,6 +74,18 @@ sc2 <- function(ae, wr = FALSE) {
     warning("No level 5 methods for AEID", ae, " -- cutoff will be 0.")
   }
   
+  ## Extract methods that need to overwrite bmad
+  ms_overwrite <- ms[grepl("ow_",mthd),]
+  ## ignore any other methods
+  ms <- ms[!grepl("ow_",mthd),]
+  
+  ## Apply bmad overwrite methods first if needed
+  if (nrow(ms_overwrite) > 0) {
+  exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
+  fenv <- environment()
+  invisible(rapply(exprs, eval, envir = fenv))
+  }
+  
   ## Apply cutoff methods
   exprs <- lapply(mthd_funcs[ms$mthd], do.call, args = list())
   fenv <- environment()
