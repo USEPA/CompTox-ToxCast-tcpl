@@ -28,6 +28,7 @@ tcplFit2 <- function(dat,
     `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
       unlist(response),
       cutoff = bmad,
+      bidirectional = FALSE,
       verbose = FALSE, force.fit = TRUE,
       fitmodels = fitmodels
     ))),
