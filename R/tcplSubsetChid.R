@@ -97,6 +97,7 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
     setkey(dat, m4id)
     
     dat <- flg[dat]
+    dat[is.na(nflg), nflg := 0]
     
   } else {
     
@@ -104,7 +105,8 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
     
   }
 
-  setkeyv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga"))
+  #setkeyv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga"))
+  setorderv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga","max_med"),c(1,1,1,1,1,-1), na.last = TRUE)
 
   min_modl_ga <- dat[ , list(ind = .I[1]), by = list(aeid, casn)]
 
