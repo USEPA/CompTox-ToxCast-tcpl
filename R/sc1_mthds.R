@@ -248,7 +248,8 @@ sc1_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)),
                        resp := (rval/bval)-1])
       list(e1)
-    
+    }
+      
   )
 }
 
