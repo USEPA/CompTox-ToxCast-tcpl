@@ -614,7 +614,14 @@ mc3_mthds <- function() {
                        by = list(aeid)])
       list(e1)
       
-    }
+    },
+    
+    resp.incr.zerocenter.fc = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)),
+                       resp := (cval/bval)-1])
+      list(e1)
+    } 
     
   )
   

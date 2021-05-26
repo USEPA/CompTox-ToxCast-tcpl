@@ -241,8 +241,15 @@ sc1_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)), resp := resp * -1])
       list(e1)
       
-    }
+    },
     
+    resp.incr.zerocenter.fc = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)),
+                       resp := (rval/bval)-1])
+      list(e1)
+    }
+      
   )
 }
 
