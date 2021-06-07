@@ -152,6 +152,20 @@ sc2_mthds <- function() {
       e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)]))
       list(e1)
       
+    },
+    
+    pc30 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 20))
+      list(e1)
+      
+    },
+    
+     bmad1.5 = function() {
+      
+      e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*1.5]))
+      list(e1)
+      
     }
 
   )
