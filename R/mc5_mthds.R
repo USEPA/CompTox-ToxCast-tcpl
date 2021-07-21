@@ -180,6 +180,18 @@ mc5_mthds <- function(ae) {
 	    
 	  e1 <- bquote(coff <- c(coff, 10))
 	  list(e1)
+	},
+	
+	pc05 = function() {
+	  
+	  e1 <- bquote(coff <- c(coff, 5))
+	  list(e1)
+	},
+	
+	pc95 = function() {
+	  
+	  e1 <- bquote(coff <- c(coff, 95))
+	  list(e1)
 	}
 	
   )
