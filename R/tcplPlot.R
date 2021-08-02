@@ -291,6 +291,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   x <- list(
     title = "Concentration",
     # set zeroline to false so there is no vertical line at x = 0
+    type = "log",
     zeroline = FALSE
   )
   
@@ -373,7 +374,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       fig <- fig %>% add_annotations(
         yref = "paper",
         xref = "x",
-        x = ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric(),
+        x = ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric() %>% log10(),
         y = 1,
         text = paste0("Winning Model Log AC50 (", specify_decimal(ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric(),2), ")"),
         showarrow = F,
