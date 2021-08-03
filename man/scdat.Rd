@@ -4,7 +4,8 @@
 \name{scdat}
 \alias{scdat}
 \title{A subset of ToxCast data showing changes in transcription factor activity for multiple targets.}
-\format{A data frame with 320 rows and 10 variables:
+\format{
+A data frame with 320 rows and 10 variables:
 \describe{
 
  \item{spid}{sample ID}
@@ -17,7 +18,8 @@
         \item{rval}{raw assay component readout value}
          \item{srcf}{source file containing the data}
           \item{acsn}{assay component source name}
-}}
+}
+}
 \source{
 Toxcast database
 }

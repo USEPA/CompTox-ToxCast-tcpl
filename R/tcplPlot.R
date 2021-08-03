@@ -158,11 +158,13 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
 
 #' tcplPlotlyPlot
 #'
-#' @param dat 
-#' @param lvl 
+#' @param dat data table with all required conc/resp data
+#' @param lvl integer level of data that should be plotted
+#' level 4 - all fit models
+#' level 5 - all fit models and winning model with hitcall
+#' level 6 - include all flags
 #'
 #' @return
-#' @export
 #' @import dplyr
 #' @import plotly
 #'

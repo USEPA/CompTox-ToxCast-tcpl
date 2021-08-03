@@ -4,7 +4,8 @@
 \name{chdat}
 \alias{chdat}
 \title{Chemical library of tested chemicals in the example datasets with the corresponding sample IDs.}
-\format{A data frame with 6 rows and 6 variables:
+\format{
+A data frame with 6 rows and 6 variables:
 \describe{
  \item{spid}{sample ID}
   \item{casn}{Chemical Abstract Service(CAS) number}
@@ -13,7 +14,8 @@
      \item{code}{CAS number compressed into numeric string}
       \item{chid}{unique chemical ID number for tcpl}
 
-}}
+}
+}
 \source{
 Toxcast database
 }
