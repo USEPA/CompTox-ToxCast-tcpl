@@ -465,3 +465,48 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   fig
   
 }
+
+
+tcplggplot <- function(dat, lvl = 5){
+  
+  l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
+  l3_range <- l3_dat %>%
+      pull(.data$conc) %>%
+      range()
+
+  ggplot(l3_dat, aes(conc, resp)) + 
+    geom_function(aes(colour = "Hill",linetype = "Hill"),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
+    geom_function(aes(colour = "Gnls",linetype = "Gnls"),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
+    geom_function(aes(colour = "Exp2",linetype = "Exp2"),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
+    geom_function(aes(colour = "Exp3",linetype = "Exp3"),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
+    geom_function(aes(colour = "Exp4",linetype = "E4xp"),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
+    geom_function(aes(colour = "Exp5",linetype = "Exp5"),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
+    geom_function(aes(colour = "Poly1",linetype = "Poly1"),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
+    geom_function(aes(colour = "Poly2",linetype = "Poly2"),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
+    geom_function(aes(colour = "Pow",linetype = "Pow"),fun = function(x) tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x)) +
+    geom_point() +
+    scale_x_continuous(limits = l3_range, trans='log10')+
+    scale_colour_manual(values = c("Hill" = ifelse(dat$modl == "hill","Blue","Red"),
+                                   "Gnls" = ifelse(dat$modl == "gnls","Blue","Red"), 
+                                   "Exp2" = ifelse(dat$modl == "exp2","Blue","Red"),
+                                   "Exp3" = ifelse(dat$modl == "exp3","Blue","Red"),
+                                   "Exp4" = ifelse(dat$modl == "exp4","Blue","Red"),
+                                   "Exp5" = ifelse(dat$modl == "exp5","Blue","Red"),
+                                   "Poly1" = ifelse(dat$modl == "poly1","Blue","Red"),
+                                   "Poly2" = ifelse(dat$modl == "poly2","Blue","Red"),
+                                   "Pow" = ifelse(dat$modl == "pow","Blue","Red")
+                                   ), name="Model") +
+    scale_linetype_manual(values=c("Hill" = ifelse(dat$modl == "hill",1,2),
+                                   "Gnls" = ifelse(dat$modl == "gnls",1,2), 
+                                   "Exp2" = ifelse(dat$modl == "exp2",1,2),
+                                   "Exp3" = ifelse(dat$modl == "exp3",1,2),
+                                   "Exp4" = ifelse(dat$modl == "exp4",1,2),
+                                   "Exp5" = ifelse(dat$modl == "exp5",1,2),
+                                   "Poly1" = ifelse(dat$modl == "poly1",1,2),
+                                   "Poly2" = ifelse(dat$modl == "poly2",1,2),
+                                   "Pow" = ifelse(dat$modl == "pow",1,2)
+                                   ), name="Model") +
+    xlab("Log Concentration") + 
+    ylab("Percent Activity") 
+
+}
