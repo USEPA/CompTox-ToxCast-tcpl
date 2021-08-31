@@ -66,7 +66,11 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     dat$conc <- list(10^agg$logc)
     dat$resp <- list(agg$resp)
     # plot single graph
-    return(tcplPlotlyPlot(dat))
+    # this needs to be fixed to be more succinct about users selected option
+    ifelse(output[1] == "console",
+    return(tcplPlotlyPlot(dat)),
+    return(tcplggplot(dat))
+    )
 
   } else {
     if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
@@ -467,6 +471,19 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 }
 
 
+#' tcplggplot
+#'
+#' @param dat data table with all required conc/resp data
+#' @param lvl integer level of data that should be plotted
+#' level 4 - all fit models
+#' level 5 - all fit models and winning model with hitcall
+#' level 6 - include all flags
+#'
+#' @return
+#' @import dplyr
+#' @import ggplot2
+#'
+#' @examples
 tcplggplot <- function(dat, lvl = 5){
   
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
