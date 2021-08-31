@@ -473,8 +473,30 @@ tcplggplot <- function(dat, lvl = 5){
   l3_range <- l3_dat %>%
       pull(.data$conc) %>%
       range()
+  
+  annotations <- data.frame(
+    xpos = c(l3_range[1]),
+    ypos =  c(Inf),
+    annotateText = c(paste0(
+      dat %>% pull(.data$aenm), "\n",
+      case_when(
+        dat$hitc == 1 ~ "ACTIVE",
+        dat$hitc == 0 ~ "INACTIVE",
+        dat$hitc == -1 ~ "NO CALL",
+        TRUE ~ paste0(dat$hitc)
+      ), "\n",
+      dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ")", "\n",
+      dat %>% pull(.data$dsstox_substance_id), "\n",
+      dat %>% pull(.data$spid), "\n",
+      ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
+    )),
+    hjustvar = c(0) ,
+    vjustvar = c(1)) #<- adjust
+
 
   ggplot(l3_dat, aes(conc, resp)) + 
+    geom_hline(yintercept=dat$coff, linetype="dotdash", color = "orange") +
+    geom_vline(xintercept=dat$ac50, linetype="dotdash", color = "orange") +
     geom_function(aes(colour = "Hill",linetype = "Hill"),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
     geom_function(aes(colour = "Gnls",linetype = "Gnls"),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
     geom_function(aes(colour = "Exp2",linetype = "Exp2"),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
@@ -507,6 +529,7 @@ tcplggplot <- function(dat, lvl = 5){
                                    "Pow" = ifelse(dat$modl == "pow",1,2)
                                    ), name="Model") +
     xlab("Log Concentration") + 
-    ylab("Percent Activity") 
+    ylab("Percent Activity") +
+    geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText))
 
 }
