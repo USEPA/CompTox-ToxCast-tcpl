@@ -621,6 +621,13 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)),
                        resp := (cval/bval)-1])
       list(e1)
+    },
+    
+    resp.mult100 = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), resp := resp * 100])
+      list(e1)
+      
     } 
     
   )

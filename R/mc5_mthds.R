@@ -192,6 +192,13 @@ mc5_mthds <- function(ae) {
 	  
 	  e1 <- bquote(coff <- c(coff, 95))
 	  list(e1)
+	},
+	
+	bmad4 = function() {
+	  
+	  e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*4]))
+	  list(e1)
+	  
 	}
 	
   )
