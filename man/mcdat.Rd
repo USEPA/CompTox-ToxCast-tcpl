@@ -4,7 +4,8 @@
 \name{mcdat}
 \alias{mcdat}
 \title{A subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor.}
-\format{A data frame with 14183 rows and 10 variables:
+\format{
+A data frame with 14183 rows and 10 variables:
 \describe{
  \item{spid}{sample ID}
   \item{apid}{assay plate ID}
@@ -16,7 +17,8 @@
         \item{rval}{raw assay component readout value}
          \item{srcf}{source file containing the data}
           \item{acsn}{assay component source name}
-}}
+}
+}
 \source{
 Toxcast database
 }
