@@ -30,7 +30,8 @@
 #'
 #' Leaving \code{fld} NULL will return all data.
 #' @import data.table
-#' @importFrom gridExtra grid.arrange
+#' @importFrom gridExtra marrangeGrob
+#' @importFrom ggplot2 ggsave
 #' @export
 #'
 #' @examples
@@ -65,8 +66,10 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     dat <- tcplPrepOtpt(dat)
   
     # unlog concs
-    dat$conc <- list(10^agg$logc)
-    dat$resp <- list(agg$resp)
+    conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+    dat <- dat[conc_resp_table, on = "m4id"]
+    # dat$conc <- list(10^agg$logc)
+    # dat$resp <- list(agg$resp)
     if (nrow(input) == 1) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
@@ -75,7 +78,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         return(tcplggplot(dat))
       )
     } else {
-      plot_list <- by(dat,seq(nrow(input)),tcplggplot)
+      plot_list <- by(dat,seq(nrow(dat)),tcplggplot)
       # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
       m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
       ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)
