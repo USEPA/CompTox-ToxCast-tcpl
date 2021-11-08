@@ -30,6 +30,7 @@
 #'
 #' Leaving \code{fld} NULL will return all data.
 #' @import data.table
+#' @importFrom gridExtra grid.arrange
 #' @export
 #'
 #' @examples
@@ -42,35 +43,44 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE, nrow = 2, ncol = 3) {
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
     if (nrow(input) == 0) stop("No data for fld/val provided")
-    if (nrow(input) > 1) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
-    m4id <- input$m4id
+    if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
     
+    m4id <- input$m4id
+  
     # load dat
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
     agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
-    
-    
+  
+  
     if (lvl >= 5L) {
-    l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
-    dat <- l4[l5, on = "m4id"]
+      l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
+      dat <- l4[l5, on = "m4id"]
     }
-    
+  
     dat <- tcplPrepOtpt(dat)
-    
-    #unlog concs
+  
+    # unlog concs
     dat$conc <- list(10^agg$logc)
     dat$resp <- list(agg$resp)
-    # plot single graph
-    # this needs to be fixed to be more succinct about users selected option
-    ifelse(output[1] == "console",
-    return(tcplPlotlyPlot(dat)),
-    return(tcplggplot(dat))
-    )
+    if (nrow(input) == 1) {
+      # plot single graph
+      # this needs to be fixed to be more succinct about users selected option
+      ifelse(output[1] == "console",
+        return(tcplPlotlyPlot(dat)),
+        return(tcplggplot(dat))
+      )
+    } else {
+      plot_list <- by(dat,seq(nrow(input)),tcplggplot)
+      # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
+      m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
+      ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)
+    }
+    
 
   } else {
     if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
