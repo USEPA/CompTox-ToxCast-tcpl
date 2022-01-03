@@ -64,7 +64,11 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     }
   
     dat <- tcplPrepOtpt(dat)
-  
+    
+    # add normalized data type for y axis
+    ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
+    dat <- dat[ndt, on = "aeid"]
+    
     # unlog concs
     conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
     dat <- dat[conc_resp_table, on = "m4id"]
@@ -491,13 +495,15 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' level 4 - all fit models
 #' level 5 - all fit models and winning model with hitcall
 #' level 6 - include all flags
+#' @param verbose boolean should plotting include table of values next to the plot
 #'
 #' @return
 #' @import dplyr
 #' @import ggplot2
+#' @import gridExtra
 #'
 #' @examples
-tcplggplot <- function(dat, lvl = 5){
+tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
   l3_range <- l3_dat %>%
@@ -508,30 +514,27 @@ tcplggplot <- function(dat, lvl = 5){
     xpos = c(l3_range[1]),
     ypos =  c(Inf),
     annotateText = c(paste0(
-      dat %>% pull(.data$aenm), "\n",
-      case_when(
-        dat$hitc == 1 ~ "ACTIVE",
-        dat$hitc == 0 ~ "INACTIVE",
-        dat$hitc == -1 ~ "NO CALL",
-        TRUE ~ paste0(dat$hitc)
-      ), "\n",
-      dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ")", "\n",
-      dat %>% pull(.data$dsstox_substance_id), "\n",
-      dat %>% pull(.data$spid), "\n",
+      "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))), "\n",
       ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
     )),
     hjustvar = c(0) ,
     vjustvar = c(1)) #<- adjust
+  
+  #check if winning model has negative top.  If so coff should be negative
+  if(!is.null(dat$tp) && !is.null(dat$coff) && !is.na(dat$tp)){
+    if(dat$tp<0){
+      dat$coff <- dat$coff*-1
+    }
+  }
 
-
-  ggplot(l3_dat, aes(conc, resp)) + 
+  gg <- ggplot(l3_dat, aes(conc, resp)) + 
     geom_hline(yintercept=dat$coff, linetype="dotdash", color = "orange") +
     geom_vline(xintercept=dat$ac50, linetype="dotdash", color = "orange") +
     geom_function(aes(colour = "Hill",linetype = "Hill"),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
     geom_function(aes(colour = "Gnls",linetype = "Gnls"),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
     geom_function(aes(colour = "Exp2",linetype = "Exp2"),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
     geom_function(aes(colour = "Exp3",linetype = "Exp3"),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
-    geom_function(aes(colour = "Exp4",linetype = "E4xp"),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
+    geom_function(aes(colour = "Exp4",linetype = "Exp4"),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
     geom_function(aes(colour = "Exp5",linetype = "Exp5"),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
     geom_function(aes(colour = "Poly1",linetype = "Poly1"),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
     geom_function(aes(colour = "Poly2",linetype = "Poly2"),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
@@ -558,8 +561,32 @@ tcplggplot <- function(dat, lvl = 5){
                                    "Poly2" = ifelse(dat$modl == "poly2",1,2),
                                    "Pow" = ifelse(dat$modl == "pow",1,2)
                                    ), name="Model") +
-    xlab("Log Concentration") + 
-    ylab("Percent Activity") +
-    geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText))
+    xlab("Concentration (\u03BCM)") + 
+    ylab(stringr::str_to_title(gsub("_"," ",dat$normalized_data_type))) +
+    geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText)) +
+    labs(
+      title = stringr::str_wrap(paste0(
+        dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ") ",
+        dat %>% pull(.data$dsstox_substance_id)
+      ),50),
+      subtitle = paste0(
+        "SPID: ", dat %>% pull(.data$spid), " ",
+        "AENM: ", dat %>% pull(.data$aenm)
+      )
+    )
+  
+  p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
+    dat %>%
+      select(contains(paste0(x,c("_aic","_rme")))) %>%
+      tidyr::pivot_longer(cols = everything()) %>% as_tibble()
+  })
+  
+  combined_p <- data.table::rbindlist(p)
+  pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
+  t <- tableGrob(pivoted_p,rows = NULL)
+  
+  ifelse(verbose,
+         return(grid.arrange(gg,t,nrow = 1)),
+         return(gg))
 
 }
