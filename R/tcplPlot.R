@@ -521,8 +521,8 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
     vjustvar = c(1)) #<- adjust
   
   #check if winning model has negative top.  If so coff should be negative
-  if(!is.null(dat$tp) && !is.null(dat$coff) && !is.na(dat$tp)){
-    if(dat$tp<0){
+  if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
+    if(dat$top<0){
       dat$coff <- dat$coff*-1
     }
   }
@@ -574,6 +574,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
         "AENM: ", dat %>% pull(.data$aenm)
       )
     )
+  
   
   p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
     dat %>%
