@@ -527,40 +527,27 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
     }
   }
 
+  winning_model_string <- paste0("Winning Model\n(",dat$modl,")")
+  model_test <- function(modeltype){
+    ifelse(dat$modl == modeltype,winning_model_string,"Losing Models")
+  }
+  
   gg <- ggplot(l3_dat, aes(conc, resp)) + 
-    geom_hline(yintercept=dat$coff, linetype="dotdash", color = "orange") +
-    geom_vline(xintercept=dat$ac50, linetype="dotdash", color = "orange") +
-    geom_function(aes(colour = "Hill",linetype = "Hill"),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
-    geom_function(aes(colour = "Gnls",linetype = "Gnls"),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
-    geom_function(aes(colour = "Exp2",linetype = "Exp2"),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
-    geom_function(aes(colour = "Exp3",linetype = "Exp3"),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
-    geom_function(aes(colour = "Exp4",linetype = "Exp4"),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
-    geom_function(aes(colour = "Exp5",linetype = "Exp5"),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
-    geom_function(aes(colour = "Poly1",linetype = "Poly1"),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
-    geom_function(aes(colour = "Poly2",linetype = "Poly2"),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
-    geom_function(aes(colour = "Pow",linetype = "Pow"),fun = function(x) tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x)) +
-    geom_point() +
-    scale_x_continuous(limits = l3_range, trans='log10')+
-    scale_colour_manual(values = c("Hill" = ifelse(dat$modl == "hill","Blue","Red"),
-                                   "Gnls" = ifelse(dat$modl == "gnls","Blue","Red"), 
-                                   "Exp2" = ifelse(dat$modl == "exp2","Blue","Red"),
-                                   "Exp3" = ifelse(dat$modl == "exp3","Blue","Red"),
-                                   "Exp4" = ifelse(dat$modl == "exp4","Blue","Red"),
-                                   "Exp5" = ifelse(dat$modl == "exp5","Blue","Red"),
-                                   "Poly1" = ifelse(dat$modl == "poly1","Blue","Red"),
-                                   "Poly2" = ifelse(dat$modl == "poly2","Blue","Red"),
-                                   "Pow" = ifelse(dat$modl == "pow","Blue","Red")
-                                   ), name="Model") +
-    scale_linetype_manual(values=c("Hill" = ifelse(dat$modl == "hill",1,2),
-                                   "Gnls" = ifelse(dat$modl == "gnls",1,2), 
-                                   "Exp2" = ifelse(dat$modl == "exp2",1,2),
-                                   "Exp3" = ifelse(dat$modl == "exp3",1,2),
-                                   "Exp4" = ifelse(dat$modl == "exp4",1,2),
-                                   "Exp5" = ifelse(dat$modl == "exp5",1,2),
-                                   "Poly1" = ifelse(dat$modl == "poly1",1,2),
-                                   "Poly2" = ifelse(dat$modl == "poly2",1,2),
-                                   "Pow" = ifelse(dat$modl == "pow",1,2)
-                                   ), name="Model") +
+    geom_function(aes(color = !!model_test("gnls"),linetype = !!model_test("gnls")),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
+    geom_function(aes(color = !!model_test("exp2"),linetype = !!model_test("exp2")),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
+    geom_function(aes(color = !!model_test("exp3"),linetype = !!model_test("exp3")),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
+    geom_function(aes(color = !!model_test("exp4"),linetype = !!model_test("exp4")),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
+    geom_function(aes(color = !!model_test("exp5"),linetype = !!model_test("exp5")),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
+    geom_function(aes(color = !!model_test("poly1"),linetype = !!model_test("poly1")),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
+    geom_function(aes(color = !!model_test("poly2"),linetype = !!model_test("poly2")),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
+    geom_function(aes(color = !!model_test("pow"),linetype = !!model_test("pow")),fun = function(x) tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x)) +
+    geom_function(aes(color = !!model_test("hill"),linetype = !!model_test("hill")),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
+    geom_vline(aes(xintercept=dat$ac50, color = "AC50",linetype = "AC50")) +
+    geom_hline(aes(yintercept=dat$coff, color = "Cutoff", linetype = "Cutoff")) +
+    geom_point() + 
+    scale_x_continuous(limits = l3_range, trans='log10') +
+    scale_color_viridis_d("",direction = -1, guide = guide_legend(reverse = TRUE, order = 2)) +
+    scale_linetype_manual("",guide = guide_legend(reverse = TRUE, order = 2), values = c(2,2,3,1)) +
     xlab("Concentration (\u03BCM)") + 
     ylab(stringr::str_to_title(gsub("_"," ",dat$normalized_data_type))) +
     geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText)) +
@@ -573,7 +560,11 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
         "SPID: ", dat %>% pull(.data$spid), " ",
         "AENM: ", dat %>% pull(.data$aenm)
       )
-    )
+    ) +
+    theme(legend.title=element_blank(),
+          legend.margin = margin(0, 0, 0, 0),
+          legend.spacing.x = unit(0, "mm"),
+          legend.spacing.y = unit(0, "mm"))
   
   
   p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
@@ -586,8 +577,14 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
   t <- tableGrob(pivoted_p,rows = NULL)
   
+  l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
+  l5_t <- tableGrob(l5_details,rows = NULL)
+  
+  
+  valigned <- gtable_combine(l5_t,t, along=2)
+  
   ifelse(verbose,
-         return(grid.arrange(gg,t,nrow = 1)),
+         return(grid.arrange(gg,valigned,nrow = 1)),
          return(gg))
 
 }
