@@ -573,11 +573,13 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
       tidyr::pivot_longer(cols = everything()) %>% as_tibble()
   })
   
-  round_n <- function(x,n){trimws(format(round(x, n), nsmall = 3))}
+  round_n <- function(x,n){format(round(x, n), nsmall = 3)}
   
   combined_p <- data.table::rbindlist(p)
   pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
   pivoted_p <- pivoted_p %>% mutate_if(is.numeric,~round_n(.,3))
+  pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
+  #print(pivoted_p)
   t <- tableGrob(pivoted_p,rows = NULL)
   
   l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
