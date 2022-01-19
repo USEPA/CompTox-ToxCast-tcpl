@@ -513,8 +513,8 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   annotations <- data.frame(
     xpos = c(l3_range[1]),
     ypos =  c(Inf),
-    annotateText = c(paste0(
-      "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))), "\n",
+    annotateText = c(paste0(ifelse(verbose,"",paste0(
+      "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))))), "\n",
       ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
     )),
     hjustvar = c(0) ,
@@ -573,18 +573,22 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
       tidyr::pivot_longer(cols = everything()) %>% as_tibble()
   })
   
+  round_n <- function(x,n){trimws(format(round(x, n), nsmall = 3))}
+  
   combined_p <- data.table::rbindlist(p)
   pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
+  pivoted_p <- pivoted_p %>% mutate_if(is.numeric,~round_n(.,3))
   t <- tableGrob(pivoted_p,rows = NULL)
   
   l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
+  l5_details <- l5_details %>% mutate_if(is.numeric,~round_n(.,3))
   l5_t <- tableGrob(l5_details,rows = NULL)
   
   
   valigned <- gtable_combine(l5_t,t, along=2)
   
   ifelse(verbose,
-         return(grid.arrange(gg,valigned,nrow = 1)),
+         return(grid.arrange(gg,valigned,nrow = 1,widths = 2:1)),
          return(gg))
 
 }
