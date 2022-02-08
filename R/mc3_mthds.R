@@ -628,9 +628,25 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)), resp := resp * 100])
       list(e1)
       
-    } 
+    }, 
+    
+    pval.twlls.99pct = function(aeids) {
+      e1 <- bquote(dat[J(.(aeids)), pval := quantile(cval[wllt=='t'], probs = 0.99, na.rm=TRUE),
+                       by=list(aeid)])
+      list(e1)
+      },
+    
+  	pval.neg.100 = function(aeids) {
+      e1 <- bquote(dat[J(.(aeids)), pval := -100,
+                       by=list(aeid)])
+      list(e1)
+      }
     
   )
+    
+  )
+  
+  
   
 }
 
