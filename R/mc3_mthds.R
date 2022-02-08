@@ -642,7 +642,7 @@ mc3_mthds <- function() {
       list(e1)
       }
     
-  )
+  
     
   )
   
