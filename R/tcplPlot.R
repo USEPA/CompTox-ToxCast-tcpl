@@ -17,6 +17,9 @@
 #' @param multi Boolean, if multi is TRUE output 6 plots per page
 #' @param fileprefix prefix of filename
 #' @param by Paramater to divide files into e.g. aeid
+#' @param verbose By default FALSE, should a table with fitting parameters be included in the plot
+#' @param nrow Integer, number of rows in multiplot default of 2
+#' @param ncol Integer, number of columns in multiplot default of 3, 2 if verbose
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -44,13 +47,18 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE, nrow = 2, ncol = 3) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE,verbose = FALSE, nrow = NULL, ncol = NULL) {
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
     if (nrow(input) == 0) stop("No data for fld/val provided")
     if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
-    
+    if(is.null(nrow)){
+      nrow <- ifelse(verbose,2,2)
+    }
+    if(is.null(ncol)){
+      ncol <- ifelse(verbose,2,3)
+    }
     m4id <- input$m4id
   
     # load dat
@@ -79,13 +87,17 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
         return(tcplPlotlyPlot(dat)),
-        return(tcplggplot(dat))
+        return(tcplggplot(dat,verbose = verbose))
       )
     } else {
-      plot_list <- by(dat,seq(nrow(dat)),tcplggplot)
+      plot_list <- by(dat,seq(nrow(dat)),tcplggplot,verbose = verbose)
       # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
       m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
-      ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)
+      if(!verbose){
+        ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
+      else{
+        ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*7, height = nrow*5)
+      }
     }
     
 
@@ -590,7 +602,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   valigned <- gtable_combine(l5_t,t, along=2)
   
   ifelse(verbose,
-         return(grid.arrange(gg,valigned,nrow = 1,widths = 2:1)),
+         return(arrangeGrob(gg,valigned,nrow = 1,widths = 2:1)),
          return(gg))
 
 }
