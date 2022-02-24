@@ -17,6 +17,9 @@
 #' @param multi Boolean, if multi is TRUE output 6 plots per page
 #' @param fileprefix prefix of filename
 #' @param by Paramater to divide files into e.g. aeid
+#' @param verbose By default FALSE, should a table with fitting parameters be included in the plot
+#' @param nrow Integer, number of rows in multiplot default of 2
+#' @param ncol Integer, number of columns in multiplot default of 3, 2 if verbose
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -30,6 +33,8 @@
 #'
 #' Leaving \code{fld} NULL will return all data.
 #' @import data.table
+#' @importFrom gridExtra marrangeGrob
+#' @importFrom ggplot2 ggsave
 #' @export
 #'
 #' @examples
@@ -42,35 +47,59 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE,verbose = FALSE, nrow = NULL, ncol = NULL) {
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
     if (nrow(input) == 0) stop("No data for fld/val provided")
-    if (nrow(input) > 1) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    if(is.null(nrow)){
+      nrow <- ifelse(verbose,2,2)
+    }
+    if(is.null(ncol)){
+      ncol <- ifelse(verbose,2,3)
+    }
     m4id <- input$m4id
-    
+  
     # load dat
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
     agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
-    
-    
+  
+  
     if (lvl >= 5L) {
-    l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
-    dat <- l4[l5, on = "m4id"]
+      l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
+      dat <- l4[l5, on = "m4id"]
     }
-    
+  
     dat <- tcplPrepOtpt(dat)
     
-    #unlog concs
-    dat$conc <- list(10^agg$logc)
-    dat$resp <- list(agg$resp)
-    # plot single graph
-    # this needs to be fixed to be more succinct about users selected option
-    ifelse(output[1] == "console",
-    return(tcplPlotlyPlot(dat)),
-    return(tcplggplot(dat))
-    )
+    # add normalized data type for y axis
+    ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
+    dat <- dat[ndt, on = "aeid"]
+    
+    # unlog concs
+    conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+    dat <- dat[conc_resp_table, on = "m4id"]
+    # dat$conc <- list(10^agg$logc)
+    # dat$resp <- list(agg$resp)
+    if (nrow(input) == 1) {
+      # plot single graph
+      # this needs to be fixed to be more succinct about users selected option
+      ifelse(output[1] == "console",
+        return(tcplPlotlyPlot(dat)),
+        return(tcplggplot(dat,verbose = verbose))
+      )
+    } else {
+      plot_list <- by(dat,seq(nrow(dat)),tcplggplot,verbose = verbose)
+      # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
+      m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
+      if(!verbose){
+        ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
+      else{
+        ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*7, height = nrow*5)
+      }
+    }
+    
 
   } else {
     if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
@@ -478,13 +507,15 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' level 4 - all fit models
 #' level 5 - all fit models and winning model with hitcall
 #' level 6 - include all flags
+#' @param verbose boolean should plotting include table of values next to the plot
 #'
 #' @return
 #' @import dplyr
 #' @import ggplot2
+#' @import gridExtra
 #'
 #' @examples
-tcplggplot <- function(dat, lvl = 5){
+tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
   l3_range <- l3_dat %>%
@@ -494,59 +525,84 @@ tcplggplot <- function(dat, lvl = 5){
   annotations <- data.frame(
     xpos = c(l3_range[1]),
     ypos =  c(Inf),
-    annotateText = c(paste0(
-      dat %>% pull(.data$aenm), "\n",
-      case_when(
-        dat$hitc == 1 ~ "ACTIVE",
-        dat$hitc == 0 ~ "INACTIVE",
-        dat$hitc == -1 ~ "NO CALL",
-        TRUE ~ paste0(dat$hitc)
-      ), "\n",
-      dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ")", "\n",
-      dat %>% pull(.data$dsstox_substance_id), "\n",
-      dat %>% pull(.data$spid), "\n",
+    annotateText = c(paste0(ifelse(verbose,"",paste0(
+      "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))))), "\n",
       ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
     )),
     hjustvar = c(0) ,
     vjustvar = c(1)) #<- adjust
+  
+  #check if winning model has negative top.  If so coff should be negative
+  if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
+    if(dat$top<0){
+      dat$coff <- dat$coff*-1
+    }
+  }
 
-
-  ggplot(l3_dat, aes(conc, resp)) + 
-    geom_hline(yintercept=dat$coff, linetype="dotdash", color = "orange") +
-    geom_vline(xintercept=dat$ac50, linetype="dotdash", color = "orange") +
-    geom_function(aes(colour = "Hill",linetype = "Hill"),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
-    geom_function(aes(colour = "Gnls",linetype = "Gnls"),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
-    geom_function(aes(colour = "Exp2",linetype = "Exp2"),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
-    geom_function(aes(colour = "Exp3",linetype = "Exp3"),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
-    geom_function(aes(colour = "Exp4",linetype = "E4xp"),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
-    geom_function(aes(colour = "Exp5",linetype = "Exp5"),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
-    geom_function(aes(colour = "Poly1",linetype = "Poly1"),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
-    geom_function(aes(colour = "Poly2",linetype = "Poly2"),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
-    geom_function(aes(colour = "Pow",linetype = "Pow"),fun = function(x) tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x)) +
-    geom_point() +
-    scale_x_continuous(limits = l3_range, trans='log10')+
-    scale_colour_manual(values = c("Hill" = ifelse(dat$modl == "hill","Blue","Red"),
-                                   "Gnls" = ifelse(dat$modl == "gnls","Blue","Red"), 
-                                   "Exp2" = ifelse(dat$modl == "exp2","Blue","Red"),
-                                   "Exp3" = ifelse(dat$modl == "exp3","Blue","Red"),
-                                   "Exp4" = ifelse(dat$modl == "exp4","Blue","Red"),
-                                   "Exp5" = ifelse(dat$modl == "exp5","Blue","Red"),
-                                   "Poly1" = ifelse(dat$modl == "poly1","Blue","Red"),
-                                   "Poly2" = ifelse(dat$modl == "poly2","Blue","Red"),
-                                   "Pow" = ifelse(dat$modl == "pow","Blue","Red")
-                                   ), name="Model") +
-    scale_linetype_manual(values=c("Hill" = ifelse(dat$modl == "hill",1,2),
-                                   "Gnls" = ifelse(dat$modl == "gnls",1,2), 
-                                   "Exp2" = ifelse(dat$modl == "exp2",1,2),
-                                   "Exp3" = ifelse(dat$modl == "exp3",1,2),
-                                   "Exp4" = ifelse(dat$modl == "exp4",1,2),
-                                   "Exp5" = ifelse(dat$modl == "exp5",1,2),
-                                   "Poly1" = ifelse(dat$modl == "poly1",1,2),
-                                   "Poly2" = ifelse(dat$modl == "poly2",1,2),
-                                   "Pow" = ifelse(dat$modl == "pow",1,2)
-                                   ), name="Model") +
-    xlab("Log Concentration") + 
-    ylab("Percent Activity") +
-    geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText))
+  winning_model_string <- paste0("Winning Model\n(",dat$modl,")")
+  model_test <- function(modeltype){
+    ifelse(dat$modl == modeltype,winning_model_string,"Losing Models")
+  }
+  
+  gg <- ggplot(l3_dat, aes(conc, resp)) + 
+    geom_function(aes(color = !!model_test("gnls"),linetype = !!model_test("gnls")),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
+    geom_function(aes(color = !!model_test("exp2"),linetype = !!model_test("exp2")),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
+    geom_function(aes(color = !!model_test("exp3"),linetype = !!model_test("exp3")),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
+    geom_function(aes(color = !!model_test("exp4"),linetype = !!model_test("exp4")),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
+    geom_function(aes(color = !!model_test("exp5"),linetype = !!model_test("exp5")),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
+    geom_function(aes(color = !!model_test("poly1"),linetype = !!model_test("poly1")),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
+    geom_function(aes(color = !!model_test("poly2"),linetype = !!model_test("poly2")),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
+    geom_function(aes(color = !!model_test("pow"),linetype = !!model_test("pow")),fun = function(x) tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x)) +
+    geom_function(aes(color = !!model_test("hill"),linetype = !!model_test("hill")),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
+    geom_vline(aes(xintercept=dat$ac50, color = "AC50",linetype = "AC50")) +
+    geom_hline(aes(yintercept=dat$coff, color = "Cutoff", linetype = "Cutoff")) +
+    geom_point() + 
+    scale_x_continuous(limits = l3_range, trans='log10') +
+    scale_color_viridis_d("",direction = -1, guide = guide_legend(reverse = TRUE, order = 2)) +
+    scale_linetype_manual("",guide = guide_legend(reverse = TRUE, order = 2), values = c(2,2,3,1)) +
+    xlab("Concentration (\u03BCM)") + 
+    ylab(stringr::str_to_title(gsub("_"," ",dat$normalized_data_type))) +
+    geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText)) +
+    labs(
+      title = stringr::str_wrap(paste0(
+        dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ") ",
+        dat %>% pull(.data$dsstox_substance_id)
+      ),50),
+      subtitle = paste0(
+        "SPID: ", dat %>% pull(.data$spid), " ",
+        "AENM: ", dat %>% pull(.data$aenm)
+      )
+    ) +
+    theme(legend.title=element_blank(),
+          legend.margin = margin(0, 0, 0, 0),
+          legend.spacing.x = unit(0, "mm"),
+          legend.spacing.y = unit(0, "mm"))
+  
+  
+  p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
+    dat %>%
+      select(contains(paste0(x,c("_aic","_rme")))) %>%
+      tidyr::pivot_longer(cols = everything()) %>% as_tibble()
+  })
+  
+  round_n <- function(x,n){format(round(x, n), nsmall = 3)}
+  
+  combined_p <- data.table::rbindlist(p)
+  pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
+  pivoted_p <- pivoted_p %>% mutate_if(is.numeric,~round_n(.,3))
+  pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
+  #print(pivoted_p)
+  t <- tableGrob(pivoted_p,rows = NULL)
+  
+  l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
+  l5_details <- l5_details %>% mutate_if(is.numeric,~round_n(.,3))
+  l5_t <- tableGrob(l5_details,rows = NULL)
+  
+  
+  valigned <- gtable_combine(l5_t,t, along=2)
+  
+  ifelse(verbose,
+         return(arrangeGrob(gg,valigned,nrow = 1,widths = 2:1)),
+         return(gg))
 
 }
