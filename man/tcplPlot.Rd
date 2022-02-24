@@ -13,7 +13,10 @@ tcplPlot(
   by = NULL,
   output = c("console", "pdf"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
-  multi = FALSE
+  multi = FALSE,
+  verbose = FALSE,
+  nrow = NULL,
+  ncol = NULL
 )
 }
 \arguments{
@@ -33,6 +36,12 @@ the same order as 'fld'.}
 \item{fileprefix}{prefix of filename}
 
 \item{multi}{Boolean, if multi is TRUE output 6 plots per page}
+
+\item{verbose}{By default FALSE, should a table with fitting parameters be included in the plot}
+
+\item{nrow}{Integer, number of rows in multiplot default of 2}
+
+\item{ncol}{Integer, number of columns in multiplot default of 3, 2 if verbose}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot
