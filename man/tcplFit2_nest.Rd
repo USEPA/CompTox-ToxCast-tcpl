@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcplFit2.R
 \name{tcplFit2_nest}
 \alias{tcplFit2_nest}
-\title{Title}
+\title{Nest dataframe into a list that is readable by tcplfit2}
 \usage{
 tcplFit2_nest(test)
 }
@@ -10,8 +10,8 @@ tcplFit2_nest(test)
 \item{test}{}
 }
 \value{
-
+a list of fitting parameters that can be consumed by tcplfit2
 }
 \description{
-Title
+Nest dataframe into a list that is readable by tcplfit2
 }

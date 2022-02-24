@@ -1,8 +1,7 @@
-#' Title
+#' Write level 4 with updated schema
 #'
 #' @param dat 
 #'
-#' @return
 #'
 #' @examples
 write_lvl_4 <- function(dat){
@@ -75,27 +74,27 @@ write_lvl_4 <- function(dat){
   
   
   # append agg columns
-  tcpl:::tcplAppend(
+  tcplAppend(
     dat = dat_agg[, .SD, .SDcols = mc4_agg_cols],
     tbl = "mc4_agg",
     db = getOption("TCPL_DB")
   )
   
   # append param dat
-  tcpl:::tcplAppend(
+  tcplAppend(
     dat = dat_param,
     tbl = "mc4_param",
     db = getOption("TCPL_DB")
   )
   
   
-  tcpl:::tcplAppend(
+  tcplAppend(
     dat = onesd,
     tbl = "mc4_param",
     db = getOption("TCPL_DB")
   )
   
-  tcpl:::tcplAppend(
+  tcplAppend(
     dat = bmed,
     tbl = "mc4_param",
     db = getOption("TCPL_DB")

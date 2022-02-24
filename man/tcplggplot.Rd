@@ -17,7 +17,7 @@ level 6 - include all flags}
 \item{verbose}{boolean should plotting include table of values next to the plot}
 }
 \value{
-
+A ggplot object or grob with accompanied table depending on verbose option
 }
 \description{
 tcplggplot

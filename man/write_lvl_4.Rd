@@ -2,16 +2,13 @@
 % Please edit documentation in R/v3_schema_functions.R
 \name{write_lvl_4}
 \alias{write_lvl_4}
-\title{Title}
+\title{Write level 4 with updated schema}
 \usage{
 write_lvl_4(dat)
 }
 \arguments{
 \item{dat}{}
 }
-\value{
-
-}
 \description{
-Title
+Write level 4 with updated schema
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcplFit2.R
 \name{tcplFit2_unnest}
 \alias{tcplFit2_unnest}
-\title{Title}
+\title{Unnest tcplfit2 parameters into a dataframe}
 \usage{
 tcplFit2_unnest(output)
 }
@@ -10,8 +10,8 @@ tcplFit2_unnest(output)
 \item{output}{}
 }
 \value{
-
+list of parameters unnested and compiled into a dataframe
 }
 \description{
-Title
+Unnest tcplfit2 parameters into a dataframe
 }

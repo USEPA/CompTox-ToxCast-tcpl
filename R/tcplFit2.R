@@ -2,7 +2,7 @@
 #'
 #' @param dat
 #'
-#' @return
+#' @return Data.table with an additional column fitparams that includes all of the fitting parameters
 #' @importFrom tcplfit2 tcplfit2_core
 #' @examples
 tcplFit2 <- function(dat,
@@ -39,12 +39,12 @@ tcplFit2 <- function(dat,
   res
 }
 
-#' Title
+#' Hitcalling with tcplfit2
 #'
 #' @param mc4
 #' @param coff
 #'
-#' @return
+#' @return Data.table with key value pairs of hitcalling parameters
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
 #' @importFrom tidyr pivot_longer
 #' @importFrom tcplfit2 tcplhit2_core
@@ -110,11 +110,11 @@ tcplHit2 <- function(mc4, coff) {
 }
 
 
-#' Title
+#' Unnest tcplfit2 parameters into a dataframe
 #'
 #' @param output
 #'
-#' @return
+#' @return list of parameters unnested and compiled into a dataframe
 #'
 #' @examples
 tcplFit2_unnest <- function(output) {
@@ -133,16 +133,15 @@ tcplFit2_unnest <- function(output) {
 }
 
 
-#' Title
+#' Nest dataframe into a list that is readable by tcplfit2
 #'
 #' @param test
 #'
-#' @return
+#' @return a list of fitting parameters that can be consumed by tcplfit2
 #'
 #' @examples
 tcplFit2_nest <- function(test) {
   # renest
-  #browser()
   modelnames <- unique(test$model)
   for (m in modelnames) {
     assign(m, split(test[test$model == m, ]$model_val, test[test$model == m, ]$model_param))

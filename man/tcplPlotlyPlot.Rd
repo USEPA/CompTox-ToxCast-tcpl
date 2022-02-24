@@ -15,7 +15,7 @@ level 5 - all fit models and winning model with hitcall
 level 6 - include all flags}
 }
 \value{
-
+A plotly plot
 }
 \description{
 tcplPlotlyPlot

@@ -197,7 +197,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
 #' level 5 - all fit models and winning model with hitcall
 #' level 6 - include all flags
 #'
-#' @return
+#' @return A plotly plot
 #' @import dplyr
 #' @import plotly
 #'
@@ -509,7 +509,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' level 6 - include all flags
 #' @param verbose boolean should plotting include table of values next to the plot
 #'
-#' @return
+#' @return A ggplot object or grob with accompanied table depending on verbose option
 #' @import dplyr
 #' @import ggplot2
 #' @import gridExtra

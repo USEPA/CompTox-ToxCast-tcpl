@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcplFit2.R
 \name{tcplHit2}
 \alias{tcplHit2}
-\title{Title}
+\title{Hitcalling with tcplfit2}
 \usage{
 tcplHit2(mc4, coff)
 }
@@ -10,8 +10,8 @@ tcplHit2(mc4, coff)
 \item{coff}{}
 }
 \value{
-
+Data.table with key value pairs of hitcalling parameters
 }
 \description{
-Title
+Hitcalling with tcplfit2
 }

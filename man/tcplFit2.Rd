@@ -15,7 +15,7 @@ tcplFit2(
 \item{dat}{}
 }
 \value{
-
+Data.table with an additional column fitparams that includes all of the fitting parameters
 }
 \description{
 tcpl Wrapper for tcplfit2_core including additional calculations to fit into new schema
