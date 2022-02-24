@@ -17,7 +17,7 @@ Description: A set of tools for processing and modeling high-throughput and
     can be used for diverse chemical screening efforts.
 URL: https://github.com/USEPA/CompTox-ToxCast-tcpl
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.5.0)
 Imports:
     data.table (>= 1.9.4),
     DBI,
@@ -31,7 +31,11 @@ Imports:
     grDevices,
     sqldf,
 	dplyr,
-	tidyr
+	tidyr,
+	plotly,
+	tcplfit2,
+	ggplot2,
+	gridExtra
 Suggests:
     roxygen2,
     knitr,
@@ -41,6 +45,6 @@ Suggests:
     testthat (>= 2.1.0)
 License: GPL-2
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Encoding: UTF-8
