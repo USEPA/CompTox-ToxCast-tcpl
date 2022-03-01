@@ -1,11 +1,12 @@
 #' Write level 4 with updated schema
 #'
-#' @param dat 
+#' @param dat output of tcplfit2 that has been unnested into a data.table
 #'
 #'
 #' @examples
 write_lvl_4 <- function(dat){
-  
+  #variable binding
+  lvl <- aeid <- m4id <- m3ids <- NULL
   
   mc4_cols <- c("aeid",
                 "spid",

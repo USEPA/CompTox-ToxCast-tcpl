@@ -13,7 +13,9 @@
 #' @param fld Character, the field(s) to query on
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
-#'
+#' @param add.fld Boolean if true we want to return 
+#' the additional parameters fit with tcplfit2
+#' 
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
 #' for single concentration data. Multiple concentration data will be loaded
@@ -76,6 +78,10 @@
 #' @export
 
 tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL) {
+  #variable binding
+  model <- model_param <- model_val <- NULL
+  hit_param <- hit_val <- NULL
+  
   if (length(lvl) > 1 | length(type) > 1) {
     stop("'lvl' & 'type' must be of length 1.")
   }

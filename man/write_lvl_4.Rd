@@ -7,7 +7,7 @@
 write_lvl_4(dat)
 }
 \arguments{
-\item{dat}{}
+\item{dat}{output of tcplfit2 that has been unnested into a data.table}
 }
 \description{
 Write level 4 with updated schema

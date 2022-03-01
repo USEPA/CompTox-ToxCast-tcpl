@@ -35,7 +35,8 @@ Imports:
 	plotly,
 	tcplfit2,
 	ggplot2,
-	gridExtra
+	gridExtra,
+	stringr
 Suggests:
     roxygen2,
     knitr,

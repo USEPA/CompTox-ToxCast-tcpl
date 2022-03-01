@@ -1,6 +1,8 @@
 #' tcpl Wrapper for tcplfit2_core including additional calculations to fit into new schema
 #'
-#' @param dat
+#' @param dat output from level 3 processing
+#' @param fitmodels list of the models that should be fit with the data
+#' @param bmed baseline value, typically should be 0
 #'
 #' @return Data.table with an additional column fitparams that includes all of the fitting parameters
 #' @importFrom tcplfit2 tcplfit2_core
@@ -8,6 +10,8 @@
 tcplFit2 <- function(dat,
                      fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5"),
                      bmed = NULL) {
+  #variable binding
+  resp  <-bmad  <-aeid  <-osd  <-m3id <- concentration_unlogged  <-response <- NULL
   # do all the regular fitting things that still need to be done
   res <- dat[, `:=`(c("rmns", "rmds", "nconcs", "med_rmds"), {
     rmns <- mean(resp)
@@ -41,8 +45,9 @@ tcplFit2 <- function(dat,
 
 #' Hitcalling with tcplfit2
 #'
-#' @param mc4
-#' @param coff
+#' @param mc4 data.table with level 4 data 
+#' @param coff cutoff value for hitcalling
+#' 
 #'
 #' @return Data.table with key value pairs of hitcalling parameters
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
@@ -51,6 +56,11 @@ tcplFit2 <- function(dat,
 #'
 #' @examples
 tcplHit2 <- function(mc4, coff) {
+  
+  #variable binding
+  model <- m4id  <-model_param  <-model_val  <-resp  <- NULL
+  params  <-conc  <-bmed  <-onesd  <-df  <-aeid  <- NULL
+  fit_method  <-hitcall  <-cutoff  <-top_over_cutoff  <-bmd  <-hit_val <- NULL
   nested_mc4 <- mc4 %>%
     filter(model != "all") %>%
     group_by(m4id) %>%
@@ -112,7 +122,7 @@ tcplHit2 <- function(mc4, coff) {
 
 #' Unnest tcplfit2 parameters into a dataframe
 #'
-#' @param output
+#' @param output list of output from tcplfit2
 #'
 #' @return list of parameters unnested and compiled into a dataframe
 #'
@@ -135,16 +145,16 @@ tcplFit2_unnest <- function(output) {
 
 #' Nest dataframe into a list that is readable by tcplfit2
 #'
-#' @param test
+#' @param dat a dataframe that has all of the fitting parameters in the style of tcplloaddata
 #'
 #' @return a list of fitting parameters that can be consumed by tcplfit2
 #'
 #' @examples
-tcplFit2_nest <- function(test) {
+tcplFit2_nest <- function(dat) {
   # renest
-  modelnames <- unique(test$model)
+  modelnames <- unique(dat$model)
   for (m in modelnames) {
-    assign(m, split(test[test$model == m, ]$model_val, test[test$model == m, ]$model_param))
+    assign(m, split(dat[dat$model == m, ]$model_val, dat[dat$model == m, ]$model_param))
   }
   
   # each model requires the pars parameter for tcplhit2_core

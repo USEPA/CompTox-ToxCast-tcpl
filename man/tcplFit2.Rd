@@ -12,7 +12,11 @@ tcplFit2(
 )
 }
 \arguments{
-\item{dat}{}
+\item{dat}{output from level 3 processing}
+
+\item{fitmodels}{list of the models that should be fit with the data}
+
+\item{bmed}{baseline value, typically should be 0}
 }
 \value{
 Data.table with an additional column fitparams that includes all of the fitting parameters

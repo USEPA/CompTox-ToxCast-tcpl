@@ -15,6 +15,9 @@ tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL)
 the same order as 'fld'.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
+
+\item{add.fld}{Boolean if true we want to return 
+the additional parameters fit with tcplfit2}
 }
 \value{
 A data.table containing data for the given fields.

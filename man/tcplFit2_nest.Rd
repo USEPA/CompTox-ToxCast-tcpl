@@ -4,10 +4,10 @@
 \alias{tcplFit2_nest}
 \title{Nest dataframe into a list that is readable by tcplfit2}
 \usage{
-tcplFit2_nest(test)
+tcplFit2_nest(dat)
 }
 \arguments{
-\item{test}{}
+\item{dat}{a dataframe that has all of the fitting parameters in the style of tcplloaddata}
 }
 \value{
 a list of fitting parameters that can be consumed by tcplfit2

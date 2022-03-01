@@ -48,6 +48,8 @@
 #' ## Reset configuration
 #' options(conf_store)
 tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE,verbose = FALSE, nrow = NULL, ncol = NULL) {
+  #variable binding
+  resp <- NULL
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
@@ -198,8 +200,10 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
 #' level 6 - include all flags
 #'
 #' @return A plotly plot
-#' @import dplyr
-#' @import plotly
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
+#' @importFrom dplyr tibble ends_with everything case_when
+#' @importFrom plotly plot_ly add_trace add_annotations
+#' @importFrom dplyr .data
 #'
 #' @examples
 tcplPlotlyPlot <- function(dat, lvl = 5){
@@ -208,7 +212,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   #library(dplyr)
   
   #variable binding
-  model_stats <- NULL
+  model_stats <- model <- param <- value <- ac50 <- hitc <- NULL
   
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
   #get models from columns that have an ac50 listed
@@ -510,13 +514,19 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @param verbose boolean should plotting include table of values next to the plot
 #'
 #' @return A ggplot object or grob with accompanied table depending on verbose option
-#' @import dplyr
-#' @import ggplot2
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if
+#' @importFrom dplyr tibble contains everything as_tibble arrange .data
+#' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_color_viridis_d
+#' @importFrom ggplot2 guide_legend scale_linetype_manual xlab ylab geom_text labs theme element_blank
+#' @importFrom ggplot2 margin unit
 #' @import gridExtra
-#'
+#' @import stringr
 #' @examples
 tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   
+  #variable binding
+  conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
+  annotateText <- name <- aic <- NULL
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
   l3_range <- l3_dat %>%
       pull(.data$conc) %>%

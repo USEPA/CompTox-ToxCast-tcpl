@@ -7,7 +7,7 @@
 tcplFit2_unnest(output)
 }
 \arguments{
-\item{output}{}
+\item{output}{list of output from tcplfit2}
 }
 \value{
 list of parameters unnested and compiled into a dataframe

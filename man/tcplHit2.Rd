@@ -7,7 +7,9 @@
 tcplHit2(mc4, coff)
 }
 \arguments{
-\item{coff}{}
+\item{mc4}{data.table with level 4 data}
+
+\item{coff}{cutoff value for hitcalling}
 }
 \value{
 Data.table with key value pairs of hitcalling parameters
