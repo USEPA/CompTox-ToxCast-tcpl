@@ -29,10 +29,7 @@ Imports:
     methods,
     graphics,
     grDevices,
-    sqldf,
-    httr,
-    dplyr,
-    tidyr
+    sqldf
 Suggests:
     roxygen2,
     knitr,
@@ -42,6 +39,6 @@ Suggests:
     testthat (>= 2.1.0)
 License: GPL-2
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Encoding: UTF-8
