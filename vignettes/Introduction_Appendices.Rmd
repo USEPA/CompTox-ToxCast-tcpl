@@ -108,7 +108,7 @@ Note, <font face="CMTT10"> tcplSetOpts </font> will only make changes to the par
 
 Each assay element is represented by a separate table in the <font face="CMTT10"> tcpl </font> database. In general, we refer to an "assay_component_endpoint" as an "assay endpoint." As we move down the hierarchy, each additional layer has a one-to-many relationship with the previous layer. For example, an assay component can have multiple assay endpoints, but an assay endpoint can derive only from a single assay component.
 
-All processing occurs by assay component or assay endpoint, depending on the processing type (single-concentration or multiple-concentration) and level. No data are stored at the assay or assay source level. The "assay" and "assay_source" tables store annotations to help in the processing and down-stream understanding/analysis of the data. For more information about the assay annotations and the ToxCast assays, please refer to http://www.epa.gov/ncct/toxcast/.
+All processing occurs by assay component or assay endpoint, depending on the processing type (single-concentration or multiple-concentration) and level. No data are stored at the assay or assay source level. The "assay" and "assay_source" tables store annotations to help in the processing and down-stream understanding/analysis of the data. For more information about the assay annotations and the ToxCast assays, please refer to https://www.epa.gov/chemical-research/toxicity-forecasting.
 
 Throughout the package, the levels of assay hierarchy are defined and referenced by their primary keys (IDs) in the <font face="CMTT10"> tcpl </font> database: $\mathit{asid}$ (assay source ID), $\mathit{aid}$ (assay ID), $\mathit{acid}$ (assay component ID), and $\mathit{aeid}$ (assay endpoint ID). In addition, the package abbreviates the fields for the assay hierarchy names. The abbreviations mirror the abbreviations for the IDs with "nm" in place of "id" in the abbreviations, e.g. assay\_component\_name is abbreviated $\mathit{acnm}$.
 
@@ -129,7 +129,7 @@ The method and method assignment tables will not be listed in the tables below t
 
 Many of the tables also include the $\mathit{created\_date}$, $\mathit{modified\_date}$, and $\mathit{modified\_by}$ fields that store helpful information  for tracking changes to the data. These fields will not be discussed further or included in the tables below.
 
-Many of the tables specific to the assay annotation are not utilized by the <font face="CMTT10"> tcpl </font> package. The full complexity of the assay annotation used by the ToxCast program is beyond the scope of this vignette and the  <font face="CMTT10"> tcpl </font> package. More information about the ToxCast assay annotation can be found at: http://epa.gov/ncct/toxcast/data.html.
+Many of the tables specific to the assay annotation are not utilized by the <font face="CMTT10"> tcpl </font> package. The full complexity of the assay annotation used by the ToxCast program is beyond the scope of this vignette and the  <font face="CMTT10"> tcpl </font> package. More information about the ToxCast assay annotation can be found at: https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data.
 
 ## A. Single-concentration data-containing tables
 <!-- Table 5-->
