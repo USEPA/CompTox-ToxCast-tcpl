@@ -16,4 +16,17 @@ Also minor changes to package and examples were added
 
 ## Downstream dependencies
 
-* There are 0 Downstream dependencies for this package.
+* There are 2 Downstream dependencies for this package.
+
+## revdepcheck results
+
+We checked 2 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 0 new problems
+ * We failed to check 1 packages
+
+Issues with CRAN packages are summarised below.
+
+### Failed to check
+
+* toxEval (NA)
