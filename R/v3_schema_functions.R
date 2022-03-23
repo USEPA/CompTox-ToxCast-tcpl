@@ -111,8 +111,14 @@ write_lvl_4 <- function(dat){
 #'
 #' @examples
 check_tcpl_db_schema <- function(){
-  # get list of fields in the table
-  tbls <- unlist(tcplQuery("SHOW TABLES;"))
-  # check if _params are in the list of tables
-  all(c("mc4_param","mc5_param") %in% tbls)
+  drvr <- getOption("TCPL_DRVR")
+  if (drvr == "MySQL") {
+    # get list of fields in the table
+    tbls <- unlist(tcplQuery("SHOW TABLES;"))
+    # check if _params are in the list of tables
+    return(all(c("mc4_param","mc5_param") %in% tbls))
+  }else{
+    return(FALSE)
+  }
+  
 }
