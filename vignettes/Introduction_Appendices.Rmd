@@ -52,7 +52,7 @@ The <font face="CMTT10"> tcpl </font> package includes processing functionality 
 Prior to the pipeline processing provided in this package, all the data must go through pre-processing (level 0). Level 0 pre-processing utilizes dataset-specific R scripts to process the heterogeneous data into a uniform format and to load the uniform data into the <font face="CMTT10"> tcpl </font> database. Level 0 pre-processing is outside the scope of this package, but can be done for virtually any high-throughput or high-content chemical screening effort, provided the resulting data includes the minimum required information. 
 
 
-In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing/analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. Using tcplLite, the user can upload a flat file, in ToxCast database format, and process the data using the tcpl analysis protocols. Using tcpl, the user can upload, process and retrieve data by connecting to a MySQL database. The package includes a SQL file to initialize the MySQL database on the user's server of choice. Additionally, the MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <http://epa.gov/ncct/toxcast/data.html>.
+In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing/analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. Using tcpl, the user can upload, process and retrieve data by connecting to a MySQL database. The package includes a SQL file to initialize the MySQL database on the user's server of choice. Additionally, the MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <http://epa.gov/ncct/toxcast/data.html>.
 
 ## B. Package Settings
 
@@ -71,10 +71,10 @@ tcpl (v1.3) loaded with the following settings:
   TCPL_DB:    C:/Users/user/R-3.4.4/library/tcpl/csv
   TCPL_USER:  NA
   TCPL_HOST:  NA
-  TCPL_DRVR:  tcplLite
+  TCPL_DRVR:  NA
 Default settings stored in TCPL.conf. See ?tcplConf for more information.
 ```
-The package consists of five settings: (1) <font face="CMTT10"> $TCPL_DB </font> points to the <font face="CMTT10"> tcpl </font> database (either the path to the CSV directory, as in the given example above, or the name of the MySQL database), (2) <font face="CMTT10"> $TCPL_USER </font> stores the username for accessing the database, (3) <font face="CMTT10"> $TCPL_PASS </font> stores the password for accessing the database, (4) <font face="CMTT10"> $TCPL_HOST </font> points to the MySQL server host, and (5) <font face="CMTT10"> $TCPL_DRVR </font> indicates which database driver to use (either "MySQL" or "tcplLite").
+The package consists of five settings: (1) <font face="CMTT10"> $TCPL_DB </font> points to the <font face="CMTT10"> tcpl </font> database (either the path to the CSV directory, as in the given example above, or the name of the MySQL database), (2) <font face="CMTT10"> $TCPL_USER </font> stores the username for accessing the database, (3) <font face="CMTT10"> $TCPL_PASS </font> stores the password for accessing the database, (4) <font face="CMTT10"> $TCPL_HOST </font> points to the MySQL server host, and (5) <font face="CMTT10"> $TCPL_DRVR </font> indicates which database driver to use ("MySQL").
 
 Refer to <font face="CMTT10"> ?tcplConf </font> for more information. At any time, users can check the settings using <font face="CMTT10"> tcplConfList() </font>. An example of database settings using tcpl would be as follows:
 
@@ -87,12 +87,8 @@ tcplConf(drvr = "MySQL",
 
 ```
 
-In addition, the settings can be adjusted to the tcplLite driver:
-```{r eval = FALSE}
-tcplConf(drvr = "tcplLite", db = system.file("csv", package = "tcpl"), user = "", pass = "", host = "")
-```
 
-The examples illustrated in this vignette use tcplLite for data uploading and processing. Therefore, the user does not need to change the initialzed settings. For data retrieval, we will provide examples for accessing data from the tcpl database using a MySQL connection (tcpl), and csv files (tcplLite).
+For data retrieval, we will provide examples for accessing data from the tcpl database using a MySQL connection (tcpl).
 
 
 Note, <font face="CMTT10"> tcplSetOpts </font> will only make changes to the parameters given. The package is always loaded with the settings stored in the TCPL.config file located within the package directory. The user can edit the file, such that the package loads with the desired settings, rather than having to call the <font face="CMTT10"> tcplSetOpts </font> function every time. The TCPL.config file has to be edited whenever the package is updated or re-installed.
