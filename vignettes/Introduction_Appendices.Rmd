@@ -343,7 +343,7 @@ htmlTable(output,
 ```
 <!-- Table 13-->
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "max_med", "max_med_conc", "logc_max", "logc_min", "cnst", "hill", "hcov", "gnls", "gcov", "cnst_er", "cnst_aic", "cnst_rmse", "cnst_prob", "hill_tp", "hill_tp_sd", "hill_ga", "hill_ga_sd")
+Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "max_med", "max_med_conc", "logc_max", "logc_min", "nconc", "npts", "nrep", "nmed_gtbl", "tmpi")
 
 Description <- c("Level 4 ID",
                  "Assay endpoint ID",
@@ -357,20 +357,11 @@ Description <- c("Level 4 ID",
                  "Log concentration at *max_med*",
                  "Maximum log concentration tested",
                  "Minimum log concentration tested",
-                 "1 if the constant model converged, 0 if it failed to converge, N/A if series had less than four concentrations",
-                  "1 if the Hill model converged, 0 if it failed to converge, N/A if series had less than four concentrations or if *max_med* < *3bmad*",
-                "1 if the Hill model Hessian matrix could be inverted, else 0",
-      "1 if the gain-loss model converged, 0 if it failed to converge, N/A
-if series had less than four concentrations or if *max_med* < *3bmad*",
-                "1 if the gain-loss model Hessian matrix could be inverted, else 0",
-                "Scale term for the constant model",
-                "AIC for the constant model",
-                "RMSE for the constant model",
-                "Probability the constant model is the true model",
-                "Top asymptote for the Hill model",
-                "Standard deviation for *hill_tp*",
-                "AC~50~ for the Hill model",
-                 "Standard deviation for *hill_ga* "
+                 "Number of concentrations tested ",
+                 "Number of points in the concentration series",
+                 "Number of replicates in the concentration series",
+                 "Number of median values greater than *3bmad*",
+                 "Ignore, temporary index used for uploading purposes"
                  )
 
 output <- 
@@ -382,41 +373,19 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 13: Fields in mc4 table (Part 1)."
+        caption="Table 13: Fields in mc4 table."
 )
 
 ```
 <!-- Table 14-->
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("hill_gw", "hill_gw_sd", "hill_er", "hill_er_sd", "hill_aic", "hill_rmse", "hill_prob", "gnls_tp", "gnls_tp_sd", "gnls_ga", "gnls_ga_sd", "gnls_gw", "gnls_gw_sd", "gnls_la", "gnls_la_sd", "gnls_lw", "gnls_lw_sd", "gnls_er", "gnls_er_sd", "gnls_aic", "gnls_rmse", "gnls_prob", "nconc", "npts", "nrep", "nmed_gtbl", "tmpi")
+Field <- c("m4id", "aeid", "model", "model_param", "model_val")
 
-Description <- c("Hill coefficient",
-                 "Standard deviation for *hill_gw*",
-                 "Scale term for the Hill model",
-                 "Standard deviation for *hill_er*",
-                 "AIC for the Hill model",
-                 "RMSE for the Hill model",
-                 "Probability the Hill model is the true model",
-                 "Top asymptote for the gain-loss model",
-                 "Standard deviation for *gnls_tp*",
-                 "AC~50~ in the gain direction for the gain-loss model",
-                 "Standard deviation for *gnls_ga*",
-                 "Hill coefficient in the gain direction",
-                 "Standard deviation for *gnls_gw* ",
-                 "AC~50~ in the loss direction for the gain-loss model",
-                 "Standard deviation for *gnls_la*",
-                "Hill coefficient in the loss direction",
-                "Standard deviation for the *gnls_lw*",
-                 "Scale term for the gain-loss model",
-                 "Standard deviation for *gnls_er*",
-                 "AIC for the gain-loss model",
-                 "RMSE for the gain-loss model",
-                "Probability the gain-loss model is the true model",
-                "Number of concentrations tested ",
-                "Number of points in the concentration series",
-                "Number of replicates in the concentration series",
-                "Number of median values greater than *3bmad*",
-                "Ignore, temporary index used for uploading purposes"
+Description <- c("Level 4 ID",
+                 "Assay endpoint ID",
+                 "Model that was fit",
+                 "Key for the parameter that was fit with corresponding model",
+                 "Value for the associated key in the corresponding model"
                  )
 
 output <- 
@@ -428,34 +397,24 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 14: Fields in mc4 table (Part 2)."
+        caption="Table 14: Fields in mc4_param table."
 )
 
 ```
 
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("m5id", "m4id", "aeid", "modl", "hitc", "fitc", "coff", "actp", "modl_er", "modl_tp", "modl_ga", "modl_gw", "modl_la", "modl_lw", "modl_prob", "modl_rmse", "modl_acc", "modl_acb", "modl_ac10")
+Field <- c("m5id", "m4id", "aeid", "modl", "hitc", "fitc", "coff", "actp", "model_type")
 
 Description <- c("Level 5 ID",
                  "Level 4 ID",
                  "Assay endpoint ID",
-                 "Winning model: \"cnst\", \"hill\", or \"gnls\"",
-                 "Hit-/activity-call, 1 if active, 0 if inactive, -1 if cannot determine",
+                 "Winning model",
+                 "Hit-/activity-call, generally a continuous value from 0 to 1 if using tcplfit2 fitting" ,
                  "Fit category",
-                 "Effcacy cutoff value",
+                 "Efficacy cutoff value",
 
-                "Activity probability (1 - *const_prob*)",
-                "Scale term for the winning model",
-                "Top asymptote for the winning model",
-                "Gain AC~50~ for the winning model",
-              "Gain Hill coefficient for the winning model",
-              "Loss AC~50~ for the winning model",
-       "Loss Hill coefficient for the winning model",
-       "Probability for the winning model",
-       "RMSE for the winning model",
-       "Activity concentration at cutoff for the winning model",
-       "Activity concentration at baseline for the winning model",
-       "AC10 for the winning model"
+                "Activity probability (1 - *const_prob* not used with tcplfit2)",
+                "Model type placeholder for use when number of fitting methodologies increases"
                  )
 
 output <- 
@@ -472,7 +431,30 @@ htmlTable(output,
 
 ```
 
-<!-- Table 16-->
+```{r warning = FALSE, echo = FALSE}
+Field <- c("m5id", "aeid", "hit_param", "hit_val")
+
+Description <- c("Level 5 ID",
+                 "Assay endpoint ID",
+                 "Key for the parameter that was fit with winning model",
+                 "Value for the associated key in the winning model"
+                 )
+
+output <- 
+  data.frame(Field, Description)
+
+library(htmlTable)
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        caption="Table 16: Fields in mc5_param table."
+)
+
+```
+
+<!-- Table 17-->
 
 
 ```{r warning = FALSE, echo = FALSE}
@@ -496,46 +478,12 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 16: Fields in mc6 table."
+        caption="Table 17: Fields in mc6 table."
 )
 
 ```
 
-<!-- Table 17-->
 
-
-```{r warning = FALSE, echo = FALSE}
-Field <- c("m4id", "Aeid", "Aenm", "Asid", "Acid", "Hit_pct", "Total_hitc", "Modl_ga_min", "Modl_ga_max", "Modl_ga_med", "Modl_gw_med", "Modl_ga_delta", "Cnst_pct", "Hill_pct", "Gnls_pct")
-
-Description <- c("Level 4 ID",
-                 "Assay endpoint ID",
-                 "Assay endpoint name",
-                 "Assay source ID",
-                 "Assay component ID",
-                 "Total percent of hit calls made after 1000 bootstraps",
-                 "Total number of hit calls made after 1000 bootstraps",
-                 "Low bound of the 95% confidence interval for the AC~50~",
-                 "Upper bound of the 95% confidence interval for the AC~50~",
-                 "Median AC~50~ after 1000 bootstraps",
-                 "Median gain Hill coefficient for 1000 bootstraps",
-                 "AC~50~ confidence interval width in log units",
-                 "Percent of 1000 bootstraps that the constant model was selected as the winning model", 
-                 "Percent of 1000 bootstraps that the Hill model was selected as the winning model",
-                 "Percent of 1000 bootstraps that the gain-loss was selected as the winning model")
-
-output <- 
-  data.frame(Field, Description)
-
-library(htmlTable)
-htmlTable(output,
-        align = 'l',
-        align.header = 'l',
-        rnames = FALSE  ,
-        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 17: Fields in mc7 table."
-)
-
-```
 
 ## C. Auxiliary annotation tables
 As mentioned in the introduction to this appendix, a full description of the assay annotation is beyond the scope of this vignette. The fields pertinent to the <font face="CMTT10"> tcpl </font> package are listed in the tables below.
