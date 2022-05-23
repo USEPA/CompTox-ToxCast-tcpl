@@ -461,50 +461,84 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 **Notice that level 3 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned in previous sections, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 3 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
 
 ###   Level 4
-Level 4 processing splits the data into concentration series by sample and assay endpoint, then models the activity of each concentration series. Activity is modeled only in the positive direction. More information on readouts with both directions is available in the previous section.
 
-The first step in level 4 processing is to remove the well types with only one concentration. To establish the noise-band for the assay endpoint, the baseline median absolute deviation ($\mathit{bmad}$) is calculated as the median absolute deviation of the response values for test compounds where the concentration index equals 1 or 2. The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
+#### Overview
 
-In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned as a surrogate calculating one standard deviation of baseline response.  This is necessary assignment within the the <font face="CMTT10"> concRespCore </font> fuction of <font face="CMTT10"> tcplFit2 </font>, specifically for <font face="CMTT10"> tcplfit_core </font> which performs curvefitting and <font face="CMTT10"> tcplhit2_core </font> which performs hitcalling.
+Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting allows assay endpoints to have their activity patterns modeled directly and do not require any response curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multipled by $-1$ to induce a 'positive/increasing' trend).
 
-Before the model parameters are estimated, a set of summary values are calculated for each concentration series: the minimum and maximum response; minimum and maximum log concentration; the number of concentrations, points, and replicates; the maximum mean and median with the concentration at which they occur; and the number of medians greater than $3\mathit{bmad}$. When referring to the concentration series , the "mean" and "median" values are defined as the mean or median of the response values at every concentration. In other words, the maximum median is the maximum of all median values across the concentration series.
+#### Processing
 
-Concentration series must have at least four concentrations to enter the fitting algorithm. By default, concentration series must additionally have at least one median value greater than $3\mathit{bmad}$ to enter the fitting algorithm. The median value above $3\mathit{bmad}$ requirement can be ignored by setting $\mathit{fit\_all}$ to 1 in the assay endpoint annotation. 
+Level 4 processing starts with the removal of well types with only one concentration (e.g. empty wells - 'wllt = b'). Next a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  The $\mathit{bmad}$ is calculated as the median absolute deviation (MAD) of the response values in the lowest two concentrations (i.e. concentration index is 1 or 2) for test compounds. The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different
+from the $\mathit{bmad}$ definition used for single-concentration screening.
 
-All models draw from the Student's t-distribution with four degrees of freedom. The wider tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than does the more commonly used normal distribution. The robust fitting removes the need for any outlier elimination before fitting. The fitting algorithm utilizes the maximum likelihood estimates of parameters for three models as defined below in equations 3 through 16.
-
-Let $t(z,\nu)$ be the Student's t-distribution with $\nu$ degrees of freedom, $y_{i}$ be the observed response at the $i^{th}$ observation, and $\mu_{i}$ be the estimated response at the $i^{th}$ observation. We calculate $z_{i}$ as
+$$ bmad_{mc} = median( \big| y_i - \hat{y} \big |)$$
 
 
- $$ z_{i} = \frac{y_{i} - \mu_{i}}{exp(\sigma)}, $$ 
+\< Need to add in an equation for the Multi-Concentration BMAD calculation. \>
 
+In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is defined as the standard deviation of response values in the two lowest concentration groups of test samples.  The standard deviation of the baseline response is necessary for calculations within the <font face="CMTT10"> concRespCore </font> function of <font face="CMTT10"> tcplFit2 </font>, specifically for <font face="CMTT10"> tcplfit_core </font> which performs curve-fitting and <font face="CMTT10"> tcplhit2_core </font> which performs hit-calling.
 
-where $\sigma$ is the scale term. Then the log-likelihood is <br />
+Before the model parameters are estimated, a set of summary values are
+calculated for each concentration series: the minimum and maximum response;
+minimum and maximum log concentration; the number of concentrations, points,
+and replicates; the maximum mean and median with the concentration at which
+they occur; and the number of medians greater than $3\mathit{bmad}$. When
+referring to the concentration series , the "mean" and "median" values are
+defined as the mean or median of the response values at every concentration.
+In other words, the maximum median is the maximum of all median values across
+the concentration series.
 
+(May have changed with tcplfit2... Check the following.)
+Concentration series must have at least four concentrations to enter the fitting
+algorithm. By default, concentration series must additionally have at least one
+median value greater than $3\mathit{bmad}$ to enter the fitting algorithm. The
+median value above $3\mathit{bmad}$ requirement can be ignored by setting
+$\mathit{fit\_all}$ to 1 in the assay endpoint annotation. 
+(May have changed with tcplfit2... Check the above.)
 
-$$ \sum_{i=1}^{n} [\ln\left(t(z_{i}, 4)\right) - \sigma]\mathrm{,} $$
+#### Concentration-Response Modeling Details
 
-where $n$ is the number of observations.
-
-The multiple concentration-response data is fit using the ten objective curve-fitting functions from tcplfit2, described below: 
+Each concentration-response series is fit using all ten parametric model available in <font face="CMTT10"> tcplFit2 </font>, see table below for further details:
 
 ```{r warning = FALSE, echo = FALSE}
-Model <- c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5")
+Model <- c(
+  "Constant", "Linear", "Quadratic","Power", "Hill", "Gain-Loss",
+  "Exponential 2", "Exponential 3","Exponential 4", "Exponential 5"
+)
 
-Description <- c("Constant: Fits a constant line and returns generic model outputs. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. aic, rme, and er are set to NA in case of nofit or failure. pars always equals 'er'.",
-                 "Hill: Fits to f(x) = tp/[(1 + (ga/x)^p )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax)) ), then ga and ga_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p'(gain power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.",
-                 "Gain-Loss: Fits to f(x) = tp/[(1 + (ga/x)^p )(1 + (x/la)^q )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)) )(1 + 10^(q*(x-la)) )], then ga, la, ga_sd, and la_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p' (gain power), 'la' (loss AC50),'q' (loss power) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure." ,
-                 "Polynomial-linear: Fits to f(x) = a*x and returns generic model outputs. Zero background and increasing absolute response are assumed. Parameters are 'a' (y scale) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.",
-                 "Polynomial-quadratic: Fits to f(x) = a*(x/b + x^2/b^2) and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a' (y scale), 'b' (x scale), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.",
-                 "Power: Fits to f(x) = a*x^p and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a'(y scale), 'p' (power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.",
-                 "Exponential-2: Fits to f(x) = ps[1]*(exp(x/ps[2]) - 1)",
-                 "Exponential-3: Fits to f(x) = ps[1]*(exp((x/ps[2])^ps[3]) - 1)",
-                 "Exponential-4: Fits to f(x) = ps[1]*(1-2^(-x/ps[2]))",
-                 "Exponential-5: Fits to f(x) = ps[1]*(1-2^(-(x/ps[2])^ps[3]))")
+Abbreviation <- c(
+  "cnst", "poly1", "poly2","pow", "hill", "gnls",
+  "exp2", "exp3", "exp4", "exp5"
+)
+
+Equations <- c(
+  "", # constant
+  "$f(x)=ax$", # linear
+  "$f(x)=a(\\frac{x}{b}+(\\frac{x}{b})^{2})$", # quadratic
+  "$f(x) = ax^p$", # power
+  "$f(x) = tp/[1 + (\\frac{ga}{x})^{p}]$", # hill
+  "$f(x) = \\frac{tp}{(1 + (ga/x)^{p} )(1 + (x/la)^{q} )}$", # gain-loss
+  "$f(x) = ps[1]*(exp(\\frac{x}{ps[2]}) - 1)$", # exp 2
+  "$f(x) = ps[1]*(exp((\\frac{x}{ps[2]})^{ps[3]}) - 1)$", # exp 3
+  "$f(x) = ps[1]*(1-2^{\\frac{-x}{ps[2]}})$", # exp 4
+  "$f(x) = ps[1]*(1-2^{(-(\\frac{x}{ps[2]})^{ps[3]})})$" # exp 5
+)
+
+Description <- c(
+  "Constant: Fits a constant line and returns generic model outputs. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. aic, rme, and er are set to NA in case of nofit or failure. pars always equals 'er'.", # constant
+  "Polynomial-linear: Fits to f(x) = a*x and returns generic model outputs. Zero background and increasing absolute response are assumed. Parameters are 'a' (y scale) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # linear 
+  "Polynomial-quadratic: Fits to f(x) = a*(x/b + x^2/b^2) and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a' (y scale), 'b' (x scale), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # quadratic
+  "Power: Fits to f(x) = a*x^p and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a'(y scale), 'p' (power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # power
+  "Hill: Fits to f(x) = tp/[(1 + (ga/x)^p )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax)) ), then ga and ga_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p'(gain power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # hill
+  "Gain-Loss: Fits to f(x) = tp/[(1 + (ga/x)^p )(1 + (x/la)^q )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)) )(1 + 10^(q*(x-la)) )], then ga, la, ga_sd, and la_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p' (gain power), 'la' (loss AC50),'q' (loss power) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure." , # gain-loss
+                 "Exponential-2: Fits to f(x) = ps[1]*(exp(x/ps[2]) - 1)", # exp2
+                 "Exponential-3: Fits to f(x) = ps[1]*(exp((x/ps[2])^ps[3]) - 1)", # exp3
+                 "Exponential-4: Fits to f(x) = ps[1]*(1-2^(-x/ps[2]))", # exp4
+                 "Exponential-5: Fits to f(x) = ps[1]*(1-2^(-(x/ps[2])^ps[3]))") # exp5
 
 
 output <- 
-  data.frame(Model, Description)
+  data.frame(Model, Abbreviation, Equations, Description)
 
 library(htmlTable)
 htmlTable(output,
@@ -519,6 +553,24 @@ htmlTable(output,
 
 ```
 
+All models assume the error follows a Student's t-distribution with four degrees of freedom. Heavier (i.e. wider) tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than the more commonly used normal distribution. Robust model fitting removes the need to eliminate potential outliers prior to fitting. Maximum likelihood estimation is utilized in the model fitting algorithm to estimate model parameters for all available models in <font face="CMTT10"> tcplFit2 </font>.
+
+Let $t(z,\nu)$ be the Student's t-distribution with $\nu$ degrees of freedom,
+$y_{i}$ be the observed response at the $i^{th}$ observation, and $\mu_{i}$ be
+the estimated response at the $i^{th}$ observation. We calculate $z_{i}$ as:
+
+
+ $$ z_{i} = \frac{y_{i} - \mu_{i}}{exp(\sigma)}, $$ 
+
+
+where $\sigma$ is the scale term. Then the log-likelihood is <br />
+
+
+$$ \sum_{i=1}^{n} [\ln\left(t(z_{i}, 4)\right) - \sigma]\mathrm{,} $$
+
+where $n$ is the number of observations.
+
+
 Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid</font> function. The example dataset includes two assay endpoints with aeid values of 1 and 2.
 
 ```{r eval = TRUE, message = FALSE, warning = FALSE}
@@ -526,6 +578,7 @@ Level 4 does not utilize any assay endpoint-specific methods; the user only need
 # tcplMthdAssign(lvl = 4, id = 1:2, mthd_id = c(1,2), type = "mc" )
 # mc4_res <- tcplRun(id = 1:2, slvl = 4, elvl = 4, type = "mc")
 ```
+
 The level 4 data include 17 variables, including the ID fields. A complete list of level 4 fields is available in the Introduction vignette. The level 4 data include the fields $\mathit{cnst}$, $\mathit{hill}$, and $\mathit{gnls}$ indicating the convergence of the model where a value of 1 means the model converged and a value of 0 means the model did not converge. N/A values indicate the fitting algorithm did not attempt to fit the model. $\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure 2, the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the <font face="CMTT10"> tcplPlotM4ID</font>  function.
 
 ```{r eval = TRUE}
