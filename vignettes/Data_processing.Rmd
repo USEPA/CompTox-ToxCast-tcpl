@@ -464,24 +464,24 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 
 #### Overview
 
-Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting allows assay endpoints to have their activity patterns modeled directly and do not require any response curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multipled by $-1$ to induce a 'positive/increasing' trend).
+Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting allows assay endpoints to have their activity (i.e. response) patterns modeled directly and do not require any response curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend).
 
-#### Processing
+#### Level 3 Data Pre-Processing
 
-Level 4 processing starts with the removal of well types with only one concentration (e.g. empty wells - 'wllt = b'). Next a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  The $\mathit{bmad}$ is calculated as the median absolute deviation (MAD) of the response values in the lowest two concentrations (i.e. concentration index is 1 or 2) for test compounds. The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different
-from the $\mathit{bmad}$ definition used for single-concentration screening.
+Level 4 processing starts with the removal of well types with only one concentration (e.g. empty/blank wells - 'wllt = b'). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated assuming the baseline response values are either the untreated control wells (e.g. 'wllt = n'; DMSO or neutral solvent wells) *or* the lowest two concentrations of test samples (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
 
-$$ bmad_{mc} = median( \big| y_i - \hat{y} \big |)$$
-
-
-\< Need to add in an equation for the Multi-Concentration BMAD calculation. \>
+\< May want to add an equation for the Multi-Concentration BMAD calculation. \>
 
 In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is defined as the standard deviation of response values in the two lowest concentration groups of test samples.  The standard deviation of the baseline response is necessary for calculations within the <font face="CMTT10"> concRespCore </font> function of <font face="CMTT10"> tcplFit2 </font>, specifically for <font face="CMTT10"> tcplfit_core </font> which performs curve-fitting and <font face="CMTT10"> tcplhit2_core </font> which performs hit-calling.
 
-Before the model parameters are estimated, a set of summary values are
-calculated for each concentration series: the minimum and maximum response;
-minimum and maximum log concentration; the number of concentrations, points,
-and replicates; the maximum mean and median with the concentration at which
+Before the model parameters are estimated, a set of summary values are calculated for each concentration series:
+
+* Minimum and maximum observed responses
+* Minimum and maximum concentrations (on the log-scale)
+* The total number of concentration groups
+* Total number of observed responses (i.e. data points in the concentration series)
+* Number of replicates in concentration groups
+* The maximum mean and median with the concentration at which
 they occur; and the number of medians greater than $3\mathit{bmad}$. When
 referring to the concentration series , the "mean" and "median" values are
 defined as the mean or median of the response values at every concentration.
@@ -512,33 +512,47 @@ Abbreviation <- c(
 )
 
 Equations <- c(
-  "", # constant
-  "$f(x)=ax$", # linear
-  "$f(x)=a(\\frac{x}{b}+(\\frac{x}{b})^{2})$", # quadratic
+  "$f(x) = 0$", # constant
+  "$f(x) = ax$", # linear
+  "$f(x) = a(\\frac{x}{b}+(\\frac{x}{b})^{2})$", # quadratic
   "$f(x) = ax^p$", # power
-  "$f(x) = tp/[1 + (\\frac{ga}{x})^{p}]$", # hill
-  "$f(x) = \\frac{tp}{(1 + (ga/x)^{p} )(1 + (x/la)^{q} )}$", # gain-loss
-  "$f(x) = ps[1]*(exp(\\frac{x}{ps[2]}) - 1)$", # exp 2
-  "$f(x) = ps[1]*(exp((\\frac{x}{ps[2]})^{ps[3]}) - 1)$", # exp 3
-  "$f(x) = ps[1]*(1-2^{\\frac{-x}{ps[2]}})$", # exp 4
-  "$f(x) = ps[1]*(1-2^{(-(\\frac{x}{ps[2]})^{ps[3]})})$" # exp 5
+  "$f(x) = \\frac{tp}{1 + (\\frac{ga}{x})^{p}}$", # hill
+  "$f(x) = \\frac{tp}{(1 + (\\frac{ga}{x})^{p} )(1 + (\\frac{x}{la})^{q} )}$", # gain-loss
+  "$f(x) = a*(exp(\\frac{x}{b}) - 1)$", # exp 2
+  "$f(x) = a*(exp((\\frac{x}{b})^{p}) - 1)$", # exp 3
+  "$f(x) = tp*(1-2^{\\frac{-x}{ga}})$", # exp 4
+  "$f(x) = tp*(1-2^{-(\\frac{x}{ga})^{p}})$" # exp 5
+)
+
+OutputParameters <- c(
+  " - ", # constant
+  "a (y-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # linear,
+  "a (y-scale), b (x-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # quadratic
+  "a (y-scale), b (x-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # power
+  "tp (top), ga (gain AC50), p (gain-power), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # hill
+  "tp (top), ga (gain AC50), p (gain power), la (loss AC50), q (loss power), er (error-term), success, cov, aic, rme, modl, parameter, parameter sds", # gain-loss
+  "a (y-scale), b (x-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # exp2
+  "a (y-scale), b (x-scale), p (power), er (error-term), success, cov, aic, rme, modl, parameters, parameter sds", # exp3
+  "tp (top), ga (AC50), er (error-term), success, cov, aic, rme, modl, parameters, parameter sds", # exp4
+  "tp (top), ga (AC50), p (power), er (error-term), success, cov, aic, rme, modl, parameters, parameter sds" # exp5
 )
 
 Description <- c(
-  "Constant: Fits a constant line and returns generic model outputs. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. aic, rme, and er are set to NA in case of nofit or failure. pars always equals 'er'.", # constant
-  "Polynomial-linear: Fits to f(x) = a*x and returns generic model outputs. Zero background and increasing absolute response are assumed. Parameters are 'a' (y scale) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # linear 
-  "Polynomial-quadratic: Fits to f(x) = a*(x/b + x^2/b^2) and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a' (y scale), 'b' (x scale), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # quadratic
-  "Power: Fits to f(x) = a*x^p and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a'(y scale), 'p' (power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # power
-  "Hill: Fits to f(x) = tp/[(1 + (ga/x)^p )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax)) ), then ga and ga_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p'(gain power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # hill
-  "Gain-Loss: Fits to f(x) = tp/[(1 + (ga/x)^p )(1 + (x/la)^q )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)) )(1 + 10^(q*(x-la)) )], then ga, la, ga_sd, and la_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p' (gain power), 'la' (loss AC50),'q' (loss power) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure." , # gain-loss
-                 "Exponential-2: Fits to f(x) = ps[1]*(exp(x/ps[2]) - 1)", # exp2
-                 "Exponential-3: Fits to f(x) = ps[1]*(exp((x/ps[2])^ps[3]) - 1)", # exp3
-                 "Exponential-4: Fits to f(x) = ps[1]*(1-2^(-x/ps[2]))", # exp4
-                 "Exponential-5: Fits to f(x) = ps[1]*(1-2^(-(x/ps[2])^ps[3]))") # exp5
+  "Fits a constant line and returns generic model outputs. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. aic, rme, and er are set to NA in case of nofit or failure. pars always equals 'er'.", # constant
+  "Fits to f(x) = a*x and returns generic model outputs. Zero background and increasing absolute response are assumed. Parameters are 'a' (y scale) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # linear 
+  "Fits to f(x) = a*(x/b + x^2/b^2) and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a' (y scale), 'b' (x scale), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # quadratic
+  "Fits to f(x) = a*x^p and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a'(y scale), 'p' (power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # power
+  "Fits to f(x) = tp/[(1 + (ga/x)^p )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax)) ), then ga and ga_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p'(gain power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # hill
+  "Fits to f(x) = tp/[(1 + (ga/x)^p )(1 + (x/la)^q )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)) )(1 + 10^(q*(x-la)) )], then ga, la, ga_sd, and la_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p' (gain power), 'la' (loss AC50),'q' (loss power) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure." , # gain-loss
+  "Fits to f(x) = ps[1]*(exp(x/ps[2]) - 1)", # exp2
+  "Fits to f(x) = ps[1]*(exp((x/ps[2])^ps[3]) - 1)", # exp3
+  "Fits to f(x) = ps[1]*(1-2^(-x/ps[2]))", # exp4
+  "Fits to f(x) = ps[1]*(1-2^(-(x/ps[2])^ps[3]))") # exp5
 
 
 output <- 
-  data.frame(Model, Abbreviation, Equations, Description)
+  data.frame(Model, Abbreviation, Equations,
+             OutputParameters, Description)
 
 library(htmlTable)
 htmlTable(output,
@@ -571,7 +585,7 @@ $$ \sum_{i=1}^{n} [\ln\left(t(z_{i}, 4)\right) - \sigma]\mathrm{,} $$
 where $n$ is the number of observations.
 
 
-Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid</font> function. The example dataset includes two assay endpoints with aeid values of 1 and 2.
+Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function. The example dataset includes two assay endpoints with aeid values of 1 and 2.
 
 ```{r eval = TRUE, message = FALSE, warning = FALSE}
 ## Do level 4 processing for aeids 1&2 and load the data
