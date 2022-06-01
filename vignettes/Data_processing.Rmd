@@ -464,11 +464,22 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 
 #### Overview
 
-Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting allows assay endpoints to have their activity (i.e. response) patterns modeled directly and do not require any response curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend).
+Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting directly models the activity (i.e. response) in the concentration series without the need to perform curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend).
 
-#### Level 3 Data Pre-Processing
+#### Internal Level 3 to 4 Data Pre-Processing
 
-Level 4 processing starts with the removal of well types with only one concentration (e.g. empty/blank wells - 'wllt = b'). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated assuming the baseline response values are either the untreated control wells (e.g. 'wllt = n'; DMSO or neutral solvent wells) *or* the lowest two concentrations of test samples (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
+Level 4 processing starts with the removal of well types with only one concentration (e.g. empty/blank wells - 'wllt = b'). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either the untreated control wells (e.g. 'wllt = n'; DMSO or neutral solvent wells) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
+
+$$ bmad_{mc} = 1.4826*median(\big | y_i - \tilde{y} \big |)$$
+Where $\tilde{y}$ being the median of all baseline observations.
+
+$$
+  \left\{ \begin{array}{rcl}
+    i \in \{ D_{1}, D_2\} ;  D_1 = \{d_{1,1}, ..., d_{1,n_1}\} 
+    
+  \end{array} \right.
+$$
+
 
 \< May want to add an equation for the Multi-Concentration BMAD calculation. \>
 
@@ -481,12 +492,58 @@ Before the model parameters are estimated, a set of summary values are calculate
 * The total number of concentration groups
 * Total number of observed responses (i.e. data points in the concentration series)
 * Number of replicates in concentration groups
-* The maximum mean and median with the concentration at which
-they occur; and the number of medians greater than $3\mathit{bmad}$. When
-referring to the concentration series , the "mean" and "median" values are
-defined as the mean or median of the response values at every concentration.
-In other words, the maximum median is the maximum of all median values across
-the concentration series.
+* The maximum mean and median responses along with the concentration at which
+they occur
+* The number of medians responses greater than $3\mathit{bmad}$.
+
+When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series. See the simulated concentration-response series in the figures below illustrating these summary values.
+
+```{r,eval=FALSE}
+tcpl::tcplRun(slvl = 4,elvl = 5,type = 'mc')
+```
+
+
+```{r,echo=FALSE}
+# Quadratic Dummy Model
+a <- 6.5
+b <- 2.5
+# Set-up the Dummy Conc Response
+conc <- c(.03, .1, .3, 1, 3, 10, 30, 100)
+X <- rep(conc, each = 3)
+set.seed(658)
+Y <- a*(log10(X)/b + (log10(X)/b)^2) + rt(n = length(X),df = 4)
+# Obtain the Mean and Median Responses
+Y.mean <- unlist(lapply(X = conc,function(x){mean(Y[which(X == x)])}))
+Y.median <- unlist(lapply(X = conc,function(x){median(Y[which(X == x)])}))
+```
+
+<Copy an example concentration response series from the DB mc level 3, 4, 5. - Refer back to the markdown from BSK examples.>
+
+```{r,echo=FALSE}
+par(mfrow = c(1,2))
+# Plot the Data
+plot(X,Y,log = "x",
+     xlab = "log10(Concentration)",ylab = "Response")
+points(conc,Y.mean,col = "red")
+points(conc,Y.median,col = "blue")
+legend("topleft",bty = 'n',
+       legend = c("mean response","median response"),
+       col = c("red","blue"),pch = 1)
+
+plot(X,Y,log = "x",
+     xlab = "log10(Concentration)",ylab = "Response")
+points(conc[which(Y.mean == min(Y.mean) | Y.mean == max(Y.mean))],
+       c(min(Y.mean),max(Y.mean)),col = 'red',pch = c(25,24))
+points(conc[which(Y.median == min(Y.median) | Y.median == max(Y.median))],
+       c(min(Y.median),max(Y.median)),col = 'blue',pch = c(25,24))
+legend("topleft",bty = 'n',
+       legend = c("min mean response","max mean response",
+                  "min median response","max median response"),
+       col = rep(c('red','blue'),each = 2),
+       pch = rep(c(25,24),2))
+par(mfrow = c(1,1))
+```
+
 
 (May have changed with tcplfit2... Check the following.)
 Concentration series must have at least four concentrations to enter the fitting
@@ -628,6 +685,69 @@ $$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,}$
 
 
 where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estimated and observed values at the $i^{th}$ observation, respectively. 
+
+
+```{r}
+# Power Model Parameters
+set.seed(854)
+a <- round(rnorm(n = 1,mean = 0.75),3)
+p <- 3
+# Set-up Dummy Response
+conc <- c(.03, .1, .3, 1, 3, 10, 30, 100)
+X <- rep(conc, each = 3)
+set.seed(658)
+Y <- a*log10(X)^p + abs(a*log10(conc[1])^p) + rt(n = length(X),df = 4)
+# Plot the Dummy Example
+plot(X,Y,log = "x",
+     xlab = "log10(Concentration)",ylab = "Response",
+     main = "Dummy Observed Concentration-Response",
+     ylim = c(-2,16))
+```
+
+```{r}
+# Obtain the "Baseline" SD
+onesd <- sd(Y[which(X %in% conc[1:2])])
+# plot the onesd with the dummy example
+plot(X,Y,log = "x",
+     xlab = "log10(Concentration)",ylab = "Response",
+     main = "Dummy Observed Concentration-Response",
+     ylim = c(-2,16))
+abline(h = c(onesd*(-1),onesd),lty = "dashed",col = rep('lightgray',2))
+abline(h = c(onesd*(-1),onesd)*1.349,lty = "dashed",col = rep('indianred',2))
+legend("topleft",lty = rep('dashed',2),col = c('lightgray','indianred'),
+        legend = c('1 SD (lowest 2 conc)','bmr = 1.349*(1 SD)'))
+```
+
+```{r}
+# Set-up the data for how tcplfit2 needs the data
+row <- list(conc = X,
+             resp = Y,
+             bmed = 0,
+             cutoff = 1,
+             onesd = onesd,
+             name = "dummy chemical",
+             assay = "dummy assay")
+# Fit the Data
+fit1 <- tcplfit2::concRespCore(row = row)
+# Print the fit output
+fit1
+```
+
+```{r}
+# Plot Dummy Data with Annotations (x-axis log-scale)
+plot(X,Y,log = "x",
+     xlab = "log10(Concentration)",ylab = "Response",
+     ylim = c(-2,16))
+abline(h = c(onesd*(-1),onesd),lty = "dashed",col = rep('lightgray',2))
+abline(h = c(-1,1)*fit1[,"bmr"],lty = "dashed",col = rep('indianred',2))
+points(conc,fit1[,"a"]*conc^fit1[,"p"],col = 'blue')
+lines(conc,fit1[,"a"]*conc^fit1[,"p"],col = 'blue')
+segments(x0 = fit1[,"bmd"],x1 = fit1[,"bmd"],y0 = -5,y1 = fit1[,"bmr"],
+         col = 'red',lwd= 1.5)
+# true underlying fit
+# points(conc,a*log10(conc)^p + abs(a*log10(conc[1])^p),col = 'green')
+# lines(conc,a*log10(conc)^p + abs(a*log10(conc[1])^p),col = 'green')
+```
 
 ###   Level 5
 
