@@ -464,44 +464,111 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 
 #### Overview
 
-Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting directly models the activity (i.e. response) in the concentration series without the need to perform curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend).
+Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity (i.e. response) of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting directly models the activity in the concentration series without performing curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend).
 
-#### Internal Level 3 to 4 Data Pre-Processing
+#### Pre-Modeling Processes
 
-Level 4 processing starts with the removal of well types with only one concentration (e.g. empty/blank wells - 'wllt = b'). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either the untreated control wells (e.g. 'wllt = n'; DMSO or neutral solvent wells) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
+Level 4 processing starts with the removal of well types with only one concentration (e.g. 'wllt = b'; empty/blank wells). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either untreated control wells (e.g. 'wllt = n'; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
 
-$$ bmad_{mc} = 1.4826*median(\big | y_i - \tilde{y} \big |)$$
-Where $\tilde{y}$ being the median of all baseline observations.
+$$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
+Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see the following table, and $\tilde{y}$ is the median of all the baseline observations.
 
-$$
-  \left\{ \begin{array}{rcl}
-    i \in \{ D_{1}, D_2\} ;  D_1 = \{d_{1,1}, ..., d_{1,n_1}\} 
-    
-  \end{array} \right.
-$$
+```{r warning = FALSE, echo = FALSE}
+Level4_MethodAssignment <- c(
+  1,2
+)
 
+BaselineObservations <- c(
+  "$y_{i} = y_{(s,w,d)}$", # method 1
+  "$y_{i} = y_{(s,w)}$" # method 2
+)
 
-\< May want to add an equation for the Multi-Concentration BMAD calculation. \>
+ID <- c(
+  "$s \\in \\{1,...,n_{aeid}\\}$, \n$w = t$, \n$d \\in \\{ 1,2 \\}$",
+  "$s \\in \\{1,...,n_{aeid}\\}$, \n$w = n$"
+)
 
-In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is defined as the standard deviation of response values in the two lowest concentration groups of test samples.  The standard deviation of the baseline response is necessary for calculations within the <font face="CMTT10"> concRespCore </font> function of <font face="CMTT10"> tcplFit2 </font>, specifically for <font face="CMTT10"> tcplfit_core </font> which performs curve-fitting and <font face="CMTT10"> tcplhit2_core </font> which performs hit-calling.
+Details <- c(
+  "$s$ indicates the sample id within an 'aeid', $w$ indicates the well type, & $d$ indicates the concentration group index",
+  "$s$ indicates the sample id within an 'aeid', $w$ indicates the well type"
+)
+
+output <- 
+  data.frame(Level4_MethodAssignment,BaselineObservations,ID,Details)
+
+library(htmlTable)
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        
+          caption="Table 5: BMAD estimation details by method assignment."
+)
+
+```
+
+In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR), which as defined is subject to change as more data is added for an assay endpoint, and thus the benchmark dose estimate may change over time given the addition of new data.**
 
 Before the model parameters are estimated, a set of summary values are calculated for each concentration series:
 
-* Minimum and maximum observed responses
-* Minimum and maximum concentrations (on the log-scale)
-* The total number of concentration groups
-* Total number of observed responses (i.e. data points in the concentration series)
-* Number of replicates in concentration groups
+* Minimum and maximum observed responses (resp_min & resp_max, respectively).
+* Minimum and maximum concentrations (on the log-scale) (logc_min & logc_max, respectively).
+* The total number of concentration groups (nconc).
+* Total number of observed responses (i.e. data points in the concentration series) (npts).
+* Number of replicates in concentration groups (nrep).
 * The maximum mean and median responses along with the concentration at which
-they occur
-* The number of medians responses greater than $3\mathit{bmad}$.
+they occur (max_mean, max_med, max_mean_conc, & max_med_conc, respectively).
+* The number of medians responses greater than $3\mathit{bmad}$ (nmed_gtbl).
 
-When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series. See the simulated concentration-response series in the figures below illustrating these summary values.
+When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series.
 
-```{r,eval=FALSE}
-tcpl::tcplRun(slvl = 4,elvl = 5,type = 'mc')
+<See the concentration-response series in the figures below illustrating these summary values.>
+
+<Plot demonstrating each of the summarized values or at least the major ones.>
+
+```{r eval=FALSE}
+atg.aeid <- tcplLoadAeid(fld = 'asid',val = 3) %>% 
+  dplyr::filter(grepl(aenm,pattern = "_up$"))
+atg.aeid
+set.seed(1629)
+sampid <- sample(atg.aeid[,aeid],size = 3,replace = FALSE)
 ```
 
+```{r eval=FALSE}
+mc3 <- tcpl::tcplPrepOtpt(
+  tcpl::tcplLoadData(
+    lvl = 3L,
+    type = 'mc',
+    fld = 'aeid',
+    val = sampid,
+    add.fld = TRUE
+  )
+)
+```
+
+```{r eval=FALSE}
+tmp1 <- mc3 %>% 
+  dplyr::filter(.,aeid == 98) %>% 
+  dplyr::filter(.,spid == "01504064")
+
+tmp1mean <- tmp1 %>% group_by(.,cndx) %>% 
+  summarise_at(.,.vars = c('logc','resp'),.funs = mean)
+tmp1median <- tmp1 %>% group_by(.,cndx) %>% 
+  summarise_at(.,.vars = c('logc','resp'),.funs = median)
+
+tmp2 <- mc4 %>% 
+  dplyr::filter(.,aeid == 98) %>% 
+  dplyr::filter(.,spid == "01504064")
+
+ggplot2::ggplot(tmp1,aes(logc,resp))+
+  geom_point()+
+  geom_point(data = tmp1mean,col = "red",alpha = 0.25)+
+  geom_point(data = tmp1median,col = "blue",alpha = 0.25)+
+  xlab("log(Concentration)")+
+  ylab("Response")+
+  theme_bw()
+```
 
 ```{r,echo=FALSE}
 # Quadratic Dummy Model
@@ -544,18 +611,9 @@ legend("topleft",bty = 'n',
 par(mfrow = c(1,1))
 ```
 
-
-(May have changed with tcplfit2... Check the following.)
-Concentration series must have at least four concentrations to enter the fitting
-algorithm. By default, concentration series must additionally have at least one
-median value greater than $3\mathit{bmad}$ to enter the fitting algorithm. The
-median value above $3\mathit{bmad}$ requirement can be ignored by setting
-$\mathit{fit\_all}$ to 1 in the assay endpoint annotation. 
-(May have changed with tcplfit2... Check the above.)
-
 #### Concentration-Response Modeling Details
 
-Each concentration-response series is fit using all ten parametric model available in <font face="CMTT10"> tcplFit2 </font>, see table below for further details:
+Each concentration-response series is fit with all ten parametric model available in <font face="CMTT10"> tcplFit2 </font>, see table below for further details:
 
 ```{r warning = FALSE, echo = FALSE}
 Model <- c(
@@ -582,34 +640,34 @@ Equations <- c(
 )
 
 OutputParameters <- c(
-  " - ", # constant
-  "a (y-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # linear,
-  "a (y-scale), b (x-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # quadratic
-  "a (y-scale), b (x-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # power
-  "tp (top), ga (gain AC50), p (gain-power), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # hill
-  "tp (top), ga (gain AC50), p (gain power), la (loss AC50), q (loss power), er (error-term), success, cov, aic, rme, modl, parameter, parameter sds", # gain-loss
-  "a (y-scale), b (x-scale), er (error-term), success, cov, aic, rme, modl, parameters, parameters sds", # exp2
-  "a (y-scale), b (x-scale), p (power), er (error-term), success, cov, aic, rme, modl, parameters, parameter sds", # exp3
-  "tp (top), ga (AC50), er (error-term), success, cov, aic, rme, modl, parameters, parameter sds", # exp4
-  "tp (top), ga (AC50), p (power), er (error-term), success, cov, aic, rme, modl, parameters, parameter sds" # exp5
+  "", # constant
+  "a (y-scale)", # linear,
+  "a (y-scale), b (x-scale)", # quadratic
+  "a (y-scale), p (power)", # power
+  "tp (top), ga (gain AC50), p (gain-power)", # hill
+  "tp (top), ga (gain AC50), p (gain power), la (loss AC50), q (loss power)", # gain-loss
+  "a (y-scale), b (x-scale)", # exp2
+  "a (y-scale), b (x-scale), p (power)", # exp3
+  "tp (top), ga (AC50)", # exp4
+  "tp (top), ga (AC50), p (power)" # exp5
 )
 
-Description <- c(
-  "Fits a constant line and returns generic model outputs. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. aic, rme, and er are set to NA in case of nofit or failure. pars always equals 'er'.", # constant
-  "Fits to f(x) = a*x and returns generic model outputs. Zero background and increasing absolute response are assumed. Parameters are 'a' (y scale) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # linear 
-  "Fits to f(x) = a*(x/b + x^2/b^2) and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a' (y scale), 'b' (x scale), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # quadratic
-  "Fits to f(x) = a*x^p and returns generic model outputs. Zero background and monotonically increasing absolute response are assumed. Parameters are 'a'(y scale), 'p' (power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # power
-  "Fits to f(x) = tp/[(1 + (ga/x)^p )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax)) ), then ga and ga_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p'(gain power), and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure.", # hill
-  "Fits to f(x) = tp/[(1 + (ga/x)^p )(1 + (x/la)^q )] and returns generic model outputs. Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)) )(1 + 10^(q*(x-la)) )], then ga, la, ga_sd, and la_sd are converted back to regular units before returning. Zero background and increasing initial absolute response are assumed. Parameters are 'tp' (top), 'ga' (gain AC50), 'p' (gain power), 'la' (loss AC50),'q' (loss power) and error term 'er'. success = 1 for a successful fit, 0 if optimization failed, and NA if nofit = TRUE. cov = 1 for a successful hessian inversion, 0 if it fails, and NA if nofit = TRUE. aic, rme, modl, parameters, and parameter sds are set to NA in case of nofit or failure." , # gain-loss
-  "Fits to f(x) = ps[1]*(exp(x/ps[2]) - 1)", # exp2
-  "Fits to f(x) = ps[1]*(exp((x/ps[2])^ps[3]) - 1)", # exp3
-  "Fits to f(x) = ps[1]*(1-2^(-x/ps[2]))", # exp4
-  "Fits to f(x) = ps[1]*(1-2^(-(x/ps[2])^ps[3]))") # exp5
+Details <- c(
+  "Parameters always equals 'er'.", # constant
+  "", # linear 
+  "", # quadratic
+  "", # power
+  "Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax))), then ga and ga_sd are converted back to regular units before returning.", # hill
+  "Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)))(1 + 10^(q*(x-la)))], then ga, la, ga_sd, and la_sd are converted back to regular units before returning." , # gain-loss
+  "", # exp2
+  "", # exp3
+  "", # exp4
+  "") # exp5
 
 
 output <- 
   data.frame(Model, Abbreviation, Equations,
-             OutputParameters, Description)
+             OutputParameters, Details)
 
 library(htmlTable)
 htmlTable(output,
@@ -622,6 +680,37 @@ htmlTable(output,
           tfoot = "Model descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/web/packages/tcplfit2/tcplfit2.pdf>."
 )
 
+```
+
+Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE.  Similarly, if the hessian was successfully inverted then 1 is returned for cov, otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE or the model fit failed the AIC (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 6 below.
+
+```{r warning = FALSE, echo = FALSE}
+FitParameters <- c(
+  "er", "success", "cov", "aic", "rme", "modl",
+  "parameters", "parameters sds", "pars", "sds"
+)
+
+Description <- c(
+  "Error term","Success of Fit/Model Convergenece","Success of Covariance",
+  "Aikaike Information Criteria", "Root Mean Squared Error",
+  "Vector of Model Estimated Values at Given Concentrations",
+  "Model Parameter Values", "Standard deviation of Model Parameter Values",
+  "Vector of Parameter Names","Vectors of Parameter Standard Deviation Names"
+)
+
+output <- 
+  data.frame(FitParameters, Description)
+
+library(htmlTable)
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        
+          caption="Table 6: Model output descriptions." ,
+          tfoot = "Model output descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/web/packages/tcplfit2/tcplfit2.pdf>."
+)
 ```
 
 All models assume the error follows a Student's t-distribution with four degrees of freedom. Heavier (i.e. wider) tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than the more commonly used normal distribution. Robust model fitting removes the need to eliminate potential outliers prior to fitting. Maximum likelihood estimation is utilized in the model fitting algorithm to estimate model parameters for all available models in <font face="CMTT10"> tcplFit2 </font>.
@@ -641,6 +730,7 @@ $$ \sum_{i=1}^{n} [\ln\left(t(z_{i}, 4)\right) - \sigma]\mathrm{,} $$
 
 where $n$ is the number of observations.
 
+#### Methods Assignment & Processing
 
 Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function. The example dataset includes two assay endpoints with aeid values of 1 and 2.
 
@@ -648,6 +738,30 @@ Level 4 does not utilize any assay endpoint-specific methods; the user only need
 ## Do level 4 processing for aeids 1&2 and load the data
 # tcplMthdAssign(lvl = 4, id = 1:2, mthd_id = c(1,2), type = "mc" )
 # mc4_res <- tcplRun(id = 1:2, slvl = 4, elvl = 4, type = "mc")
+```
+
+Assign the level 4 methods to be used for bmad estimation (mthd_id = 1) and one standard deviation (mthd_id = 3) for the desired set of assay endpoints.  Here, we method '1' specifies that the BMAD is estimated using the two lowest concentration groups of treatment wells.  Additionally, the assignment specifies that the BMAD estimation should be applied prior to estimating the baseline standard deviation.
+
+```{r eval=FALSE}
+## Assign the level 4 processing Methods ##
+tcpl::tcplMthdAssign(
+    lvl = 4,
+    id = tmp.ids,
+    mthd_id = c(1,3), # the set of methods to be assigned
+    ordr = 1:2, # order in which they should be assigned
+    type = "mc"
+  )
+```
+
+With the methods assigned, the level 4 processing can be complted for the desired set of assay endpoints (aeid).
+
+```{r eval=FALSE}
+tcpl::tcplRun(
+  id = atg.aeid[,aeid], # assay endpoint id to pipeline
+  slvl = 4L, # level to start pipelining on
+  elvl = 4L, # level to end pipelining on
+  type = 'mc' # endpoint processing type - 'mc' = "multiple concentrations"
+)
 ```
 
 The level 4 data include 17 variables, including the ID fields. A complete list of level 4 fields is available in the Introduction vignette. The level 4 data include the fields $\mathit{cnst}$, $\mathit{hill}$, and $\mathit{gnls}$ indicating the convergence of the model where a value of 1 means the model converged and a value of 0 means the model did not converge. N/A values indicate the fitting algorithm did not attempt to fit the model. $\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure 2, the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the <font face="CMTT10"> tcplPlotM4ID</font>  function.
@@ -658,6 +772,18 @@ The level 4 data include 17 variables, including the ID fields. A complete list 
 ## List the first m4ids where the hill model converged
 ## for AEID 1
 # m4dat[hill == 1 & aeid == 1, head(m4id)]
+```
+
+```{r eval=FALSE}
+# Load Processed Level 4 Data
+mc4 <- tcpl::tcplPrepOtpt(
+  tcpl::tcplLoadData(
+    lvl = 4L,
+    type = 'mc',
+    fld = 'aeid',
+    val = sampid
+  )
+)
 ```
 
 ```{r eval = TRUE, fig.width = 15, fig.height= 10}
@@ -686,74 +812,11 @@ $$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,}$
 
 where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estimated and observed values at the $i^{th}$ observation, respectively. 
 
-
-```{r}
-# Power Model Parameters
-set.seed(854)
-a <- round(rnorm(n = 1,mean = 0.75),3)
-p <- 3
-# Set-up Dummy Response
-conc <- c(.03, .1, .3, 1, 3, 10, 30, 100)
-X <- rep(conc, each = 3)
-set.seed(658)
-Y <- a*log10(X)^p + abs(a*log10(conc[1])^p) + rt(n = length(X),df = 4)
-# Plot the Dummy Example
-plot(X,Y,log = "x",
-     xlab = "log10(Concentration)",ylab = "Response",
-     main = "Dummy Observed Concentration-Response",
-     ylim = c(-2,16))
-```
-
-```{r}
-# Obtain the "Baseline" SD
-onesd <- sd(Y[which(X %in% conc[1:2])])
-# plot the onesd with the dummy example
-plot(X,Y,log = "x",
-     xlab = "log10(Concentration)",ylab = "Response",
-     main = "Dummy Observed Concentration-Response",
-     ylim = c(-2,16))
-abline(h = c(onesd*(-1),onesd),lty = "dashed",col = rep('lightgray',2))
-abline(h = c(onesd*(-1),onesd)*1.349,lty = "dashed",col = rep('indianred',2))
-legend("topleft",lty = rep('dashed',2),col = c('lightgray','indianred'),
-        legend = c('1 SD (lowest 2 conc)','bmr = 1.349*(1 SD)'))
-```
-
-```{r}
-# Set-up the data for how tcplfit2 needs the data
-row <- list(conc = X,
-             resp = Y,
-             bmed = 0,
-             cutoff = 1,
-             onesd = onesd,
-             name = "dummy chemical",
-             assay = "dummy assay")
-# Fit the Data
-fit1 <- tcplfit2::concRespCore(row = row)
-# Print the fit output
-fit1
-```
-
-```{r}
-# Plot Dummy Data with Annotations (x-axis log-scale)
-plot(X,Y,log = "x",
-     xlab = "log10(Concentration)",ylab = "Response",
-     ylim = c(-2,16))
-abline(h = c(onesd*(-1),onesd),lty = "dashed",col = rep('lightgray',2))
-abline(h = c(-1,1)*fit1[,"bmr"],lty = "dashed",col = rep('indianred',2))
-points(conc,fit1[,"a"]*conc^fit1[,"p"],col = 'blue')
-lines(conc,fit1[,"a"]*conc^fit1[,"p"],col = 'blue')
-segments(x0 = fit1[,"bmd"],x1 = fit1[,"bmd"],y0 = -5,y1 = fit1[,"bmr"],
-         col = 'red',lwd= 1.5)
-# true underlying fit
-# points(conc,a*log10(conc)^p + abs(a*log10(conc[1])^p),col = 'green')
-# lines(conc,a*log10(conc)^p + abs(a*log10(conc[1])^p),col = 'green')
-```
-
 ###   Level 5
 
 Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates additional point-of-departure estimates based on the activity cutoff.
 
-**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$), and is used to determine the activity or hit call for the concentration series. If two models have equal AIC values, the simpler model (the model with fewer parameters) wins the tie. All of the parameters for the winning model are stored at level 5 with the prefix "modl\_" to facilitate easier queries. For a concentration series to get an active hit call, either the Hill or gain-loss must be selected as the winning model. In addition to selecting the Hill or gain-loss model, the modeled and observed response must meet an efficacy cutoff. 
+**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as none. The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is is that at least one median response is greater than the efficacy cutoff.  Second, that the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflect whether the AIC of the winning model is less than that of the constant model.
 
 The efficacy cutoff is defined by the level 5 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 5 methods. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
 
@@ -765,6 +828,18 @@ The efficacy cutoff is defined by the level 5 methods. The efficacy cutoff value
 #                ordr = 1,
 #                type = "mc")
 ```
+
+```{r eval=FALSE}
+tcpl::tcplMthdAssign(
+  lvl = 5,
+  id = atg.aeid[,aeid]
+  mthd_id = c(1,3,5),
+  ordr = 1:3,
+  type = "mc"
+)
+```
+
+
 For the example data, the cutoff value is $6\mathit{bmad}$. If the Hill or gain-loss model wins, and the estimated top parameter for the winning model ($\mathit{modl\_tp}$) and the maximum median value ($\mathit{max\_med}$) are both greater than or equal to the efficacy cutoff ($\mathit{coff}$), the concentration series is considered active and the hit call ($\mathit{hitc}$) is set to 1.
 
 The hit call can be 1, 0, or -1. A hit call of 1 or 0 indicates the concentration series is active or inactive, respectively, according to the analysis; a hit call of -1 indicates the concentration series had less than four concentrations.
@@ -834,6 +909,16 @@ With the level 5 methods assigned, the data are ready for level 5 processing:
 ## Do level 5 processing for aeids 1&2 and load the data
 #mc5_res <- tcplRun(id = 1:2, slvl = 5, elvl = 5, type = "mc")
 ```
+
+```{r eval=FALSE}
+tcpl::tcplRun(
+  id = atg.aeid[,aeid], # assay endpoint id to pipeline
+  slvl = 5L, # level to start pipelining on
+  elvl = 5L, # level to end pipelining on
+  type = 'mc' # endpoint processing type - 'mc' = "multiple concentrations"
+)
+```
+
 
 <!-- ```{r eval = TRUE, fig.width = 15, fig.height= 10} -->
 <!-- #tcplPlotM4ID(m4id = 4, lvl = 5) -->
