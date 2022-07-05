@@ -27,11 +27,20 @@ $(document).ready(function() {
 });
 </script>
 
+```{css, echo=FALSE}
+.scroll-100 {
+  max-height: 100px;
+  overflow-y: auto;
+}
+```
+
 ```{r eval = TRUE, echo = FALSE, message = FALSE}
 library(htmlTable)
 library(tcpl)
 library(data.table)
-
+library(ggplot2)
+library(gridExtra)
+library(kableExtra)
 ```
 ```{r eval = TRUE, echo = FALSE, message = FALSE, results = "hide"}
 # This chunk copies the tcplLite local directory to the temp directory used in installation
@@ -141,7 +150,7 @@ Level <- c('Lvl1', 'Lvl2', 'Lvl1', 'Lvl2', 'Lvl3', 'Lvl4', 'Lvl5', 'Lvl6')
 InputID <- c('acid', 'aeid', 'acid', 'acid', 'acid', 'aeid', 'aeid', 'aeid')
 MethodID <- c('aeid', 'aeid', 'N/A', 'acid', 'aeid', 'N/A', 'aeid', 'aeid')
 Table <- data.frame(Type, Level, InputID, MethodID)
-library(htmlTable)
+
 htmlTable(Table,
          rnames = FALSE ,
           caption="Table 1: Processing checklist.",
@@ -219,7 +228,6 @@ output <-
 "3. resp.blineshift.50.spid", "4. \t", "3. \t", "4. \t"), 
          ncol=4, byrow = TRUE)
 
-library(htmlTable)
 htmlTable(output,
           rnames = FALSE,
           rgroup = c("Scheme 1",
@@ -253,7 +261,6 @@ Description <- c("Pre-processing: Vendor/dataset-specific pre-processing to orga
 output <- 
   data.frame(Level, Description)
 
-library(htmlTable)
 htmlTable(output,
         
         rnames = FALSE  ,
@@ -358,7 +365,6 @@ on methods in the \'mc6_aeid\' table &&dagger;"
 output <- 
   data.frame(Level, Description)
 
-library(htmlTable)
 htmlTable(output,
         
         rnames = FALSE  ,
@@ -478,6 +484,11 @@ Level4_MethodAssignment <- c(
   1,2
 )
 
+GeneralDescription <- c(
+  "Median absolute deviation (MAD) of all observations in the lowest two concentrations of across samples (spid) in the assay endpoint (aeid).",
+  "Median absolute deviation (MAD) of all observations in the solvent/untreated control observations across samples (spid) in the assay endpoint (aeid)."
+)
+
 BaselineObservations <- c(
   "$y_{i} = y_{(s,w,d)}$", # method 1
   "$y_{i} = y_{(s,w)}$" # method 2
@@ -494,9 +505,8 @@ Details <- c(
 )
 
 output <- 
-  data.frame(Level4_MethodAssignment,BaselineObservations,ID,Details)
+  data.frame(Level4_MethodAssignment,GeneralDescription,BaselineObservations,ID,Details)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -523,6 +533,151 @@ they occur (max_mean, max_med, max_mean_conc, & max_med_conc, respectively).
 
 When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series.
 
+Code to load level 3 multiple concentration data from the database for a single assay endpoint (aeid).
+
+```{r eval=FALSE}
+mc3 <- tcpl::tcplPrepOtpt(tcplLoadData(lvl = 3,type = 'mc',
+                                       fld = 'aeid',val = 80,add.fld = TRUE))
+```
+
+We have provided a subset of the 'mc3' data within the 'mc_vignette' R data object within the 'tcpl' package.
+
+```{r}
+devtools::load_all()
+data(mc_vignette,package = 'tcpl')
+mc3 <- mc_vignette[['mc3']]
+```
+
+Plot the concentration-response series for one of the spid's in the `mc3` object.
+
+```{r eval=FALSE,class.source = "scroll-100"}
+tmp <- mc3 %>%
+  dplyr::select(.,c(spid,chnm,logc,resp)) %>%
+  dplyr::group_by(spid,chnm,logc) %>% 
+  dplyr::summarise(mean_resp = mean(resp),med_resp = median(resp)) %>% 
+  reshape2::melt(.,id.vars = c('spid','chnm','logc'))
+
+tmp_min <- mc3 %>%
+  dplyr::group_by(spid,chnm) %>% 
+  dplyr::filter(resp == min(resp)) %>%
+  dplyr::mutate(variable = "resp_min",value = resp) %>% 
+  dplyr::select(.,c(spid,chnm,logc,variable,value))
+tmp_max <- mc3 %>% 
+  dplyr::group_by(spid,chnm) %>% 
+  dplyr::filter(resp == max(resp)) %>% 
+  dplyr::mutate(variable = "resp_max",value = resp) %>% 
+  dplyr::select(.,c(spid,chnm,logc,variable,value))
+
+tmp <- rbind.data.frame(tmp,tmp_min,tmp_max)
+```
+
+```{r eval=FALSE}
+tmp %>% 
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot()+
+  geom_point(data = dplyr::filter(mc3,spid == "01504209"),aes(logc,resp),alpha = 0.25)+
+  geom_point(aes(logc,value,col = variable))+
+  facet_wrap(facets = 'variable')+
+  theme_bw()
+```
+
+```{r fig.align='center'}
+tmp <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  dplyr::select(.,c(spid,chnm,logc,resp)) %>%
+  dplyr::group_by(spid,chnm,logc) %>% 
+  dplyr::summarise(mean_resp = mean(resp),med_resp = median(resp))
+
+A <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_point(data = tmp,aes(x = logc,y = mean_resp),col = "red",alpha = 0.5)+
+  xlab("Log Concentration")+
+  ylab(mc3[,aenm])+
+  ggtitle("Mean Responses")+
+  theme_bw()
+
+B <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_point(data = tmp,aes(x = logc,y = med_resp),col = "blue",alpha = 0.5)+
+  xlab("Log Concentration")+
+  ylab(mc3[,aenm])+
+  ggtitle("Median Responses")+
+  theme_bw()
+
+mc4 <- mc_vignette[["mc4"]]
+
+# 'resp_min' & 'resp_max'
+tmp_min <- mc3 %>%
+  dplyr::group_by(spid,chnm) %>% 
+  dplyr::filter(resp == min(resp)) %>% 
+  dplyr::filter(spid == "01504209")
+tmp_max <- mc3 %>% 
+  dplyr::group_by(spid,chnm) %>% 
+  dplyr::filter(resp == max(resp)) %>% 
+  dplyr::filter(spid == "01504209")
+
+C <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_point(data = tmp_min,aes(x = logc,y = resp),
+             pch = 2,col = "blue")+
+  geom_point(data = tmp_max,aes(x = logc,y = resp),
+             pch = 6,col = "red")+
+  xlab("Log Concentration")+
+  ylab(mc3[,aenm])+
+  ggtitle(label = "Minimum & Maximum\nResponses")+
+  theme_bw()
+# 'logc_min' & 'logc_max'
+D <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
+             aes(xintercept = logc_min),
+             col = "blue",lty = "dashed")+
+  geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
+             aes(xintercept = logc_max),
+             col = "red",lty = "dashed")+
+  xlab("Log Concentration")+
+  ylab(mc3[,aenm])+
+  ggtitle(label = "Minimum & Maximum\nConcentrations")+
+  theme_bw()
+# 'max_mean', 'max_mean_conc', 'max_med', & 'max_med_conc'
+E <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
+             aes(x = max_mean_conc,y = max_mean),
+             col = "blue",alpha = 0.5)+
+  xlab("Log Concentration")+
+  ylab(mc3[,aenm])+
+  ggtitle(label = "Maximum Mean Response")+
+  theme_bw()
+
+G <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
+             aes(x = max_med_conc,y = max_med),
+             col = "red",alpha = 0.5)+
+  xlab("Log Concentration")+
+  ylab(mc3[,aenm])+
+  ggtitle(label = "Maximum Median Response")+
+  theme_bw()
+
+gridExtra::grid.arrange(
+  A,B,C,D,E,G,
+  nrow = 3,ncol = 2
+)
+```
+
 <See the concentration-response series in the figures below illustrating these summary values.>
 
 <Plot demonstrating each of the summarized values or at least the major ones.>
@@ -545,70 +700,6 @@ mc3 <- tcpl::tcplPrepOtpt(
     add.fld = TRUE
   )
 )
-```
-
-```{r eval=FALSE}
-tmp1 <- mc3 %>% 
-  dplyr::filter(.,aeid == 98) %>% 
-  dplyr::filter(.,spid == "01504064")
-
-tmp1mean <- tmp1 %>% group_by(.,cndx) %>% 
-  summarise_at(.,.vars = c('logc','resp'),.funs = mean)
-tmp1median <- tmp1 %>% group_by(.,cndx) %>% 
-  summarise_at(.,.vars = c('logc','resp'),.funs = median)
-
-tmp2 <- mc4 %>% 
-  dplyr::filter(.,aeid == 98) %>% 
-  dplyr::filter(.,spid == "01504064")
-
-ggplot2::ggplot(tmp1,aes(logc,resp))+
-  geom_point()+
-  geom_point(data = tmp1mean,col = "red",alpha = 0.25)+
-  geom_point(data = tmp1median,col = "blue",alpha = 0.25)+
-  xlab("log(Concentration)")+
-  ylab("Response")+
-  theme_bw()
-```
-
-```{r,echo=FALSE}
-# Quadratic Dummy Model
-a <- 6.5
-b <- 2.5
-# Set-up the Dummy Conc Response
-conc <- c(.03, .1, .3, 1, 3, 10, 30, 100)
-X <- rep(conc, each = 3)
-set.seed(658)
-Y <- a*(log10(X)/b + (log10(X)/b)^2) + rt(n = length(X),df = 4)
-# Obtain the Mean and Median Responses
-Y.mean <- unlist(lapply(X = conc,function(x){mean(Y[which(X == x)])}))
-Y.median <- unlist(lapply(X = conc,function(x){median(Y[which(X == x)])}))
-```
-
-<Copy an example concentration response series from the DB mc level 3, 4, 5. - Refer back to the markdown from BSK examples.>
-
-```{r,echo=FALSE}
-par(mfrow = c(1,2))
-# Plot the Data
-plot(X,Y,log = "x",
-     xlab = "log10(Concentration)",ylab = "Response")
-points(conc,Y.mean,col = "red")
-points(conc,Y.median,col = "blue")
-legend("topleft",bty = 'n',
-       legend = c("mean response","median response"),
-       col = c("red","blue"),pch = 1)
-
-plot(X,Y,log = "x",
-     xlab = "log10(Concentration)",ylab = "Response")
-points(conc[which(Y.mean == min(Y.mean) | Y.mean == max(Y.mean))],
-       c(min(Y.mean),max(Y.mean)),col = 'red',pch = c(25,24))
-points(conc[which(Y.median == min(Y.median) | Y.median == max(Y.median))],
-       c(min(Y.median),max(Y.median)),col = 'blue',pch = c(25,24))
-legend("topleft",bty = 'n',
-       legend = c("min mean response","max mean response",
-                  "min median response","max median response"),
-       col = rep(c('red','blue'),each = 2),
-       pch = rep(c(25,24),2))
-par(mfrow = c(1,1))
 ```
 
 #### Concentration-Response Modeling Details
@@ -669,7 +760,6 @@ output <-
   data.frame(Model, Abbreviation, Equations,
              OutputParameters, Details)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -701,7 +791,6 @@ Description <- c(
 output <- 
   data.frame(FitParameters, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -732,28 +821,36 @@ where $n$ is the number of observations.
 
 #### Methods Assignment & Processing
 
-Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function. The example dataset includes two assay endpoints with aeid values of 1 and 2.
+Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function. We show two example of how a user can assign methods using <font face="CMTT10"> tcpl </font>.  First, we assign methods for a single assay endpoint.  Second, we assign methods for all assay endpoints within an assay.  Please note, the second approach can also be used for a subset of aeid's within an assay that is larger than one.
 
-```{r eval = TRUE, message = FALSE, warning = FALSE}
-## Do level 4 processing for aeids 1&2 and load the data
-# tcplMthdAssign(lvl = 4, id = 1:2, mthd_id = c(1,2), type = "mc" )
-# mc4_res <- tcplRun(id = 1:2, slvl = 4, elvl = 4, type = "mc")
-```
-
-Assign the level 4 methods to be used for bmad estimation (mthd_id = 1) and one standard deviation (mthd_id = 3) for the desired set of assay endpoints.  Here, we method '1' specifies that the BMAD is estimated using the two lowest concentration groups of treatment wells.  Additionally, the assignment specifies that the BMAD estimation should be applied prior to estimating the baseline standard deviation.
+For both examples, the level 4 methods assigned include the bmad estimation (mthd_id = 1) and the required one standard deviation estimation (mthd_id = 3), mentioned in the pre-modeling process section, for the desired set of assay endpoints.  Here, method '1' specifies that the BMAD is estimated using the two lowest concentration groups of **treatment wells**.  Additionally, the assignment specifies that the BMAD estimation should be applied prior to estimating the baseline standard deviation.
 
 ```{r eval=FALSE}
-## Assign the level 4 processing Methods ##
+## Assign the Level 4 Processing Methods Single AEID ##
 tcpl::tcplMthdAssign(
     lvl = 4,
-    id = tmp.ids,
+    id = 80, # aeid = 80 is the only assay endpoint we want to assign methods
     mthd_id = c(1,3), # the set of methods to be assigned
     ordr = 1:2, # order in which they should be assigned
     type = "mc"
   )
 ```
 
-With the methods assigned, the level 4 processing can be complted for the desired set of assay endpoints (aeid).
+```{r eval=FALSE}
+## Obtain the 'aeid' Values ##
+# here we are pulling attagene aeid's
+atg.aeid <- tcpl::tcplGetAeid(name = "ATG") 
+## Assign the Level 4 Processing Methods for All AEID's ##
+tcpl::tcplMthdAssign(
+    lvl = 4,
+    id = atg.aeid[,aeid],
+    mthd_id = c(1,3), # the set of methods to be assigned
+    ordr = 1:2, # order in which they should be assigned
+    type = "mc"
+  )
+```
+
+With the methods assigned, the level 4 processing can be completed for the desired set of assay endpoints (aeid).
 
 ```{r eval=FALSE}
 tcpl::tcplRun(
@@ -762,6 +859,17 @@ tcpl::tcplRun(
   elvl = 4L, # level to end pipelining on
   type = 'mc' # endpoint processing type - 'mc' = "multiple concentrations"
 )
+```
+
+We can now load the level 4 data from the database.
+```{r eval=FALSE}
+mc4 <- tcpl::tcplPrepOtpt(tcplLoadData(lvl = 3,type = 'mc',
+                                       fld = 'aeid',val = 80,add.fld = TRUE))
+```
+
+A subset of this data is already available within the `mc_vignette` object.
+```{r}
+mc4 <- mc_vignette[["mc4"]]
 ```
 
 The level 4 data include 17 variables, including the ID fields. A complete list of level 4 fields is available in the Introduction vignette. The level 4 data include the fields $\mathit{cnst}$, $\mathit{hill}$, and $\mathit{gnls}$ indicating the convergence of the model where a value of 1 means the model converged and a value of 0 means the model did not converge. N/A values indicate the fitting algorithm did not attempt to fit the model. $\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure 2, the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the <font face="CMTT10"> tcplPlotM4ID</font>  function.
@@ -781,9 +889,54 @@ mc4 <- tcpl::tcplPrepOtpt(
     lvl = 4L,
     type = 'mc',
     fld = 'aeid',
-    val = sampid
+    val = atg.aeid[,aeid]
   )
 )
+```
+
+```{r}
+X <- seq(
+ 10^(mc4[which(mc4[,spid] == "01504209"),logc_min]),
+ 10^(mc4[which(mc4[,spid] == "01504209"),logc_max]),
+ length.out = 100
+)
+
+estDR <- mc4 %>% 
+  dplyr::filter(spid == "01504209") %>% 
+  dplyr::summarise(
+    poly1 = tcplfit2::poly1(.[,c(poly1_a,poly1_er)],X),
+    poly2 = tcplfit2::poly2(.[,c(poly2_a,poly2_b,poly2_er)],X),
+    power = tcplfit2::pow(.[,c(pow_a,pow_p,pow_er)],X),
+    hill  = tcplfit2::hillfn(.[,c(hill_tp,hill_ga,hill_p)],X),
+    gnls  = tcplfit2::gnls(.[,c(gnls_tp,gnls_ga,gnls_p,gnls_la,gnls_q,gnls_er)],
+                           x = X),
+    exp2  = tcplfit2::exp2(.[,c(exp2_a,exp2_b,exp2_er)],x = X),
+    exp3  = tcplfit2::exp3(.[,c(exp3_a,exp3_b,exp3_p,exp3_er)],x = X),
+    exp4  = tcplfit2::exp4(.[,c(exp4_tp,exp4_ga,exp4_er)],x = X),
+    exp5  = tcplfit2::exp5(.[,c(exp5_tp,exp5_ga,exp5_p,exp5_er)],x = X)
+  )
+
+estDR <- cbind.data.frame(X,estDR) %>%
+  reshape2::melt(data = .,measure.vars = c(
+    "poly1","poly2","power","hill","gnls","exp2","exp3","exp4","exp5"
+  ))
+```
+
+```{r fig.align='center'}
+mc3 %>% 
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(.,aes(x = logc,y = resp))+
+  geom_point()+
+  geom_line(data = estDR,
+            aes(x = log10(X),y = value,col = variable),
+            alpha = 0.5)+
+  labs(col = "Models")+
+  xlab("Log Concentration")+
+  ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
+  ggtitle(paste("Level 4 Model Fits",
+    mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
+    sep = "\n"))+
+  theme_bw()
 ```
 
 ```{r eval = TRUE, fig.width = 15, fig.height= 10}
@@ -816,7 +969,28 @@ where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estim
 
 Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates additional point-of-departure estimates based on the activity cutoff.
 
-**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as none. The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is is that at least one median response is greater than the efficacy cutoff.  Second, that the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflect whether the AIC of the winning model is less than that of the constant model.
+**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as none. The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is base on at least one median response being greater than the efficacy cutoff.  Second, the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflects whether the AIC of the winning model is less than that of the constant model.
+
+<Not sure if we need the table below or not.>
+```{r echo=FALSE}
+mc5 <- mc_vignette[["mc5"]]
+
+tmp <- mc4 %>% 
+  dplyr::select(.,grep(colnames(.),pattern = "aic")) %>% 
+  round(.,3) %>% 
+  apply(.,MARGIN = 1,FUN = function(x){
+    cell_spec(x,color = ifelse(x == min(x),yes = "blue",no = "black"))
+  }) %>% t() %>% 
+  data.frame() %>% 
+  cbind.data.frame(mc4[,dsstox_substance_id],.)
+colnames(tmp) <- colnames(mc4)[grep(colnames(mc4),pattern = "aic")] %>%
+  str_remove(.,pattern = "_aic") %>% c("dsstox_id",.)
+
+tmp %>%
+  kbl(escape = F,format = 'html',centering = TRUE,
+      caption = "Table of the AIC values from All Fits from Level 4.") %>%
+  kable_styling(c("striped","hover"),full_width = FALSE,)
+```
 
 The efficacy cutoff is defined by the level 5 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 5 methods. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
 
@@ -829,6 +1003,8 @@ The efficacy cutoff is defined by the level 5 methods. The efficacy cutoff value
 #                type = "mc")
 ```
 
+Here, we are going to assign the Attagene assay endpoints all with the same methods.  However, one can assign methods for a single assay endpoint or a subset of all endpoints within an assay.
+
 ```{r eval=FALSE}
 tcpl::tcplMthdAssign(
   lvl = 5,
@@ -839,10 +1015,13 @@ tcpl::tcplMthdAssign(
 )
 ```
 
+The above chunk of code assigns <provide description of assigned methods...>.
+
+Since the continuous hit call (as described previously) is a probability the value is between 0 and 1.  The higher the probability indicates the more probable that the concentration-response series indicates biological activity in the measured response (i.e. 'active' hit).
+
+<Information about the point of departure (POD).(??)>
 
 For the example data, the cutoff value is $6\mathit{bmad}$. If the Hill or gain-loss model wins, and the estimated top parameter for the winning model ($\mathit{modl\_tp}$) and the maximum median value ($\mathit{max\_med}$) are both greater than or equal to the efficacy cutoff ($\mathit{coff}$), the concentration series is considered active and the hit call ($\mathit{hitc}$) is set to 1.
-
-The hit call can be 1, 0, or -1. A hit call of 1 or 0 indicates the concentration series is active or inactive, respectively, according to the analysis; a hit call of -1 indicates the concentration series had less than four concentrations.
 
 For active concentration series, two additional point-of-departure estimates are calculated for the winning model: (1) the activity concentration at baseline (ACB or $\mathit{modl\_acb}$) and (2) the activity concentration at cutoff (ACC or $\mathit{modl\_acc}$). The ACB and ACC are defined as the concentration where the estimated model value equals $3\mathit{bmad}$ and the cutoff, respectively. The point-of-departure estimates are summarized in Figure 3.
 
@@ -905,11 +1084,6 @@ All concentration series fall into a single fit category ($\mathit{fitc}$), defi
 
 With the level 5 methods assigned, the data are ready for level 5 processing:
 
-```{r eval = TRUE, warning = FALSE, message = FALSE}
-## Do level 5 processing for aeids 1&2 and load the data
-#mc5_res <- tcplRun(id = 1:2, slvl = 5, elvl = 5, type = "mc")
-```
-
 ```{r eval=FALSE}
 tcpl::tcplRun(
   id = atg.aeid[,aeid], # assay endpoint id to pipeline
@@ -917,6 +1091,150 @@ tcpl::tcplRun(
   elvl = 5L, # level to end pipelining on
   type = 'mc' # endpoint processing type - 'mc' = "multiple concentrations"
 )
+```
+
+Code to load level 5 multiple concentration data from the database for a single assay endpoint (aeid).
+
+```{r eval=FALSE}
+mc5 <- tcpl::tcplPrepOtpt(tcplLoadData(lvl = 5,type = 'mc',
+                                       fld = 'aeid',val = 80,add.fld = TRUE))
+```
+
+We have provided a subset of the 'mc5' data within the 'mc_vignette' R data object within the 'tcpl' package.
+
+```{r}
+mc5 <- mc_vignette[["mc5"]]
+```
+
+Visual display of the model fitting results with the tcpl package when connected to the/a database.
+
+```{r eval=FALSE}
+my_id <- tcplLoadData(lvl = 5,fld = c('aeid','spid'),val = list(80,'01504209'))$m4id
+tcplPlot(lvl = 5,val = my_id,output = 'console')
+```
+
+Visuzalize model fitting results by creating the figures manually from data.
+```{r fig.align='center',class.source = "scroll-100"}
+mc3_ss <- mc3 %>% dplyr::filter(spid == "01504209")
+mc4_ss <- mc4 %>% dplyr::filter(spid == "01504209")
+mc5_ss <- mc5 %>% dplyr::filter(spid == "01504209")
+
+estDR <- estDR %>%
+  dplyr::mutate(.,best_modl = ifelse(variable == mc5_ss[,modl],
+                                     yes = "best model",no = NA))
+```
+
+```{r echo=FALSE,fig.align='center'}
+bestfit_col <- 'royalblue'
+names(bestfit_col) <- mc5_ss[,modl]
+
+basePlot <- mc3_ss %>% 
+  ggplot()+
+  geom_point(aes(x = logc,y = resp))+
+  # Cutoff Band
+  geom_rect(data = mc5_ss,
+            aes(xmin = logc_min,xmax = logc_max,ymin = -coff,ymax = coff),
+            alpha = 0.15,fill = "lightgray")+
+  # Best Model Fit
+  geom_line(data = dplyr::filter(estDR,variable == mc5_ss[,modl]),
+            aes(x = log10(X),y = value,color = mc5_ss[,modl]))+
+  # Other Model Fits
+  geom_line(data = dplyr::filter(estDR,variable != mc5_ss[,modl]),
+            aes(x = log10(X),y = value,lty = variable),alpha = 0.15,show.legend = TRUE)+
+  # Legend Information
+  labs(lty = "Model",color = "Best Fit")+
+  # Titles and Labels
+  xlab("Log Concentration")+
+  ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
+  ggtitle(paste("Level 5 Best Model Fit",
+    mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
+    sep = "\n"))+
+  # Background Plot Theme
+  theme_bw()
+```
+
+```{r}
+potency_cols <- colorspace::qualitative_hcl(n = 5) %>%
+  colorspace::simulate_cvd(.,colorspace::deutanomaly_cvd[[2]])
+
+
+basePlot+
+  # BMD
+  geom_hline(data = mc5_ss,
+                    aes(yintercept = bmr),
+                    alpha = 0.5,col = potency_cols[1])+
+  geom_segment(data = mc5_ss,
+               aes(x = log10(bmd),xend = log10(bmd),y = -0.5,yend = bmr),
+               alpha = 0.5,col = potency_cols[1])+
+  geom_point(data = mc5_ss,
+             aes(x = log10(bmd),y = bmr,pch = "BMD"),
+             colour = potency_cols[1])+
+  # ACC
+  geom_hline(data = mc5_ss,
+             aes(yintercept = coff),
+             alpha = 0.5,col = potency_cols[2])+
+  geom_segment(data = mc5_ss,
+               aes(x = log10(acc),xend = log10(acc),y = -0.5,yend = coff),
+               alpha = 0.5,col = potency_cols[2])+
+  geom_point(data = mc5_ss,
+             aes(x = log10(acc),y = coff,pch = "ACC"),
+             col = potency_cols[2])+
+  # AC50
+  geom_hline(data = mc5_ss,
+             aes(yintercept = max_med*0.5),
+             alpha = 0.5,col = potency_cols[3])+
+  geom_segment(data = mc5_ss,
+               aes(x = log10(ac50),xend = log10(ac50),y = -0.5,yend = max_med*0.5),
+               alpha = 0.5,col = potency_cols[3])+
+  geom_point(data = mc5_ss,
+             aes(x = log10(ac50),y = max_med*0.5),
+             col = potency_cols[3])+
+  # AC10
+  geom_hline(data = mc5_ss,
+             aes(yintercept = max_med*0.1),
+             alpha = 0.5,col = potency_cols[4])+
+  geom_segment(data = mc5_ss,
+               aes(x = log10(ac10),xend = log10(ac10),y = -0.5,yend = max_med*0.1),
+               alpha = 0.5,col = potency_cols[4])+
+  geom_point(data = mc5_ss,
+             aes(x = log10(ac10),y = max_med*0.1),
+             col = potency_cols[4])+
+  # AC5
+  geom_hline(data = mc5_ss,
+             aes(yintercept = max_med*0.05),
+             alpha = 0.5,col = potency_cols[5])+
+  geom_segment(data = mc5_ss,
+               aes(x = log10(ac5),xend = log10(ac5),y = -0.5,yend = max_med*0.05),
+               alpha = 0.5,col = potency_cols[5])+
+  geom_point(data = mc5_ss,
+             aes(x = log10(ac5),y = max_med*0.05),
+             col = potency_cols[5])+
+  # Potency Legend
+  scale_shape_manual(name = "Potency Estimates",
+                      values = c('BMD' = 16,
+                                 'ACC' = 16,
+                                 'AC50' = 16,
+                                 'AC10' = 16,
+                                 'AC5' = 16),
+                      guide = guide_legend(
+                        override.aes = list(
+                          colour = c(potency_cols),
+                          alpha = 1
+                        )
+                      )
+                     )
+```
+
+
+```{r eval=FALSE}
+potency_dose <- mc5_ss %>% 
+  mutate(log10_bmd = log10(bmd),
+         log10_acc = log10(acc),
+         log10_ac50 = log10(ac50),
+         log10_ac10 = log10(ac10),
+         log10_ac5 = log10(ac5)) %>% 
+  select(c(dsstox_substance_id,log10_bmd,log))
+
 ```
 
 
