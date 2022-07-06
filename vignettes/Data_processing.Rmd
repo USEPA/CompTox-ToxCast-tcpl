@@ -1113,36 +1113,40 @@ my_id <- tcplLoadData(lvl = 5,fld = c('aeid','spid'),val = list(80,'01504209'))$
 tcplPlot(lvl = 5,val = my_id,output = 'console')
 ```
 
-Visuzalize model fitting results by creating the figures manually from data.
-```{r fig.align='center',class.source = "scroll-100"}
-mc3_ss <- mc3 %>% dplyr::filter(spid == "01504209")
-mc4_ss <- mc4 %>% dplyr::filter(spid == "01504209")
-mc5_ss <- mc5 %>% dplyr::filter(spid == "01504209")
+Visualize model fitting results and potency estimates from Level 4 multiple-concentration (mc) data.
 
+```{r fig.align='center',class.source = "scroll-100"}
+## Obtain Data ##
+# First, we need to obtain the subset of data related to spid = "01504209",
+# which is our example spid.
+mc3_ss <- mc3 %>% dplyr::filter(spid == "01504209") # Level 3 - conc-resp series
+mc4_ss <- mc4 %>% dplyr::filter(spid == "01504209") # Level 4 - model fits
+mc5_ss <- mc5 %>% dplyr::filter(spid == "01504209") # Level 5 - best fit & est.
+# Next, we need to obtain the smooth curve estimate for the best model found
+# in the Level 5 analyses of the `tcpl` pipeline.
 estDR <- estDR %>%
   dplyr::mutate(.,best_modl = ifelse(variable == mc5_ss[,modl],
                                      yes = "best model",no = NA))
-```
 
-```{r echo=FALSE,fig.align='center'}
-bestfit_col <- 'royalblue'
-names(bestfit_col) <- mc5_ss[,modl]
-
+## Generate a Base Concentration-Response Plot ##
 basePlot <- mc3_ss %>% 
+  # Observed Concentration-Response Data
   ggplot()+
-  geom_point(aes(x = logc,y = resp))+
+  geom_point(aes(x = logc,y = resp),pch = 1)+
   # Cutoff Band
   geom_rect(data = mc5_ss,
             aes(xmin = logc_min,xmax = logc_max,ymin = -coff,ymax = coff),
-            alpha = 0.15,fill = "lightgray")+
+            alpha = 0.05,fill = "skyblue")+
   # Best Model Fit
   geom_line(data = dplyr::filter(estDR,variable == mc5_ss[,modl]),
             aes(x = log10(X),y = value,color = mc5_ss[,modl]))+
+  scale_colour_manual(values = c("royalblue3"),aesthetics = "color")+
   # Other Model Fits
   geom_line(data = dplyr::filter(estDR,variable != mc5_ss[,modl]),
-            aes(x = log10(X),y = value,lty = variable),alpha = 0.15,show.legend = TRUE)+
+            aes(x = log10(X),y = value,lty = variable),
+            alpha = 0.15,show.legend = TRUE)+
   # Legend Information
-  labs(lty = "Model",color = "Best Fit")+
+  labs(lty = "Other Models",color = "Best Fit")+
   # Titles and Labels
   xlab("Log Concentration")+
   ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
@@ -1151,92 +1155,94 @@ basePlot <- mc3_ss %>%
     sep = "\n"))+
   # Background Plot Theme
   theme_bw()
-```
 
-```{r}
-potency_cols <- colorspace::qualitative_hcl(n = 5) %>%
-  colorspace::simulate_cvd(.,colorspace::deutanomaly_cvd[[2]])
-
-
-basePlot+
+## Potency Estimate Layers ##
+# First, we need to obtain/assign colors for the potency estimates to be
+# displayed.
+potency_cols <-
+  # choose 5 distinct colors
+  viridis::inferno(n = 5,direction = -1) %>% 
+  # darken the original colors to make them more visible
+  colorspace::darken(.,amount = 0.2)
+  
+## Compile the Full Level 5 Plot ##
+fullPlot <- 
+  # Start with the `basePlot` object.
+  basePlot+
+  # Next, add the various potency layers.
   # BMD
   geom_hline(data = mc5_ss,
-                    aes(yintercept = bmr),
-                    alpha = 0.5,col = potency_cols[1])+
+             aes(yintercept = bmr),
+             col = potency_cols[1])+
   geom_segment(data = mc5_ss,
                aes(x = log10(bmd),xend = log10(bmd),y = -0.5,yend = bmr),
-               alpha = 0.5,col = potency_cols[1])+
+               col = potency_cols[1])+
   geom_point(data = mc5_ss,
              aes(x = log10(bmd),y = bmr,pch = "BMD"),
-             colour = potency_cols[1])+
+             colour = potency_cols[1],cex = 2.5)+
   # ACC
   geom_hline(data = mc5_ss,
              aes(yintercept = coff),
-             alpha = 0.5,col = potency_cols[2])+
+             col = potency_cols[2])+
   geom_segment(data = mc5_ss,
                aes(x = log10(acc),xend = log10(acc),y = -0.5,yend = coff),
-               alpha = 0.5,col = potency_cols[2])+
+               col = potency_cols[2])+
   geom_point(data = mc5_ss,
              aes(x = log10(acc),y = coff,pch = "ACC"),
-             col = potency_cols[2])+
+             col = potency_cols[2],cex = 2.5)+
   # AC50
   geom_hline(data = mc5_ss,
              aes(yintercept = max_med*0.5),
-             alpha = 0.5,col = potency_cols[3])+
+             col = potency_cols[3])+
   geom_segment(data = mc5_ss,
-               aes(x = log10(ac50),xend = log10(ac50),y = -0.5,yend = max_med*0.5),
-               alpha = 0.5,col = potency_cols[3])+
+               aes(x = log10(ac50),xend = log10(ac50),
+                   y = -0.5,yend = max_med*0.5),
+               col = potency_cols[3])+
   geom_point(data = mc5_ss,
              aes(x = log10(ac50),y = max_med*0.5),
-             col = potency_cols[3])+
+             col = potency_cols[3],cex = 2.5)+
   # AC10
   geom_hline(data = mc5_ss,
              aes(yintercept = max_med*0.1),
-             alpha = 0.5,col = potency_cols[4])+
+             col = potency_cols[4])+
   geom_segment(data = mc5_ss,
-               aes(x = log10(ac10),xend = log10(ac10),y = -0.5,yend = max_med*0.1),
-               alpha = 0.5,col = potency_cols[4])+
+               aes(x = log10(ac10),xend = log10(ac10),
+                   y = -0.5,yend = max_med*0.1),
+               col = potency_cols[4])+
   geom_point(data = mc5_ss,
              aes(x = log10(ac10),y = max_med*0.1),
-             col = potency_cols[4])+
+             col = potency_cols[4],cex = 2.5)+
   # AC5
   geom_hline(data = mc5_ss,
              aes(yintercept = max_med*0.05),
-             alpha = 0.5,col = potency_cols[5])+
+             col = potency_cols[5])+
   geom_segment(data = mc5_ss,
-               aes(x = log10(ac5),xend = log10(ac5),y = -0.5,yend = max_med*0.05),
-               alpha = 0.5,col = potency_cols[5])+
+               aes(x = log10(ac5),xend = log10(ac5),
+                   y = -0.5,yend = max_med*0.05),
+               col = potency_cols[5])+
   geom_point(data = mc5_ss,
              aes(x = log10(ac5),y = max_med*0.05),
-             col = potency_cols[5])+
-  # Potency Legend
+             col = potency_cols[5],cex = 2.5)+
+  # Legend Information
   scale_shape_manual(name = "Potency Estimates",
-                      values = c('BMD' = 16,
-                                 'ACC' = 16,
-                                 'AC50' = 16,
-                                 'AC10' = 16,
-                                 'AC5' = 16),
-                      guide = guide_legend(
-                        override.aes = list(
-                          colour = c(potency_cols),
-                          alpha = 1
+                     values = c('BMD' = 16,
+                                'ACC' = 16,
+                                'AC50' = 16,
+                                'AC10' = 16,
+                                'AC5' = 16),
+                     guide = guide_legend(
+                       override.aes = list(
+                         colour = c(potency_cols),
+                         alpha = 1
                         )
                       )
                      )
+
+## Display the Compiled Plot ##
+fullPlot
 ```
 
-
-```{r eval=FALSE}
-potency_dose <- mc5_ss %>% 
-  mutate(log10_bmd = log10(bmd),
-         log10_acc = log10(acc),
-         log10_ac50 = log10(ac50),
-         log10_ac10 = log10(ac10),
-         log10_ac5 = log10(ac5)) %>% 
-  select(c(dsstox_substance_id,log10_bmd,log))
-
-```
-
+**Figure 3:** This figure illustrates the results from the Level 5 analyses in the `tcpl` pipeline package including the best model fit and subsequent point-of-departure (POD) estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity responses from which potency estimates of interest are defined, and the vertical lines show the corresponding POD estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
 
 <!-- ```{r eval = TRUE, fig.width = 15, fig.height= 10} -->
 <!-- #tcplPlotM4ID(m4id = 4, lvl = 5) -->
