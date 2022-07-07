@@ -533,106 +533,86 @@ they occur (max_mean, max_med, max_mean_conc, & max_med_conc, respectively).
 
 When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series.
 
-Code to load level 3 multiple concentration data from the database for a single assay endpoint (aeid).
+The following code demonstrates how a user, when connected to a database with tcpl pipelined data, can load the level 3 multiple concentration data for a single assay endpoint (aeid).
 
 ```{r eval=FALSE}
 mc3 <- tcpl::tcplPrepOtpt(tcplLoadData(lvl = 3,type = 'mc',
                                        fld = 'aeid',val = 80,add.fld = TRUE))
 ```
 
-We have provided a subset of the 'mc3' data within the 'mc_vignette' R data object within the 'tcpl' package.
+For demonstration purposes, we provide the `mc_vignette` R data object with in the `tcpl` package since we are not connected to such a database.  The `mc_vignette` object contains a subset of data from level 3 through 5 from the most recent version of the invitroDB database.  The following code demonstrates how to load the example data object and how to access/store the level 3 data in the `mc3` object.
 
-```{r}
+```{r message=FALSE}
+# load all the functions in the `tcpl` package
 devtools::load_all()
+# load the example data in the `tcpl` package
 data(mc_vignette,package = 'tcpl')
+# allocate the level 3 example data to `mc3`
 mc3 <- mc_vignette[['mc3']]
 ```
 
-Plot the concentration-response series for one of the spid's in the `mc3` object.
+Plot the concentration-response series for one of the example spid's in the `mc3` object and the summary estimates mentioned previously in the bullet list above.
 
-```{r eval=FALSE,class.source = "scroll-100"}
-tmp <- mc3 %>%
-  dplyr::select(.,c(spid,chnm,logc,resp)) %>%
-  dplyr::group_by(spid,chnm,logc) %>% 
-  dplyr::summarise(mean_resp = mean(resp),med_resp = median(resp)) %>% 
-  reshape2::melt(.,id.vars = c('spid','chnm','logc'))
-
-tmp_min <- mc3 %>%
+```{r fig.align='center',class.source="scroll-100",message=FALSE}
+## Obtain Data ##
+# obtain the level 4 example data
+mc4 <- mc_vignette[["mc4"]]
+# obtain the minimum response observed and the 'logc' group - 'resp_min'
+level3_min <- mc3 %>%
   dplyr::group_by(spid,chnm) %>% 
-  dplyr::filter(resp == min(resp)) %>%
-  dplyr::mutate(variable = "resp_min",value = resp) %>% 
-  dplyr::select(.,c(spid,chnm,logc,variable,value))
-tmp_max <- mc3 %>% 
+  dplyr::filter(resp == min(resp)) %>% 
+  dplyr::filter(spid == "01504209")
+# obtain the maximum response observed and the 'logc' group - 'resp_max'
+level3_max <- mc3 %>% 
   dplyr::group_by(spid,chnm) %>% 
   dplyr::filter(resp == max(resp)) %>% 
-  dplyr::mutate(variable = "resp_max",value = resp) %>% 
-  dplyr::select(.,c(spid,chnm,logc,variable,value))
-
-tmp <- rbind.data.frame(tmp,tmp_min,tmp_max)
-```
-
-```{r eval=FALSE}
-tmp %>% 
-  dplyr::filter(spid == "01504209") %>% 
-  ggplot()+
-  geom_point(data = dplyr::filter(mc3,spid == "01504209"),aes(logc,resp),alpha = 0.25)+
-  geom_point(aes(logc,value,col = variable))+
-  facet_wrap(facets = 'variable')+
-  theme_bw()
-```
-
-```{r fig.align='center'}
-tmp <- mc3 %>%
+  dplyr::filter(spid == "01504209")
+# obtain the level 3 data and 'center' estimates for responses per 'logc' group
+level3_summary <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   dplyr::select(.,c(spid,chnm,logc,resp)) %>%
   dplyr::group_by(spid,chnm,logc) %>% 
   dplyr::summarise(mean_resp = mean(resp),med_resp = median(resp))
-
+## Generate Individual Summary Plots ##
+# plot the mean responses for each log-concentration group
 A <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
   geom_point(alpha = 0.25)+
-  geom_point(data = tmp,aes(x = logc,y = mean_resp),col = "red",alpha = 0.5)+
+  geom_point(data = level3_summary,
+             aes(x = logc,y = mean_resp),
+             col = "red",alpha = 0.5)+
   xlab("Log Concentration")+
   ylab(mc3[,aenm])+
   ggtitle("Mean Responses")+
   theme_bw()
-
+# plot the median responses for each log-concentration group
 B <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
   geom_point(alpha = 0.25)+
-  geom_point(data = tmp,aes(x = logc,y = med_resp),col = "blue",alpha = 0.5)+
+  geom_point(data = level3_summary,
+             aes(x = logc,y = med_resp),
+             col = "blue",alpha = 0.5)+
   xlab("Log Concentration")+
   ylab(mc3[,aenm])+
   ggtitle("Median Responses")+
   theme_bw()
-
-mc4 <- mc_vignette[["mc4"]]
-
-# 'resp_min' & 'resp_max'
-tmp_min <- mc3 %>%
-  dplyr::group_by(spid,chnm) %>% 
-  dplyr::filter(resp == min(resp)) %>% 
-  dplyr::filter(spid == "01504209")
-tmp_max <- mc3 %>% 
-  dplyr::group_by(spid,chnm) %>% 
-  dplyr::filter(resp == max(resp)) %>% 
-  dplyr::filter(spid == "01504209")
-
+# plot the minimum & maximum observed responses
 C <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
   geom_point(alpha = 0.25)+
-  geom_point(data = tmp_min,aes(x = logc,y = resp),
+  geom_point(data = level3_min,aes(x = logc,y = resp),
              pch = 2,col = "blue")+
-  geom_point(data = tmp_max,aes(x = logc,y = resp),
+  geom_point(data = level3_max,aes(x = logc,y = resp),
              pch = 6,col = "red")+
   xlab("Log Concentration")+
   ylab(mc3[,aenm])+
   ggtitle(label = "Minimum & Maximum\nResponses")+
   theme_bw()
-# 'logc_min' & 'logc_max'
+# plot the minimum & maximum experimental log-concentration groups -
+#   'logc_min' & 'logc_max'
 D <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
@@ -647,7 +627,8 @@ D <- mc3 %>%
   ylab(mc3[,aenm])+
   ggtitle(label = "Minimum & Maximum\nConcentrations")+
   theme_bw()
-# 'max_mean', 'max_mean_conc', 'max_med', & 'max_med_conc'
+# plot the maximum mean & median responses at the related log-concentration - 
+#   'max_mean' & 'max_mean_conc'
 E <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
@@ -659,7 +640,8 @@ E <- mc3 %>%
   ylab(mc3[,aenm])+
   ggtitle(label = "Maximum Mean Response")+
   theme_bw()
-
+# plot the maximum mean & median responses at the related log-concentration - 
+#   'max_med' & 'max_med_conc'
 G <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
@@ -671,7 +653,7 @@ G <- mc3 %>%
   ylab(mc3[,aenm])+
   ggtitle(label = "Maximum Median Response")+
   theme_bw()
-
+## Compile Summary Plots in One Figure ##
 gridExtra::grid.arrange(
   A,B,C,D,E,G,
   nrow = 3,ncol = 2
