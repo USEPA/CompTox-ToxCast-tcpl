@@ -1025,43 +1025,6 @@ For the example data, the cutoff value is $6\mathit{bmad}$. If the Hill or gain-
 
 For active concentration series, two additional point-of-departure estimates are calculated for the winning model: (1) the activity concentration at baseline (ACB or $\mathit{modl\_acb}$) and (2) the activity concentration at cutoff (ACC or $\mathit{modl\_acc}$). The ACB and ACC are defined as the concentration where the estimated model value equals $3\mathit{bmad}$ and the cutoff, respectively. The point-of-departure estimates are summarized in Figure 3.
 
-```{r eval = TRUE}
-
-par(family = "mono", mar = rep(1, 4), pty = "m")
-plot.new()
-plot.window(xlim = c(0, 30), ylim = c(-30, 100))
-axis(side = 2, lwd = 2, col = "gray35")
-rect(xleft = par()$usr[1],
-     xright = par()$usr[2], 
-     ybottom = -15, 
-     ytop = 15,
-     border = NA, 
-     col = "gray45",
-     density = 15, 
-     angle = 45)
-abline(h = 26, lwd = 3, lty = "dashed", col = "gray30")
-tmp <- list(modl = "gnls", gnls_ga = 12, gnls_tp = 80, 
-            gnls_gw = 0.18, gnls_lw = 0.7, gnls_la = 25)
-tcplAddModel(pars = tmp, lwd = 3, col = "dodgerblue2")
-
-abline(v = 8.46, lwd = 3, lty = "solid", col = "firebrick")
-text(x = 8.46, y = par()$usr[4]*0.9, 
-     font = 2, labels = "ACB", cex = 2, pos = 2, srt = 90)
-abline(v = 10.24, lwd = 3, lty = "solid", col = "yellow2")
-text(x = 10.24, y = par()$usr[4]*0.9, 
-     font = 2, labels = "ACC", cex = 2, pos = 2, srt = 90)
-abline(v = 12, lwd = 3, lty = "solid", col = "dodgerblue2")
-text(x = 12, y = par()$usr[4]*0.9, 
-     font = 2, labels = "AC50", cex = 2, pos = 2, srt = 90)
-
-points(x = c(8.46, 10.24, 12), y = c(15, 26, 40),
-       pch = 21, cex = 2, col = "gray30", lwd = 2,
-       bg = c("firebrick", "yellow2", "dodgerblue2"))
-
-```
-
-Figure 3: The point-of-departure estimates calculated by the tcpl package. The shaded rectangle represents the baseline region, $0 \pm 3\mathit{bmad}$. The dark stripped line represents the efficacy cutoff ($\mathit{coff}$). The vertical lines show where the point-of-departure estimates are defined: the red line shows the ACB, the yellow line shows the ACC, and the blue line shows the AC~50~.
-
 <!-- Exclude info about fit categories for now
 All concentration series fall into a single fit category ($\mathit{fitc}$), defined by the leaves on the tree structure in Figure 4. Concentration series in the same category will have similar characteristics, and often look very similar. Categorizing all of the series enables faster quality control checking and easier identification of potential false results. The first split differentiates series by hit call. Series with a hit call of -1 go into fit category 2. The following two paragraphs will outline the logic for the active and inactive branches. -->
 
