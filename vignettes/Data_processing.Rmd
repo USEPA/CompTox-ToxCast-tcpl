@@ -797,6 +797,47 @@ $$ \sum_{i=1}^{n} [\ln\left(t(z_{i}, 4)\right) - \sigma]\mathrm{,} $$
 
 where $n$ is the number of observations.
 
+<Introduction description for the example model fits.>
+
+```{r class.source="scroll-100"}
+## Example Data ##
+# example fit concentration series
+ex_conc <- seq(10^(min(mc3[,logc])),10^(max(mc3[,logc])),length.out = 100)
+
+## Linear (Polynomial 1) Fit ##
+
+fits <- data.frame(
+  logc = log10(ex_conc),
+  constant = tcplfit2::cnst(ps = c(er = 0.1),ex_conc),
+  poly1 = tcplfit2::poly1(ps = c(a = 3.5,er = 0.1),x = ex_conc),
+  poly2 = tcplfit2::poly2(ps = c(a = 0.13,b = 2,er = 0.1),x = ex_conc),
+  power = tcplfit2::pow(ps = c(a = 1.23,p = 1.45,er = 0.1),x = ex_conc),
+  hill = tcplfit2::hillfn(ps = c(tp = 750,ga = 5,p = 1.76,er = 0.1),
+                          x = ex_conc),
+  gnls = tcplfit2::gnls(ps = c(tp = 750,ga = 15,p = 1.45,la = 50,q = 1.34,
+                               er = 0.1),
+                        x = ex_conc),
+  exp2 = tcplfit2::exp2(ps = c(a = 0.45,b = 13.5,er = 0.1),
+                        x = ex_conc),
+  exp3 = tcplfit2::exp3(ps = c(a = 0.35,b = 12,p = 0.87,er = 0.1),
+                        x = ex_conc)
+) %>% 
+  reshape2::melt(data = .,measure.vars = c(
+    "constant",
+    "poly1","poly2","power",
+    "hill","gnls","exp2","exp3"#,"exp4","exp5"
+  ))
+
+## Plot ##
+fits %>%
+  ggplot()+
+  geom_line(aes(x = logc,y = value,lty = variable,colour = variable))+
+  facet_wrap(facets = "variable")+
+  theme_bw()+
+  labs(lty = "Models",colour = "Models")
+```
+
+
 #### Methods Assignment & Processing
 
 Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function. We show two example of how a user can assign methods using <font face="CMTT10"> tcpl </font>.  First, we assign methods for a single assay endpoint.  Second, we assign methods for all assay endpoints within an assay.  Please note, the second approach can also be used for a subset of aeid's within an assay that is larger than one.
