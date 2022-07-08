@@ -660,10 +660,6 @@ gridExtra::grid.arrange(
 )
 ```
 
-<See the concentration-response series in the figures below illustrating these summary values.>
-
-<Plot demonstrating each of the summarized values or at least the major ones.>
-
 ```{r eval=FALSE}
 atg.aeid <- tcplLoadAeid(fld = 'asid',val = 3) %>% 
   dplyr::filter(grepl(aenm,pattern = "_up$"))
