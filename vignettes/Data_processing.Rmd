@@ -477,31 +477,37 @@ Level 4 processing splits the data into concentration-response series by sample 
 Level 4 processing starts with the removal of well types with only one concentration (e.g. 'wllt = b'; empty/blank wells). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either untreated control wells (e.g. 'wllt = n'; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
 
 $$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
-Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see the following table, and $\tilde{y}$ is the median of all the baseline observations.
+Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 5 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
+
+In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR), which as defined is subject to change as more data is added for an assay endpoint, and thus the benchmark dose estimate may change over time given the addition of new data.**
 
 ```{r warning = FALSE, echo = FALSE}
 Level4_MethodAssignment <- c(
-  1,2
+  1,2,3
 )
 
 GeneralDescription <- c(
   "Median absolute deviation (MAD) of all observations in the lowest two concentrations of across samples (spid) in the assay endpoint (aeid).",
-  "Median absolute deviation (MAD) of all observations in the solvent/untreated control observations across samples (spid) in the assay endpoint (aeid)."
+  "Median absolute deviation (MAD) of all observations in the solvent/untreated control observations across samples (spid) in the assay endpoint (aeid).",
+  "Standard deviation (SD) of all observations in the lowest two concentrations of across samples (spid) in the assay endpoint (aeid)."
 )
 
 BaselineObservations <- c(
   "$y_{i} = y_{(s,w,d)}$", # method 1
-  "$y_{i} = y_{(s,w)}$" # method 2
+  "$y_{i} = y_{(s,w)}$", # method 2
+  "$y_{i} = y_{(s,w,d)}$" # method 3
 )
 
 ID <- c(
   "$s \\in \\{1,...,n_{aeid}\\}$, \n$w = t$, \n$d \\in \\{ 1,2 \\}$",
-  "$s \\in \\{1,...,n_{aeid}\\}$, \n$w = n$"
+  "$s \\in \\{1,...,n_{aeid}\\}$, \n$w = n$",
+  "$s \\in \\{1,...,n_{aeid}\\}$,\n$w = t$,\n$d \\in \\{ 1,2 \\}$"
 )
 
 Details <- c(
   "$s$ indicates the sample id within an 'aeid', $w$ indicates the well type, & $d$ indicates the concentration group index",
-  "$s$ indicates the sample id within an 'aeid', $w$ indicates the well type"
+  "$s$ indicates the sample id within an 'aeid', $w$ indicates the well type",
+  "$s$ indicates the sample id within an 'aeid', $w$ indicates the well type, & $d$ indicates the concentration group index"
 )
 
 output <- 
@@ -517,8 +523,6 @@ htmlTable(output,
 )
 
 ```
-
-In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR), which as defined is subject to change as more data is added for an assay endpoint, and thus the benchmark dose estimate may change over time given the addition of new data.**
 
 Before the model parameters are estimated, a set of summary values are calculated for each concentration series:
 
