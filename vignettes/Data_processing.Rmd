@@ -799,7 +799,7 @@ where $n$ is the number of observations.
 
 <Introduction description for the example model fits.>
 
-```{r class.source="scroll-100"}
+```{r class.source="scroll-100",fig.align='center'}
 ## Example Data ##
 # example fit concentration series
 ex_conc <- seq(10^(min(mc3[,logc])),10^(max(mc3[,logc])),length.out = 100)
@@ -819,14 +819,24 @@ fits <- data.frame(
                         x = ex_conc),
   exp2 = tcplfit2::exp2(ps = c(a = 0.45,b = 13.5,er = 0.1),
                         x = ex_conc),
-  exp3 = tcplfit2::exp3(ps = c(a = 0.35,b = 12,p = 0.87,er = 0.1),
+  exp3 = tcplfit2::exp3(ps = c(a = 1.67,b = 12.5,p = 0.87,er = 0.1),
+                        x = ex_conc),
+  exp4 = tcplfit2::exp4(ps = c(tp = 895,ga = 15,er = 0.1),x = ex_conc),
+  exp5 = tcplfit2::exp5(ps = c(tp = 793,ga = 6.25,p = 1.25,er = 0.1),
                         x = ex_conc)
 ) %>% 
   reshape2::melt(data = .,measure.vars = c(
     "constant",
     "poly1","poly2","power",
-    "hill","gnls","exp2","exp3"#,"exp4","exp5"
+    "hill","gnls","exp2","exp3","exp4","exp5"
   ))
+
+## Updated Colors ##
+fit_cols <-
+  # choose 10 distinct colors
+  viridis::magma(n = 10,direction = 1) %>% 
+  # darken the original colors to make them more visible
+  colorspace::darken(.,amount = 0.2)
 
 ## Plot ##
 fits %>%
@@ -834,7 +844,11 @@ fits %>%
   geom_line(aes(x = logc,y = value,lty = variable,colour = variable))+
   facet_wrap(facets = "variable")+
   theme_bw()+
-  labs(lty = "Models",colour = "Models")
+  labs(lty = "Models",colour = "Models")+
+  scale_colour_manual(values = fit_cols)+
+  ggtitle("General Shape of Models Included in `tcplfit2`")+
+  xlab("Log Concentration")+
+  ylab("Response")
 ```
 
 
