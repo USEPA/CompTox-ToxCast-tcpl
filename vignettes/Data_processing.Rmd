@@ -254,7 +254,7 @@ If the data does not require any normalization, the "none" method must be assign
 
 In addition to the required normalization methods, the user can add additional methods to transform the normalized values. For example, the third fold-change example in Table 2 includes "resp.blineshift.50.spid," which corrects for baseline deviations by $\mathit{spid}$. A complete list of available methods, by processing type and level, can be listed with <font face="CMTT10"> tcplMthdList </font>. More information is available in the package documentation, and can be found by running <font face="CMTT10"> ??tcpl::Methods </font>.
 
-##  Processing Single-concentration Screening Data
+## Processing Single-concentration Screening Data
 
 This section will cover the  <font face="CMTT10"> tcpl </font> process for handling single-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of single-concentration processing is to identify potentially active compounds from a broad screen at a single concentration. After the data is loaded into the<font face="CMTT10"> tcpl </font> database, the single-concentration processing consists of 2 levels (Table 3).
 
@@ -283,7 +283,14 @@ htmlTable(output,
 ```
 
 ###   Level 1
-Level 1 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$), logarithm-concentration field ($\mathit{logc}$), and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 1 is to normalize the raw values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section. Before assigning the methods below, the user needs to register the data for the single-concentration assay, as shown in the Register and Upload New Data section.
+
+#### Overview
+
+Level 1 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$), logarithm-concentration field ($\mathit{logc}$), and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 1 is to normalize the raw values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section.
+
+#### Methods Assignment & Processing
+
+Before assigning the methods below, the user needs to register the data for the single-concentration assay, as shown in the Register and Upload New Data section.
 
 Before beginning the normalization process, all wells with well quality ($\mathit{wllq}$) equal to 0 are removed.
 
@@ -303,6 +310,10 @@ tcplMthdAssign(lvl = 1,
 
 ```
 
+Above, methods 1, 11, and 13 were assigned for both endpoints. The method assignments instruct the processing to: (1) calculate $\mathit{bval}$ for each assay plate ID by taking the median of all data where the well type equals "n;" (2) calculate a fold-change over $\mathit{bval}$; (3) log-transform the fold-change values with base 2.
+
+If a user needs to add a method to the end of a normalization sequence, as shown above, then the user can use a second methods assignment statement.  For example, suppose for AEID 2 only we need to indicate a change of directionality in the response and multiply all response values by $-1$.  Then, the following code can be executed. **Reminder, the order of methods assignment matters, particularly in the normalization step.**
+
 ```{r eval = FALSE}
 tcplMthdAssign(lvl = 1, 
                id = 2,
@@ -310,16 +321,15 @@ tcplMthdAssign(lvl = 1,
                ordr = 1,
                type = "sc")
 ```
-Above, methods 1, 11, and 13 were assigned for both endpoints. The method assignments instruct the processing to: (1) calculate $\mathit{bval}$ for each assay plate ID by taking the median of all data where the well type equals "n;" (2) calculate a fold-change over $\mathit{bval}$; (3) log-transform the fold-change values with base 2. The second method assignment (only for AEID 2) indicates to multiply all response values by $-1$.
 
 For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 1, type = "sc") </font> or <font face="CMTT10"> ?SC1\_Methods </font>. With the assay endpoints and normalization methods defined, the data are ready for level 1 processing. 
 
 ```{r eval = FALSE}
 ## Do level 1 processing for acid 1
-#sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
+sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 ```
 
-**Notice that level 1 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned in previously, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 1 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
+**Notice that level 1 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned previously, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 1 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
 
 ###   Level 2
 Level 2 processing defines the baseline median absolute deviation ($\mathit{bmad}$), collapses any replicates by sample ID, and determines the activity. 
