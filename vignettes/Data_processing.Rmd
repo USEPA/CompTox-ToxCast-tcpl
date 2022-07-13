@@ -284,8 +284,6 @@ htmlTable(output,
 
 ###   Level 1
 
-#### Overview
-
 Level 1 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$), logarithm-concentration field ($\mathit{logc}$), and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 1 is to normalize the raw values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section.
 
 #### Methods Assignment & Processing
@@ -332,8 +330,6 @@ sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 **Notice that level 1 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned previously, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 1 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
 
 ###   Level 2
-
-#### Overview
 
 Level 2 processing defines the baseline median absolute deviation ($\mathit{bmad}$), collapses any replicates by sample ID, and determines the activity. 
 
@@ -497,8 +493,6 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 **Notice that level 3 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned in previous sections, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 3 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
 
 ###   Level 4
-
-#### Overview
 
 Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity (i.e. response) of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package \{citation?\}. Bi-directional fitting directly models the activity in the concentration series without performing curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend).
 
