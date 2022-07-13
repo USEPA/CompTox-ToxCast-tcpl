@@ -332,13 +332,23 @@ sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 **Notice that level 1 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned previously, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 1 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
 
 ###   Level 2
+
+#### Overview
+
 Level 2 processing defines the baseline median absolute deviation ($\mathit{bmad}$), collapses any replicates by sample ID, and determines the activity. 
 
-Before the data are collapsed by sample ID, the $\mathit{bmad}$ is calculated as the median absolute deviation of all wells with well type equal to "t." The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for multiple-concentration screening.
+#### Methods Assignment & Processing
 
+Before the data are collapsed by sample ID, the $\mathit{bmad}$ is calculated as the median absolute deviation of all wells with well type equal to "t". The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for multiple-concentration screening.
+
+$$ bmad_{sc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
+
+Where $y_i$ is the $i^{th}$ observation of all treatment wells in the assay component, i.e. well type ($\mathit{wllt}$) equal to "t" - $wllt = t$, and $\tilde{y}$ is the median across all $y_i$'s.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
+
+<NOT SURE HOW THIS IS APPLICABLE  -- NEED TO CHECK>
 To collapse the data by sample ID, the median response value is calculated at each concentration. The data are then further collapsed by taking the maximum of those median values ($\mathit{max\_med}$).
 
-Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than an efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
+Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
 
 ```{r eval = FALSE}
 ## Assign a cutoff value of log2(1.2)
@@ -348,9 +358,9 @@ tcplMthdAssign(lvl = 2,
                type = "sc")
 ```
 
-For the example data (edit), the cutoff value is $log_2(1.2)$. If the maximum median value ($\mathit{max\_med}$) is greater than or equal to the efficacy cutoff ($\mathit{coff}$), the sample ID is considered active and the hit call ($\mathit{hitc}$) is set to 1.
+In the example above, we are assigning level 2 methods such that the cutoff value is $log_2(1.2)$. Thus, if the maximum median value ($\mathit{max\_med}$) is greater than or equal to the efficacy cutoff ($\mathit{coff}$), then the sample ID is considered active and the hit call ($\mathit{hitc}$) is set to 1.
 
-With the methods assigned, the level 2 processing can be completed.
+With the methods assigned and the cutoff set, the data are ready for level 2 processing.
 
 ```{r eval = FALSE}
 ## Do level 2 processing for acid 1
@@ -358,6 +368,7 @@ sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 ```
 
 ## Processing Multiple-concentration Screening Data
+
 This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 4).
 
 <!--#Table 4-->
