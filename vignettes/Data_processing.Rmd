@@ -337,14 +337,50 @@ Level 2 processing defines the baseline median absolute deviation ($\mathit{bmad
 
 #### Methods Assignment & Processing
 
-Before the data are collapsed by sample ID, the $\mathit{bmad}$ is calculated as the median absolute deviation of all wells with well type equal to "t". The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for multiple-concentration screening.
+Before the data are collapsed by sample ID, the $\mathit{bmad}$ is calculated as the median absolute deviation of all treatment wells ($\mathit{wllt} = t$ - default option) or blank wells ($\mathit{wllt} = n$). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for multiple-concentration screening.
 
 $$ bmad_{sc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 
-Where $y_i$ is the $i^{th}$ observation of all treatment wells in the assay component, i.e. well type ($\mathit{wllt}$) equal to "t" - $wllt = t$, and $\tilde{y}$ is the median across all $y_i$'s.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
+Where $y_i$ is the $i^{th}$ observation of all wells within a well type in the assay component and $\tilde{y}$ is the median across all $y_i$'s (see Table 4 for further details).  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
 
-<NOT SURE HOW THIS IS APPLICABLE  -- NEED TO CHECK>
-To collapse the data by sample ID, the median response value is calculated at each concentration. The data are then further collapsed by taking the maximum of those median values ($\mathit{max\_med}$).
+```{r warning = FALSE, echo = FALSE}
+Methods <- c(
+  1,2
+)
+
+Description <- c(
+  "Median absolute deviation (MAD) of all treatment wells across the assay component (acid).",
+  "Median absolute deviation (MAD) of all blank wells across the assay component (acid)."
+)
+
+Observations <- c(
+  "$y_{i} = y_{(s,w)}$", # method 1
+  "$y_{i} = y_{(s,w)}$" # method 2
+)
+
+ID <- c(
+  "$s \\in \\{1,...,n_{acid}\\}$, \n$w = t$",
+  "$s \\in \\{1,...,n_{acid}\\}$, \n$w = n$"
+)
+
+Details <- c(
+  "$s$ indicates the sample id within an 'acid' & $w$ indicates the well type",
+  "$s$ indicates the sample id within an 'acid' & $w$ indicates the well type"
+)
+
+output <- 
+  data.frame(Methods,Description,Observations,ID,Details)
+
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        caption="Table 4: Single concentration *baseline* estimation by method assignment in Level 2 processing."
+)
+```
+
+To collapse the data by sample ID, the median response value of replicates within a concentration is calculated. (**Note**, in most cases each $\mathit{spid}$ will only have a single concentration level.) Data are then further collapsed by taking the maximum of those median values ($\mathit{max\_med}$).
 
 Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
 
@@ -367,7 +403,7 @@ sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 
 ## Processing Multiple-concentration Screening Data
 
-This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 4).
+This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 5).
 
 <!--#Table 4-->
 
@@ -399,7 +435,7 @@ htmlTable(output,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         align = 'l',
         align.header = 'l',
-        caption="Table 4: Summary of the tcpl multiple-concentration pipeline.",
+        caption="Table 5: Summary of the tcpl multiple-concentration pipeline.",
         tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette. &ddagger;Level 6 processing *will not* be possible in  tcpl v3.0, but may be included in future versions")
 
 ```
@@ -504,22 +540,22 @@ Level 4 processing splits the data into concentration-response series by sample 
 Level 4 processing starts with the removal of well types with only one concentration (e.g. 'wllt = b'; empty/blank wells). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either untreated control wells (e.g. 'wllt = n'; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
 
 $$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
-Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 5 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
+Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 6 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
 
 In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR), which as defined is subject to change as more data is added for an assay endpoint, and thus the benchmark dose estimate may change over time given the addition of new data.**
 
 ```{r warning = FALSE, echo = FALSE}
-Level4_MethodAssignment <- c(
+Method <- c(
   1,2,3
 )
 
-GeneralDescription <- c(
+Description <- c(
   "Median absolute deviation (MAD) of all observations in the lowest two concentrations of across samples (spid) in the assay endpoint (aeid).",
   "Median absolute deviation (MAD) of all observations in the solvent/untreated control observations across samples (spid) in the assay endpoint (aeid).",
   "Standard deviation (SD) of all observations in the lowest two concentrations of across samples (spid) in the assay endpoint (aeid)."
 )
 
-BaselineObservations <- c(
+Observations <- c(
   "$y_{i} = y_{(s,w,d)}$", # method 1
   "$y_{i} = y_{(s,w)}$", # method 2
   "$y_{i} = y_{(s,w,d)}$" # method 3
@@ -538,17 +574,15 @@ Details <- c(
 )
 
 output <- 
-  data.frame(Level4_MethodAssignment,GeneralDescription,BaselineObservations,ID,Details)
+  data.frame(Method,Description,Observations,ID,Details)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        
-          caption="Table 5: BMAD estimation details by method assignment."
+        caption="Table 6: Multiple concentration *baseline* variability estimation by method assignment in Level 4 processing."
 )
-
 ```
 
 Before the model parameters are estimated, a set of summary values are calculated for each concentration series:
@@ -775,13 +809,13 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         
-          caption="Table 5: Model descriptions." ,
+          caption="Table 7: Model descriptions." ,
           tfoot = "Model descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/web/packages/tcplfit2/tcplfit2.pdf>."
 )
 
 ```
 
-Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE.  Similarly, if the hessian was successfully inverted then 1 is returned for cov, otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE or the model fit failed the AIC (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 6 below.
+Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE.  Similarly, if the hessian was successfully inverted then 1 is returned for cov, otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE or the model fit failed the AIC (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
 
 ```{r warning = FALSE, echo = FALSE}
 FitParameters <- c(
@@ -806,7 +840,7 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         
-          caption="Table 6: Model output descriptions." ,
+          caption="Table 8: Model output descriptions." ,
           tfoot = "Model output descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/web/packages/tcplfit2/tcplfit2.pdf>."
 )
 ```
@@ -1060,7 +1094,7 @@ colnames(tmp) <- colnames(mc4)[grep(colnames(mc4),pattern = "aic")] %>%
 
 tmp %>%
   kbl(escape = F,format = 'html',centering = TRUE,
-      caption = "Table of the AIC values from All Fits from Level 4.") %>%
+      caption = "Table 9: AIC values from All Fits from Level 4.") %>%
   kable_styling(c("striped","hover"),full_width = FALSE,)
 ```
 
