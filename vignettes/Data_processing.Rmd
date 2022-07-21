@@ -205,6 +205,8 @@ tcplMthdClear(lvl = 2, id = 97:98, type = "mc")
 tcplMthdLoad(lvl = 2, id = 97:98, type = "mc")
 ```
 
+Later sections in this vignette provide examples for level specific methods assignment and details on the methods assigned prior to data processing with <font face="CMTT10"> tcplRun </font> at a particular level.  It should be noted that most examples reflect "default" methods assigned, but one should consider the data at hand and all methods available for a specific level prior to methods 
+
 ## Data Normalization
 
 Data normalization occurs in both single- and multiple-concentration processing at levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.**
@@ -385,7 +387,7 @@ objective curve-fitting functions from tcplfit2: (1) constant, (2) hill, (3) gai
 the response cutoff based on methods in the \'mc5_aeid\' table, and
 determine activity",
 "Flag: Flag potential false positive and false negative endings based
-on methods in the \'mc6_aeid\' table &&dagger;"
+on methods in the \'mc6_aeid\' table &ddagger;"
                  )
 
 output <- 
@@ -398,9 +400,10 @@ htmlTable(output,
         align = 'l',
         align.header = 'l',
         caption="Table 4: Summary of the tcpl multiple-concentration pipeline.",
-        tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette. &&dagger;Level 6 processing will not be possible in  tcpl v3.0, but may be included in future versions")
+        tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette. &ddagger;Level 6 processing *will not* be possible in  tcpl v3.0, but may be included in future versions")
 
 ```
+
 ###   Level 1
 Level 1 processing defines the replicate and concentration index fields to facilitate downstream processing. Because of cost, availability, physicochemical, and technical constraints, screening-level efforts utilize numerous experimental designs and test compound (sample) stock concentrations. The resulting data may contain inconsistent numbers of concentrations, concentration values, and technical replicates. To enable quick and uniform processing, level 1 processing explicitly defines concentration and replicate indices, giving integer values $1 \dots N$ to increasing concentrations and technical replicates, where $1$ represents the lowest concentration or first technical replicate.
 
@@ -984,14 +987,22 @@ estDR <- cbind.data.frame(X,estDR) %>%
 ```
 
 ```{r fig.align='center'}
+## Updated Colors ##
+fit_cols <-
+  # choose 10 distinct colors
+  viridis::magma(n = 10,direction = 1) %>% 
+  # darken the original colors to make them more visible
+  colorspace::darken(.,amount = 0.2)
+## Plot the Model Fits from Level 4 ##
 mc3 %>% 
   dplyr::filter(spid == "01504209") %>% 
   ggplot(.,aes(x = logc,y = resp))+
   geom_point()+
   geom_line(data = estDR,
-            aes(x = log10(X),y = value,col = variable),
+            aes(x = log10(X),y = value,colour = variable),
             alpha = 0.5)+
-  labs(col = "Models")+
+  labs(colour = "Models")+
+  scale_colour_manual(values = fit_cols)+
   xlab("Log Concentration")+
   ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
   ggtitle(paste("Level 4 Model Fits",
@@ -1422,4 +1433,80 @@ fullPlot
 <!-- write.csv(chemical, file = file.path(dir,"chemical.csv"), row.names = F) -->
 <!-- ``` -->
 
+
+## 'tcpl' Compiled Processing Examples
+
+In this section we provide a practical step-by-step example for single- and multi-concentration data from methods assignment through data processing.
+
+### Single-concentration Data
+
+After level 0 is loaded into the database, we need to assign the data processing methods for each step.  In the following code chunk, we demonstrate how to assign the methods for each step.
+
+```{r eval=FALSE}
+## Methods Assignment.
+# Level 1 - Normalization
+tcplMthdAssign(lvl = 1, # data level
+               id = 1:2, # assay component 
+               mthd_id = c(1, 11, 13), # method(s) to be applied
+               ordr = 1:3, # order sequence for applied methods
+               type = "sc") # data type - single concentration
+
+# Level 2 - Bioactivity Hit Call
+tcplMthdAssign(lvl = 2, # data level
+               id = 1, # assay component
+               mthd_id = 3, # method(s) to be applied
+               type = "sc") # data type - single concentration
+```
+
+Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.
+
+```{r eval=FALSE}
+sc_res <- tcplRun(id = 1, slvl = 1, elvl = 2, type = "sc")
+```
+
+### Multiple-concentration Data
+
+After level 0 multiple-concentration data is loaded into the database, we need to assign the data processing methods for each step.  In the following code chunk, we demonstrate how to assign the methods for each step.
+
+```{r eval=FALSE}
+## Methods Assignment.
+# Level 1 - Normalization
+tcplMthdAssign(lvl = 1, # data level
+               id = 1:2, # assay component 
+               mthd_id = c(1, 11, 13), # method(s) to be applied
+               ordr = 1:3, # order sequence for applied methods
+               type = "sc") # data type - single concentration
+
+# Level 2 - Bioactivity Hit Call
+tcplMthdAssign(lvl = 2, # data level
+               id = 1, # assay component
+               mthd_id = 3, # method(s) to be applied
+               type = "sc") # data type - single concentration
+```
+
+Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.
+
+```{r eval=FALSE}
+## Assign the Number of Processing Cores.
+mycores <- 1 # DO NOT leverage parallel computing.
+             # Users that want to leverage parallel computing set to > 1.
+
+## Pipeline Assay Components (acid's) from level 0 to 3.
+mc_res_0.3 <- tcpl::tcplRun(
+  id = bsk.acid[,acid], # assay component id to pipeline
+  type = "mc",
+  slvl = 0L, # level to start pipelining on
+  elvl = 3L,  # level to end pipelining on
+  mc.cores = mycores # number of computing cores
+)
+
+## Pipeline Assay Endpoints (aeid's) from level 4 to 5.
+mc_res_4.5 <- tcpl::tcplRun(
+  id = atg.aeid[,aeid], # assay endpoint id to pipeline
+  type = "mc",
+  slvl = 4L, # level to start pipelining on
+  elvl = 5L,  # level to end pipelining on
+  mc.cores = mycores # number of computing cores
+)
+```
 
