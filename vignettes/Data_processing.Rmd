@@ -322,9 +322,11 @@ tcplMthdAssign(lvl = 1,
                type = "sc")
 ```
 
-For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 1, type = "sc") </font> or <font face="CMTT10"> ?SC1\_Methods </font>. With the assay endpoints and normalization methods defined, the data are ready for level 1 processing. 
+For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 1, type = "sc") </font> or <font face="CMTT10"> ?SC1\_Methods </font>.
 
-```{r eval = FALSE}
+```{r echo=FALSE, eval = FALSE}
+# With the assay endpoints and normalization methods defined, the data are ready for level 1 processing. 
+
 ## Do level 1 processing for acid 1
 sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 ```
@@ -394,9 +396,9 @@ tcplMthdAssign(lvl = 2,
 
 In the example above, we are assigning level 2 methods such that the cutoff value is $log_2(1.2)$. Thus, if the maximum median value ($\mathit{max\_med}$) is greater than or equal to the efficacy cutoff ($\mathit{coff}$), then the sample ID is considered active and the hit call ($\mathit{hitc}$) is set to 1.
 
-With the methods assigned and the cutoff set, the data are ready for level 2 processing.
+```{r echo=FALSE, eval = FALSE}
+# With the methods assigned and the cutoff set, the data are ready for level 2 processing.
 
-```{r eval = FALSE}
 ## Do level 2 processing for acid 1
 sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 ```
@@ -449,9 +451,9 @@ For both experimental designs, data are ordered by source file ($\mathit{srcf}$)
 
 Once the data are ordered, and the temporary replicate ID is defined, the data are scanned from top to bottom and increment the replicate index ($\mathit{repi}$) every time a replicate ID is duplicated. Then, for each replicate, the concentration index ($\mathit{cndx}$) is defined by ranking the unique concentrations, with the lowest concentration starting at 1.
 
-The following demonstrates how to carry out the level 1 processing and look at the resulting data:
+```{r echo=FALSE, eval = FALSE, message = FALSE}
+# The following demonstrates how to carry out the level 1 processing and look at the resulting data:
 
-```{r eval = FALSE, message = FALSE}
 ## Do level 1 processing for acid 1
 mc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "mc")
 ```
@@ -493,12 +495,15 @@ tcplMthdAssign(lvl = 2,
                 type = "mc")
 ```
 
-Every assay component needs at least one transformation method assigned to complete level 2 processing. With the method assigned, the processing can be completed.
+Every assay component needs at least one transformation method assigned to complete level 2 processing.
 
-```{r eval = FALSE,  warning = FALSE, message = FALSE}
+```{r echo=FALSE, eval = FALSE,  warning = FALSE, message = FALSE}
+# With the method assigned, the processing can be completed.
+
 ## Do level 2 processing for acid 1
 mc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "mc")
 ```
+
 For the complete list of level 2 transformation methods currently available, see  <font face="CMTT10"> tcplMthdList(lvl = 2, type = "mc") </font> or <font face="CMTT10"> ?MC2\_Methods </font> for more detail. The coding methodology used to implement the methods is beyond the scope of this vignette, but, in brief, the method names in the database correspond to a function name in the list of functions returned by <font face="CMTT10"> mc2\_mthds() </font> (the <font face="CMTT10"> mc2\_mthds </font> function is not exported, and not intended for use by the user). Each of the functions in the list given by  <font face="CMTT10"> mc2\_mthds </font> only return expression objects that processing function called by  <font face="CMTT10"> tcplRun </font> executes in the local function environment to avoid making additional copies of the data in memory. We encourage suggestions for new methods.
 
 ###   Level 3
@@ -520,9 +525,11 @@ tcplMthdAssign(lvl = 3,
 
 Above, methods 17, 9, and 7 were assigned for both endpoints. The method assignments instruct the processing to: (1) calculate $\mathit{bval}$ for each assay plate ID by taking the median of all data where the well type equals "n" or the well type equals "t" and the concentration index is 1 or 2; (2) calculate a fold-change over $\mathit{bval}$; (3) log-transform the fold-change values with base 2. 
 
-For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 3, type = "mc") </font> or <font face="CMTT10"> ?MC3\_Methods </font>. With the assay endpoints and normalization methods defined, the data are ready for level 3 processing. 
+For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 3, type = "mc") </font> or <font face="CMTT10"> ?MC3\_Methods </font>.
 
-```{r eval = FALSE,warning = FALSE, message = FALSE}
+```{r echo=FALSE, eval = FALSE,warning = FALSE, message = FALSE}
+# With the assay endpoints and normalization methods defined, the data are ready for level 3 processing. 
+
 ## Do level 3 processing for acid 1
 mc3_res <- tcplRun(id = 1, slvl = 3, elvl = 3, type = "mc")
 ```
@@ -946,9 +953,9 @@ tcpl::tcplMthdAssign(
   )
 ```
 
-With the methods assigned, the level 4 processing can be completed for the desired set of assay endpoints (aeid).
+```{r echo=FALSE, eval=FALSE}
+# With the methods assigned, the level 4 processing can be completed for the desired set of assay endpoints (aeid).
 
-```{r eval=FALSE}
 tcpl::tcplRun(
   id = atg.aeid[,aeid], # assay endpoint id to pipeline
   slvl = 4L, # level to start pipelining on
@@ -1150,9 +1157,9 @@ All concentration series fall into a single fit category ($\mathit{fitc}$), defi
 
 <!-- The inactive branch is first divided by whether any median values were greater than or equal to $3\mathit{bmad}$. Series with no evidence of activity go into fit category 4. Similar to the active branch, series with evidence of activity are separated by the model winner. The Hill and gain-loss portions of the inactive branch follow the same logic. First, series diverge by the efficacy of their top parameter in relation to the cutoff: $\mathit{modl\_tp < 0.8\mathit{coff}}$  or $\mathit{modl\_tp \geq 0.8\mathit{coff}}$. Then, the same comparison is made on the top values of the losing model. If the losing model did not converge, then the series go into the "DNC" category. If the losing model top value is greater than or equal to $0.8\mathit{coff}$, then the series are split based on whether the losing model top surpassed the cutoff. On the constant model branch, if neither top parameter is greater than or equal to $0.8\mathit{bmad}$, then the series go into fit category 7. If one of the top parameters is greater than or equal to $0.8\mathit{coff}$, the series go into fit category 9 or 10 based on whether one of the top values surpassed the cutoff. -->
 
-With the level 5 methods assigned, the data are ready for level 5 processing:
-
-```{r eval=FALSE}
+```{r echo=FALSE, eval=FALSE}
+# With the level 5 methods assigned, the data are ready for level 5 processing:
+  
 tcpl::tcplRun(
   id = atg.aeid[,aeid], # assay endpoint id to pipeline
   slvl = 5L, # level to start pipelining on
@@ -1494,7 +1501,11 @@ tcplMthdAssign(lvl = 2, # data level
 Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.
 
 ```{r eval=FALSE}
-sc_res <- tcplRun(id = 1, slvl = 1, elvl = 2, type = "sc")
+## Pipeline Assay Components (acid's) from level 0 to 2.
+sc_res <- tcplRun(id = 1, # assay component id to pipeline
+                  type = "sc", # type of data being processed
+                  slvl = 1, # level to start pipelining on
+                  elvl = 2) # level to end pipelining on
 ```
 
 ### Multiple-concentration Data
@@ -1517,7 +1528,26 @@ tcplMthdAssign(lvl = 2, # data level
                type = "sc") # data type - single concentration
 ```
 
-Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.
+Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.  This can be done in two ways (a) from start to finish (i.e. Level 0 to 5) with the assay component ID (acid) or (b) Level 0 to 3 with the assay component ID (acid) and Level 4 to 5 with the assay endpoint ID (aeid).
+
+**Option A:**
+
+```{r eval=FALSE}
+## Assign the Number of Processing Cores.
+mycores <- 1 # DO NOT leverage parallel computing.
+             # Users that want to leverage parallel computing set to > 1.
+
+## Pipeline Assay Components (acid's) from level 0 to 5.
+mc_res <- tcpl::tcplRun(
+  id = atg.aeid[,acid], # assay component id to pipeline
+  type = "mc", # type of data being processed
+  slvl = 0L, # level to start pipelining on
+  elvl = 5L, # level to end pipelining on
+  mc.cores = mycores # number of computing cores
+)
+```
+
+**Option B:**
 
 ```{r eval=FALSE}
 ## Assign the Number of Processing Cores.
@@ -1526,7 +1556,7 @@ mycores <- 1 # DO NOT leverage parallel computing.
 
 ## Pipeline Assay Components (acid's) from level 0 to 3.
 mc_res_0.3 <- tcpl::tcplRun(
-  id = bsk.acid[,acid], # assay component id to pipeline
+  id = atg.aeid[,acid], # assay component id to pipeline
   type = "mc",
   slvl = 0L, # level to start pipelining on
   elvl = 3L,  # level to end pipelining on
