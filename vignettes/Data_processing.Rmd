@@ -288,7 +288,7 @@ htmlTable(output,
 
 Level 1 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$), logarithm-concentration field ($\mathit{logc}$), and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 1 is to normalize the raw values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section.
 
-#### Methods Assignment & Processing
+#### Methods Assignment
 
 Before assigning the methods below, the user needs to register the data for the single-concentration assay, as shown in the Register and Upload New Data section.
 
@@ -337,7 +337,7 @@ sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 
 Level 2 processing defines the baseline median absolute deviation ($\mathit{bmad}$), collapses any replicates by sample ID, and determines the activity. 
 
-#### Methods Assignment & Processing
+#### Methods Assignment
 
 Before the data are collapsed by sample ID, the $\mathit{bmad}$ is calculated as the median absolute deviation of all treatment wells ($\mathit{wllt} = t$ - default option) or blank wells ($\mathit{wllt} = n$). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for multiple-concentration screening.
 
@@ -922,7 +922,7 @@ fits %>%
 ```
 
 
-#### Methods Assignment & Processing
+#### Methods Assignment
 
 Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function. We show two example of how a user can assign methods using <font face="CMTT10"> tcpl </font>.  First, we assign methods for a single assay endpoint.  Second, we assign methods for all assay endpoints within an assay.  Please note, the second approach can also be used for a subset of aeid's within an assay that is larger than one.
 
@@ -1080,6 +1080,8 @@ where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estim
 ###   Level 5
 
 Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates additional point-of-departure estimates based on the activity cutoff.
+
+#### Methods Assignment
 
 **The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as none. The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is base on at least one median response being greater than the efficacy cutoff.  Second, the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflects whether the AIC of the winning model is less than that of the constant model.
 
