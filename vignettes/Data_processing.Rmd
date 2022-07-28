@@ -648,10 +648,10 @@ level3_summary <- mc3 %>%
 A <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
+  geom_point(pch = 1,size = 2)+
   geom_point(data = level3_summary,
              aes(x = logc,y = mean_resp),
-             col = "darkgoldenrod3",alpha = 0.75)+
+             col = "paleturquoise3",alpha = 0.75,size = 2)+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle("Mean Responses")+
@@ -660,36 +660,36 @@ A <- mc3 %>%
 B <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
+  geom_point(pch = 1,size = 2)+
   geom_point(data = level3_summary,
              aes(x = logc,y = med_resp),
-             col = "indianred",alpha = 0.75)+
+             col = "hotpink",alpha = 0.75,size = 2)+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle("Median Responses")+
   theme_bw()
-# plot the maximum mean & median responses at the related log-concentration - 
+# plot the maximum mean & median responses at the related log-concentration -
 #   'max_mean' & 'max_mean_conc'
 C <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
+  geom_point(pch = 1,size = 2)+
   geom_point(data = dplyr::filter(mc4,spid == "01504209"),
              aes(x = max_mean_conc,y = max_mean),
-             col = "darkgoldenrod3",alpha = 0.75,pch = 15)+
+             col = "paleturquoise3",alpha = 0.75,size = 2)+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle(label = "Maximum Mean Response")+
   theme_bw()
-# plot the maximum mean & median responses at the related log-concentration - 
+# plot the maximum mean & median responses at the related log-concentration -
 #   'max_med' & 'max_med_conc'
 D <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
+  geom_point(pch = 1,size = 2)+
   geom_point(data = dplyr::filter(mc4,spid == "01504209"),
              aes(x = max_med_conc,y = max_med),
-             col = "indianred",alpha = 0.75,pch = 15)+
+             col = "hotpink",alpha = 0.75,size = 2)+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle(label = "Maximum Median Response")+
@@ -698,11 +698,11 @@ D <- mc3 %>%
 E <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
+  geom_point(pch = 1,size = 2)+
   geom_point(data = level3_min,aes(x = logc,y = resp),
-             pch = 24,col = "blue", bg = "blue",alpha = 0.75)+
+             col = "blue",alpha = 0.75,size = 2)+
   geom_point(data = level3_max,aes(x = logc,y = resp),
-             pch = 25,col = "red",bg = "red",alpha = 0.75)+
+             col = "red",alpha = 0.75,size = 2)+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle(label = "Minimum & Maximum\nResponses")+
@@ -712,7 +712,7 @@ E <- mc3 %>%
 G <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
+  geom_point(pch = 1,size = 2)+
   geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
              aes(xintercept = logc_min),
              col = "blue",lty = "dashed")+
@@ -729,6 +729,8 @@ gridExtra::grid.arrange(
   nrow = 3,ncol = 2
 )
 ```
+
+**Figure 1:** The plots in this figure illustrate the summary estimates calculated as part of the level 4 processing that occurs prior to dose-response modeling.  Each of the plots depict the observed concentration-response data with white circles, where the x-axis is a base 10 log-transformed concentration.  The mean response values for each concentration group are depicted as turquoise circles in the upper left plot.  Similarly, the upper right plot depicts the median response values for each concentration group with hot-pink circles. The middle two plots depict the maximum mean ($\mathit{max\_mean}$) and median ($\mathit{max\_med}$) response estimates (left and right plots, respectively).  The bottom left plot depicts the minimum response value ($\mathit{min\_resp}$) with a blue circle and the maximum response value ($\mathit{max\_resp}$) is with a red circle.  Finally, the minimum ($\mathit{min\_logc}$) and maximum $\mathit{max\_logc}$ log-scale concentrations are depicted, respectively, with a blue and red vertical dashed line. 
 
 ```{r eval=FALSE}
 atg.aeid <- tcplLoadAeid(fld = 'asid',val = 3) %>% 
@@ -867,7 +869,7 @@ $$ \sum_{i=1}^{n} [\ln\left(t(z_{i}, 4)\right) - \sigma]\mathrm{,} $$
 
 where $n$ is the number of observations.
 
-<Introduction description for the example model fits.>
+The following set of plots provides a set of simulated concentration-response curves to illustrate the general curve shapes captured by the models included in `tcplfit2`.  It should be noted, when fitting 'real-world' experimental data the resulting curve shapes are meant to minimize the error between the observed data and the concentration-response curve.  Thus, the shape for each model fit may or may not reflect what is illustrated in the following figure.
 
 ```{r class.source="scroll-100",fig.align='center'}
 ## Example Data ##
@@ -921,6 +923,7 @@ fits %>%
   ylab("Response")
 ```
 
+**Figure 2:** This figure contains a simulated concentration-response curve to illustrate the general underlying curve shape(s) covered by each of the models included in the `tcplfit2` package and used on the back-end of the level 4 data processing in `tcpl`.  Each sub-plot in the figure corresponds to a single parametric model included in the model fitting process and has a corresponding color and line type to accompany it.  All sub-plots are plotted such that the x-axis represents the log-transformed concentration ($base=10$) and the y-axis represents the response values. 
 
 #### Methods Assignment
 
