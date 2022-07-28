@@ -28,7 +28,7 @@ $(document).ready(function() {
 });
 </script>
 
-```{r eval = FALSE, echo = FALSE, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
 library(htmlTable)
 ```
@@ -39,11 +39,11 @@ This vignette provides an overview of the <font face="CMTT10"> tcpl </font> pack
 
 # Overview
 
-The ToxCast pipeline (<font face="CMTT10"> tcpl </font>) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, InvitroDB. The U.S. Environmental Protection Agency (EPA) ToxCast^TM^ program. includes in vitro medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest.These assays comprise Tier 2-3 of the new Computational Toxicology Blueprint, and employ automated chemical screening technologies, to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins (Thomas et al., 2019). More information on the ToxCast program can be found at <http://www.epa.gov/chemical-research/toxicity-forecasting>.
+The ToxCast pipeline (<font face="CMTT10"> tcpl </font>) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, InvitroDB. The U.S. Environmental Protection Agency (EPA) ToxCast^TM^ program. includes in vitro medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. These assays comprise Tier 2-3 of the new Computational Toxicology Blueprint, and employ automated chemical screening technologies, to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins (Thomas et al., 2019). More information on the ToxCast program can be found at <http://www.epa.gov/chemical-research/toxicity-forecasting>.
 
 This flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format and loaded into the <font face="CMTT10"> tcpl </font> database by vendor-specific R scripts. Once data is loaded into the database, ToxCast utilizes generalized processing functions provided in this package to process, normalize, model, qualify, and visualize the data. 
 
-The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting in past versions of <font face="CMTT10"> tcpl </font>. Processing with <font face="CMTT10"> tcpl_v3 </font> onward encompass the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration response models.The main set of extensions was to include all of the concentration-response models that are contained in the program BMDExpress. These include exponential and power functions in addition to the original Hill, gain-loss and constant models. Additionally, we wanted to include BMD (Benchmark Dose Modeling) outputs, which is simply defining a Benchmark Response (BMR) level and setting the BMD to the concentration where the curve crosses the BMR level. One final addition was to let the hitcall value be a continuous number ranging from 0 to 1. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
+The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting in past versions of <font face="CMTT10"> tcpl </font>. Processing with <font face="CMTT10"> tcpl_v3 </font> onward encompass the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration response models. The main set of extensions was to include all of the concentration-response models that are contained in the program BMDExpress. These include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Additionally, we wanted to include Benchmark Dose (BMD) estimation, which is simply defining a Benchmark Response (BMR) level and estimating the BMD which is the dose/concentration where the BMR level occurs on the curve fit. One final addition was to let the hitcall value be a continuous number ranging from 0 to 1. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
 
 The <font face="CMTT10"> tcpl </font> package includes processing functionality for two screening paradigms: (1) single-concentration screening and (2) multiple-concentration screening. Single-concentration screening consists of testing chemicals at one concentration, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. Multiple-concentration screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
 
@@ -130,7 +130,6 @@ Description <- c("Level 0 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -158,7 +157,6 @@ Description <- c("Level 1 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -182,7 +180,6 @@ Description <- c("Assay component endpoint ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -201,7 +198,7 @@ Description <- c("Level 2 ID",
                  "Sample ID",
                  "Baseline median absolute deviation",
                  "Maximum median response value",
-                 "Hit-/activity-call, 1 if active, 0 if inactive",
+                 "Hit-/activity-call: 1 if active, 0 if inactive",
                  "Efficacy cutoff value",
                  "Ignore, temporary index used for uploading purposes"
                  )
@@ -209,7 +206,6 @@ Description <- c("Level 2 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -225,13 +221,12 @@ htmlTable(output,
 Field <- c("s2id", "chid_rep")
 
 Description <- c("Level 2 ID",
-                 "1 if representative sample, else 0"
+                 "Representative sample designation for a tested chemical: 1 if representative sample, else 0"
                  )
 
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -259,7 +254,6 @@ Description <- c("Level 1 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -283,7 +277,6 @@ Description <- c("Level 2 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -311,7 +304,6 @@ Description <- c("Level 3 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -336,7 +328,6 @@ Description <- c(
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -375,7 +366,6 @@ Description <- c("Level 4 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -401,7 +391,6 @@ Description <- c("Level 4 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -432,7 +421,6 @@ Description <- c("Level 5 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -456,7 +444,6 @@ Description <- c("Level 5 ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -472,12 +459,12 @@ htmlTable(output,
 Field <- c("m5id", "chid_rep")
 
 Description <- c("Level 5 ID",
-                 "1 if representative sample, else 0" )
+                 "Representative sample designation for a tested chemical: 1 if representative sample, else 0"
+                 )
 
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -529,7 +516,6 @@ Description <- c("Assay-level annotation",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -576,7 +562,6 @@ Description <- c("Assay ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -613,7 +598,6 @@ Description <- c("Assay component ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -638,7 +622,6 @@ Description <- c("Assay source ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -673,7 +656,6 @@ Description <- c("Assay component endpoint ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -696,7 +678,6 @@ Description <- c("Assay component ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -720,7 +701,6 @@ Description <- c("Chemical ID&dagger;",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -744,7 +724,6 @@ Description <- c("Chemical ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -770,7 +749,6 @@ Description <- c("Sample ID",
 output <- 
   data.frame(Field, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -812,7 +790,6 @@ Description <- c("Assay component source name",
 output <- 
   data.frame(Field, Description, `N/A`)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -847,7 +824,6 @@ Description <- c("Test compound",
 output <- 
   data.frame(`Well Type`, Description)
 
-library(htmlTable)
 htmlTable(output,
         align = 'l',
         align.header = 'l',
