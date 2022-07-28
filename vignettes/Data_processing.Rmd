@@ -646,8 +646,8 @@ A <- mc3 %>%
   geom_point(alpha = 0.25)+
   geom_point(data = level3_summary,
              aes(x = logc,y = mean_resp),
-             col = "red",alpha = 0.5)+
-  xlab("Log Concentration")+
+             col = "darkgoldenrod3",alpha = 0.75)+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle("Mean Responses")+
   theme_bw()
@@ -658,27 +658,53 @@ B <- mc3 %>%
   geom_point(alpha = 0.25)+
   geom_point(data = level3_summary,
              aes(x = logc,y = med_resp),
-             col = "blue",alpha = 0.5)+
-  xlab("Log Concentration")+
+             col = "indianred",alpha = 0.75)+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle("Median Responses")+
   theme_bw()
-# plot the minimum & maximum observed responses
+# plot the maximum mean & median responses at the related log-concentration - 
+#   'max_mean' & 'max_mean_conc'
 C <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
   geom_point(alpha = 0.25)+
+  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
+             aes(x = max_mean_conc,y = max_mean),
+             col = "darkgoldenrod3",alpha = 0.75,pch = 15)+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
+  ylab(mc3[,aenm])+
+  ggtitle(label = "Maximum Mean Response")+
+  theme_bw()
+# plot the maximum mean & median responses at the related log-concentration - 
+#   'max_med' & 'max_med_conc'
+D <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
+  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
+             aes(x = max_med_conc,y = max_med),
+             col = "indianred",alpha = 0.75,pch = 15)+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
+  ylab(mc3[,aenm])+
+  ggtitle(label = "Maximum Median Response")+
+  theme_bw()
+# plot the minimum & maximum observed responses
+E <- mc3 %>%
+  dplyr::filter(spid == "01504209") %>% 
+  ggplot(data = .,aes(logc,resp))+
+  geom_point(alpha = 0.25)+
   geom_point(data = level3_min,aes(x = logc,y = resp),
-             pch = 2,col = "blue")+
+             pch = 24,col = "blue", bg = "blue",alpha = 0.75)+
   geom_point(data = level3_max,aes(x = logc,y = resp),
-             pch = 6,col = "red")+
-  xlab("Log Concentration")+
+             pch = 25,col = "red",bg = "red",alpha = 0.75)+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle(label = "Minimum & Maximum\nResponses")+
   theme_bw()
 # plot the minimum & maximum experimental log-concentration groups -
 #   'logc_min' & 'logc_max'
-D <- mc3 %>%
+G <- mc3 %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc,resp))+
   geom_point(alpha = 0.25)+
@@ -688,35 +714,9 @@ D <- mc3 %>%
   geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
              aes(xintercept = logc_max),
              col = "red",lty = "dashed")+
-  xlab("Log Concentration")+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc3[,aenm])+
   ggtitle(label = "Minimum & Maximum\nConcentrations")+
-  theme_bw()
-# plot the maximum mean & median responses at the related log-concentration - 
-#   'max_mean' & 'max_mean_conc'
-E <- mc3 %>%
-  dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
-  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
-             aes(x = max_mean_conc,y = max_mean),
-             col = "blue",alpha = 0.5)+
-  xlab("Log Concentration")+
-  ylab(mc3[,aenm])+
-  ggtitle(label = "Maximum Mean Response")+
-  theme_bw()
-# plot the maximum mean & median responses at the related log-concentration - 
-#   'max_med' & 'max_med_conc'
-G <- mc3 %>%
-  dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(alpha = 0.25)+
-  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
-             aes(x = max_med_conc,y = max_med),
-             col = "red",alpha = 0.5)+
-  xlab("Log Concentration")+
-  ylab(mc3[,aenm])+
-  ggtitle(label = "Maximum Median Response")+
   theme_bw()
 ## Compile Summary Plots in One Figure ##
 gridExtra::grid.arrange(
@@ -912,7 +912,7 @@ fits %>%
   labs(lty = "Models",colour = "Models")+
   scale_colour_manual(values = fit_cols)+
   ggtitle("General Shape of Models Included in `tcplfit2`")+
-  xlab("Log Concentration")+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab("Response")
 ```
 
@@ -992,13 +992,16 @@ mc4 <- tcpl::tcplPrepOtpt(
 )
 ```
 
-```{r}
+```{r fig.align='center',class.source = "scroll-100"}
+## Create a Sequence of Concentration Values within Observed Range ##
 X <- seq(
  10^(mc4[which(mc4[,spid] == "01504209"),logc_min]),
  10^(mc4[which(mc4[,spid] == "01504209"),logc_max]),
  length.out = 100
 )
-
+## Obtain the Continuous Fit of Level 4 Model Estimates ##
+# Apply each model fit to continous concentration values (X) and estimated
+# parameters from 'tcplfit2'.
 estDR <- mc4 %>% 
   dplyr::filter(spid == "01504209") %>% 
   dplyr::summarise(
@@ -1013,31 +1016,29 @@ estDR <- mc4 %>%
     exp4  = tcplfit2::exp4(.[,c(exp4_tp,exp4_ga,exp4_er)],x = X),
     exp5  = tcplfit2::exp5(.[,c(exp5_tp,exp5_ga,exp5_p,exp5_er)],x = X)
   )
-
+# Format data into a data.frame for ease of plotting.
 estDR <- cbind.data.frame(X,estDR) %>%
   reshape2::melt(data = .,measure.vars = c(
     "poly1","poly2","power","hill","gnls","exp2","exp3","exp4","exp5"
   ))
-```
 
-```{r fig.align='center'}
 ## Updated Colors ##
 fit_cols <-
   # choose 10 distinct colors
   viridis::magma(n = 10,direction = 1) %>% 
   # darken the original colors to make them more visible
   colorspace::darken(.,amount = 0.2)
+
 ## Plot the Model Fits from Level 4 ##
 mc3 %>% 
   dplyr::filter(spid == "01504209") %>% 
   ggplot(.,aes(x = logc,y = resp))+
-  geom_point()+
+  geom_point(pch = 1,size = 2)+
   geom_line(data = estDR,
-            aes(x = log10(X),y = value,colour = variable),
-            alpha = 0.5)+
-  labs(colour = "Models")+
+            aes(x = log10(X),y = value,colour = variable,lty = variable))+
+  labs(colour = "Models",lty = "Models")+
   scale_colour_manual(values = fit_cols)+
-  xlab("Log Concentration")+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
   ggtitle(paste("Level 4 Model Fits",
     mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
@@ -1201,11 +1202,11 @@ estDR <- estDR %>%
 basePlot <- mc3_ss %>% 
   # Observed Concentration-Response Data
   ggplot()+
-  geom_point(aes(x = logc,y = resp),pch = 1)+
+  geom_point(aes(x = logc,y = resp),pch = 1,size = 2)+
   # Cutoff Band
   geom_rect(data = mc5_ss,
             aes(xmin = logc_min,xmax = logc_max,ymin = -coff,ymax = coff),
-            alpha = 0.05,fill = "skyblue")+
+            alpha = 0.15,fill = "skyblue")+
   # Best Model Fit
   geom_line(data = dplyr::filter(estDR,variable == mc5_ss[,modl]),
             aes(x = log10(X),y = value,color = mc5_ss[,modl]))+
@@ -1213,11 +1214,11 @@ basePlot <- mc3_ss %>%
   # Other Model Fits
   geom_line(data = dplyr::filter(estDR,variable != mc5_ss[,modl]),
             aes(x = log10(X),y = value,lty = variable),
-            alpha = 0.15,show.legend = TRUE)+
+            alpha = 0.3,show.legend = TRUE)+
   # Legend Information
   labs(lty = "Other Models",color = "Best Fit")+
   # Titles and Labels
-  xlab("Log Concentration")+
+  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
   ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
   ggtitle(paste("Level 5 Best Model Fit",
     mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
