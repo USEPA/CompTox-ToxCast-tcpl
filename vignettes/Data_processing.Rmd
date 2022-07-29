@@ -56,7 +56,7 @@ tcplConf(db = dbfile_temp, drvr = 'tcplLite')
 
 # Introduction
 
-This vignette explains in the first section how upload and process the newly-registered data through the data analysis pipeline using a small subset of ToxCast data. The <font face="CMTT10"> tcpl </font> R package provides three functions for adding new data:
+This vignette explains in the first section how to upload and process the newly-registered data through the data analysis pipeline using a small subset of ToxCast data. The <font face="CMTT10"> tcpl </font> R package provides three functions for adding new data:
 
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; **tcplRegister** -- to register a new assay element or chemical <br /> <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; **tcplUpdate** -- to change or add additional information for existing assay or chemical ids <br />  <br />
@@ -67,26 +67,36 @@ This vignette explains in the first section how upload and process the newly-reg
 Before writing any data to the  <font face="CMTT10"> tcpl </font> database, the user has to register the assay and chemical information. All processing occurs by assay component or assay endpoint, depending on the processing type (single-concentration or multiple-concentration) and level. No data is stored at the assay or assay source level. The “assay” and “assay_source” tables store annotations to help in the processing and down-stream understanding of the data. Additional details for registering each assay element and updating annotations are provided within the assay registration vignette.
 
 ## Chemicals
+
 With the minimal assay information registered, the next step is to register the necessary chemical and sample information with <font face="CMTT10"> tcplRegister </font>. The "chdat" dataset included in the package contains the sample and chemical information for the data that will be loaded. The following shows an example of how to load chemical information. Similar to the order in registering assay information, the user must first register chemicals, then register the samples that map to the corresponding chemical.
+
 ```{r eval = TRUE}
+## Obtain the Data ##
+# Load the 'chdat' data from the package.
 data(chdat, package = "tcpl")
+# Convert 'chdat' object to a data.table.
 setDT(chdat)
+# View the first 6 rows of the table.
 head(chdat)
 ```
-```{r eval = TRUE, message = FALSE}
-# Register the unique chemicals
-cmap <- tcplLoadChem() # Chemicals already registered
-chdat.register <- chdat[!(chdat$code %in% cmap$code)] # Chemicals in chdat that are not registered yet
 
-tcplRegister(what = "chid",
+```{r eval = TRUE, message = FALSE}
+## Register the Chemicals ##
+# Obtain chemicals already registered in the database.
+cmap <- tcplLoadChem()
+# Find chemicals in 'chdat' that are not registered yet.
+chdat.register <- chdat[!(chdat$code %in% cmap$code)] 
+# Register the chemicals not yet in the database.
+tcplRegister(what = "chid", 
              flds = chdat.register[,
                         unique(.SD),
                         .SDcols = c("casn", "chnm", "dsstox_substance_id", "code", "chid")])
 ```
 
-The "chdat" dataset contains a map of sample to chemical information, but chemical and sample information have to be registered separately because a chemical could potentially have multiple samples. Registering chemicals only takes a chemical CAS registry number ($\mathit{casn}$) and name ($\mathit{chnm}$). In the above example, only the unique chemicals were loaded. The $\mathit{casn}$ and $\mathit{chnm}$ fields have unique constraints; trying to register multiple chemicals with the same name or CAS registry number is not possible and will result in an error. With the chemicals loaded, the samples can be registered by mapping the sample ID ($\mathit{spid}$) to the chemical ID. Note, the user needs to load the chemical information to get the chemical IDs then merge the new chemical IDs with the sample IDs from the original file by chemical name or CASRN.
+The "chdat" dataset contains a map of sample to chemical information, but chemical and sample information have to be registered separately because a chemical could potentially have multiple samples. Registering chemicals only takes a chemical CAS registry number ($\mathit{casn}$) and name ($\mathit{chnm}$). In the above example, only the unique chemicals were loaded. The $\mathit{casn}$ and $\mathit{chnm}$ fields have unique constraints; trying to register multiple chemicals with the same name or CAS registry number is not possible and will result in an error. With the chemicals registered and loaded, the samples can be registered by mapping the sample ID ($\mathit{spid}$) to the chemical ID. Note, the user needs to load the chemical information to get the chemical IDs then merge the new chemical IDs with the sample IDs from the original file by chemical name or CASRN.
 
 ```{r eval = TRUE, message = FALSE}
+## Register Sample IDs (spids) ##
 tcplRegister(what = "spid",
              flds = merge(chdat[ , list(spid, casn)],
                           chdat.register[ , list(casn, chid)],
@@ -94,16 +104,23 @@ tcplRegister(what = "spid",
 ```
 
 Optionally, the user can subdivide the chemcial IDs into different groups or libraries. For illustration, the chemical IDs will be arbitrarily divided into two chemical libraries, with the even numbered chemical IDs in group 1 and the odd numbered chemical IDs in group 2.
+
 ```{r eval = FALSE}
+## Register Chemical Libraries ##
+# Subdivide even numbered chemicals in group 1.
 grp1 <- cmap[chid %% 2 == 0, unique(chid)]
+# Subdivide odd numbered chemicals in group 2.
 grp2 <- cmap[chid %% 2 == 1, unique(chid)]
+# Register the group 1 chemicals.
 tcplRegister(what = "clib",
              flds = list(clib = "group_1", chid = grp1))
+# Register the group 2 chemicals.
 tcplRegister(what = "clib",
              flds = list(clib = "group_2", chid = grp2))
 ```
 
 Chemical IDs can belong to more than one library, and will be listed as separate entries when loading chemical library information. The <font face="CMTT10"> tcplLoadClib </font> function provides more information about the ToxCast chemical library used for sample generation, and is only relevant to the MySQL version of invitrodb.
+
 ```{r eval = FALSE}
 tcplRegister(what = "clib",
              flds = list(clib = "other", chid = 1:2))
@@ -111,39 +128,49 @@ tcplLoadClib(field = "chid", val = 1:2)
 ```
 
 ## Source Data
+
 After registering the chemical and assay information, the data can be loaded into the <font face="CMTT10"> tcpl </font> local directory. The package includes two datasets from the ToxCast program, "scdat" and "mcdat", with a subset of single- and multiple-concentration data, respectively. The single- and multiple-concentration processing require the same level 0 fields; more information about level 0 pre-processing is in Introduction vignette.
+
 ```{r eval = FALSE}
+## Obtain the Data ##
+# Load the multi-concentration data from the package.
 data(mcdat, package = 'tcpl')
+# Convert 'mcdat' to a data.table.
 setDT(mcdat)
 ```
 
-The data are now ready to be loaded with the <font face="CMTT10"> tcplWriteLvl0 </font> function when pre-processed into standard format.The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing: "sc" indicates single-concentration; "mc" indicates multiple-concentration. 
+After being pre-processed into the standard format, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration. 
+
 ```{r eval = FALSE, message = FALSE}
+# Write/load the 'mcdat' into the database.
 tcplWriteLvl0(dat=mcdat, type ="mc")
 ```
 
-The  <font face="CMTT10"> tcplLoadData </font> function can be used to load the data from the MySQL database.
+The  <font face="CMTT10"> tcplLoadData </font> function can be used to load the data from the MySQL database into the current R session.
+
 ```{r eval = FALSE, message = FALSE}
+# Load the level 0 data from the database to R.
 tcplLoadData(lvl=0, fld="acid", val=1, type = "mc")
 ```
+
 Notice in the loaded data, the  $\mathit{acsn}$ is replaced by the correct $\mathit{acid}$ and the $\mathit{m0id}$ field is added. The "m#"
 fields in the multiple-concentration data are the primary keys for each level of data. These primary keys link the various levels of data. All of the keys are auto-generated and will change anytime data are reloaded or processed. Note, the primary keys only change for the levels affected, e.g. if the user reprocesses level 1, the level 0 keys will remain the same. 
 
 # Data Processing
 
-This section is intended to help the user understand the general aspects of how the data are processed before diving into the specifics of each processing level for both screening paradigms. The details of the two screening paradigms are provided in later sections.
+This section is intended to help the user understand the general aspects of how the data are processed before diving into the specifics of each processing level for both screening paradigms (i.e. processing types). The details of the two screening paradigms are provided in later sections.
 
 All processing in the <font face="CMTT10"> tcpl </font> package occurs at the assay component or assay endpoint level. There is no capability within either screening paradigm to do any processing which combines data from multiple assay components or assay endpoints. Any combining of data must occur before or after the pipeline processing. For example, a ratio of two values could be processed through the pipeline if the user calculated the ratio during the level 0 pre-processing and uploaded a single "component".
 
 Once the data are uploaded, data processing occurs through the <font face="CMTT10"> tcplRun </font> function for both single- and multiple-concentration screening. The <font face="CMTT10"> tcplRun </font> function can either take a single ID ($\mathit{acid}$ or $\mathit{aeid}$, depending on the processing type and level) or an $\mathit{asid}$. If given an $\mathit{asid}$, the <font face="CMTT10"> tcplRun </font> function will attempt to process all corresponding components/endpoints. When processing by $\mathit{acid}$ or $\mathit{aeid}$, the user must know which ID to give for each level (Table 1).
 
-The processing is sequential, and every level of processing requires successful processing at the antecedent level. Any processing changes will cause a "delete cascade," removing any subsequent data affected by the processing change to ensure complete data fidelity at any given time. For example, processing level 3 data will cause the data from levels 4 through 6 to be deleted for the corresponding IDs. Level 6 is related to inspecting and flagging curve fits, though this processing step is not currently included in  <font face="CMTT10"> tcpl v3.0 </font> it may be included in future versions.  **Changing any method assignments will also trigger a delete cascade for any corresponding data** (more on method assignments below).
+The processing is sequential, and every level of processing requires successful processing at the antecedent level. Any processing changes will cause a "delete cascade," removing any subsequent data affected by the processing change to ensure complete data fidelity at any given time. For example, processing level 3 data for multiple-concentration data will cause the data from levels 4 through 6 to be deleted for the corresponding IDs. Level 6 is related to inspecting and flagging curve fits, though this processing step is not currently included in  <font face="CMTT10"> tcpl v3.0 </font> it may be included in future versions.  **Changing any method assignments will also trigger a delete cascade for any corresponding data** (more on method assignments below).
 
 The user must give a start and end level when using the <font face="CMTT10"> tcplRun </font> function. If processing more than one assay component or endpoint, the function will not stop if one component or endpoint fails. If a component or endpoint fails while processing multiple levels, the function will not attempt to process the failed component/endpoint in subsequent levels. When finished processing, the <font face="CMTT10"> tcplRun </font> function returns a list indicating the processing success of each id. For each level processed, the list will contain two elements: (1) "l#" a named Boolean vector where <font face="CMTT10"> TRUE </font> indicates successful processing, and (2) "l#_failed" containing the names of any ids that failed processing, where "#" is the processing level.
 
 The processing functions print messages to the console indicating the four steps of the processing. These steps include (1) data for the given assay component ID are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The 'outfile' parameter in the <font face="CMTT10"> tcplRun </font> function gives the user the option of printing all the output text to a file.
 
-The <font face="CMTT10"> tcplRun </font> function will attempt to use multiple processors on Unix-based systems (does not include Windows). Depending on the system environment, or if the user is running into memory constraints, the user may wish to use less processing power. The user can specify less processing power by setting the "mc.cores" parameter in the <font face="CMTT10"> tcplRun </font> function.
+The <font face="CMTT10"> tcplRun </font> function will attempt to use multiple processors on Unix-based systems (does not include Windows). Depending on the system environment, or if the user is running into memory constraints, the user may wish to use less processing power. If the user is working on a Unix-based system, the default specification of "mc.cores = NULL" uses all cores except for one, which is necessary for 'overhead' processes. The user can specify less processing power by setting the "mc.cores" parameter in the <font face="CMTT10"> tcplRun </font> function to the desired level of processing power. **Note, the specification should meet the following criteria $\mathit{mc.cores} \space < \space \mathit{detectCores()}-1$.**
 
 ```{r warning = FALSE, echo = FALSE}
 Type <- c('SC', 'SC', 'MC', 'MC', 'MC', 'MC', 'MC', 'MC')
@@ -164,6 +191,7 @@ The processing requirements vary by screening paradigm and level, which later se
 Notice from Table 1 that level 1 single-concentration processing (SC1) requires an $\mathit{acid}$ input (Table 1), but the methods are assigned by $\mathit{aeid}$. The same is true for MC3 processing. SC1 and MC3 are the normalization steps and convert $\mathit{acid}$ to $\mathit{aeid}$. (Only MC2 has methods assigned by $\mathit{acid}$.) The normalization process is discussed in the following section.
 
 ## Methods
+
 To promote reproducibility, all method assignments must occur through the database. Methods cannot be passed directly to either the <font face="CMTT10"> tcplRun </font> function or the low-level processing functions called by <font face="CMTT10"> tcplRun </font>. 
 
 In general, methods data are stored in the "_methods" and "_id" tables that correspond to the data-storing tables. For example, the "sc1" table is accompanied by the "sc1_methods" table which stores the available methods for SC1, and the "sc1_aeid" table which stores the method assignments and execution order.
@@ -181,47 +209,50 @@ The  <font face="CMTT10"> tcpl </font> package provides three functions to easil
 The following code blocks will give some examples of how to use the method-related functions.
 
 ```{r eval= FALSE}
-## For illustrative purposes, assign level 2 MC methods to ACIDs 97, 98, and 99.
-## First check for available methods.
+## Methods Assignment ##
+# For illustrative purposes, assign level 2 MC methods to ACIDs 97, 98, and 99.
+# First check for available methods.
 mthds <- tcplMthdList(lvl = 2, type = "mc")
 mthds[1:2]
-## Assign some methods to ACID 97, 98, and 99.
+# Assign some methods to ACID 97, 98, and 99.
 tcplMthdAssign(lvl = 2, 
                id = 97:99, 
                mthd_id = c(3, 4, 2), 
                ordr = 1:3, 
                type = "mc")
-## Check the assigned methods for ACID 97, 98, and 99 in the database.
+# Check the assigned methods for ACID 97, 98, and 99 in the database.
 tcplMthdLoad(lvl = 2, id = 97:99, type = "mc")
 
-## Methods can be cleared one at a time for the given id(s)
+# Methods can be cleared one at a time for the given id(s)
 tcplMthdClear(lvl = 2, id = 99, mthd_id = 2, type = "mc")
-## Check the assigned methods for the single id updated, namely ACID 99.
+# Check the assigned methods for the single id updated, namely ACID 99.
 tcplMthdLoad(lvl = 2, id = 99, type = "mc")
 
-## Or all methods can be cleared for the given id(s)
+# Or all methods can be cleared for the given id(s)
 tcplMthdClear(lvl = 2, id = 97:98, type = "mc")
-## Check the assigned methods for the all updated ids, namely ACID 97 and 98.
+# Check the assigned methods for the all updated ids, namely ACID 97 and 98.
 tcplMthdLoad(lvl = 2, id = 97:98, type = "mc")
 ```
 
-Later sections in this vignette provide examples for level specific methods assignment and details on the methods assigned prior to data processing with <font face="CMTT10"> tcplRun </font> at a particular level.  It should be noted that most examples reflect "default" methods assigned, but one should consider the data at hand and all methods available for a specific level prior to methods 
+Later sections in this vignette provide examples for level specific methods assignment and details on the methods assigned prior to data processing with <font face="CMTT10"> tcplRun </font> at a particular level.  It should be noted that most examples reflect "default" methods assigned, but one should consider the data at hand and all methods available for a specific level prior to assigning methods.
 
 ## Data Normalization
 
-Data normalization occurs in both single- and multiple-concentration processing at levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.**
+Data normalization occurs in both single- and multiple-concentration processing paradigms - levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.**
 
-The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered, so all fold-change data must be log-transformed. Normalizing to a control requires three normalization methods: <br />
+The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered. Thus, all fold-change data must be log-transformed.
+
+Normalizing to a control requires three normalization methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 1. one to define the baseline value, <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 2. one to define the control value, and <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 3. one to calculate percent of control ("resp.pc"). <br /> <br />
+
 Normalizing to fold-change also requires three methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 1. one to define the baseline value, <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 2. one to calculate the fold-change, and <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 3. one to log-transform the fold-change values ("resp.fc"). <br /><br />
-Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formluae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
 
-The percent of control and fold-change values, respectively:
+Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formluae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
 
 $$  resp.pc = \frac{cval - bval}{pval - bval}*100  $$
 
@@ -252,13 +283,13 @@ htmlTable(output,
 
 If the data does not require any normalization, the "none" method must be assigned for normalization. The "none" method simply copies the input data to the response field. Without assigning "none", the response field will not get generated and the processing will not complete.
 
-<font face="CMTT10"> tcpl_v2 </font> package only modeled responses in the positive direction. Therefore, a signal in the negative direction needed to be transformed to the positive direction during normalization. Creating multiple endpoints for one component was one way to enable multiple normalization approaches. Multiple normalization approaches were necessary when the assay component detected a signal in both positive and negative directions. Negative direction data was inverted by multiplying the final response values by ${-1}$ (see the "resp.mult.neg" methods in Table 2). <font face="CMTT10"> tcplFit2 </font> utilized within <font face="CMTT10"> tcpl_v3 </font> onward allows for bidirectional fitting, therefore the "resp.mult.neg" method is now only required in special use cases.
+<font face="CMTT10"> tcpl_v2 </font> package only modeled responses in the positive direction. Therefore, a signal in the negative direction needed to be transformed to the positive direction during normalization. Creating multiple endpoints for one component was one way to enable multiple normalization approaches. Multiple normalization approaches were necessary when the assay component detected a signal in both positive and negative directions. Negative direction data was inverted by multiplying the final response values by ${-1}$ (see the "resp.mult.neg" methods in Table 2). <font face="CMTT10"> tcpl_v3 </font> onward will utilize the <font face="CMTT10"> tcplFit2 </font> package, which allows for bidirectional fitting, therefore the "resp.mult.neg" method is now only required in special use cases.
 
-In addition to the required normalization methods, the user can add additional methods to transform the normalized values. For example, the third fold-change example in Table 2 includes "resp.blineshift.50.spid," which corrects for baseline deviations by $\mathit{spid}$. A complete list of available methods, by processing type and level, can be listed with <font face="CMTT10"> tcplMthdList </font>. More information is available in the package documentation, and can be found by running <font face="CMTT10"> ??tcpl::Methods </font>.
+In addition to the required normalization methods, the user can add additional methods to transform the normalized values. For example, the third fold-change example in Table 2 includes "resp.blineshift.50.spid", which corrects for baseline deviations by $\mathit{spid}$. A complete list of available methods, by processing type and level, can be listed with <font face="CMTT10"> tcplMthdList </font>. More information is available in the package documentation, and can be found by running <font face="CMTT10"> ??tcpl::Methods </font>.
 
-## Processing Single-concentration Screening Data
+## Single-concentration Screening Data
 
-This section will cover the  <font face="CMTT10"> tcpl </font> process for handling single-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of single-concentration processing is to identify potentially active compounds from a broad screen at a single concentration. After the data is loaded into the<font face="CMTT10"> tcpl </font> database, the single-concentration processing consists of 2 levels (Table 3).
+This section will cover the  <font face="CMTT10"> tcpl </font> process for handling single-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of single-concentration processing is to identify potentially active compounds from a broad screen at a single concentration. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the single-concentration processing consists of 2 levels (Table 3).
 
 <!--#Table 3-->
 
@@ -280,46 +311,49 @@ htmlTable(output,
         align = 'l',
         align.header = 'l',
         caption="Table 3: Summary of the tcpl single-concentration pipeline.",
-        tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette.")
+        tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in the Introduction vignette.")
 
 ```
 
-###   Level 1
+### Level 1
 
-Level 1 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$), logarithm-concentration field ($\mathit{logc}$), and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 1 is to normalize the raw values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section.
+Level 1 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$), logarithm-concentration field ($\mathit{logc}$), and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 1 is to normalize the raw values to either the percentage of a control or the fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section.
 
 #### Methods Assignment
 
-Before assigning the methods below, the user needs to register the data for the single-concentration assay, as shown in the Register and Upload New Data section.
+Before assigning the methods below, the user needs to register the data for the single-concentration assay, as shown in the previous Register and Upload New Data section.
 
 Before beginning the normalization process, all wells with well quality ($\mathit{wllq}$) equal to 0 are removed.
 
 The first step in beginning the processing is to identify which assay endpoints stem from the assay component(s) being processed.
 
 ```{r eval = FALSE}
+# Load the 'aeid' values for 'acid = 2'.
 tcplLoadAeid(fld = "acid", val = 2)
 ```
 
 With the corresponding endpoints identified, the appropriate methods can be assigned.
-```{r eval = FALSE}
-tcplMthdAssign(lvl = 1, 
-               id = 1:2,
-               mthd_id = c(1, 11, 13), 
-               ordr = 1:3,
-               type = "sc")
 
+```{r eval = FALSE}
+# Assign the level 1 methods to ACID 1 & 2.
+tcplMthdAssign(lvl = 1,  # processing level
+               id = 1:2, # assay endpoint ID's to assign methods
+               mthd_id = c(1, 11, 13), # methods to be assigned
+               ordr = 1:3, # order the methods should be applied
+               type = "sc") # the data/processing type
 ```
 
-Above, methods 1, 11, and 13 were assigned for both endpoints. The method assignments instruct the processing to: (1) calculate $\mathit{bval}$ for each assay plate ID by taking the median of all data where the well type equals "n;" (2) calculate a fold-change over $\mathit{bval}$; (3) log-transform the fold-change values with base 2.
+Above, methods 1, 11, and 13 were assigned for both endpoints. The method assignments instruct the processing to: (1) calculate $\mathit{bval}$ for each assay plate ID by taking the median of all data where the well type equals "n"; (2) calculate a fold-change with respect to the $\mathit{bval}$ (i.e. $\frac{resp}{\mathit{bval}}$); (3) log-transform the fold-change values with base 2.
 
-If a user needs to add a method to the end of a normalization sequence, as shown above, then the user can use a second methods assignment statement.  For example, suppose for AEID 2 only we need to indicate a change of directionality in the response and multiply all response values by $-1$.  Then, the following code can be executed. **Reminder, the order of methods assignment matters, particularly in the normalization step.**
+If a user needs to add a method to the end of a normalization sequence, as shown above, then the user can use a second method assignment statement.  For example, suppose for AEID 2 only we need to indicate a change of directionality in the response and multiply all response values by $-1$.  Then, the following code can be executed. **Reminder, the order of methods assignment matters, particularly in the normalization step.**
 
 ```{r eval = FALSE}
-tcplMthdAssign(lvl = 1, 
-               id = 2,
-               mthd_id = 16, 
-               ordr = 1,
-               type = "sc")
+# Assign a fourth step to the normalization processing - for ACID 2 only.
+tcplMthdAssign(lvl = 1, # processing level
+               id = 2, # assay endpoint ID's to assign methods
+               mthd_id = 16, # methods to be assigned
+               ordr = 1, # order the methods should be applied
+               type = "sc") # the data/processing type
 ```
 
 For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 1, type = "sc") </font> or <font face="CMTT10"> ?SC1\_Methods </font>.
@@ -331,9 +365,9 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 sc1_res <- tcplRun(id = 1, slvl = 1, elvl = 1, type = "sc")
 ```
 
-**Notice that level 1 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned previously, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 1 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
+**Note, though level 1 methods are assigned at the assay endpoint ID, processing takes an assay component ID as the input ID.** As mentioned previously, the user must assign normalization methods by assay endpoint, then do the processing by assay component. We will demonstrate in a later section how to run the processing step.  When level 1 processing is performed <font face="CMTT10"> tcpl </font> will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have the appropriate methods assigned), the processing for the entire component fails.
 
-###   Level 2
+### Level 2
 
 Level 2 processing defines the baseline median absolute deviation ($\mathit{bmad}$), collapses any replicates by sample ID, and determines the activity. 
 
@@ -343,36 +377,38 @@ Before the data are collapsed by sample ID, the $\mathit{bmad}$ is calculated as
 
 $$ bmad_{sc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 
-Where $y_i$ is the $i^{th}$ observation of all wells within a well type in the assay component and $\tilde{y}$ is the median across all $y_i$'s (see Table 4 for further details).  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the observations is large and they are normally distributed (i.e. Gaussian), see \{citation?\}.
+Where $y_i$ is the $i^{th}$ observation of all wells within a well type in the assay component and $\tilde{y}$ is the median across all $y_i$'s (see Table 4 for further details).  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for further details.
 
 ```{r warning = FALSE, echo = FALSE}
+## Create the sc BMAD calculation Table ##
+# Specify column 1 in the table - Methods.
 Methods <- c(
   1,2
 )
-
+# Specify column 2 in the table - Description.
 Description <- c(
   "Median absolute deviation (MAD) of all treatment wells across the assay component (acid).",
   "Median absolute deviation (MAD) of all blank wells across the assay component (acid)."
 )
-
+# Specify column 3 in the table - Observations.
 Observations <- c(
   "$y_{i} = y_{(s,w)}$", # method 1
   "$y_{i} = y_{(s,w)}$" # method 2
 )
-
+# Specify column 4 in the table - Observation ID.
 ID <- c(
   "$s \\in \\{1,...,n_{acid}\\}$, \n$w = t$",
   "$s \\in \\{1,...,n_{acid}\\}$, \n$w = n$"
 )
-
+# Specify column 5 in the table - Details about the Observation ID.
 Details <- c(
   "$s$ indicates the sample id within an 'acid' & $w$ indicates the well type",
   "$s$ indicates the sample id within an 'acid' & $w$ indicates the well type"
 )
-
+# Create the output table.
 output <- 
   data.frame(Methods,Description,Observations,ID,Details)
-
+# Out put the table in an 'html' format.
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -387,14 +423,14 @@ To collapse the data by sample ID, the median response value of replicates withi
 Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
 
 ```{r eval = FALSE}
-## Assign a cutoff value of log2(1.2)
-tcplMthdAssign(lvl = 2,
-               id = 1,
-               mthd_id = 3,
-               type = "sc")
+# Assign a cutoff value of log2(1.2).
+tcplMthdAssign(lvl = 2, # processing level
+               id = 1,  # assay endpoint ID's to assign methods
+               mthd_id = 3, # methods to be assigned 
+               type = "sc") # the data/processing type
 ```
 
-In the example above, we are assigning level 2 methods such that the cutoff value is $log_2(1.2)$. Thus, if the maximum median value ($\mathit{max\_med}$) is greater than or equal to the efficacy cutoff ($\mathit{coff}$), then the sample ID is considered active and the hit call ($\mathit{hitc}$) is set to 1.
+In the example above, we are assigning level 2 methods such that the cutoff value is $log_2(1.2)$. Thus, if the maximum median value ($\mathit{max\_med}$) is greater than or equal to the efficacy cutoff ($\mathit{coff} = log_2(1.2)$), then the sample ID is considered active and the hit call ($\mathit{hitc}$) is set to 1.
 
 ```{r echo=FALSE, eval = FALSE}
 # With the methods assigned and the cutoff set, the data are ready for level 2 processing.
@@ -403,7 +439,7 @@ In the example above, we are assigning level 2 methods such that the cutoff valu
 sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 ```
 
-## Processing Multiple-concentration Screening Data
+## Multiple-concentration Screening Data
 
 This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 5).
 
