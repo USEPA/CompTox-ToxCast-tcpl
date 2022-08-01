@@ -43,20 +43,22 @@ The ToxCast pipeline (<font face="CMTT10"> tcpl </font>) is an R package that ma
 
 This flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format and loaded into the <font face="CMTT10"> tcpl </font> database by vendor-specific R scripts. Once data is loaded into the database, ToxCast utilizes generalized processing functions provided in this package to process, normalize, model, qualify, and visualize the data. 
 
-The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting in past versions of <font face="CMTT10"> tcpl </font>. Processing with <font face="CMTT10"> tcpl_v3 </font> onward encompass the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration response models. The main set of extensions was to include all of the concentration-response models that are contained in the program BMDExpress. These include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Additionally, we wanted to include Benchmark Dose (BMD) estimation, which is simply defining a Benchmark Response (BMR) level and estimating the BMD which is the dose/concentration where the BMR level occurs on the curve fit. One final addition was to let the hitcall value be a continuous number ranging from 0 to 1. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
+The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting in past versions of <font face="CMTT10"> tcpl </font>. Processing with <font face="CMTT10"> tcpl_v3 </font> onward encompass the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond.^[Using tcplv3 with the schema from invitrodb versions 2.0-3.5 will still default to tcplFit() modeling with constant, Hill, and gain-loss] The main set of extensions was to include all of the concentration-response models that are contained in the program BMDExpress. These include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Similar to the program BMDExpress, tcplFit2 curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hitcall value be a continuous number ranging from 0 to 1. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
 
 The <font face="CMTT10"> tcpl </font> package includes processing functionality for two screening paradigms: (1) single-concentration screening and (2) multiple-concentration screening. Single-concentration screening consists of testing chemicals at one concentration, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. Multiple-concentration screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
 
 Prior to the pipeline processing provided in this package, all the data must go through pre-processing (level 0). Level 0 pre-processing utilizes dataset-specific R scripts to process the heterogeneous data into a uniform format and to load the uniform data into the <font face="CMTT10"> tcpl </font> database. Level 0 pre-processing is outside the scope of this package, but can be done for virtually any high-throughput or high-content chemical screening effort, provided the resulting data includes the minimum required information. 
 
-In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette and others, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. tcplLite, which allowed the user to upload a flat file in ToxCast database format and process the data using the tcpl analysis protocols, is no longer supported by <font face="CMTT10"> tcpl </font>. <font face="CMTT10"> tcplFit2 </font>, however, can be used for stand-alone applications, available at <https://cran.r-project.org/web/packages/tcplfit2/index.html>. Using <font face="CMTT10"> tcpl </font>, the user can upload, process, and retrieve data by connecting to a MySQL database. The package includes a SQL file to initialize a blank schema on the user's server of choice. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette and others, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. tcplLite is no longer supported by <font face="CMTT10"> tcpl </font>. <font face="CMTT10"> tcplFit2 </font>, however, can be used for stand-alone applications, available at <https://cran.r-project.org/web/packages/tcplfit2/index.html>. tcplLite relied on flat files structured like invitrodb to produce curve-fitting and summary information like hitcalls and AC50 values. Functionally <font face="CMTT10"> tcplFit2 </font> replaces tcplLite because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the invitrodb schema. For the ToxCast program it is still important to use invitrodb when curve-fitting as invitrodb serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using <font face="CMTT10"> tcpl </font>, the user can upload, process, and retrieve data by connecting to a MySQL database. The package includes a SQL file to initialize a blank schema on the user's server of choice. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
 # Package Settings
 
 
-First, it is highly recommended for users to utilize the <font face="CMTT10"> data.table </font> package. The <font face="CMTT10"> tcpl </font> package utilizes the <font face="CMTT10"> data.table </font> package for all data frame-like objects. 
+First, it is highly recommended for users to utilize the <font face="CMTT10"> data.table </font> package. The <font face="CMTT10"> tcpl </font> package utilizes the <font face="CMTT10"> data.table </font> package for all data frame-like objects. <font face="CMTT10"> tcpl </font> is dependent on the following two packages: <font face="CMTT10"> tcplfit2 </font> and <font face="CMTT10"> plotly </font>. The user must install and load them prior to loading the tcpl package. 
 ```{r eval=TRUE, message=FALSE}
 library(data.table)
+library(plotly)
+library(tcplfit2)
 library(tcpl)
 ## Store the path for the tcpl directory for loading data
 pkg_dir <- system.file(package = "tcpl")
@@ -108,7 +110,7 @@ Each of the methods tables have fields analogous to $\mathit{mc5\_mthd\_id}$, $\
 
 Many of the tables also include the $\mathit{created\_date}$, $\mathit{modified\_date}$, and $\mathit{modified\_by}$ fields that store helpful information  for tracking changes to the data. These fields will not be discussed further or included in the tables below.
 
-Many of the tables specific to the assay annotation are not utilized by the <font face="CMTT10"> tcpl </font> package. The full complexity of the assay annotation used by the ToxCast program is beyond the scope of this vignette and the  <font face="CMTT10"> tcpl </font> package. Additionally, assay description documents for ToxCast assays can be found at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+Many of the tables specific to the assay annotation are populated semi-manually based on expert curation of information on assay design; these tables of assay annotation are not currently utilized by the <font face="CMTT10"> tcpl </font> package, but instead act as meta-data for users. The full complexity of the assay annotation used by the ToxCast program is beyond the scope of this vignette and the  <font face="CMTT10"> tcpl </font> package. Additionally, assay description documents for ToxCast assays can be found at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
 ## Single-concentration Data-containing Tables
 <!-- Table 1-->
@@ -198,7 +200,7 @@ Description <- c("Level 2 ID",
                  "Sample ID",
                  "Baseline median absolute deviation",
                  "Maximum median response value",
-                 "Hit-/activity-call: 1 if active, 0 if inactive",
+                 "Hit-/activity-call: 1 if active, 0 if inactive&dagger;",
                  "Efficacy cutoff value",
                  "Ignore, temporary index used for uploading purposes"
                  )
@@ -211,7 +213,8 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 4: Fields in sc2 table."
+        caption="Table 4: Fields in sc2 table.",
+        tfoot = "&dagger; As sc data are not curve-fit, the hitcalling procedure performed at sc2 remains binary (hitc=1 or hitc=0)."
 )
 
 ```
@@ -232,7 +235,8 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 5: Fields in sc2_chid." 
+        caption="Table 5: Fields in sc2_chid.",
+        
      
 )
 
@@ -411,7 +415,7 @@ Description <- c("Level 5 ID",
                  "Level 4 ID",
                  "Assay endpoint ID",
                  "Winning model",
-                 "Hit-/activity-call, generally a continuous value from 0 to 1 if using tcplfit2 fitting" ,
+                 "Hit-/activity-call, generally a continuous value from 0 to 1 if using tcplfit2 fitting&dagger;" ,
                  "Fit category",
                  "Efficacy cutoff value",
                 "Activity probability (1 - *const_prob* not used with tcplfit2)",
@@ -426,7 +430,8 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 12: Fields in mc5 table."
+        caption="Table 12: Fields in mc5 table.",
+        tfoot = "&dagger; The continuous hitcalls produced resultant to tcplFit2 curve-fitting are described in more detail in library(tcplFit2) and Sheffield et al. 2021 (https://doi.org/10.1093/bioinformatics/btab779)."
 )
 
 ```
@@ -486,7 +491,7 @@ The definition of an "assay" is, for the purposes of this package, broken into:
 
 **assay_component_endpoint**: the normalized component data  
 
-Each assay element is represented by a separate table in the <font face="CMTT10"> tcpl </font> database. In general, we refer to an "assay_component_endpoint" as an "assay endpoint." As we move down the hierarchy, each additional layer may have a one-to-many relationship with the previous layer. For example, an assay source can include multiple assays. Given bidirectional fitting in <font face="CMTT10"> tcpl_v3 </font>, a single assay endpoint will derive from each assay component.
+Each assay element is represented by a separate table in the <font face="CMTT10"> tcpl </font> database. In general, we refer to an "assay_component_endpoint" as an "assay endpoint." As we move down the hierarchy, each additional layer may have a one-to-many relationship with the previous layer. For example, an assay source can include multiple assays. Given bidirectional fitting in <font face="CMTT10"> tcpl_v3 </font>, in many cases, a single assay endpoint may be derived from each component, as the "up" and "dn" curve-fitting directions will no longer be separated into different assay endpoints.
 
 All processing occurs by assay component or assay endpoint, depending on the processing type (single-concentration or multiple-concentration) and level. No data are stored at the assay or assay source level. The “assay” and “assay_source” tables store annotations to help in the processing and down-stream understanding of the data.
 
@@ -707,7 +712,7 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         caption="Table 21: Fields in chemical table." ,
-        tfoot = "&dagger; this is the DSSTox GSID within the ToxCast data, but can be any integer and will be auto-generated (if not explicitly defined) for newly registered
+        tfoot = "&dagger; This is the DSSTox GSID within the ToxCast data, but can be any integer and will be auto-generated (if not explicitly defined) for newly registered
 chemicals"
 )
 
