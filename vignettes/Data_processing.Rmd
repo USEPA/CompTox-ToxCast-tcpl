@@ -1044,10 +1044,10 @@ The example we include in this vignette for demonstrating the assignment of leve
 
 ```{r eval=FALSE}
 ## Methods Assignment ##
-# Assign the Level 4 Processing Methods AEID 80.
-tcpl::tcplMthdAssign(
+# Assign the Level 4 Processing Methods to AEID 80.
+tcplMthdAssign(
     lvl = 4, # processing level
-    id = 80, # assay endpoint IDs to assign method(s)
+    id = 80, # assay endpoint ID(s) to assign method(s)
     mthd_id = c(1,3), # method(s) to be assigned
     ordr = 1:2, # order the method(s) should be applied
     type = "mc") # the data/processing type
@@ -1085,7 +1085,7 @@ After level 4 data is processed, the user can load the model fit information fro
 ```{r eval=FALSE}
 ## Explore the Level 4 Data ##
 # Load the level 4 data.
-mc4 <- tcplLoadData(lvl = 3,
+mc4 <- tcplLoadData(lvl = 4,
                     type = 'mc',
                     fld = 'aeid',
                     val = 80,
@@ -1105,9 +1105,7 @@ mc4 <- mc_vignette[["mc4"]]
 
 The level 4 data includes fields for each of the ten model fits as well as the ID fields. A complete list of level 4 fields is available in the Introduction vignette. The level 4 data fields with model fit information are prefaced by the model abbreviations (e.g. $\mathit{cnst}$, $\mathit{hill}$, $\mathit{gnls}$, $\mathit{poly1}$, etc.).  The fields ending in $\mathit{success}$ indicates the convergence status of the model, where a value of 1 means the model converged and a value of 0 otherwise. NA values indicate the fitting algorithm did not attempt to fit the model.
 
-<NEEDS UPDATING>
-$\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure 2, the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the <font face="CMTT10"> tcplPlotM4ID</font>  function.
-<NEEDS UPDATING>
+<!-- $\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure 2, the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the <font face="CMTT10"> tcplPlotM4ID</font>  function. -->
 
 ```{r eval = FALSE,echo=FALSE}
 ## Load the level 4 data
@@ -1117,7 +1115,7 @@ m4dat <- tcplPrepOtpt(tcplLoadData(lvl = 4, type = "mc"))
 m4dat[hill == 1 & aeid == 1, head(m4id)]
 ```
 
-In Figure 3 we display the smoothed model fits results from level 4 with respect to the observed concentration-response series.
+In Figure 3 we display the smoothed model fit results from level 4 with respect to the observed concentration-response series.
 
 ```{r fig.align='center',class.source = "scroll-100"}
 ## Create a Sequence of Concentration Values within Observed Range ##
@@ -1132,6 +1130,7 @@ X <- seq(
 estDR <- mc4 %>% 
   dplyr::filter(spid == "01504209") %>% 
   dplyr::summarise(
+    cnst  = tcplfit2::cnst(.[,c(cnst_er)],X),
     poly1 = tcplfit2::poly1(.[,c(poly1_a,poly1_er)],X),
     poly2 = tcplfit2::poly2(.[,c(poly2_a,poly2_b,poly2_er)],X),
     power = tcplfit2::pow(.[,c(pow_a,pow_p,pow_er)],X),
@@ -1146,7 +1145,7 @@ estDR <- mc4 %>%
 # Format data into a data.frame for ease of plotting.
 estDR <- cbind.data.frame(X,estDR) %>%
   reshape2::melt(data = .,measure.vars = c(
-    "poly1","poly2","power","hill","gnls","exp2","exp3","exp4","exp5"
+    "cnst","poly1","poly2","power","hill","gnls","exp2","exp3","exp4","exp5"
   ))
 
 ## Updated Colors ##
@@ -1173,23 +1172,17 @@ mc3 %>%
   theme_bw()
 ```
 
-```{r eval = FALSE, fig.width = 15, fig.height= 10}
-## Plot a fit for m4id 7
-tcplPlotM4ID(m4id = 7, lvl = 4)
-```
+**Figure 3:** This figure illustrates the results from the Level 4 analyses in the <font face="CMTT10"> tcpl</font> pipeline.  The plot depicts the observed concentration-response data with white circles, where the x-axis is base 10 log-transformed concentration values. All the ten model fits are displayed and distinguished by color and line-type.
 
-<!-- Insert description about new plots!!
-Figure 2. An example level 4 plot for a single concentration series. The orange dashed line shows the constant model, the red dashed line shows the Hill model, and the blue dashed line shows the gain-loss model. The gray striped box shows the baseline region, $0 \pm 3\mathit{bmad}$. The summary panel shows assay endpoint and sample information, the parameter values (val) and standard deviations (sd) for the Hill and gain-loss models, and summary values for each model. -->
+Each of the models in Figure 3 have two model fit summary estimates, which include the Akaike Information Criterion (AIC) and the root mean square error (RMSE or RME).
 
-The model summary values in Figure 2 include Akaike Information Criterion (AIC), probability, and the root mean square error (RMSE). Let $log(\mathcal{L}(\hat{\theta}, y))$ be the log-likelihood of the model $\hat{\theta}$ given the observed values $y$, and $K$ be the number of parameters in $\hat{\theta}$, then,
-
+For the AIC, let $log(\mathcal{L}(\hat{\theta}, y))$ be the log-likelihood of the model $\hat{\theta}$ given the observed values $y$, and $K$ be the number of parameters in $\hat{\theta}$, then,
 
 $$\mathrm{AIC} = -2\log(\mathcal{L}(\hat{\theta}, y)) + 2K\mathrm{.} $$
 
+<!-- The probability, $\omega_{i}$, is defined as the weight of evidence that model $i$ is the best model, given that one of the models must be the best model. Let $\Delta_{i}$ be the difference $\mathrm{AIC}_{i} - \mathrm{AIC}_{min}$ for the $i^{th}$ model. If $R$ is the set of models, then $\omega_{i}$ is given by -->
 
-The probability, $\omega_{i}$, is defined as the weight of evidence that model $i$ is the best model, given that one of the models must be the best model. Let $\Delta_{i}$ be the difference $\mathrm{AIC}_{i} - \mathrm{AIC}_{min}$ for the $i^{th}$ model. If $R$ is the set of models, then $\omega_{i}$ is given by
-
-$$\omega_{i} = \frac{\exp\left(-\frac{1}{2}\Delta_{i}\right)}{\sum_{i=1}^{R} \exp\left(-\frac{1}{2}\Delta_{r}\right)}\mathrm{.} $$
+<!-- $$\omega_{i} = \frac{\exp\left(-\frac{1}{2}\Delta_{i}\right)}{\sum_{i=1}^{R} \exp\left(-\frac{1}{2}\Delta_{r}\right)}\mathrm{.} $$ -->
 
 
 The RMSE is given by
@@ -1199,72 +1192,72 @@ $$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,}$
 
 where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estimated and observed values at the $i^{th}$ observation, respectively. 
 
-###   Level 5
+### Level 5
 
-Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates additional point-of-departure estimates based on the activity cutoff.
+Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates point-of-departure estimates based on the activity cutoff.
 
 #### Methods Assignment
 
-**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as none. The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is base on at least one median response being greater than the efficacy cutoff.  Second, the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflects whether the AIC of the winning model is less than that of the constant model.
+**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as 'none'. Table 9 provides a side-by-side comparison of AIC values from each of the ten model fits for the concentration-response series we include in the example dataset <font face="CMTT10"> mc_vignette</font>.
 
-<Not sure if we need the table below or not.>
 ```{r echo=FALSE}
-mc5 <- mc_vignette[["mc5"]]
-
-tmp <- mc4 %>% 
+# Obtain the AIC values from each of the model fits from
+# the level 4 data.
+mc4_aic <- mc4 %>% 
   dplyr::select(.,grep(colnames(.),pattern = "aic")) %>% 
   round(.,3) %>% 
   apply(.,MARGIN = 1,FUN = function(x){
-    cell_spec(x,color = ifelse(x == min(x),yes = "blue",no = "black"))
+    cell_spec(x,color = ifelse(x == min(x),
+                               yes = "blue",
+                               no = "black"))
   }) %>% t() %>% 
   data.frame() %>% 
   cbind.data.frame(mc4[,dsstox_substance_id],.)
-colnames(tmp) <- colnames(mc4)[grep(colnames(mc4),pattern = "aic")] %>%
+# Rename the columns.
+colnames(mc4_aic) <-
+  colnames(mc4)[grep(colnames(mc4),pattern = "aic")] %>%
   str_remove(.,pattern = "_aic") %>% c("dsstox_id",.)
-
-tmp %>%
-  kbl(escape = F,format = 'html',centering = TRUE,
-      caption = "Table 9: AIC values from All Fits from Level 4.") %>%
-  kable_styling(c("striped","hover"),full_width = FALSE,)
+# Export/display the table in an HTML format.
+mc4_aic %>%
+  kbl(
+    escape = FALSE,
+    format = 'html',
+    centering = TRUE,
+    caption = "Table 9: AIC values from All Fits in Level 4.  Values highlighted in blue indicate the winning model for the compound.") %>%
+  kable_styling(
+    font_size = 14,
+    c("striped","hover"),
+    full_width = FALSE
+  )
 ```
 
-The efficacy cutoff is defined by the level 5 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 5 methods. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
+The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is based on at least one median response being greater than the efficacy cutoff.  Second, the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflects whether the AIC of the winning model is less than that of the constant model.
 
-```{r eval = FALSE, warning = FALSE}
-## Assign a cutoff value of 6*bmad
-tcplMthdAssign(lvl = 5,
-               id = 1:2,
-               mthd_id = 6,
-               ordr = 1,
-               type = "mc")
-```
+The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
 
-Here, we are going to assign the Attagene assay endpoints all with the same methods.  However, one can assign methods for a single assay endpoint or a subset of all endpoints within an assay.
+<!-- Here, we are going to assign the Attagene assay endpoints all with the same methods.  However, one can assign methods for a single assay endpoint or a subset of all endpoints within an assay. -->
+
+The example we include in this vignette for demonstrating the assignment of level 5 methods specifies that three different efficacy cutoff estimates be considered.  These efficacy cutoff estimates include $3*\mathit{bmad}$, $log_2(1.2)$, and $5*\mathit{bmad}$, which correspond to $\mathit{mthd\_id}$ assignments 1, 3, and 5 respectively.
 
 ```{r eval=FALSE}
-tcpl::tcplMthdAssign(
-  lvl = 5,
-  id = atg.aeid[,aeid]
-  mthd_id = c(1,3,5),
-  ordr = 1:3,
-  type = "mc"
-)
+## Methods Assignment ##
+# Assign the Level 5 Processing Methods to AEID 80.
+tcplMthdAssign(
+  lvl = 5, # processing level
+  id = 80, # assay endpoint ID(s) to assign method(s)
+  mthd_id = c(1,3,5), # method(s) to be assigned
+  ordr = 1:3, # order the method(s) should be assigned
+  type = "mc") # the data/processing type
 ```
 
-The above chunk of code assigns <provide description of assigned methods...>.
+As described previously, since the continuous hit call is the product of three a probability values, then the resulting value is between 0 and 1.  The higher the hitcall (i.e. close to 1) the more probable the concentration-response series indicates true biological activity in the measured response (i.e. 'active' hit).
 
-Since the continuous hit call (as described previously) is a probability the value is between 0 and 1.  The higher the probability indicates the more probable that the concentration-response series indicates biological activity in the measured response (i.e. 'active' hit).
-
-<Information about the point of departure (POD).(??)>
-
-For the example data, the cutoff value is $6\mathit{bmad}$. If the Hill or gain-loss model wins, and the estimated top parameter for the winning model ($\mathit{modl\_tp}$) and the maximum median value ($\mathit{max\_med}$) are both greater than or equal to the efficacy cutoff ($\mathit{coff}$), the concentration series is considered active and the hit call ($\mathit{hitc}$) is set to 1.
-
-For active concentration series, two additional point-of-departure estimates are calculated for the winning model: (1) the activity concentration at baseline (ACB or $\mathit{modl\_acb}$) and (2) the activity concentration at cutoff (ACC or $\mathit{modl\_acc}$). The ACB and ACC are defined as the concentration where the estimated model value equals $3\mathit{bmad}$ and the cutoff, respectively. The point-of-departure estimates are summarized in Figure 3.
+For each concentration series several point-of-departure (POD) estimates are calculated for the winning model.  The major estimates include: (1) the activity concentration at the specified benchmark response (BMR) ($\mathit{bmd}$), (2) the activity concentration at $50\%$ of the maximal response ($\mathit{ac50}$), (3) the activity concentration at the efficacy cutoff ($\mathit{acc}$), (4) the activity concentration at $10\%$ of the maximal response, and (5) the concentration at $5\%$ of the maximal response.  Though there are several other potency estimates calculated as part of the level 5 pipeline these five are the major POD estimates. The POD estimates mentioned in here are summarized in Figure 4.
 
 <!-- Exclude info about fit categories for now
 All concentration series fall into a single fit category ($\mathit{fitc}$), defined by the leaves on the tree structure in Figure 4. Concentration series in the same category will have similar characteristics, and often look very similar. Categorizing all of the series enables faster quality control checking and easier identification of potential false results. The first split differentiates series by hit call. Series with a hit call of -1 go into fit category 2. The following two paragraphs will outline the logic for the active and inactive branches. -->
 
-<!-- <!-- figure 4--> -->
+<!-- <!-- figure 4--> 
 
 <!-- ```{r eval = TRUE} -->
 <!-- mc5_fit_categories <- fread(system.file("/example/mc5_fit_categories.csv", -->
@@ -1292,27 +1285,46 @@ tcpl::tcplRun(
 )
 ```
 
-Code to load level 5 multiple concentration data from the database for a single assay endpoint (aeid).
+After level 5 data processed, the user can load the model fit information from database.
 
 ```{r eval=FALSE}
-mc5 <- tcpl::tcplPrepOtpt(tcplLoadData(lvl = 5,type = 'mc',
-                                       fld = 'aeid',val = 80,add.fld = TRUE))
+## Explore the Level 5 Data ##
+# Load the level 5 data.
+mc5 <- tcplLoadData(lvl = 5,
+                    type = 'mc',
+                    fld = 'aeid',
+                    val = 80,
+                    add.fld = TRUE)
+# Prepare the data into a readable format.
+mc5 <- tcplPrepOtpt(mc5)
+# Display the data.
+mc5
 ```
 
-We have provided a subset of the 'mc5' data within the 'mc_vignette' R data object within the 'tcpl' package.
+A subset of this data is already available within <font face="CMTT10"> mc_vignette </font> object.
 
 ```{r}
+# Allocate the level 5 data in `mc_vignette` to the `mc5` object.
 mc5 <- mc_vignette[["mc5"]]
 ```
 
-Visual display of the model fitting results with the tcpl package when connected to the/a database.
+The level 5 data includes fields for the best model fit, the POD estimates, other estimates from the best model fit, as well as the ID fields.  A complete list of level 5 fields is available in the Introduction vignette.
+
+The user can visualize the model fitting results with <font face="CMTT10"> tcpl </font> using the <font face="CMTT10"> tcplPlot </font> functions, when connected to a database. The resulting figure is an interactive plot displaying the concentration-response series data, the ten curve fits from level 4 with the best model distiguished by color, and the AC50 estimate.
 
 ```{r eval=FALSE}
-my_id <- tcplLoadData(lvl = 5,fld = c('aeid','spid'),val = list(80,'01504209'))$m4id
+## Plot the Interactive Level 5 Figure ##
+# Obtain the `m4id` for AEID 80 and spid `01504209`
+my_id <- tcplLoadData(lvl = 5,
+                      fld = c('aeid','spid'),
+                      val = list(80,'01504209'))$m4id
+# Report the `m4id`.
+my_id
+# Generate the interactive concentration-response plot.
 tcplPlot(lvl = 5,val = my_id,output = 'console')
 ```
 
-Visualize model fitting results and potency estimates from Level 4 multiple-concentration (mc) data.
+In Figure 4, we provide an alternative visualization of the model fitting results from Level 4 and the best model as well as the potency estimates from Level 5 data.
 
 ```{r fig.align='center',class.source = "scroll-100"}
 ## Obtain Data ##
@@ -1441,7 +1453,7 @@ fullPlot <-
 fullPlot
 ```
 
-**Figure 3:** This figure illustrates the results from the Level 5 analyses in the `tcpl` pipeline package including the best model fit and subsequent point-of-departure (POD) estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity responses from which potency estimates of interest are defined, and the vertical lines show the corresponding POD estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
+**Figure 4:** This figure illustrates the results from the Level 5 analyses in the <font face="CMTT10"> tcpl </font> pipeline package including the best model fit and subsequent point-of-departure (POD) estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity responses from which potency estimates of interest are defined, and the vertical lines show the corresponding POD estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
 
 <!-- ```{r eval = TRUE, fig.width = 15, fig.height= 10} -->
 <!-- #tcplPlotM4ID(m4id = 4, lvl = 5) -->
@@ -1519,7 +1531,7 @@ fullPlot
 
 <!-- Figure 8: An example level 6 plot for a single concentration series. All level 6 method ID (*l6_mthd_id*) values are concatenated in the flags section. If flags have an associated value (*fval*), the value will be shown in parentheses to the right of the level 6 method ID. -->
 
-<!-- <!--Figure 7--> -->
+<!-- <!--Figure 7-->
 <!-- The evidence of true activity shown in Figure 8 could be argued either way. Level 6 processing does not attempt to define truth in the matter of borderline compounds or data anomalies, but rather attempts to identify concentration series for closer consideration. -->
 
 <!-- ```{r eval = FALSE, echo = FALSE, message = FALSE} -->
@@ -1597,14 +1609,15 @@ fullPlot
 <!-- write.csv(chemical, file = file.path(dir,"chemical.csv"), row.names = F) -->
 <!-- ``` -->
 
-
 ## 'tcpl' Compiled Processing Examples
 
-In this section we provide a practical step-by-step example for single- and multi-concentration data from methods assignment through data processing.
+In this section we provide a practical step-by-step example for single- and multiple-concentration data from methods assignment through data processing.
 
 ### Single-concentration Data
 
-After level 0 is loaded into the database, we need to assign the data processing methods for each step.  In the following code chunk, we demonstrate how to assign the methods for each step.
+After level 0 (pre-processed data) is loaded into the database, we need to assign the data processing methods for each step. Once the methods for level 1 and 2 processing are assigned, then we can run the pipeline for processing and storing the data in a database.
+
+In the following code chunk, we demonstrate how to assign the methods for each step.
 
 ```{r eval=FALSE}
 ## Methods Assignment ##
@@ -1622,7 +1635,7 @@ tcplMthdAssign(lvl = 2, # data level
                type = "sc") # data type - single concentration
 ```
 
-Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.
+Now that we have assigned methods for each level we can run pipeline with data with <font face="CMTT10">tcpl</font>.
 
 ```{r eval=FALSE}
 ## Pipeline Assay Components (acid's) from level 0 to 2.
@@ -1634,25 +1647,45 @@ sc_res <- tcplRun(id = 1, # assay component id to pipeline
 
 ### Multiple-concentration Data
 
-After level 0 multiple-concentration data is loaded into the database, we need to assign the data processing methods for each step.  In the following code chunk, we demonstrate how to assign the methods for each step.
+After level 0 multiple-concentration data is loaded into the database, we need to assign the data processing methods for each step. Once the methods for levels 1-5 processing are assigned, then we can run the pipeline for processing and storing the data in a database. **Note, if higher levels of processing are included in future versions of the pipeline, then these also should be assigned prior to running the pipeline.**
+
+In the following code chunk, we demonstrate how to assign the methods for each step.
 
 ```{r eval=FALSE}
 ## Methods Assignment.
-# Level 1 - Normalization
-tcplMthdAssign(lvl = 1, # data level
-               id = 1:2, # assay component 
-               mthd_id = c(1, 11, 13), # method(s) to be applied
-               ordr = 1:3, # order sequence for applied methods
-               type = "sc") # data type - single concentration
+# Level 1 - Indexing
+#   * No methods need to be assigned.
 
-# Level 2 - Bioactivity Hit Call
+# Level 2 - Data Transformation
 tcplMthdAssign(lvl = 2, # data level
-               id = 1, # assay component
-               mthd_id = 3, # method(s) to be applied
-               type = "sc") # data type - single concentration
+               id = 49, # assay component
+               mthd_id = c(3,4,2), # method(s) to be applied
+               ordr = 1:3, # the order method(s) are to be applied
+               type = "mc") # data type - multiple concentration
+
+# Level 3 - Normalization
+tcplMthdAssign(lvl = 3, # data level
+               id = 80, # assay endpoint
+               mthd_id = 1, # method(s) to be applied
+               ordr = 1, # the order method(s) are to be applied
+               type = "mc") # data type - multiple concentration
+
+# Level 4 - Concentration-Response Modeling
+tcplMthdAssign(lvl = 4, # data level
+               id = 80, # assay endpoint
+               mthd_id = c(1,3), # method(s) to be applied
+               ordr = 1:2, # the order method(s) are to be applied
+               type = "mc") # data type - multiple concentration
+
+# Level 5 - Best Model Fit
+tcplMthdAssign(lvl = 5, # data level
+               id = 80, # assay endpoint
+               mthd_id = c(1,3,5), # method(s) to be applied
+               ordr = 1:3, # the order method(s) are to be applied
+               type = "mc") # data type - multiple concentration
 ```
 
-Now that we have assigned methods for each level we can run pipeline with data with `tcpl`.  This can be done in two ways (a) from start to finish (i.e. Level 0 to 5) with the assay component ID (acid) or (b) Level 0 to 3 with the assay component ID (acid) and Level 4 to 5 with the assay endpoint ID (aeid).
+Now that we have assigned methods for each level we can run pipeline with data with <font face="CMTT10">tcpl</font>.  This can be done in two ways (a) from start to finish (i.e. Level 0 to 5) with the assay component ID (acid) or (b) Level 0 to 3 with the assay component ID (acid) and Level 4 to 5 with the assay endpoint ID (aeid).
 
 **Option A:**
 
