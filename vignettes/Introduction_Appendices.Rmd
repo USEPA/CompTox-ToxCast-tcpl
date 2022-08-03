@@ -803,7 +803,7 @@ htmlTable(output,
         
           caption="Table 24: Required fields in level 0 pre-processing." ,
           tfoot = "The N/A column indicates whether the field can be N/A in the pre-processed data. 
- &dagger; In past versions of tcpl, there were some exceptions where concentrations could be N/A. For tcpl_v3, it is best practice to remove N/A values since N/A values may result in processing errors. 
+ &dagger; In past versions of tcpl, there were some exceptions where concentrations could be N/A. For tcpl_v3, conc values must be numeric for processing since N/A values will result in processing error.  
  &ddagger;If the raw value is N/A, well quality must be 0."
 )
 
