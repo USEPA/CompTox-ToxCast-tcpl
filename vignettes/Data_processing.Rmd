@@ -379,6 +379,8 @@ $$ bmad_{sc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 
 Where $y_i$ is the $i^{th}$ observation of all wells within a well type in the assay component and $\tilde{y}$ is the median across all $y_i$'s (see Table 4 for further details).  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for further details.
 
+<!-- #Table 4 -->
+
 ```{r warning = FALSE, echo = FALSE}
 ## Create the sc BMAD calculation Table ##
 # Specify column 1 in the table - Methods.
@@ -443,7 +445,7 @@ sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 
 This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 5).
 
-<!--#Table 4-->
+<!--#Table 5-->
 
 ```{r warning = FALSE, echo = FALSE}
 Level <- c("Lvl 0 ", "Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5", "Lvl 6")
@@ -519,11 +521,9 @@ The package also contains a function, namely <font face="CMTT10"> tcplPlotPlate 
 tcplPlotPlate(dat = m1dat, apid = "4009721")
 ``` 
 
-```{r echo=FALSE,eval=FALSE}
-# Figure 1: An assay plate diagram. The color indicates the raw values according to the key on the right. The bold lines on the key show the distribution of values for the plate on the scale of values across the entire assay. The text inside each well shows the well type and concentration index. For example, 't4' indicates a test compound at the fourth concentration. The wells with an 'X' have a well quality of 0.
+<!-- # Figure 1: An assay plate diagram. The color indicates the raw values according to the key on the right. The bold lines on the key show the distribution of values for the plate on the scale of values across the entire assay. The text inside each well shows the well type and concentration index. For example, 't4' indicates a test compound at the fourth concentration. The wells with an 'X' have a well quality of 0. -->
 
-# In Figure 1, we see the results of <font face="CMTT10"> tcplPlotPlate </font>. 
-```
+<!-- # In Figure 1, we see the results of <font face="CMTT10"> tcplPlotPlate </font>.  -->
 
 In the generated figure, the row and column indices are printed along the respective edges of the plate, with the raw observed values in each well represented by color. While the plate does not give sample ID information, the letter/number codes in the wells indicate the well type and concentration index, respectively. The plate display also shows the wells with poor quality (as defined by the well quality, $\mathit{wllq}$, field at level 0) with an "X." Plotting plates in subsequent levels of wells with poor quality will appear empty. The title of the plate display lists the assay component/assay endpoint and the assay plate ID ($\mathit{apid}$).
 
@@ -679,6 +679,7 @@ mc3
 For demonstration purposes, we provide the <font face="CMTT10"> mc_vignette </font> R data object within the <font face="CMTT10"> tcpl </font> package since the vignette is not directly connected to such a database.  The <font face="CMTT10"> mc_vignette </font> object contains a subset of data from level 3 through 5 from the most recent version of the invitroDB database.  The following code demonstrates how to load the example data object and accessing/storing the level 3 data in the <font face="CMTT10"> mc3 </font> object.
 
 ```{r message=FALSE}
+# Currently have to load the package to knit/render the HTML.
 devtools::load_all()
 ```
 
@@ -721,7 +722,6 @@ A <- mc3 %>%
   geom_point(data = level3_summary,
              aes(x = logc,y = mean_resp,
                  col = 'mean responses'),
-             # col = "paleturquoise3",
              alpha = 0.75,size = 2)+
   scale_color_manual(values = 'paleturquoise3',
                      aesthetics = 'col')+
@@ -739,7 +739,6 @@ B <- mc3 %>%
   geom_point(data = level3_summary,
              aes(x = logc,y = med_resp,
                  col = 'median response'),
-             # col = "hotpink",
              alpha = 0.75,size = 2)+
   scale_color_manual(values = 'hotpink',
                      aesthetics = 'col')+
@@ -758,7 +757,6 @@ C <- mc3 %>%
   geom_point(data = dplyr::filter(mc4,spid == "01504209"),
              aes(x = max_mean_conc,y = max_mean,
                  col = 'maximum mean response'),
-             # col = "paleturquoise3",
              alpha = 0.75,size = 2)+
   scale_color_manual(values = 'paleturquoise3',
                      aesthetics = 'col')+
@@ -777,7 +775,6 @@ D <- mc3 %>%
   geom_point(data = dplyr::filter(mc4,spid == "01504209"),
              aes(x = max_med_conc,y = max_med,
                  col = "maximum median response"),
-             # col = "hotpink",
              alpha = 0.75,size = 2)+
   scale_color_manual(values = 'hotpink',
                      aesthetics = 'col')+
@@ -795,12 +792,10 @@ E <- mc3 %>%
   geom_point(data = level3_min,
              aes(x = logc,y = resp,
                  col = "minimum response"),
-             # col = "blue",
              alpha = 0.75,size = 2)+
   geom_point(data = level3_max,
              aes(x = logc,y = resp,
                  col = "maximum response"),
-             # col = "red",
              alpha = 0.75,size = 2)+
   scale_color_manual(values = c('red','blue'),
                      aesthetics = 'col')+
@@ -819,12 +814,10 @@ G <- mc3 %>%
   geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
              aes(xintercept = logc_min,
                  col = 'minimum concentration'),
-             # col = "blue",
              lty = "dashed")+
   geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
              aes(xintercept = logc_max,
                  col = 'maximum concentration'),
-             # col = "red",
              lty = "dashed")+
   scale_color_manual(values = c('red','blue'),
                      aesthetics = 'col')+
@@ -844,6 +837,7 @@ gridExtra::grid.arrange(
 **Figure 1:** The plots in this figure illustrate the summary estimates calculated as part of the level 4 processing, which occurs prior to dose-response modeling.  Each of the plots depict the observed concentration-response data with white circles, where the x-axis is base 10 log-transformed concentration values.  The mean response values for each concentration group are depicted as turquoise circles in the upper left plot.  Similarly, the upper right plot depicts the median response values for each concentration group with hot-pink circles. The middle two plots again depict mean and median responses, but only shows the maximum mean ($\mathit{max\_mean}$) and median ($\mathit{max\_med}$) response estimates (left and right plots, respectively).  The bottom left plot depicts the minimum observed response value ($\mathit{min\_resp}$) with a blue circle and the maximum observed response value ($\mathit{max\_resp}$) is with a red circle.  Finally, the minimum ($\mathit{min\_logc}$) and maximum $\mathit{max\_logc}$ log-scale concentrations are depicted, respectively, with a blue and red vertical dashed lines. 
 
 ```{r eval=FALSE, echo=FALSE}
+# Randomly selecting ATG AEID's.
 atg.aeid <- tcplLoadAeid(fld = 'asid',val = 3) %>% 
   dplyr::filter(grepl(aenm,pattern = "_up$"))
 atg.aeid
@@ -852,6 +846,7 @@ sampid <- sample(atg.aeid[,aeid],size = 3,replace = FALSE)
 ```
 
 ```{r eval=FALSE, echo=FALSE}
+# Load mc3 data
 mc3 <- tcpl::tcplPrepOtpt(
   tcpl::tcplLoadData(
     lvl = 3L,
@@ -935,11 +930,12 @@ htmlTable(output,
 Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation. If the model optimization converges then 1, 0 if the optimization fails, and NA if 'nofit' was set to TRUE.  Similarly, if the hessian was successfully inverted then 1 is returned for cov, otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE or the model fit failed the AIC (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
 
 ```{r warning = FALSE, echo = FALSE}
+# First column - tcplfit2 additional fit parameters.
 FitParameters <- c(
   "er", "success", "cov", "aic", "rme", "modl",
   "parameters", "parameters sds", "pars", "sds"
 )
-
+# Second column - description of additional fit parameters.
 Description <- c(
   "Error term","Success of Fit/Model Convergenece","Success of Covariance",
   "Aikaike Information Criteria", "Root Mean Squared Error",
@@ -947,10 +943,10 @@ Description <- c(
   "Model Parameter Values", "Standard deviation of Model Parameter Values",
   "Vector of Parameter Names","Vectors of Parameter Standard Deviation Names"
 )
-
+# Consolidate all columns into a table.
 output <- 
   data.frame(FitParameters, Description)
-
+# Export/print the table into an html rendered table.
 htmlTable(output,
         align = 'l',
         align.header = 'l',
@@ -1040,7 +1036,7 @@ fits %>%
 
 Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function.
 
-The example we include in this vignette for demonstrating the assignment of level 4 methods instructs the processing to (1) estimate the bmad (mthd_id = 1) and (2) estimate one standard deviation [required] (mthd_id = 3), mentioned in the pre-modeling process section, for the specified set of assay endpoints.  Here, method '1' specifies that the BMAD is estimated using the two lowest concentration groups of **treatment wells**.
+The example we include in this vignette for demonstrating the assignment of level 4 methods instructs the processing to (1) estimate the $\mathit{bmad}$ (mthd_id = 1) and (2) estimate one standard deviation [required] (mthd_id = 3), mentioned in the pre-modeling process section, for the specified set of assay endpoints.  Here, method '1' specifies that the BMAD is estimated using the two lowest concentration groups of **treatment wells**.
 
 ```{r eval=FALSE}
 ## Methods Assignment ##
@@ -1104,8 +1100,6 @@ mc4 <- mc_vignette[["mc4"]]
 ```
 
 The level 4 data includes fields for each of the ten model fits as well as the ID fields. A complete list of level 4 fields is available in the Introduction vignette. The level 4 data fields with model fit information are prefaced by the model abbreviations (e.g. $\mathit{cnst}$, $\mathit{hill}$, $\mathit{gnls}$, $\mathit{poly1}$, etc.).  The fields ending in $\mathit{success}$ indicates the convergence status of the model, where a value of 1 means the model converged and a value of 0 otherwise. NA values indicate the fitting algorithm did not attempt to fit the model.
-
-<!-- $\mathit{cnst}$ will be N/A when the concentration series had less than 4 concentrations; $\mathit{hill}$ and $\mathit{gnls}$ will be N/A when none of the medians were greater than or equal to $3\mathit{bmad}$. Similarly, the $\mathit{hcov}$ and $\mathit{gcov}$ fields indicate the success in inverting the Hessian matrix. Where the Hessian matrix did not invert, the parameter standard deviation estimates will be N/A. NaN values in the parameter standard deviation fields indicate the covariance matrix was not positive definite. In Figure 2, the $\mathit{hill}$ field is used to find potentially active compounds to visualize with the <font face="CMTT10"> tcplPlotM4ID</font>  function. -->
 
 ```{r eval = FALSE,echo=FALSE}
 ## Load the level 4 data
@@ -1180,15 +1174,9 @@ For the AIC, let $log(\mathcal{L}(\hat{\theta}, y))$ be the log-likelihood of th
 
 $$\mathrm{AIC} = -2\log(\mathcal{L}(\hat{\theta}, y)) + 2K\mathrm{.} $$
 
-<!-- The probability, $\omega_{i}$, is defined as the weight of evidence that model $i$ is the best model, given that one of the models must be the best model. Let $\Delta_{i}$ be the difference $\mathrm{AIC}_{i} - \mathrm{AIC}_{min}$ for the $i^{th}$ model. If $R$ is the set of models, then $\omega_{i}$ is given by -->
-
-<!-- $$\omega_{i} = \frac{\exp\left(-\frac{1}{2}\Delta_{i}\right)}{\sum_{i=1}^{R} \exp\left(-\frac{1}{2}\Delta_{r}\right)}\mathrm{.} $$ -->
-
-
 The RMSE is given by
 
 $$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,}$$
-
 
 where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estimated and observed values at the $i^{th}$ observation, respectively. 
 
@@ -1234,8 +1222,6 @@ mc4_aic %>%
 The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is based on at least one median response being greater than the efficacy cutoff.  Second, the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflects whether the AIC of the winning model is less than that of the constant model.
 
 The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
-
-<!-- Here, we are going to assign the Attagene assay endpoints all with the same methods.  However, one can assign methods for a single assay endpoint or a subset of all endpoints within an assay. -->
 
 The example we include in this vignette for demonstrating the assignment of level 5 methods specifies that three different efficacy cutoff estimates be considered.  These efficacy cutoff estimates include $3*\mathit{bmad}$, $log_2(1.2)$, and $5*\mathit{bmad}$, which correspond to $\mathit{mthd\_id}$ assignments 1, 3, and 5 respectively.
 
@@ -1454,42 +1440,6 @@ fullPlot
 ```
 
 **Figure 4:** This figure illustrates the results from the Level 5 analyses in the <font face="CMTT10"> tcpl </font> pipeline package including the best model fit and subsequent point-of-departure (POD) estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity responses from which potency estimates of interest are defined, and the vertical lines show the corresponding POD estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
-
-<!-- ```{r eval = TRUE, fig.width = 15, fig.height= 10} -->
-<!-- #tcplPlotM4ID(m4id = 4, lvl = 5) -->
-<!-- ``` -->
-
-<!-- Figure 5: An example level 5 plot for a single concentration series. The solid line and model highlighting indicate the model winner. The horizontal line shows the cutoff value. In addition to the information from the level 4 plots, the summary panel includes the cutoff ($\mathit{coff}$), hit call ($\mathit{hitc}$), fit category ($\mathit{fitc}$) and activity probability ($\mathit{actp}$) values. -->
-
-<!-- Figure 5 shows an example of a concentration series in fit category 41, indicating the series is active and the Hill model won with a top value greater than $1.2\mathit{coff}$, and an AC$_{50}$ value within the tested concentration range. The <font face="CMTT10"> tcplPlotFitc</font> function shows the distribution of concentration series across the fit category tree (Figure 6).  -->
-
-
-
-<!-- ```{r eval = TRUE} -->
-<!-- # m5dat <- tcplLoadData(lvl = 5, type = "mc") -->
-<!-- # tcplPlotFitc(fitc = m5dat$fitc) -->
-<!-- ``` -->
-
-<!-- Figure 6:The distribution of concentration series by fit category for the example data. Both the size and color of the circles indicate the number of concentration series. The legend gives the range for number of concentration series by color. -->
-
-
-
-<!-- The distribution in Figure 6 shows 312-721 concentration series fell into fit category 21. Following the logic discussed previously, fit category 21 indicates an inactive series where the Hill model was selected, the top asymptote for the Hill model was greater than or equal to $0.8\mathit{coff}$, and the gain-loss top asymptote was greater than or equal to the cutoff. The series in fit category 21 can be found easily in the level 5 data. -->
-
-<!-- ```{r eval = TRUE} -->
-<!-- # head(m5dat[fitc == 21,  -->
-<!-- #            list(m4id, hill_tp, gnls_tp,  -->
-<!-- #                 max_med, coff, hitc)]) -->
-<!-- ``` -->
-
-
-<!-- The plot in Figure 7 shows a concentration series in fit category 21. In the example given by Figure 7, the $\mathit{hill\_tp}$ and $\mathit{gnls\_tp}$ parameters are equal and greater than $\mathit{coff}$; however, the maximum median value ($\mathit{max\_med}$) is not greater than the cutoff making the series inactive.  -->
-
-<!-- ```{r eval = TRUE, fig.width = 15, fig.height= 10} -->
-<!-- # tcplPlotM4ID(m4id = 3, lvl = 5) -->
-<!-- ``` -->
-
-<!-- Figure 7: Level 5 plot for m4id 3 showing an example series in fit category 21. -->
 
 <!-- ###   Level 6 -->
 
