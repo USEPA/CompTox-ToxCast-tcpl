@@ -150,7 +150,7 @@ data(mcdat, package = 'tcpl')
 setDT(mcdat)
 ```
 
-After being pre-processed into the standard format, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration. 
+After being pre-processed into the standard format, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration, as described in the <font face="CMTT10"> tcpl </font> introductory vignette.
 
 ```{r eval = FALSE, message = FALSE}
 # Write/load the 'mcdat' into the database.
@@ -203,9 +203,7 @@ Notice from Table 1 that level 1 single-concentration processing (SC1) requires 
 
 ## Methods
 
-To promote reproducibility, all method assignments must occur through the database. Methods cannot be passed directly to either the <font face="CMTT10"> tcplRun </font> function or the low-level processing functions called by <font face="CMTT10"> tcplRun </font>. 
-
-In general, methods data are stored in the "_methods" and "_id" tables that correspond to the data-storing tables. For example, the "sc1" table is accompanied by the "sc1_methods" table which stores the available methods for SC1, and the "sc1_aeid" table which stores the method assignments and execution order.
+To promote reproducibility, all method assignments must occur through the database and should come from the available list of methods for each processing level. In general, methods data are stored in the "_methods" and "_id" tables that correspond to the data-storing tables. For example, the "sc1" table is accompanied by the "sc1_methods" table which stores the available methods for SC1, and the "sc1_aeid" table which stores the method assignments and execution order.
 
 The  <font face="CMTT10"> tcpl </font> package provides three functions to easily modify and load the method assignments for the given assay components or endpoints:  <br />
 
@@ -251,7 +249,7 @@ Later sections in this vignette provide examples for level specific methods assi
 
 Data normalization occurs in both single- and multiple-concentration processing paradigms - levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.**
 
-The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered. Thus, all fold-change data must be log-transformed.
+The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered. Therefore, in general fold-change data is log-transformed.
 
 Normalizing to a control requires three normalization methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 1. one to define the baseline value, <br />
