@@ -150,7 +150,7 @@ data(mcdat, package = 'tcpl')
 setDT(mcdat)
 ```
 
-After being pre-processed into the standard format, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration, as described in the <font face="CMTT10"> tcpl </font> introductory vignette.
+After being pre-processed into the standard format, as described in the <font face="CMTT10"> tcpl </font> introductory vignette, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration.
 
 ```{r eval = FALSE, message = FALSE}
 # Write/load the 'mcdat' into the database.
