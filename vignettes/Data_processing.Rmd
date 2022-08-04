@@ -34,12 +34,23 @@ $(document).ready(function() {
 }
 ```
 
-```{r eval = TRUE, echo = FALSE, message = FALSE}
-library(htmlTable)
+```{r eval = TRUE, echo = FALSE, message = FALSE,warning=FALSE}
+# Primary Packages #
 library(tcpl)
+library(tcplfit2)
+# Data Format Packages #
 library(data.table)
+library(dplyr)
+library(magrittr)
+library(reshape2)
+# Plotting Packages #
 library(ggplot2)
 library(gridExtra)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+# Table Packages #
+library(htmlTable)
 library(kableExtra)
 ```
 ```{r eval = TRUE, echo = FALSE, message = FALSE, results = "hide"}
