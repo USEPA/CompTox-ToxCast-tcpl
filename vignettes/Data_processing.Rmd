@@ -91,7 +91,7 @@ setDT(chdat)
 head(chdat)
 ```
 
-```{r eval = TRUE, message = FALSE}
+```{r eval = TRUE, message = FALSE, warning=FALSE}
 ## Register the Chemicals ##
 # Obtain chemicals already registered in the database.
 cmap <- tcplLoadChem()
