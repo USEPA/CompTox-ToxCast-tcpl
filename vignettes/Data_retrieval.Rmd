@@ -1,5 +1,5 @@
 ---
-title: tcpl 2.0 <br />Data Retrieval<br />
+title: tcpl v3.0 <br />Data Retrieval<br />
 author: "National Center for Computational Toxicology, US EPA"
 output:
   prettydoc::html_pretty:
@@ -28,29 +28,68 @@ $(document).ready(function() {
 });
 </script>
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+## Primary R Packages ##
+library(tcpl)
+library(tcplfit2)
+## Data Formatting ##
+library(dplyr)
+library(magrittr)
+## Plotting ##
+library(ggplot2)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+```
+
 # Data Retrieval
-This vignette describes how the user can retrieve data from the ToxCast databases using tcpl. Listed below are case examples that extract summary information about the chemical, *Bisphenol A*, and  the assay, *NVS_NR_hTRa*. The multiple concentration table for level 5 can be downloaded from the publicly available ToxCast data https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data. 
 
-## A. Using Tcpl
-We illustrate here the necessary steps for extracting information about *Bisphenol A* using tcpl.
+This vignette describes how the user can retrieve data from the ToxCast databases using <font face="CMTT10">tcpl</font>. Listed below are case examples that extract summary information about the chemical, *Bisphenol A*, and the assay, *NVS_NR_hTRa*. The multiple concentration table for level 5 can be downloaded from the publicly available ToxCast data https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data. 
 
-First, we change the driver in tcpl settings to MySQL, and the database to invitrodb :
+## Load Chemical Information from the Database
+
+Here, we illustrate the necessary steps for extracting information about *Bisphenol A* using <font face="CMTT10">tcpl</font>.
+
+First, we need to connect to the database (DB) and specify the driver with <font face="CMTT10">tcpl</font>.  In the following example the driver settings is MySQL and we specify that we want to connect to the database 'invitrodb':
 
 ```{r eval = FALSE}
-tcplConf(
-          user = 'XXXXXXX', 
-          pass = 'XXXXXXX', 
-          host = 'XXXXXXX', 
-          db = 'invitrodb', 
-          drvr = 'MySQL')
+## Connect to the 'invitrodb' database in MySQL ##
+tcplConf(user = 'XXXXXXX', # provide your username for the DB
+         pass = 'XXXXXXX', # provide your password for the DB
+         host = 'XXXXXXX', # provide the host where the DB is stored
+         db = 'invitrodb', # provide the name of the DB
+         drvr = 'MySQL')   # provide the DB platform (i.e. driver)
+## Print the Connection Information ##
+tcplConfList()
 ```
 
-Next, we define the chemical of interest and load the related spids:
+Next, we define the chemical of interest and load the related sample id's ($\mathit{spids}$):
 
 ```{r eval = FALSE}
+## Obtain the `spids` for a Given Chemical ##
+# Provide the chemical name and assign to 'chnm'.
 chnm <- 'Bisphenol A'
-chem <- tcplLoadChem('chnm', chnm)
+# Load the chemical data from the database.
+chem <- tcplLoadChem(field = 'chnm',val = chnm)
 ```
+
+## Load Sample Data for a Chemical from the Database
+
+In the following section, we provide examples of how to load data from different levels and how to summarize results for the chemical of interest, namely *Bisphenol A*. The following code chunk provides the basic data retrieval from the database, then will be followed by more complex examples.
+
+```{r eval=FALSE}
+## Basic Data Loading ##
+# Provide a level of data to extract from the database.
+datlvl <- 5
+# Load data from the database.
+chemdat <- tcplLoadData(lvl = datlvl, # data level 
+                        fld = 'spid', # field corresponding to ID's in `val`
+                        val = chem[,spid], # the ID's to pull data for
+                        type = 'mc') # the data type - multiple concentration
+```
+
+In the example above, we are loading the level 5 multiple concentration data for the sample ID's ($\mathit{spid}$) that were obtained in the chemical information section above.  The user should note that the basic data loading can be adjusted to obtain different applicable data levels one may want to evaluate.  For single-concentration (sc) data, one can load data from levels 0 through 2.  For multiple-concentration (mc) data, one can load data from levels 0 through 5 (future versions of <font face="CMTT10">tcpl</font> may also include level 6 data with curve-fit flags - see the Data processing vignette for more information). 
+
 
 Then, we load the data from different levels to summarize positive responses for this chemical.
 
@@ -89,7 +128,7 @@ tcplPlotM4ID(m4ids, lvl = 6)
 graphics.off()
 ```
 
-In the following example, we will obtain summary information about the example assay NVS_NR_hTRa_Antagonist using tcpl:
+In the following example, we will obtain summary information about the example assay NVS_NR_hTRa_Antagonist using <font face="CMTT10">tcpl</font>:
 
 
 ```{r eval = FALSE}
@@ -132,11 +171,9 @@ mc3 <- tcplPrepOtpt(tcplLoadData
 mc3 <- mc3[aeid %in% aeids]
 ```
 
-Then, we can visualize the normalized mc3 data without tcpl curve-fitting:
+Then, we can visualize the normalized mc3 data without <font face="CMTT10">tcpl</font> curve-fitting:
 
 ```{r eval = FALSE}
-library(ggplot2)
-
 graphics.off()
 pdf(file = file.path(getwd(),
                    paste("mc3",
