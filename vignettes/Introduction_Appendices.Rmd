@@ -767,7 +767,7 @@ The stock concentration fields in the "sample" table allow the user to track the
 
 # Level 0 Pre-processing
 
-Level 0 pre-processing can be done on virtually any high-throughput/high-content screening application. In the ToxCast program, level 0 processing is done in R by vendor/dataset-specific scripts. The individual R scripts act as the "laboratory notebook" for the data, with all pre-processing decisions clearly commented and explained. 
+Level 0 pre-processing can be done on virtually any high-throughput/high-content screening application. In the ToxCast program, level 0 processing is done in R by vendor/dataset-specific scripts. The individual R scripts act as the "laboratory notebook" for the data, with all pre-processing decisions clearly commented and explained. The standard Level 0 format to enter the pipeline is identical between testing paradigms, single concentration (sc) and multi-concentration (mc).
 
 Level 0 pre-processing has to reformat the raw data into the standard format for the pipeline, and also can make manual changes to the data. All manual changes to the data should be very well documented with justification. Common examples of manual changes include fixing a sample ID typo, or changing well quality value(s) to 0 after finding obvious problems like a plate row/column missing an assay reagent. 
 
