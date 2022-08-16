@@ -41,6 +41,29 @@ nrow(atg.aeid)
 set.seed(8011)
 atg.aeid.ss <- sample(1:nrow(atg.aeid),size = 1,replace = FALSE) %>% 
   atg.aeid[.,]
+# obtain the 'acid' for the endpoints in the example dataset
+atg.acid.ss <- tcplLoadAcid(fld = 'aeid',val = atg.aeid.ss[,aeid])
+# obtain level 0 mc data
+tictoc::tic()
+atg.mc0 <- tcplPrepOtpt(
+  tcplLoadData(lvl = 0,type = "mc",
+               fld = 'acid',val = atg.acid.ss[,acid])
+)
+tictoc::toc()
+# obtain level 1 mc data
+tictoc::tic()
+atg.mc1 <- tcplPrepOtpt(
+  tcplLoadData(lvl = 1,type = "mc",
+               fld = 'acid',val = atg.acid.ss[,acid])
+)
+tictoc::toc()
+# obtain level 2 mc data
+tictoc::tic()
+atg.mc2 <- tcplPrepOtpt(
+  tcplLoadData(lvl = 2,type = "mc",
+               fld = 'acid',val = atg.acid.ss[,acid])
+)
+tictoc::toc()
 # obtain level 3 mc data
 tictoc::tic()
 atg.mc3 <- tcplPrepOtpt(
@@ -74,7 +97,25 @@ atg.mc5.ss <- atg.mc5 %>%
   # keep the top 5 observations in the data.table
   .[1:5,]
 tictoc::toc()
-# subset the level 3 and 4 data based on spids in the level 5 subset
+# subset levels 0 through 4 data based on spids in the level 5 subset
+tictoc::tic()
+atg.mc0.ss <- atg.mc0 %>% 
+  # keep only those observations that are related to the level 5 spids
+  dplyr::filter(spid %in% atg.mc5.ss[,spid])
+tictoc::toc()
+
+tictoc::tic()
+atg.mc1.ss <- atg.mc1 %>% 
+  # keep only those observations that are related to the level 5 spids
+  dplyr::filter(spid %in% atg.mc5.ss[,spid])
+tictoc::toc()
+
+tictoc::tic()
+atg.mc2.ss <- atg.mc2 %>% 
+  # keep only those observations that are related to the level 5 spids
+  dplyr::filter(spid %in% atg.mc5.ss[,spid])
+tictoc::toc()
+
 tictoc::tic()
 atg.mc3.ss <- atg.mc3 %>% 
   # keep only those observations that are related to the level 5 spids
@@ -87,7 +128,10 @@ atg.mc4.ss <- atg.mc4 %>%
   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 tictoc::toc()
 # collate the data into a single object 'mc_vignette'
-mc_vignette <- list(mc3 = atg.mc3.ss,mc4 = atg.mc4.ss,mc5 = atg.mc5.ss)
+mc_vignette <- list(
+  mc0 = atg.mc0.ss,mc1 = atg.mc1.ss,mc2 = atg.mc2.ss,
+  mc3 = atg.mc3.ss,mc4 = atg.mc4.ss,mc5 = atg.mc5.ss
+)
 #---------------------------#
 ## save the data
 usethis::use_data(mc_vignette, overwrite = TRUE)
