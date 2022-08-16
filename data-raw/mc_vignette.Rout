@@ -96,6 +96,32 @@ The following objects are masked from ‘package:base’:
 > set.seed(8011)
 > atg.aeid.ss <- sample(1:nrow(atg.aeid),size = 1,replace = FALSE) %>% 
 +   atg.aeid[.,]
+> # obtain the 'acid' for the endpoints in the example dataset
+> atg.acid.ss <- tcplLoadAcid(fld = 'aeid',val = atg.aeid.ss[,aeid])
+> # obtain level 0 mc data
+> tictoc::tic()
+> atg.mc0 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 0,type = "mc",
++                fld = 'acid',val = atg.acid.ss[,acid])
++ )
+> tictoc::toc()
+0.687 sec elapsed
+> # obtain level 1 mc data
+> tictoc::tic()
+> atg.mc1 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 1,type = "mc",
++                fld = 'acid',val = atg.acid.ss[,acid])
++ )
+> tictoc::toc()
+1.009 sec elapsed
+> # obtain level 2 mc data
+> tictoc::tic()
+> atg.mc2 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 2,type = "mc",
++                fld = 'acid',val = atg.acid.ss[,acid])
++ )
+> tictoc::toc()
+2.238 sec elapsed
 > # obtain level 3 mc data
 > tictoc::tic()
 > atg.mc3 <- tcplPrepOtpt(
@@ -103,7 +129,7 @@ The following objects are masked from ‘package:base’:
 +                fld = 'aeid',val = atg.aeid.ss[,aeid],add.fld = TRUE)
 + )
 > tictoc::toc()
-1.917 sec elapsed
+2.164 sec elapsed
 > # obtain level 4 mc data
 > tictoc::tic()
 > atg.mc4 <- tcplPrepOtpt(
@@ -111,7 +137,7 @@ The following objects are masked from ‘package:base’:
 +                fld = 'aeid',val = atg.aeid.ss[,aeid],add.fld = TRUE)
 + )
 > tictoc::toc()
-3.575 sec elapsed
+3.763 sec elapsed
 > # obtain level 5 mc data
 > tictoc::tic()
 > atg.mc5 <- tcplPrepOtpt(
@@ -119,7 +145,7 @@ The following objects are masked from ‘package:base’:
 +                fld = 'aeid',val = atg.aeid.ss[,aeid],add.fld = TRUE)
 + )
 > tictoc::toc()
-0.709 sec elapsed
+0.889 sec elapsed
 > # narrow down to several active compounds/spids
 > tictoc::tic()
 > atg.mc5.ss <- atg.mc5 %>%
@@ -132,8 +158,29 @@ The following objects are masked from ‘package:base’:
 +   # keep the top 5 observations in the data.table
 +   .[1:5,]
 > tictoc::toc()
-0.015 sec elapsed
-> # subset the level 3 and 4 data based on spids in the level 5 subset
+0.009 sec elapsed
+> # subset levels 0 through 4 data based on spids in the level 5 subset
+> tictoc::tic()
+> atg.mc0.ss <- atg.mc0 %>% 
++   # keep only those observations that are related to the level 5 spids
++   dplyr::filter(spid %in% atg.mc5.ss[,spid])
+> tictoc::toc()
+0.002 sec elapsed
+> 
+> tictoc::tic()
+> atg.mc1.ss <- atg.mc1 %>% 
++   # keep only those observations that are related to the level 5 spids
++   dplyr::filter(spid %in% atg.mc5.ss[,spid])
+> tictoc::toc()
+0.002 sec elapsed
+> 
+> tictoc::tic()
+> atg.mc2.ss <- atg.mc2 %>% 
++   # keep only those observations that are related to the level 5 spids
++   dplyr::filter(spid %in% atg.mc5.ss[,spid])
+> tictoc::toc()
+0.002 sec elapsed
+> 
 > tictoc::tic()
 > atg.mc3.ss <- atg.mc3 %>% 
 +   # keep only those observations that are related to the level 5 spids
@@ -146,9 +193,12 @@ The following objects are masked from ‘package:base’:
 +   # keep only those observations that are related to the level 5 spids
 +   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 > tictoc::toc()
-0.002 sec elapsed
+0.003 sec elapsed
 > # collate the data into a single object 'mc_vignette'
-> mc_vignette <- list(mc3 = atg.mc3.ss,mc4 = atg.mc4.ss,mc5 = atg.mc5.ss)
+> mc_vignette <- list(
++   mc0 = atg.mc0.ss,mc1 = atg.mc1.ss,mc2 = atg.mc2.ss,
++   mc3 = atg.mc3.ss,mc4 = atg.mc4.ss,mc5 = atg.mc5.ss
++ )
 > #---------------------------#
 > ## save the data
 > usethis::use_data(mc_vignette, overwrite = TRUE)
@@ -158,7 +208,7 @@ The following objects are masked from ‘package:base’:
 > #---------------------------#
 > ## session information
 > Sys.time()
-[1] "2022-06-13 14:00:30 EDT"
+[1] "2022-08-16 08:35:36 EDT"
 > sessionInfo()
 R version 3.6.0 (2019-04-26)
 Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -192,7 +242,7 @@ loaded via a namespace (and not attached):
 [16] digest_0.6.27       RColorBrewer_1.1-2  colorspace_2.0-0   
 [19] htmltools_0.5.1.1   pkgconfig_2.0.3     listenv_0.8.0      
 [22] purrr_0.3.4         scales_1.1.1        processx_3.5.2     
-[25] tibble_3.1.0        generics_0.1.0      ggplot2_3.3.3      
+[25] tibble_3.1.0        generics_0.1.0      ggplot2_3.3.6      
 [28] sqldf_0.4-11        ellipsis_0.3.1      cachem_1.0.5       
 [31] withr_2.4.1         lazyeval_0.2.2      cli_2.5.0          
 [34] proto_1.0.0         magrittr_2.0.1      crayon_1.4.1       
@@ -213,4 +263,4 @@ loaded via a namespace (and not attached):
 > 
 > proc.time()
    user  system elapsed 
-  6.567   0.863   9.441 
+  9.923   1.069  14.276 
