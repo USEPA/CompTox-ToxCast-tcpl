@@ -35,6 +35,7 @@
 #' @import data.table
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom ggplot2 ggsave
+#' @importFrom dplyr %>% all_of pull
 #' @export
 #'
 #' @examples
