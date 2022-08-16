@@ -102,9 +102,9 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(!verbose){
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
+          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_by_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
         else{
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
+          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_by_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
         }
       }
     }
