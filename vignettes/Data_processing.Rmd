@@ -32,6 +32,14 @@ $(document).ready(function() {
   max-height: 100px;
   overflow-y: auto;
 }
+
+.noticebox {
+  padding: 1em;
+  background: lightgray;
+  color: blue;
+  border: 2px solid black;
+  border-radius: 10px;
+}
 ```
 
 # R Packages
@@ -158,14 +166,14 @@ data(mcdat, package = 'tcpl')
 setDT(mcdat)
 ```
 
-After being pre-processed into the standard format, as described in the <font face="CMTT10"> tcpl </font> introductory vignette, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration.
+After being pre-processed into the standard format as described in the <font face="CMTT10"> tcpl </font> introductory vignette, the data are now ready to be loaded into the database with the <font face="CMTT10"> tcplWriteLvl0 </font> function. The <font face="CMTT10"> type </font> argument is used throughout the package to distinguish the type of data/processing required: "sc" indicates single-concentration; "mc" indicates multiple-concentration.
 
 ```{r eval = FALSE, message = FALSE}
 # Write/load the 'mcdat' into the database.
 tcplWriteLvl0(dat=mcdat, type ="mc")
 ```
 
-The  <font face="CMTT10"> tcplLoadData </font> function can be used to load the data from the MySQL database into the current R session.
+The  <font face="CMTT10"> tcplLoadData </font> function can be used to load the data from the MySQL database into the current R session.  Furthermore, the <font face="CMTT10"> tcplPrepOtpt </font> function can be used in conjunction with <font face="CMTT10"> tcplLoadData </font> to prepare the data into a readable format as well as provide additional chemical and assay annotation information by querying the database.  We refer the reader to the <font face="CMTT10"> tcpl </font> data retrieval vignette for further details.
 
 ```{r eval = FALSE, message = FALSE}
 # Load the level 0 data from the database to R.
@@ -257,7 +265,7 @@ Later sections in this vignette provide examples for level specific methods assi
 
 Data normalization occurs in both single- and multiple-concentration processing paradigms - levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.**
 
-The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered. Therefore, in general fold-change data is log-transformed.
+The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered. Therefore, in general fold-change data is log-transformed.  Log-scale transformations for fold-change data is typically base 2 ($log_2$), but in some circumstances other bases may be more appropriate.
 
 Normalizing to a control requires three normalization methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 1. one to define the baseline value, <br />
@@ -607,7 +615,16 @@ For a complete list of normalization methods see <font face="CMTT10"> tcplMthdLi
 mc3_res <- tcplRun(id = 1, slvl = 3, elvl = 3, type = "mc")
 ```
 
-**Notice that level 3 processing takes an assay component ID, not an assay endpoint ID, as the input ID.** As mentioned in previous sections, the user must assign normalization methods by assay endpoint, then do the processing by assay component. The level 3 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
+Notice that level 3 processing takes an assay component ID, not an assay endpoint ID, as the input ID. Though as mentioned in previous sections, the user must assign the normalization methods by assay endpoint.  Then, the processing is done by assay component. The level 3 processing will attempt to process all endpoints in the database for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
+
+::: {.noticebox data-latex=""}
+
+**NOTE:**
+
+If the starting level (slvl) is less than 4, then 'id' is interpreted by <font face="CMTT10"> tcplRun </font> as an assay component id (acid). When slvl is greater than or equal to 4 the 'id' is interpreted as an assay endpoint id (aeid).  The user must provide either an assay source id (asid) or 'id'. If an 'id' fails, no results are loaded into the database and the 'id' is not included in the cue for subsequent processing levels.
+
+:::
+
 
 ###   Level 4
 
@@ -846,7 +863,7 @@ gridExtra::grid.arrange(
 )
 ```
 
-**Figure 1:** The plots in this figure illustrate the summary estimates calculated as part of the level 4 processing, which occurs prior to dose-response modeling.  Each of the plots depict the observed concentration-response data with white circles, where the x-axis is base 10 log-transformed concentration values.  The mean response values for each concentration group are depicted as turquoise circles in the upper left plot.  Similarly, the upper right plot depicts the median response values for each concentration group with hot-pink circles. The middle two plots again depict mean and median responses, but only shows the maximum mean ($\mathit{max\_mean}$) and median ($\mathit{max\_med}$) response estimates (left and right plots, respectively).  The bottom left plot depicts the minimum observed response value ($\mathit{min\_resp}$) with a blue circle and the maximum observed response value ($\mathit{max\_resp}$) with a red circle.  Finally, the minimum ($\mathit{min\_logc}$) and maximum $\mathit{max\_logc}$ log-scale concentrations are depicted, respectively, with blue and red vertical dashed lines. 
+**Figure 1:** The plots in this figure illustrate the summary estimates calculated as part of the level 4 processing, which occurs prior to dose-response modeling.  Each of the plots depict the observed concentration-response data with white circles, where the x-axis is base 10 log-transformed concentration values.  The mean response values for each concentration group are depicted as turquoise circles in the upper left plot.  Similarly, the upper right plot depicts the median response values for each concentration group with hot-pink circles. The middle two plots again depict mean and median responses, but only shows the maximum mean ($\mathit{max\_mean}$) and median ($\mathit{max\_med}$) response estimates (left and right plots, respectively).  The bottom left plot depicts the minimum observed response value ($\mathit{min\_resp}$) with a blue circle and the maximum observed response value ($\mathit{max\_resp}$) with a red circle.  Finally, the minimum ($\mathit{min\_logc}$) and maximum $\mathit{max\_logc}$ log10-scale concentrations are depicted, respectively, with blue and red vertical dashed lines. 
 
 ```{r eval=FALSE, echo=FALSE}
 # Randomly selecting ATG AEID's.
