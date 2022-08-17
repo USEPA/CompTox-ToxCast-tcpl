@@ -34,11 +34,13 @@ $(document).ready(function() {
 }
 ```
 
-```{r eval = TRUE, echo = FALSE, message = FALSE,warning=FALSE}
+# R Packages
+
+```{r eval = TRUE, message = FALSE,warning=FALSE}
 # Primary Packages #
 library(tcpl)
 library(tcplfit2)
-# Data Format Packages #
+# Data Formatting Packages #
 library(data.table)
 library(dplyr)
 library(magrittr)
@@ -53,6 +55,12 @@ library(viridis)
 library(htmlTable)
 library(kableExtra)
 ```
+
+```{r message=FALSE}
+# Currently have to load the package to knit/render the HTML.
+devtools::load_all()
+```
+
 ```{r eval = TRUE, echo = FALSE, message = FALSE, results = "hide"}
 # This chunk copies the tcplLite local directory to the temp directory used in installation
 # to comply with CRAN policies on not writing to the installation directory
@@ -181,7 +189,7 @@ The user must give a start and end level when using the <font face="CMTT10"> tcp
 
 The processing functions print messages to the console indicating the four steps of the processing. These steps include (1) data for the given assay component ID are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The 'outfile' parameter in the <font face="CMTT10"> tcplRun </font> function gives the user the option of printing all the output text to a file.
 
-The <font face="CMTT10"> tcplRun </font> function will attempt to use multiple processors on Unix-based systems (does not include Windows). Depending on the system environment, or if the user is running into memory constraints, the user may wish to use less processing power. If the user is working on a Unix-based system, the default specification of "mc.cores = NULL" uses all cores except for one, which is necessary for 'overhead' processes. The user can specify less processing power by setting the "mc.cores" parameter in the <font face="CMTT10"> tcplRun </font> function to the desired level of processing power. **Note, the specification should meet the following criteria $\mathit{mc.cores} \space < \space \mathit{detectCores()}-1$.**
+The <font face="CMTT10"> tcplRun </font> function can execute processing of multiple assay components/endpoints simultaneously. This is done with the internal utilization of the <font face="CMTT10"> mclapply </font> function from the <face="CMTT10"> parallel </font> package.  Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. Users pipelining on a Windows operating system the default is $mc.cores = 1$, unless otherwise specified.  Users pipelining on a Unix-based operating system the default is $mc.cores = NULL$ indicating the utilization of all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the "mc.cores" parameter in the <font face="CMTT10"> tcplRun </font> function to the desired level of processing power. **Note, the specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
 
 ```{r warning = FALSE, echo = FALSE}
 Type <- c('SC', 'SC', 'MC', 'MC', 'MC', 'MC', 'MC', 'MC')
@@ -524,10 +532,10 @@ m1dat[chnm == "Bisphenol A",
       list(chnm, conc, cndx, repi)]
 ```
 
-The package also contains a function, namely <font face="CMTT10"> tcplPlotPlate </font>, for visualizing the data at the assay plate level. This function can be used to visualize the data at levels 1 to 3. 
+The package also contains a function, namely <font face="CMTT10"> tcplPlotPlate </font>, for visualizing the data at the assay plate level. This function can be used to visualize the data at levels 1 to 3.
 
 ```{r eval = FALSE, warning = FALSE, message = FALSE, fig.width = 30, fig.height= 20}
-tcplPlotPlate(dat = m1dat, apid = "4009721")
+tcplPlotPlate(dat = m1dat, apid = "TP0001915")
 ``` 
 
 <!-- # Figure 1: An assay plate diagram. The color indicates the raw values according to the key on the right. The bold lines on the key show the distribution of values for the plate on the scale of values across the entire assay. The text inside each well shows the well type and concentration index. For example, 't4' indicates a test compound at the fourth concentration. The wells with an 'X' have a well quality of 0. -->
@@ -542,7 +550,7 @@ Level 2 processing removes data where the well quality ($\mathit{wllq}$) equals 
 
 #### Methods Assignment
 
-Every assay component needs at least one transformation method assigned to complete level 2 processing. For the example data used in this vignette, no transformations are necessary at level 2. Thus, to not apply any transformation methods, but allow for level 2 processing to complete, we assign the "none" method to the assay components.
+Every assay component needs at least one transformation method assigned to complete level 2 processing. For the example data used in this vignette, no transformations are necessary at level 2. To allow level 2 processing to complete without performing any transformation, assign the "none" method to the assay component(s).
 
 ```{r eval = FALSE, message = FALSE}
 ## Methods Assignment ##
@@ -565,7 +573,7 @@ For the complete list of level 2 transformation methods currently available, see
 
 ### Level 3
 
-Level 3 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$); log-scale concentration field ($\mathit{logc}$); and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 3 processing is to normalize the corrected values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section. The processing aspect of level 3 is almost completely analogous to level 2, except the user has to be careful about using assay component versus assay endpoint.
+Level 3 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$); log-scale concentration field ($\mathit{logc}$); and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 3 processing is to normalize the corrected values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section. A primary distinction between level 2 and level 3 processing is that level 2 processes assay components and level 3 processes assay endpoints.  The user must assign level 3 processing to assay endpoint identifiers.
 
 #### Methods Assignment
 
@@ -580,9 +588,9 @@ Now that we have the corresponding assay endpoints listed, the normalization met
 
 ```{r eval = FALSE, message = FALSE}
 ## Methods Assignment ##
-# Assign the baseline calculation and normalization methods to ACID's 1 & 2.
+# Assign the baseline calculation and normalization methods to AEID's 1 & 2.
 tcplMthdAssign(lvl = 3, # processing level
-               id = 1:2, # assay component ID to assign methods
+               id = 1:2, # assay endpoint ID to assign methods
                mthd_id = c(17, 9, 7), # method(s) to be assigned
                ordr = 1:3, # order the method(s) should be applied
                type = "mc") # the data/processing type
@@ -607,12 +615,12 @@ Level 4 processing splits the data into concentration-response series by sample 
 
 #### Pre-Modeling Processes
 
-Level 4 processing starts with the removal of well types with only one concentration (e.g. 'wllt = b'; empty/blank wells). Next, a noise-band is establish for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either untreated control wells (e.g. 'wllt = n'; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.** Note, this $\mathit{bmad}$ definition is different from the $\mathit{bmad}$ definition used for single-concentration screening.
+Level 4 processing starts with the removal of well types with only one concentration (e.g. 'wllt = b'; empty/blank wells). Next, a noise-band is established for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either untreated control wells (e.g. 'wllt = n'; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.**
 
 $$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 6 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for further details.
 
-In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must also be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR), which as defined is subject to change as more data is added for an assay endpoint, and thus the benchmark dose estimate may change over time given the addition of new data.**
+In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must also be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR) as defined will change for a single sample in a given assay endpoint as additional screening data are pipelined. Thus, the benchmark dose (BMD) estimate may change over time.**
 
 ```{r warning = FALSE, echo = FALSE}
 # First column with the method assignment index.
@@ -665,7 +673,7 @@ Before the model parameters are estimated, a set of summary values are calculate
 * Number of replicates in concentration groups (nrep).
 * The maximum mean and median responses along with the concentration at which
 they occur (max_mean, max_med, max_mean_conc, & max_med_conc, respectively).
-* The number of medians responses greater than $3\mathit{bmad}$ (nmed_gtbl).
+* The number of median responses greater than $3\mathit{bmad}$ (nmed_gtbl).
 
 When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series.
 
@@ -677,8 +685,7 @@ The following code demonstrates how a user, when connected to a database with tc
 mc3 <- tcplLoadData(lvl = 3,
                     type = 'mc',
                     fld = 'aeid',
-                    val = 80,
-                    add.fld = TRUE)
+                    val = 80)
 # Prepare the data into a readable format.
 mc3 <- tcplPrepOtpt(mc3)
 # Display the data.
@@ -686,11 +693,6 @@ mc3
 ```
 
 For demonstration purposes, we provide the <font face="CMTT10"> mc_vignette </font> R data object within the <font face="CMTT10"> tcpl </font> package since the vignette is not directly connected to such a database.  The <font face="CMTT10"> mc_vignette </font> object contains a subset of data from level 3 through 5 from the most recent version of the invitroDB database.  The following code demonstrates how to load the example data object and accessing/storing the level 3 data in the <font face="CMTT10"> mc3 </font> object.
-
-```{r message=FALSE}
-# Currently have to load the package to knit/render the HTML.
-devtools::load_all()
-```
 
 ```{r message=FALSE}
 # Load the example data from the `tcpl` package.
@@ -702,7 +704,7 @@ mc3 <- mc_vignette[['mc3']]
 
 Plot the concentration-response series for one of the example spid's in the <font face="CMTT10"> mc3 </font> object along with the summary estimates mentioned previously in the bullet list above.
 
-```{r fig.align='center',class.source="scroll-100",message=FALSE,fig.height= 10}
+```{r fig.align='center',class.source="scroll-100",message=FALSE,fig.dim=c(8,10)}
 ## Obtain Data ##
 # Obtain the level 4 example data.
 mc4 <- mc_vignette[["mc4"]]
@@ -736,7 +738,7 @@ A <- mc3 %>%
                      aesthetics = 'col')+
   labs(lty = "",colour = "")+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc3[,aenm])+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+
   ggtitle("Mean Responses")+
   theme_bw()+
   theme(legend.position = 'bottom')
@@ -753,7 +755,7 @@ B <- mc3 %>%
                      aesthetics = 'col')+
   labs(lty = "",colour = "")+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc3[,aenm])+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+
   ggtitle("Median Responses")+
   theme_bw()+
   theme(legend.position = 'bottom')
@@ -771,7 +773,7 @@ C <- mc3 %>%
                      aesthetics = 'col')+
   labs(lty = "",colour = "")+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc3[,aenm])+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+
   ggtitle(label = "Maximum Mean Response")+
   theme_bw()+
   theme(legend.position = 'bottom')
@@ -789,7 +791,7 @@ D <- mc3 %>%
                      aesthetics = 'col')+
   labs(lty = "",colour = "")+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc3[,aenm])+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+
   ggtitle(label = "Maximum Median Response")+
   theme_bw()+
   theme(legend.position = 'bottom')
@@ -810,7 +812,7 @@ E <- mc3 %>%
                      aesthetics = 'col')+
   labs(lty = "",colour = "")+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc3[,aenm])+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+
   ggtitle(label = "Minimum & Maximum\nResponses")+
   theme_bw()+
   theme(legend.position = 'bottom')
@@ -832,18 +834,19 @@ G <- mc3 %>%
                      aesthetics = 'col')+
   labs(lty = "",colour = "")+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc3[,aenm])+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+
   ggtitle(label = "Minimum & Maximum\nConcentrations")+
   theme_bw()+
   theme(legend.position = 'bottom')
 ## Compile Summary Plots in One Figure ##
 gridExtra::grid.arrange(
   A,B,C,D,E,G,
-  nrow = 3,ncol = 2
+  nrow = 3,ncol = 2,
+  top = mc3[which(mc4[,spid] == "01504209"),aenm]
 )
 ```
 
-**Figure 1:** The plots in this figure illustrate the summary estimates calculated as part of the level 4 processing, which occurs prior to dose-response modeling.  Each of the plots depict the observed concentration-response data with white circles, where the x-axis is base 10 log-transformed concentration values.  The mean response values for each concentration group are depicted as turquoise circles in the upper left plot.  Similarly, the upper right plot depicts the median response values for each concentration group with hot-pink circles. The middle two plots again depict mean and median responses, but only shows the maximum mean ($\mathit{max\_mean}$) and median ($\mathit{max\_med}$) response estimates (left and right plots, respectively).  The bottom left plot depicts the minimum observed response value ($\mathit{min\_resp}$) with a blue circle and the maximum observed response value ($\mathit{max\_resp}$) is with a red circle.  Finally, the minimum ($\mathit{min\_logc}$) and maximum $\mathit{max\_logc}$ log-scale concentrations are depicted, respectively, with a blue and red vertical dashed lines. 
+**Figure 1:** The plots in this figure illustrate the summary estimates calculated as part of the level 4 processing, which occurs prior to dose-response modeling.  Each of the plots depict the observed concentration-response data with white circles, where the x-axis is base 10 log-transformed concentration values.  The mean response values for each concentration group are depicted as turquoise circles in the upper left plot.  Similarly, the upper right plot depicts the median response values for each concentration group with hot-pink circles. The middle two plots again depict mean and median responses, but only shows the maximum mean ($\mathit{max\_mean}$) and median ($\mathit{max\_med}$) response estimates (left and right plots, respectively).  The bottom left plot depicts the minimum observed response value ($\mathit{min\_resp}$) with a blue circle and the maximum observed response value ($\mathit{max\_resp}$) with a red circle.  Finally, the minimum ($\mathit{min\_logc}$) and maximum $\mathit{max\_logc}$ log-scale concentrations are depicted, respectively, with blue and red vertical dashed lines. 
 
 ```{r eval=FALSE, echo=FALSE}
 # Randomly selecting ATG AEID's.
@@ -861,15 +864,14 @@ mc3 <- tcpl::tcplPrepOtpt(
     lvl = 3L,
     type = 'mc',
     fld = 'aeid',
-    val = sampid,
-    add.fld = TRUE
+    val = sampid
   )
 )
 ```
 
 #### Concentration-Response Modeling Details
 
-After the summary values are obtained from each concentration-response series, Each series is fit with all ten parametric model available in <font face="CMTT10"> tcplFit2 </font>, see Table 7 for further details.
+After the summary values are obtained for each concentration-response series, all ten parametric models available in <font face="CMTT10"> tcplFit2 </font> are used to fit each series.  See Table 7 for model details.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 available models.
@@ -936,7 +938,7 @@ htmlTable(output,
 
 ```
 
-Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation. If the model optimization converges then 1, 0 if the optimization fails, and NA if 'nofit' was set to TRUE.  Similarly, if the hessian was successfully inverted then 1 is returned for cov, otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE or the model fit failed the AIC (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
+Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplFit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 additional fit parameters.
@@ -1120,7 +1122,7 @@ m4dat[hill == 1 & aeid == 1, head(m4id)]
 
 In Figure 3 we display the smoothed model fit results from level 4 with respect to the observed concentration-response series.
 
-```{r fig.align='center',class.source = "scroll-100"}
+```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100"}
 ## Create a Sequence of Concentration Values within Observed Range ##
 X <- seq(
  10^(mc4[which(mc4[,spid] == "01504209"),logc_min]),
@@ -1168,10 +1170,13 @@ mc3 %>%
   labs(colour = "Models",lty = "Models")+
   scale_colour_manual(values = fit_cols)+
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
-  ggtitle(paste("Level 4 Model Fits",
-    mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
-    sep = "\n"))+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+# )+
+  ggtitle(
+    label = paste("Level 4 Model Fits",
+                  mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
+                  sep = "\n"),
+    subtitle = paste("Assay Endpoint: ",
+                     mc4[which(mc4[,spid] == "01504209"),aenm]))+
   theme_bw()
 ```
 
@@ -1230,9 +1235,9 @@ mc4_aic %>%
 
 The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model which is the product of three probabilities.  The first probability is based on at least one median response being greater than the efficacy cutoff.  Second, the top (or maximal change in the fitted response) is larger than the cutoff. The last probability reflects whether the AIC of the winning model is less than that of the constant model.
 
-The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
+The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
 
-The example we include in this vignette for demonstrating the assignment of level 5 methods specifies that three different efficacy cutoff estimates be considered.  These efficacy cutoff estimates include $3*\mathit{bmad}$, $log_2(1.2)$, and $5*\mathit{bmad}$, which correspond to $\mathit{mthd\_id}$ assignments 1, 3, and 5 respectively.
+The example we include in this vignette for demonstrating the assignment of level 5 methods specifies three different efficacy cutoff estimates for consideration.  These efficacy cutoff estimates include $3*\mathit{bmad}$, $log_2(1.2)$, and $5*\mathit{bmad}$, which correspond to $\mathit{mthd\_id}$ assignments 1, 3, and 5 respectively.  As mentioned previously, the largest of these three values will be selected as the cutoff for processing the endpoint.  
 
 ```{r eval=FALSE}
 ## Methods Assignment ##
@@ -1321,7 +1326,7 @@ tcplPlot(lvl = 5,val = my_id,output = 'console')
 
 In Figure 4, we provide an alternative visualization of the model fitting results from Level 4 and the best model as well as the potency estimates from Level 5 data.
 
-```{r fig.align='center',class.source = "scroll-100"}
+```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100"}
 ## Obtain Data ##
 # First, we need to obtain the subset of data related to spid = "01504209",
 # which is our example spid.
@@ -1355,10 +1360,13 @@ basePlot <- mc3_ss %>%
   labs(lty = "Other Models",color = "Best Fit")+
   # Titles and Labels
   xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(mc4[which(mc4[,spid] == "01504209"),aenm])+
-  ggtitle(paste("Level 5 Best Model Fit",
-    mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
-    sep = "\n"))+
+  ylab(expression(paste(log[2],"(Fold Induction)")))+# )+
+  ggtitle(
+    label = paste("Level 5 Best Model Fit",
+                  mc4[which(mc4[,spid] == "01504209"),dsstox_substance_id],
+                  sep = "\n"),
+    subtitle = paste("Assay Endpoint: ",
+                     mc4[which(mc4[,spid] == "01504209"),aenm]))+
   # Background Plot Theme
   theme_bw()
 
@@ -1450,123 +1458,7 @@ fullPlot
 
 **Figure 4:** This figure illustrates the results from the Level 5 analyses in the <font face="CMTT10"> tcpl </font> pipeline package including the best model fit and subsequent point-of-departure (POD) estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity responses from which potency estimates of interest are defined, and the vertical lines show the corresponding POD estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
 
-<!-- ###   Level 6 -->
-
-<!-- Level 6 processing uses various methods to identify concentration series with etiologies that may suggest false positive/false negative results or explain apparent anomalies in the data. Each flag is defined by a level 6 method that has to be assigned to each assay endpoint. Similar to level 5, an assay endpoint does not need any level 6 methods assigned to complete processing.  -->
-
-<!-- ```{r eval = TRUE, warning = FALSE, message = FALSE, error = TRUE} -->
-<!-- ## Clear old methods -->
-<!-- # tcplMthdClear(lvl = 6, id = 1:2, type = "mc") -->
-<!-- # tcplMthdAssign(lvl = 6, id = 1:2, -->
-<!-- #                mthd_id = c(6:8, 10:12, 15:16), -->
-<!-- #                type = "mc") -->
-<!-- # tcplMthdLoad(lvl = 6, id = 1, type = "mc") -->
-<!-- ``` -->
-
-<!-- The example above assigns the most common flags. Some of the available flags only apply to specific experimental designs and do not apply to all data. For a complete list of normalization methods see <font face="CMTT10"> tcplMthdList(lvl = 6) </font> or <font face="CMTT10"> ?MC6\_Methods(lvl = 6) </font>.  -->
-
-<!-- The additional $\mathit{nddr}$ field in the "mc6\_methods"(and the output from <font face="CMTT10"> tcplMthdLoad() </font>/<font face="CMTT10"> tcplMthdList() </font> for level 6) indicates whether the method requires additional data. Methods with an $\mathit{nddr}$ value of 0 only require the modeled/summary information from levels 4 and 5. Methods with an $\mathit{nddr}$ value of 1 also require the individual response and concentration values from level 3. Methods requiring data from level 3 can greatly increase the processing time. -->
-
-<!-- ```{r eval = TRUE, warning = FALSE, error = TRUE} -->
-
-<!-- ## Do level 6 processing -->
-<!-- # mc6_res <- tcplRun(id = 1:2, slvl = 5, elvl = 6, type = "mc") -->
-<!-- ``` -->
-
-<!-- ```{r eval = TRUE, warning = FALSE} -->
-<!-- #m6dat <- tcplLoadData(lvl = 6, type = "mc") -->
-<!-- ``` -->
-<!-- For the two assay endpoints, concentration series were flagged in the level 6 processing. Series not flagged in the level 6 processing do not get stored at level 6. Each series-flag combination is a separate entry in the level 6 data. Or, in other words, if a series has multiple flags, it will show up on multiple rows in the output. For example, consider the following results: -->
-
-<!-- ```{r eval = TRUE} -->
-<!-- #m6dat[m4id == 6] -->
-<!-- ``` -->
-
-<!-- The data above lists two flags: "Multiple points above baseline, inactive" and "Borderline inactive." Without knowing much about the flags, one might assume this concentration series had some evidence of activity, but was not called a hit, and could potentially be a false negative. In cases of borderline results, plotting the curve is often helpful. -->
-
-<!-- ```{r eval = TRUE, fig.width = 15, fig.height= 10} -->
-<!-- # tcplPlotM4ID(m4id = 6, lvl = 6) -->
-<!-- ``` -->
-
-<!-- Figure 8: An example level 6 plot for a single concentration series. All level 6 method ID (*l6_mthd_id*) values are concatenated in the flags section. If flags have an associated value (*fval*), the value will be shown in parentheses to the right of the level 6 method ID. -->
-
-<!-- <!--Figure 7-->
-<!-- The evidence of true activity shown in Figure 8 could be argued either way. Level 6 processing does not attempt to define truth in the matter of borderline compounds or data anomalies, but rather attempts to identify concentration series for closer consideration. -->
-
-<!-- ```{r eval = FALSE, echo = FALSE, message = FALSE} -->
-<!-- rm(list=ls()) -->
-<!-- library(htmlTable) -->
-<!-- library(tcpl) -->
-<!-- library(data.table) -->
-<!-- ``` -->
-
-<!-- ```{r eval = TRUE, echo = FALSE, message = FALSE} -->
-
-<!-- sample <- data.table (spid = c("Tox21_400088", "Tox21_303655", "Tox21_110011", "Tox21_400081", -->
-<!--                                "DMSO", "Tox21_400037"), -->
-<!--                       chid= c("20182", "22364", "23463", "24102", "21735", "20283"), -->
-<!--                       stkc = c("", "", "", "", "", ""), -->
-<!--                       stkc_unit = c("", "", "", "", "", ""), -->
-<!--                       tested_conc_unit= c("", "", "", "", "", ""), -->
-<!--                       spid_legacy = c("", "", "", "", "", "")) -->
-
-<!-- assay <- data.table(aid=numeric(),	asid=numeric(),	assay_name= character(),	assay_desc= character(),	timepoint_hr=numeric(),	organism_id=numeric(),	organism= character(),	tissue= character(),	cell_format= character(),	cell_free_component_source= character(),	cell_short_name= character(),	cell_growth_mode= character(),	assay_footprint= character(),	assay_format_type= character(),	assay_format_type_sub= character(),	content_readout_type= character(),	dilution_solvent= character(),	dilution_solvent_percent_max= character() -->
-<!-- ) -->
-
-<!-- assay_component <- data.table(acid=numeric(),	aid=numeric(),	assay_component_name= character(),	assay_component_desc= character(),	assay_component_target_desc= character(),	parameter_readout_type= character(),	assay_design_type= character(),	assay_design_type_sub	= character(),biological_process_target	= character(),detection_technology_type	= character(),detection_technology_type_sub= character(),	 detection_technology= character(),	signal_direction_type= character(),key_assay_reagent_type= character(), -->
-<!--                       key_assay_reagent	= character(),technological_target_type= character(),	technological_target_type_sub= character() ) -->
-
-<!-- assay_component_endpoint <- data.table(aeid=numeric(),	acid=numeric(),	assay_component_endpoint_name= character(),	export_ready=numeric(),	internal_ready= character(),	assay_component_endpoint_desc= character(),	assay_function_type= character(),	normalized_data_type= character(),	analysis_direction= character(),	burst_assay= character(),	key_positive_control= character(),	signal_direction= character(),	intended_target_type= character(),	intended_target_type_sub= character(),	intended_target_family= character(),	intended_target_family_sub= character(),	fit_all=numeric()) -->
-
-<!-- assay_component_map <- data.table(acid =numeric(), acsn = character()) -->
-
-
-
-<!-- assay_source <- data.table(asid=numeric(),	assay_source_name= character(),	assay_source_long_name= character(),	assay_source_desc= character()) -->
-
-<!-- chemical <- data.table(chid = c("20182", "22364", "23463" , "24102", "21735","20283"), -->
-<!--                        casn = c("80-05-7", "521-18-6", "150-30-1", "22224-92-6", "67-68-5", "95-83-0"), -->
-<!--                        chnm = c("Bisphenol A", "5alpha-Dihydrotestosterone","Phenylalanine","Fenamiphos", -->
-<!-- "Dimethyl sulfoxide","4-Chloro-1,2-diaminobenzene"), -->
-<!--                       dsstox_substance_id = c("DTXSID7020182", "DTXSID9022364",         "DTXSID9023463", "DTXSID3024102", "DTXSID2021735", "DTXSID5020283"), -->
-<!--                     code = c("C80057", "C521186","C150301","C22224926", "C67685","C95830")) -->
-
-
-
-
-<!-- mc0 <- data.table(m0id =numeric(), acid =numeric(), spid = character(), apid = character(), rowi =numeric(), -->
-<!--                   coli =numeric(), wllt = character(), wllq =numeric(), conc = character(), rval = character(), -->
-<!--                   srcf =character(), created_date = character(), modified_date = character(),  -->
-<!--                   modified_by = character()) -->
-<!-- mc1 <- data.table(m1id = character(),m0id =numeric(), acid = character(), cndx = character(), repi = character(), created_date = character(), -->
-<!--                   modified_date = character(), modified_by = character()) -->
-<!-- mc2 <- data.table(m2id = character(),m0id =numeric(), acid = character(),m1id =numeric(), cval = character(), created_date = character(), -->
-<!--                   modified_date = character(), modified_by = character()) -->
-<!-- mc3 <- data.table(m3id =numeric(), aeid =numeric(),m0id =numeric(), acid = character(),m1id =numeric(),m2id =numeric(), bval = character(), pval = character(), -->
-<!--                   logc = character(), resp = character(), created_date = character(), modified_date = character(), modified_by = character()) -->
-
-<!-- mc4 <- data.table(m4id =numeric(), aeid =numeric(),	spid = character(),	bmad = character(),	resp_max = character(),	resp_min = character(),	max_mean = character(),	max_mean_conc = character(),	max_med = character(),	max_med_conc = character(),	logc_max = character(),	logc_min = character(),	cnst = character(),	hill = character(),	hcov = character(),	gnls = character(),	gcov = character(),	cnst_er = character(),	cnst_aic = character(),	cnst_rmse = character(),	cnst_prob = character(),	hill_tp = character(),	hill_tp_sd = character(),	hill_ga = character(),	hill_ga_sd = character(),	hill_gw = character(),	hill_gw_sd = character(),	hill_er = character(),	hill_er_sd = character(),	hill_aic = character(),	hill_rmse = character(),	hill_prob = character(),	gnls_tp = character(),	gnls_tp_sd = character(),	gnls_ga = character(),	gnls_ga_sd = character(),	gnls_gw = character(),	gnls_gw_sd = character(),	gnls_la = character(),	gnls_la_sd = character(),	gnls_lw = character(),	gnls_lw_sd = character(),	gnls_er = character(),	gnls_er_sd = character(),	gnls_aic = character(),	gnls_rmse = character(),	gnls_prob = character(),	nconc = character(),	npts = character(),	nrep = character(),	nmed_gtbl = character(),	tmpi = character(),	created_date = character(),	modified_date = character(),	modified_by = character()) -->
-
-<!-- mc5 <- data.table(m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	modl = character(),	hitc = character(),	fitc = character(),	coff = character(),	actp = character(),	modl_er = character(),	modl_tp = character(),	modl_ga = character(),	modl_gw = character(),	modl_la = character(),	modl_lw = character(),	modl_prob = character(),	modl_rmse = character(),	modl_acc = character(),	modl_acb = character(),	modl_ac10 = character(),	created_date = character(),	modified_date = character(),	modified_by = character()) -->
-
-<!-- mc6 <- data.table (m6id =numeric(),	m5id =numeric(),	m4id =numeric(),	aeid =numeric(),	mc6_mthd_id = character(),	flag = character(),	fval = character(),	fval_unit = character(),	created_date = character(),	modified_date = character(),	modified_by = character()) -->
-
-<!-- dir <- dbfile_temp -->
-<!-- write.csv(mc0, file = file.path(dir,"mc0.csv"), row.names = F) -->
-<!-- write.csv(mc1, file = file.path(dir,"mc1.csv"), row.names = F) -->
-<!-- write.csv(mc2, file = file.path(dir,"mc2.csv"), row.names = F) -->
-<!-- write.csv(mc3, file = file.path(dir,"mc3.csv"), row.names = F) -->
-<!-- write.csv(mc4, file = file.path(dir,"mc4.csv"), row.names = F) -->
-<!-- write.csv(mc5, file = file.path(dir,"mc5.csv"), row.names = F) -->
-<!-- write.csv(mc6, file = file.path(dir,"mc6.csv"), row.names = F) -->
-<!-- write.csv(sample, file = file.path(dir,"sample.csv"), row.names = F) -->
-<!-- write.csv(assay, file = file.path(dir,"assay.csv"), row.names = F) -->
-<!-- write.csv(assay_component, file = file.path(dir,"assay_component.csv"), row.names = F) -->
-<!-- write.csv(assay_component_map, file = file.path(dir,"assay_component_map.csv"), row.names = F) -->
-<!-- write.csv(assay_component_endpoint, file = file.path(dir,"assay_component_endpoint.csv"), row.names = F) -->
-<!-- write.csv(assay_source, file = file.path(dir,"assay_source.csv"), row.names = F) -->
-<!-- write.csv(chemical, file = file.path(dir,"chemical.csv"), row.names = F) -->
-<!-- ``` -->
+In <font face="CMTT10"> tcpl v3.0.0 </font>, there are no level 6 (mc6) methods to apply since the introduction of new curve-fitting models requires further investigation for behaviors that may warrant caution flags.  Caution flags may be developed in future versions of <font face="CMTT10">tcpl</font> if such behaviors are identified.
 
 ## 'tcpl' Compiled Processing Examples
 
@@ -1651,7 +1543,10 @@ Now that we have assigned methods for each level we can run pipeline with data w
 ```{r eval=FALSE}
 ## Assign the Number of Processing Cores.
 mycores <- 1 # DO NOT leverage parallel computing.
-             # Users that want to leverage parallel computing set to > 1.
+             # Users that want to leverage parallel computing set to > 1,
+             # but less than the total number of cores (i.e. need at least
+             # 1 core open for overhead).  Please see below.
+# mycores <- parallel::detectCores() - 1 # Maximum allowed number of cores.
 
 ## Pipeline Assay Components (acid's) from level 0 to 5.
 mc_res <- tcpl::tcplRun(
@@ -1689,3 +1584,8 @@ mc_res_4.5 <- tcpl::tcplRun(
 )
 ```
 
+# Session Information
+
+```{r echo=FALSE,warning=FALSE}
+sessionInfo()
+```
