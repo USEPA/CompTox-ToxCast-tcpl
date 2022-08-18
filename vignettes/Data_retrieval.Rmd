@@ -47,10 +47,13 @@ library(viridis)
 This vignette describes how the user can retrieve data from the ToxCast databases using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
 ## Overview of Key Functions
+
 To support different data retrieval needs within <font face="CMTT10">tcpl</font>, there are a number of functions which query the database and return information.
 
 ### Assay Elements
+
 The <font face="CMTT10">tcplLoadAsid</font>, <font face="CMTT10">tcplLoadAid</font>, <font face="CMTT10">tcplLoadAcid</font>, <font face="CMTT10">tcplLoadAeid</font> functions load relevant ids and names for their respective assay elements based on given parameters. 
+
 ```{r tcplLoad, eval = FALSE}
 # List all assay source IDs
 tcplLoadAsid() 
@@ -61,7 +64,9 @@ aeids <- tcplLoadAeid(fld="asid", # field to query on
 ```
 
 ### Data
+
 The <font face="CMTT10">tcplQuery</font> function can be used to load the data from the MySQL database into the R session using SQL queries. Any SQL query can replace the one provided in this example.
+
 ```{r tcplquery, eval = FALSE}
 # Load sample table
 samples <- tcplQuery("SELECT * FROM sample;")
@@ -72,9 +77,11 @@ The <font face="CMTT10">tcplLoadData</font> function can be used to load the dat
 When loading data, the user must indicate correct field and id for corresponding level. Loading Level 0 (SC0 and MC0), MC1, and MC2 will always use $\mathit{acid}$. As described in Table 1 of the processing vignette, SC1 and MC3 levels are the normalization steps where $\mathit{acid}$ is converted to $\mathit{aeid}$. These tables contain both IDs therefore data can be loaded using either id as long as properly specified. Loading SC2, MC4, and MC5 will use $\mathit{aeid}$. Selected id(s) are based on the primary key within each data-containing table. Examples of loading data are detailed in later sections.
 
 ### Chemical Information
+
 The <font face="CMTT10">tcplLoadChem</font> function returns chemical information for given parameters i.e. chemical name (chnm), chemical id (chid). The <font face="CMTT10">tcplLoadClib</font> function provides more information about the ToxCast chemical library used for sample generation.
 
 ### Methods
+
 The <font face="CMTT10">tcplMthdList</font> function returns available methods at specified level. A function utilizing <font face="CMTT10">tcplMthdList</font> to that output all available methods is included below. The <font face="CMTT10">tcplMthdLoad</font> return the method assignments at specified id(s). Examples of loading methods for individuals ids are detailed in later sections.
 
 ```{r mthd_list, eval = FALSE}
@@ -116,6 +123,7 @@ method_list <- method_list()
 Prior to the pipeline processing provided in this package, all the data must go through pre-processing (level 0). Heterogeneous assay data is pre-processed into a uniform format using dataset-specific R scripts and loaded into the <font face="CMTT10">tcpl</font> database. The standard Level 0 format is identical between testing paradigms, single concentration (sc) or multi-concentration (mc). Users can inspect the level 0 data and calculate the example assay quality metrics.
 
 ## Load SC0 Data
+
 ```{r sc0, eval = FALSE}
 # Load Level 0 single-concentration data for acid to R
 sc0 <- tcplLoadData(lvl=0, # data level
@@ -127,6 +135,7 @@ sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
 ```
 
 ## Load MC0 Data
+
 ```{r mc0, eval = FALSE}
 # Load Level 0 multi-concentration data
 mc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, # data level
@@ -137,6 +146,7 @@ head(mc0)
 ```
 
 ## Review MC assay quality
+
 ```{r mc0_aq, eval = FALSE}
 # Review assay quality metrics using indexed Level 0 data
 aq <- function(ac){
@@ -195,6 +205,7 @@ head(aq)
 The goal of single-concentration processing is to identify potentially active compounds from a broad screen at a single concentration. After processing, users can inspect single concentration activity hit calls and methods. 
 
 ## Load SC2 Data
+
 ```{r sc2, eval = FALSE}
 # Load Level 2 single-concentration data for select aeids
 # Alternativly, individual ids can be specified
@@ -202,6 +213,7 @@ sc2 <- tcplPrepOtpt(tcplLoadData(lvl=2, fld="aeid", val=aeids$aeid, type = "sc")
 ```
 
 ## Load SC Methods
+
 ```{r sc2_mthd, eval = FALSE}
 #Load methods for single-concentration data processing for select aeids
 sc_methods <- function(aeids) {
@@ -217,9 +229,11 @@ sc_methods <- sc_methods(aeids)
 ```
 
 # Retrieving Processed Multi-Concentration Data, Methods, and Plots
+
 The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After processing, users can inspect multi-concentration activity hit calls, model parameters, concentration-response plots, and methods. 
 
 ## Load MC5 Data
+
 ```{r mc5_data, eval = FALSE}
 # Load Level 5 multi-concentration data summary values for select aeids
 # Alternatively, individual aeids can be specified
@@ -236,6 +250,7 @@ mc5 <- tcplPrepOtpt(tcplLoadData(lvl=5,# data level
 ```
 
 ## Load MC Methods
+
 ```{r mc5_methods, eval = FALSE}
 # Load methods for multi-concentration data processing for select aeids
 methods <- function(aeids) {
@@ -263,6 +278,7 @@ methods <- methods(aeids)
 ```
 
 ## Plot MC Data
+
 The <font face="CMTT10">tcplPlot</font> function is the generic plotting function that returns a plot for the given level and parameters.
 
 ```{r mc_plots, eval = FALSE}
@@ -286,6 +302,7 @@ tcplPlot(lvl = 5, # data level
 ```
 
 # Additional Examples
+
 Listed below are a few case examples to retrieve different information from the database.
 
 ## Load Data for a Specific Chemical
