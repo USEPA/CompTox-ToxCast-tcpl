@@ -28,14 +28,16 @@ $(document).ready(function() {
 });
 </script>
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-## Primary R Packages ##
+# R Packages
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# Primary Packages #
 library(tcpl)
 library(tcplfit2)
-## Data Formatting ##
+# Data Formatting Packages #
 library(dplyr)
 library(magrittr)
-## Plotting ##
+# Plotting Packages #
 library(ggplot2)
 library(RColorBrewer)
 library(colorspace)
@@ -346,4 +348,10 @@ tcplPlot(lvl = 5, #data level
          output = "pdf", # output as pdf
          fileprefix = "output/upitt") # prefix of filename
 
+```
+
+# Session Information
+
+```{r echo=FALSE,warning=FALSE}
+sessionInfo()
 ```
