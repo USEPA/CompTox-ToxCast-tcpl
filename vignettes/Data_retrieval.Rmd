@@ -28,6 +28,21 @@ $(document).ready(function() {
 });
 </script>
 
+```{css, echo=FALSE}
+.scroll-100 {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.noticebox {
+  padding: 1em;
+  background: lightgray;
+  color: blue;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+```
+
 # R Packages
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -51,6 +66,14 @@ devtools::load_all()
 # Introduction
 
 This vignette describes how the user can retrieve data from the ToxCast databases using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+
+::: {.noticebox data-latex=""}
+
+**NOTE:**
+
+Users must be connected to the <font face="CMTT10">tcpl</font> database or a replicate of the database to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in this package for more details.
+
+:::
 
 ## Overview of Key Functions
 
@@ -87,17 +110,22 @@ The <font face="CMTT10">tcplLoadData</font> function can be used to load the dat
 
 ```{r tcplPrepOtpt, eval=FALSE}
 # Load single concentration data from level 1, put into a readable format,
-# and map additional annotation information
-sc1_fmtd <- tcplPrepOtpt(
+# and map only the chemical annotation information.
+mc1_fmtd <- tcplPrepOtpt(
   tcplLoadData(
-    lvl = 1, # data level
-    fld = 'aeid', # field to query on
-    val = 1, # value for each field
+    lvl = 2, # data level
+    fld = 'acid', # field to query on
+    val = 49, # value for each field
              # values should match their corresponding 'fld'
-    type = 'sc' # data type
+    type = 'mc' # data type
   ),
-  ids = c('dsstox_substance_id','acnm','asnm') # additional annotation fields
+  ids = 'spid' # additional annotation fields to add - just chemical info
+               # - (Default): map all annotations
+               # - 'acid' OR 'aeid': map only assay annoations
+               # - 'spid': map only chemical annoations
 )
+# Print the first 6 rows of 'sc1_fmtd'
+head(mc1_fmtd)
 ```
 
 When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5 one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
@@ -176,6 +204,18 @@ sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
 head(sc0)
 ```
 
+Since we are not able to connect to the database directly, we have provided a sample dataset in the package to illustrate what the results should look like.
+
+```{r sc0_data_ex,warning=FALSE,message=FALSE}
+# Load the example data from the package.
+data(sc_vignette,package = 'tcpl')
+# Save the single concentration level 0 data in the 'sc0' object.
+sc0 <- sc_vignette[["sc0"]]
+# Print the first 6 rows of the data.
+head(sc0)
+```
+
+
 ## Load MC0 Data
 
 ```{r mc0, eval = FALSE}
@@ -187,6 +227,17 @@ mc0 <- tcplPrepOtpt(
                       # values should match their corresponding 'fld'
                type = "mc") # data type - multiple concentrations
 )
+# Print the first 6 rows of the data.
+head(mc0)
+```
+
+We again can use one of the provided datasets in this package to demonstrate what the above results should look like.
+
+```{r mc0_data_ex,warning=FALSE,message=FALSE}
+# Load the example data from the package.
+data(mc_vignette,package = 'tcpl')
+# Save the multiple concentration level 0 data in the 'mc0' object.
+mc0 <- mc_vignette[["mc0"]]
 # Print the first 6 rows of the data.
 head(mc0)
 ```
@@ -360,30 +411,58 @@ mc5 <- tcplPrepOtpt(
 ## Load MC Methods
 
 ```{r mc5_methods, eval = FALSE}
-# Load methods for multiple concentration data processing for select aeids
-methods <- function(aeids) {
-  #acid
+# Create a function to load methods for multiple concentration data processing
+# for select aeids.
+mc_methods <- function(aeids) {
+  # acid
+  ## load the methods assigned to level 2 for given acids
   mc2_mthds <- tcplMthdLoad(2,aeids$acid)
+  ## aggregate the assigned methods by acid
   mc2_mthds<- aggregate(mthd_id ~ acid, mc2_mthds, toString)
+  ## rename the columns for the 'mc2_mthds' object
   setnames(mc2_mthds, "mthd_id", "mc2_mthd_id")
-  #aeid
+  
+  # aeid
+  ## load the methods assigned to level 3 for given aeids
   mc3_mthds <- tcplMthdLoad(3,aeids$aeid)
+  ## aggregate the assigned methods by aeid
   mc3_mthds<- aggregate(mthd_id ~ aeid, mc3_mthds, toString)
+  ## rename the columns for the 'mc3_mthds' object
   setnames(mc3_mthds, "mthd_id", "mc3_mthd_id")
+  ## load the methods assigned to level 4 for given aeids
   mc4_mthds <- tcplMthdLoad(4,aeids$aeid)
+  ## aggregate the assigned methods by aeid
   mc4_mthds<- aggregate(mthd_id ~ aeid, mc4_mthds, toString) 
+  ## rename the columns for 'mc4_mthds' object
   setnames(mc4_mthds, "mthd_id", "mc4_mthd_id")
+  ## load the methods assigned to level 5 for given aeids
   mc5_mthds <- tcplMthdLoad(5,aeids$aeid)
+  ## aggregate the assigned methods by aeid
   mc5_mthds<- aggregate(mthd_id ~ aeid, mc5_mthds, toString)
+  ## rename the columns for 'mc5_mthds' object
   setnames(mc5_mthds, "mthd_id", "mc5_mthd_id")
 
+  # Compile the Results.
+  ## merge the aeid information with the level 2 methods by acid
   acid.methods <- merge(aeids, mc2_mthds,by.x = "acid", by.y = "acid")
-  
-  mthd35 <- merge( merge(mc3_mthds, mc4_mthds, by = "aeid", all = TRUE ), mc5_mthds, by = "aeid", all = TRUE )
+  ## merge the level 3, 4, and 5 methods by aeid
+  mthd35 <- merge(
+    merge(mc3_mthds, mc4_mthds, by = "aeid", all = TRUE),
+    mc5_mthds, by = "aeid", all = TRUE
+    )
+  ## merge all methods information by aeid
   methods <- merge(acid.methods, mthd35,by.x = "aeid", by.y = "aeid")
+  # Print the Results.
   print(methods)
+  # Return the Results.
+  return(methods)
 }
-methods <- methods(aeids)
+
+# Run the 'methods' function and store the output.
+mmthds <- mc_methods(aeids)
+
+# Print the available methods list.
+mmthds
 ```
 
 ## Plot MC Data
@@ -409,16 +488,16 @@ tcplPlot(lvl = 5, # data level
          multi = TRUE, # multiple plots per page - output 6 per page if TRUE
          verbose = TRUE, # output all details if TRUE
          output = "pdf", # output as pdf
-         fileprefix = "output/", ) # prefix of the filename
+         fileprefix = "output/") # prefix of the filename
 ```
 
 # Additional Examples
 
-Listed below are a few case examples to retrieve different information from the database.
+Below are a few case examples for retrieving various bits of information from the database.
 
 ## Load Data for a Specific Chemical
 
-This example illustrates the necessary steps for extracting information about *Bisphenol A* found within the <font face="CMTT10">tcpl</font> database. The user will define the chemical of interest, isolate all associated sample ids ($\mathit{spids}$), then load all data for the given chemical. 
+In this example, we illustrate the necessary steps for extracting information about the compound *Bisphenol A* found within the <font face="CMTT10">tcpl</font> database. The user will define the chemical of interest, isolate all associated sample ids ($\mathit{spids}$), and then load all data for the given chemical. 
 
 ```{r BPA, eval = FALSE}
 # Provide the chemical name and assign to 'chnm'.
@@ -434,7 +513,7 @@ BPA.mc5 <- tcplLoadData(lvl = 5, # data level
 
 ## Plot Sample Subset 
 
-This example illustrates how to plot by endpoint for a sample subset, as opposed to plotting all samples tested within an endpoint. The user will load data for the select endpoints, isolate the samples of interest, then plot by endpoint for the sample subset. 
+In this example, we illustrate how to plot by endpoint for a sample subset, as opposed to plotting all samples tested within an endpoint. The user will load data for the select endpoints, isolate the samples of interest, and then plot by endpoint for the sample subset. 
 
 ```{r spid_plot, eval=FALSE}
 # Load Level 5 multiple concentration data summary values for select aeids.
