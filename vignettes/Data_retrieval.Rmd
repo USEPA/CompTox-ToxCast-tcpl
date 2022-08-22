@@ -65,13 +65,13 @@ devtools::load_all()
 
 # Introduction
 
-This vignette describes how the user can retrieve data from the ToxCast databases using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+This vignette describes how the user can retrieve data from the ToxCast database, known as invitrodb, using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
 ::: {.noticebox data-latex=""}
 
 **NOTE:**
 
-Users must be connected to the <font face="CMTT10">tcpl</font> database or a replicate of the database to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in this package for more details.
+Users must be connected to the ToxCast database (invitrodb), or a replicate of the database, to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in this package for more details.
 
 :::
 
@@ -81,7 +81,7 @@ To support different data retrieval needs within <font face="CMTT10">tcpl</font>
 
 ## Overview of Data Nomenclature
 
-Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC' and 'MC' is used the data assay has multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing single concentration data from level 2 processing, then we will use the abbreviation 'SC2'.
+Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC.' 'MC' is used for assay data with multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing single concentration data from level 2 processing, then we will use the abbreviation 'SC2.'
 
 ### Assay Elements
 
@@ -106,10 +106,10 @@ The <font face="CMTT10">tcplQuery</font> function allows a user to provide an SQ
 samples <- tcplQuery("SELECT * FROM sample;")
 ```
 
-The <font face="CMTT10">tcplLoadData</font> function can be used to load the data from the MySQL database into the R session. Furthermore, the <font face="CMTT10">tcplPrepOtpt</font> function can be used in combination with <font face="CMTT10">tcplLoadData</font> to prepare retrieved data into a readable output, and query the database for additional chemical and assay annotation information to map to the retrieved data.
+The <font face="CMTT10">tcplLoadData</font> function can be used to load the data from the MySQL database into the R session. Further, the <font face="CMTT10">tcplPrepOtpt</font> function can be used in combination with <font face="CMTT10">tcplLoadData</font> to add useful chemical and assay annotation information, mapped to the retrieved data.
 
 ```{r tcplPrepOtpt, eval=FALSE}
-# Load single concentration data from level 1, put into a readable format,
+# Load single concentration data from level 1,
 # and map only the chemical annotation information.
 mc1_fmtd <- tcplPrepOtpt(
   tcplLoadData(
@@ -120,15 +120,15 @@ mc1_fmtd <- tcplPrepOtpt(
     type = 'mc' # data type
   ),
   ids = 'spid' # additional annotation fields to add - just chemical info
-               # - (Default): map all annotations
-               # - 'acid' OR 'aeid': map only assay annoations
-               # - 'spid': map only chemical annoations
+               # - (Default): map assay and chemical annotation
+               # - 'acid' OR 'aeid': map only assay annotation
+               # - 'spid': map only chemical annotation
 )
 # Print the first 6 rows of 'sc1_fmtd'
 head(mc1_fmtd)
 ```
 
-When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5 one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
+When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the tcpl Data Processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5 one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
 
 ### Chemical Information
 
@@ -136,10 +136,10 @@ The <font face="CMTT10">tcplLoadChem</font> function returns chemical informatio
 
 ### Methods
 
-The <font face="CMTT10">tcplMthdList</font> function returns methods available for processing at a specified level (i.e. step in the <font face="CMTT10">tcpl</font> pipeline). The user defined function in the following code chunk utilizes the <font face="CMTT10">tcplMthdList</font> function to retrieve and output all available methods for both the single and multiple concentration data levels.
+The <font face="CMTT10">tcplMthdList</font> function returns methods available for processing at a specified level (i.e. step in the <font face="CMTT10">tcpl</font> pipeline). The user defined function in the following code chunk utilizes the <font face="CMTT10">tcplMthdList</font> function to retrieve and output all available methods for both the SC and MC data levels.
 
 ```{r mthd_list, eval = FALSE}
-# Create a function to list all available methods function (sc & mc).
+# Create a function to list all available methods function (SC & MC).
 method_list <- function() {
   # Single Concentration
   ## Level 1
@@ -181,11 +181,11 @@ amthds <- method_list()
 amthds
 ```
 
-The <font face="CMTT10">tcplMthdLoad</font> function returns the method assignments for specified id(s). Later sections provide more detailed examples for utilizing the method loading functions for individuals ids.
+The <font face="CMTT10">tcplMthdLoad</font> function returns the method assignments for specified id(s). Later sections provide more detailed examples for utilizing the <font face="CMTT10">tcplMthdLoad</font> function for individuals ids.
 
 # Retrieving Level 0 Data
 
-Prior to the pipeline processing provided in this package, all the data must go through pre-processing, i.e. raw data to database level 0 data. Pre-processing the data should transform data from heterogeneous assays into a uniform format.  This is executed using dataset specific R scripts.  After pre-processing is complete and the formatted data matches the level 0 format it can be loaded into the <font face="CMTT10">tcpl</font> database. The standard level 0 format is identical for both testing paradigms, single concentration (sc) or multiple concentrations (mc). Users can inspect the level 0 data and calculate assay quality metrics prior to running the processing pipeline.
+Prior to the pipeline processing provided in this package, all the data must go through pre-processing, i.e. raw data to database level 0 data. Pre-processing the data should transform data from heterogeneous assays into a uniform format.  This is executed using dataset specific R scripts.  After pre-processing is complete and the formatted data matches the level 0 format, it can be loaded into the database using <font face="CMTT10">tcplWriteLvl0</font>, as described in the tcpl Data Processing vignette. The standard level 0 format is identical for both testing paradigms, SC or MC. Users can inspect the level 0 data and calculate assay quality metrics prior to running the processing pipeline.
 
 ## Load SC0 Data
 
@@ -197,14 +197,14 @@ sc0 <- tcplLoadData(lvl=0, # data level
                            # values should match their corresponding 'fld'
                     type = "sc") # data type - single concentration
 
-# Alternatively, load data in and format to a readable with tcplPrepOtpt.
+# Alternatively, load data in and format with tcplPrepOtpt.
 sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
 
 # Print the first 6 rows of the data.
 head(sc0)
 ```
 
-Since we are not able to connect to the database directly, we have provided a sample dataset in the package to illustrate what the results should look like.
+Since we are not able to connect to the database directly in this vignette, we have provided a sample dataset in the package to illustrate what the results should look like.
 
 ```{r sc0_data_ex,warning=FALSE,message=FALSE}
 # Load the example data from the package.
@@ -324,9 +324,9 @@ assayq <- aq(ac)
 head(assayq)
 ```
 
-# Retrieving Processed Single-Concentration Data and Methods
+# Retrieving Processed Single-Concentration (SC) Data and Methods
 
-The goal of single concentration processing is to identify potentially active compounds from a large screen at a single concentration. After processing, users can inspect single concentration activity hit calls and the applied methods.
+The goal of SC processing is to identify potentially active compounds from a large screen at a single concentration. After processing, users can inspect SC activity hit calls and the applied methods.
 
 ## Load SC2 Data
 
@@ -378,21 +378,21 @@ smthds <- sc_methods(aeids)
 smthds
 ```
 
-# Retrieving Processed Multi-Concentration Data, Methods, and Plots
+# Retrieving Processed Multi-Concentration (MC) Data, Methods, and Plots
 
-The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other endpoints for sample-assay pairs given a series of multiple concentrations. After processing, users can inspect the activity hit calls, model parameters, concentration-response plots, and the applied methods for the multiple concentration data. 
+The goal of MC processing is to estimate the hitcall, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. After processing, users can inspect the activity hitcalls, model parameters, concentration-response plots, and the applied methods for the multiple concentration data. 
 
 ## Load MC5 Data
 
 ```{r mc5_data, eval = FALSE}
-# Load Level 5 multiple concentration data summary values for a set of aeids.
+# Load Level 5 MC data summary values for a set of aeids.
 # (NOTE: As before, the user can obtain data for individual aeids.)
 mc5 <- tcplPrepOtpt(
   tcplLoadData(lvl=5, # data level
                fld="aeid", # fields to query on
                val=aeids$aeid, # value for each field
                                # values should match their corresponding 'fld'
-               type = "mc") # data type - multiple concentration
+               type = "mc") # data type - MC
 )
 
 # For tcpl v3.0.0 and future releases, to output mc5_param information with
@@ -411,7 +411,7 @@ mc5 <- tcplPrepOtpt(
 ## Load MC Methods
 
 ```{r mc5_methods, eval = FALSE}
-# Create a function to load methods for multiple concentration data processing
+# Create a function to load methods for MC data processing
 # for select aeids.
 mc_methods <- function(aeids) {
   # acid
@@ -467,7 +467,7 @@ mmthds
 
 ## Plot MC Data
 
-The <font face="CMTT10">tcplPlot</font> function is the generic plotting function that returns a plot for the given level and parameters.
+The <font face="CMTT10">tcplPlot</font> function is the generic plotting function that returns a plot for the given sample-assay endpoint combination(s), level, and parameters.
 
 ```{r mc_plots, eval = FALSE}
 # Create Level 4 plot for a single m4id.
@@ -479,7 +479,7 @@ tcplPlot(lvl = 4,  # data level
          verbose = FALSE, # output all details if TRUE
          output = "console") # output in R console
 
-# Plot Level 5 multiple concentration data for select aeids.
+# Plot Level 5 MC data for select aeids.
 tcplPlot(lvl = 5, # data level
          fld = "aeid", # field to query on
          val = 3157:3159, # value for each field
@@ -497,7 +497,7 @@ Below are a few case examples for retrieving various bits of information from th
 
 ## Load Data for a Specific Chemical
 
-In this example, we illustrate the necessary steps for extracting information about the compound *Bisphenol A* found within the <font face="CMTT10">tcpl</font> database. The user will define the chemical of interest, isolate all associated sample ids ($\mathit{spids}$), and then load all data for the given chemical. 
+In this example, we illustrate the necessary steps for extracting information about the compound *Bisphenol A* found within the database. The user will define the chemical of interest, isolate all associated sample ids ($\mathit{spids}$), and then load all data for the given chemical. 
 
 ```{r BPA, eval = FALSE}
 # Provide the chemical name and assign to 'chnm'.
@@ -508,7 +508,7 @@ chem <- tcplLoadChem(field = 'chnm',val = chnm)
 BPA.mc5 <- tcplLoadData(lvl = 5, # data level 
                         fld = 'spid', # field to query on
                         val = chem[,spid], # value for each field (fld)
-                        type = 'mc') # data type - multiple concentration
+                        type = 'mc') # data type - MC
 ```
 
 ## Plot Sample Subset 
@@ -521,7 +521,7 @@ mc5 <- tcplPrepOtpt(
   tcplLoadData(lvl=5, # data level
                fld='aeid', # id field to query on
                val=tcplLoadAeid(fld="asid",val = 25)$aeid, # value for each field
-               type='mc', # data type - multiple concentration
+               type='mc', # data type - MC
                add.fld=TRUE) # return additional parameters from mc5_param
   )
 
