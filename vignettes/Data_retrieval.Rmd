@@ -57,6 +57,9 @@ library(ggplot2)
 library(RColorBrewer)
 library(colorspace)
 library(viridis)
+# Table Packages #
+library(htmlTable)
+library(kableExtra)
 ```
 
 ```{r warning=FALSE,message=FALSE}
@@ -199,9 +202,6 @@ sc0 <- tcplLoadData(lvl=0, # data level
 
 # Alternatively, load data in and format with tcplPrepOtpt.
 sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
-
-# Print the first 6 rows of the data.
-head(sc0)
 ```
 
 Since we are not able to connect to the database directly in this vignette, we have provided a sample dataset in the package to illustrate what the results should look like.
@@ -212,7 +212,13 @@ data(sc_vignette,package = 'tcpl')
 # Save the single concentration level 0 data in the 'sc0' object.
 sc0 <- sc_vignette[["sc0"]]
 # Print the first 6 rows of the data.
-head(sc0)
+head(sc0) %>%
+  # format output into a table
+  kbl() %>%
+  # format the output rendering to allow horizontal scrolling
+  scroll_box(width = "100%") %>% 
+  # reduce the size of the table text to improve readability
+  kable_styling(font_size = 10)
 ```
 
 
@@ -227,8 +233,6 @@ mc0 <- tcplPrepOtpt(
                       # values should match their corresponding 'fld'
                type = "mc") # data type - multiple concentrations
 )
-# Print the first 6 rows of the data.
-head(mc0)
 ```
 
 We again can use one of the provided datasets in this package to demonstrate what the above results should look like.
@@ -239,7 +243,13 @@ data(mc_vignette,package = 'tcpl')
 # Save the multiple concentration level 0 data in the 'mc0' object.
 mc0 <- mc_vignette[["mc0"]]
 # Print the first 6 rows of the data.
-head(mc0)
+head(mc0) %>%
+  # format output into a table
+  kbl() %>%
+  # format the output rendering to allow horizontal scrolling
+  scroll_box(width = "100%") %>% 
+  # reduce the size of the table text to improve readability
+  kable_styling(font_size = 10)
 ```
 
 ## Review MC assay quality
@@ -374,7 +384,7 @@ sc_methods <- function(aeids) {
 # Run the 'sc_methods' function and store the output.
 smthds <- sc_methods(aeids)
 
-# Print the available methods list.
+# Print the assigned sc methods.
 smthds
 ```
 
@@ -461,7 +471,7 @@ mc_methods <- function(aeids) {
 # Run the 'methods' function and store the output.
 mmthds <- mc_methods(aeids)
 
-# Print the available methods list.
+# Print the assigned mc methods.
 mmthds
 ```
 
