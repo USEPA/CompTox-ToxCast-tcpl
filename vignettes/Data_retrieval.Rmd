@@ -542,9 +542,3 @@ tcplPlot(lvl = 5, # data level
          output = "pdf", # output as pdf
          fileprefix = "output/upitt") # prefix of the filename
 ```
-
-# Session Information
-
-```{r echo=FALSE,warning=FALSE}
-sessionInfo()
-```

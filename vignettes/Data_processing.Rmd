@@ -1600,9 +1600,3 @@ mc_res_4.5 <- tcpl::tcplRun(
   mc.cores = mycores # number of computing cores
 )
 ```
-
-# Session Information
-
-```{r echo=FALSE,warning=FALSE}
-sessionInfo()
-```
