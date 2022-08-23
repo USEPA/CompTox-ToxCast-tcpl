@@ -1,9 +1,6 @@
 #' Write level 4 with updated schema
 #'
 #' @param dat output of tcplfit2 that has been unnested into a data.table
-#'
-#'
-#' @examples
 write_lvl_4 <- function(dat){
   #variable binding
   lvl <- aeid <- m4id <- m3ids <- NULL
@@ -109,7 +106,18 @@ write_lvl_4 <- function(dat){
 #' @return boolean TRUE if param tables are listed in schema FALSE otherwise
 #' 
 #'
-#' @examples
+#' @examples 
+#' \dontrun{
+#' #connect to database first with tcplConf
+#' tcplConf(user=user,
+#'  pass= pass,
+#'  db=dbname,
+#'  drvr='MySQL',
+#'  host=hostname)
+#'  
+#' #check if it is part of the new schema
+#' new_schema <- check_tcpl_db_schema()
+#' }
 check_tcpl_db_schema <- function(){
   drvr <- getOption("TCPL_DRVR")
   if (drvr == "MySQL") {
