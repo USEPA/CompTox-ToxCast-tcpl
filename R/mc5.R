@@ -6,7 +6,8 @@
 #' @templateVar LVL 5
 #' @templateVar type mc
 #' 
-#' @inheritParams mc4
+#' @param ae 	Integer of length 1, assay endpoint id (aeid) for processing.
+#' @param wr Logical, whether the processed data should be written to the tcpl database
 #' 
 #' @details
 #' Level 5 multiple-concentration hit-calling uses the fit parameters and the 

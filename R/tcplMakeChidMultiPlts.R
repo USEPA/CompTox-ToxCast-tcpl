@@ -14,7 +14,6 @@
 #' @param clib Character, the chemical library to subset on, see 
 #' \code{\link{tcplLoadClib}} for more information. 
 #' @param hitc.all If FALSE, only plots with hitc==1 will be displayed
-#' @inheritParams tcplMultiplot
 #' 
 #' @details 
 #' \code{tcplMakeChidMultiPlts} provides a wrapper for \code{\link{tcplMultiplot}},
