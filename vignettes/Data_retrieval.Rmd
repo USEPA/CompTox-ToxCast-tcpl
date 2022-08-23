@@ -62,9 +62,6 @@ library(htmlTable)
 library(kableExtra)
 ```
 
-```{r warning=FALSE,message=FALSE}
-devtools::load_all()
-```
 
 # Introduction
 
