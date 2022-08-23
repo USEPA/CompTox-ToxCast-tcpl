@@ -1,6 +1,6 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 2.1.0
+Version: 3.0.0
 Authors@R: c(
     person("Richard S", "Judson",role = c("cre","ths"), email = "Judson.Richard@epa.gov"),
     person("Dayne L", "Filer", role = "aut",email = "dayne.filer@gmail.com"),
@@ -43,9 +43,14 @@ Suggests:
     prettydoc,
     rmarkdown,
     htmlTable,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    reshape2,
+    viridis,
+    kableExtra,
+    colorspace,
+    magrittr
 License: GPL-2
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Encoding: UTF-8
