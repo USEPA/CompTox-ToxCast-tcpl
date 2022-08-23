@@ -12,3 +12,16 @@ boolean TRUE if param tables are listed in schema FALSE otherwise
 \description{
 Function that checks if the most recent v3 table schema is used in the database schema
 }
+\examples{
+\dontrun{
+#connect to database first with tcplConf
+tcplConf(user=user,
+ pass= pass,
+ db=dbname,
+ drvr='MySQL',
+ host=hostname)
+ 
+#check if it is part of the new schema
+new_schema <- check_tcpl_db_schema()
+}
+}
