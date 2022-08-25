@@ -5,6 +5,7 @@ Authors@R: c(
     person("Richard S", "Judson",role = c("cre","ths"), email = "Judson.Richard@epa.gov"),
     person("Dayne L", "Filer", role = "aut",email = "dayne.filer@gmail.com"),
     person("Jason","Brown",role = "ctb", email = "brown.jason@epa.gov"),
+    person("Sarah E","Davidson-Fritz",role = "ctb",email = "davidsonfritz.sarah@epa.gov"),
     person("Todd", "Zurlinden", role="ctb", email="zurlinden.todd@epa.gov"),
     person("Parth", "Kothiya", role = "ctb"),
     person("Woodrow R", "Setzer", role = "ctb"),
