@@ -6,44 +6,46 @@
 \title{List with single-concentration data for the vignette}
 \format{
 \enumerate{
-\item \strong{sc0} A data frame with 10 rows and 18 columns
+\item \strong{sc0} A data frame with 10 rows and 18 columns containing
+                   level 0 formatted raw data.
 \describe{
-  \item{spid}{sample ID}
-  \item{chid}{unique chemical ID number for tcpl}
+  \item{spid}{Sample ID}
+  \item{chid}{Unique chemical ID number for tcpl}
   \item{casn}{Chemical Abstract Service(CAS) number}
-  \item{chnm}{chemical name}
-  \item{dsstox_substance_id}{chemical-specific DTXSID}
+  \item{chnm}{Chemical name}
+  \item{dsstox_substance_id}{Chemical-specific DTXSID}
   \item{code}{CAS number compressed into numeric string}
   \item{acid}{Assay Component ID}
   \item{acnm}{Assay Component Name}
-  \item{s0id}{SC0 ID}
-  \item{apid}{assay plate ID}
+  \item{s0id}{Level 0 (sc0) ID}
+  \item{apid}{Assay plate ID}
   \item{rowi}{Row Index}
   \item{coli}{Column Index}
   \item{wllt}{Well Type}
   \item{wllq}{Well Quality (0 or 1)}
-  \item{conc}{concentration in micromolar}
-  \item{rval}{raw assay component readout value}
-  \item{srcf}{source file containing the raw data}
+  \item{conc}{Concentration in micromolar}
+  \item{rval}{Raw assay component readout value}
+  \item{srcf}{Source file containing the raw data}
   \item{conc_unit}{Concentration Units}
   }
 
 
-\item \strong{sc1} A data frame with 10 rows and 20 columns
+\item \strong{sc1} A data frame with 10 rows and 20 columns containing
+                   level 1 normalized data.
 \describe{
-  \item{spid}{sample ID}
-  \item{chid}{unique chemical ID number for tcpl}
+  \item{spid}{Sample ID}
+  \item{chid}{Unique chemical ID number for tcpl}
   \item{casn}{Chemical Abstract Service(CAS) number}
-  \item{chnm}{chemical name}
-  \item{dsstox_substance_id}{chemical-specific DTXSID}
+  \item{chnm}{Chemical name}
+  \item{dsstox_substance_id}{Chemical-specific DTXSID}
   \item{code}{CAS number compressed into numeric string}
   \item{aeid}{Assay Component Endpoint ID}
-  \item{aenm}{assay endpoint name (i.e., assay_component_endpoint_name)}
+  \item{aenm}{Assay endpoint name (i.e., assay_component_endpoint_name)}
   \item{acid}{Assay Component ID}
   \item{acnm}{Assay Component Name}
-  \item{s0id}{SC0 ID}
-  \item{s1id}{SC1 ID}
-  \item{apid}{assay plate ID}
+  \item{s0id}{Level 0 (sc0) ID}
+  \item{s1id}{Level 1 (sc1) ID}
+  \item{apid}{Assay plate ID}
   \item{rowi}{Row Index}
   \item{coli}{Column Index}
   \item{wllt}{Well Type}
@@ -54,19 +56,20 @@
   }
 
 
-\item \strong{sc2} A data frame with 10 rows and 15 columns
+\item \strong{sc2} A data frame with 10 rows and 15 columns containing
+                   level 2 efficacy/hit designation data.
 \describe{
-  \item{spid}{sample ID}
-  \item{chid}{unique chemical ID number for tcpl}
+  \item{spid}{Sample ID}
+  \item{chid}{Unique chemical ID number for tcpl}
   \item{casn}{Chemical Abstract Service(CAS) number}
-  \item{chnm}{chemical name}
-  \item{dsstox_substance_id}{chemical-specific DTXSID}
+  \item{chnm}{Chemical name}
+  \item{dsstox_substance_id}{Chemical-specific DTXSID}
   \item{code}{CAS number compressed into numeric string}
   \item{aeid}{Assay Component Endpoint ID}
-  \item{aenm}{assay endpoint name (i.e., assay_component_endpoint_name)}
-  \item{s2id}{SC2 ID}
+  \item{aenm}{Assay endpoint name (i.e., assay_component_endpoint_name)}
+  \item{s2id}{Level 2 (sc2) ID}
   \item{bmad}{The median absolute deviation of all treatment wells (default option) or blank wells }
-  \item{max_med}{maximum median response}
+  \item{max_med}{Maximum median response}
   \item{hitc}{Hitcall}
   \item{coff}{Cutoff}
   \item{resp_unit}{Response Units}

@@ -6,8 +6,8 @@
 \usage{
 tcplFit2(
   dat,
-  fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4",
-    "exp5"),
+  fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3",
+    "exp4", "exp5"),
   bmed = NULL
 )
 }
