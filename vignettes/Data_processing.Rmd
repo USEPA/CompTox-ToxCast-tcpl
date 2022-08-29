@@ -64,10 +64,6 @@ library(htmlTable)
 library(kableExtra)
 ```
 
-```{r message=FALSE}
-# Currently have to load the package to knit/render the HTML.
-devtools::load_all()
-```
 
 ```{r eval = TRUE, echo = FALSE, message = FALSE, results = "hide"}
 # This chunk copies the tcplLite local directory to the temp directory used in installation
@@ -1235,7 +1231,7 @@ mc4_aic <- mc4 %>%
 # Rename the columns.
 colnames(mc4_aic) <-
   colnames(mc4)[grep(colnames(mc4),pattern = "aic")] %>%
-  str_remove(.,pattern = "_aic") %>% c("dsstox_id",.)
+  stringr::str_remove(.,pattern = "_aic") %>% c("dsstox_id",.)
 # Export/display the table in an HTML format.
 mc4_aic %>%
   kbl(
