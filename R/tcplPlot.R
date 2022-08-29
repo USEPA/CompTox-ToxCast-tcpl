@@ -205,7 +205,6 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
 #' @importFrom plotly plot_ly add_trace add_annotations
 #' @importFrom dplyr .data
 #'
-#' @examples
 tcplPlotlyPlot <- function(dat, lvl = 5){
   
   #library(plotly)
@@ -521,7 +520,6 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @importFrom ggplot2 margin unit
 #' @import gridExtra
 #' @import stringr
-#' @examples
 tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   
   #variable binding

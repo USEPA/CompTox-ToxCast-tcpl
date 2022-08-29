@@ -27,7 +27,7 @@ Toxcast database
 scdat
 }
 \description{
-The example dataset is used to illustrate how the user can pipeline single-concentration  
+The example dataset is used to illustrate how the user can pipeline single-concentration
 data from chemical screening using tcplLite.
 }
 \keyword{datasets}

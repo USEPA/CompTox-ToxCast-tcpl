@@ -6,7 +6,6 @@
 #'
 #' @return Data.table with an additional column fitparams that includes all of the fitting parameters
 #' @importFrom tcplfit2 tcplfit2_core
-#' @examples
 tcplFit2 <- function(dat,
                      fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5"),
                      bmed = NULL) {
@@ -53,8 +52,6 @@ tcplFit2 <- function(dat,
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
 #' @importFrom tidyr pivot_longer
 #' @importFrom tcplfit2 tcplhit2_core
-#'
-#' @examples
 tcplHit2 <- function(mc4, coff) {
   
   #variable binding
@@ -125,8 +122,6 @@ tcplHit2 <- function(mc4, coff) {
 #' @param output list of output from tcplfit2
 #'
 #' @return list of parameters unnested and compiled into a dataframe
-#'
-#' @examples
 tcplFit2_unnest <- function(output) {
   # unnest for use in invitrodb
   modelnames <- output$modelnames
@@ -148,8 +143,6 @@ tcplFit2_unnest <- function(output) {
 #' @param dat a dataframe that has all of the fitting parameters in the style of tcplloaddata
 #'
 #' @return a list of fitting parameters that can be consumed by tcplfit2
-#'
-#' @examples
 tcplFit2_nest <- function(dat) {
   # renest
   modelnames <- unique(dat$model)
