@@ -6,14 +6,17 @@
  Generic Plotting Function for tcpl}
 \usage{
 tcplPlot(
-  lvl = 4,
-  fld = NULL,
+  lvl = 5,
+  fld = "m4id",
   val = NULL,
   type = "mc",
   by = NULL,
   output = c("console", "pdf"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
-  multi = FALSE
+  multi = FALSE,
+  verbose = FALSE,
+  nrow = NULL,
+  ncol = NULL
 )
 }
 \arguments{
@@ -33,6 +36,12 @@ the same order as 'fld'.}
 \item{fileprefix}{prefix of filename}
 
 \item{multi}{Boolean, if multi is TRUE output 6 plots per page}
+
+\item{verbose}{By default FALSE, should a table with fitting parameters be included in the plot}
+
+\item{nrow}{Integer, number of rows in multiplot default of 2}
+
+\item{ncol}{Integer, number of columns in multiplot default of 3, 2 if verbose}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot
@@ -51,15 +60,13 @@ information.
 Leaving \code{fld} NULL will return all data.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
+## Store the current config settings, so they can be reloaded at the end
 ## of the examples
 conf_store <- tcplConfList()
 tcplConfExample()
 
-tcplPlot(lvl = 4, fld = "m4id", val = c(18609966))## Create a level 4 plot
+tcplPlot(lvl = 4, fld = "m4id", val = c(18609966)) ## Create a level 4 plot
 
 ## Reset configuration
 options(conf_store)
-
-
 }

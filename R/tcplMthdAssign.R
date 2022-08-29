@@ -33,6 +33,10 @@ tcplMthdAssign <- function(lvl, id, mthd_id, ordr = NULL, type) {
         
   }
   
+  if (lvl == 4 & !is.null(ordr)) {
+    dat[ , "exec_ordr" := ordr[match(get("mthd"), mthd_id)]]
+  }
+  
   setnames(dat, old = c("id", "mthd"), flds)
   
   mb <- paste(Sys.info()[c("login", "user", "effective_user")], collapse = ".")

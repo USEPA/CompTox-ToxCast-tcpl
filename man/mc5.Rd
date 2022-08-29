@@ -4,6 +4,11 @@
 \alias{mc5}
 \title{Perform level 5  
 multiple-concentration processing}
+\arguments{
+\item{ae}{Integer of length 1, assay endpoint id (aeid) for processing.}
+
+\item{wr}{Logical, whether the processed data should be written to the tcpl database}
+}
 \value{
 A boolean of length 1, indicating the success of the processing, or 
 when 'wr' is FALSE, a list where the first element is a boolean indiciating 

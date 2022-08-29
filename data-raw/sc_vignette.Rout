@@ -1,0 +1,318 @@
+
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> #==============================================================================#
+> # NOTE: This script is written such that it is run from 'top' to 'bottom'
+> #       or programmatically via the Terminal.
+> #         ('R CMD BATCH --vanilla <script.R>'.)
+> #       Please do not jump around when running this script.
+> #==============================================================================#
+> ## r packages
+> library(tcplfit2)
+> library(tcpl)
+tcpl (v2.1.0) loaded with the following settings:
+  TCPL_DB:    /ccte/home2/sdavid01/R/x86_64-redhat-linux-gnu-library/3.6/tcpl/csv
+  TCPL_USER:  NA
+  TCPL_HOST:  NA
+  TCPL_DRVR:  tcplLite
+Default settings stored in tcpl config file. See ?tcplConf for more information.
+> 
+> library(here)
+here() starts at /ccte/home2/sdavid01/Git/tcpl
+> library(data.table)
+> library(devtools)
+Loading required package: usethis
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:data.table’:
+
+    between, first, last
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> library(tictoc)
+> library(numbers)
+> #---------------------------#
+> ## code to prepare `sc_vignette` dataset goes here
+> # source the user ID, password, host, and database information for connection
+> #  - NOTE: To replicate one will need to save their own 'db_cred.R', including
+> #          the 'userid', 'userpwd', 'host', and DB collection via 'ivtdb'.
+> source(file = here::here("data-raw/db_cred.R"),verbose = FALSE)
+> # connect to the DB
+> tcplConf(user = userid,
++          pass = userpwd,
++          host = host,
++          db = ivtdb,
++          drvr = "MySQL")
+> # obtain all level 0 data
+> sc.lvl0 <- tcplLoadData(lvl = 0,type = 'sc')
+> # obtain all acid's for Attagene ('ATG')
+> atg.acid <- tcplLoadAcid() %>%
++   # keep only the 'ATG' assay components
++   filter(.,grepl(acnm,pattern = "^ATG"))
+> # check if there are any attagene acid's in single concentration data
+> any(unique(atg.acid[,acid])%in%unique(sc.lvl0[,acid]))
+[1] TRUE
+> # obtain the atg acid's in single concentration data
+> atg.sc.ids <- which(unique(atg.acid[,acid])%in%unique(sc.lvl0[,acid])) %>% 
++   unique(atg.acid[,acid])[.]
+> # obtain the data.table of acid's in single concentration data
+> atg.acid.sc <- atg.acid %>% filter(.,acid%in%atg.sc.ids) %>% as.data.table() 
+> # print the data.table of acid's
+> atg.acid.sc
+    acid              acnm
+ 1:   32       ATG_Ahr_CIS
+ 2:   33      ATG_AP_1_CIS
+ 3:   34      ATG_AP_2_CIS
+ 4:   35       ATG_BRE_CIS
+ 5:   36     ATG_C_EBP_CIS
+ 6:   85     ATG_CAR_TRANS
+ 7:   37       ATG_CMV_CIS
+ 8:   38       ATG_CRE_CIS
+ 9:   39   ATG_DR4_LXR_CIS
+10:   40   ATG_DR5_RAR_CIS
+11:   41     ATG_E_Box_CIS
+12:   42       ATG_E2F_CIS
+13:   43       ATG_EGR_CIS
+14:   86     ATG_ERa_TRANS
+15:   44       ATG_ERE_CIS
+16:   87    ATG_ERRa_TRANS
+17:   88    ATG_ERRg_TRANS
+18:   45       ATG_Ets_CIS
+19:   46     ATG_FoxA2_CIS
+20:   47      ATG_FoxO_CIS
+21:   89     ATG_FXR_TRANS
+22:   48      ATG_GATA_CIS
+23:   49       ATG_GLI_CIS
+24:   91      ATG_GR_TRANS
+25:   50       ATG_GRE_CIS
+26:   51     ATG_HIF1a_CIS
+27:   92   ATG_HNF4a_TRANS
+28:   52      ATG_HNF6_CIS
+29:   93    ATG_Hpa5_TRANS
+30:   53       ATG_HSE_CIS
+31:   54       ATG_IR1_CIS
+32:   55      ATG_ISRE_CIS
+33:   94    ATG_LXRa_TRANS
+34:   95    ATG_LXRb_TRANS
+35:   56      ATG_M_06_CIS
+36:   96    ATG_M_06_TRANS
+37:   57      ATG_M_19_CIS
+38:   97    ATG_M_19_TRANS
+39:   58      ATG_M_32_CIS
+40:   98    ATG_M_32_TRANS
+41:   59      ATG_M_61_CIS
+42:   99    ATG_M_61_TRANS
+43:   60       ATG_MRE_CIS
+44:   61       ATG_Myb_CIS
+45:   62       ATG_Myc_CIS
+46:   63     ATG_NF_kB_CIS
+47:   64       ATG_NFI_CIS
+48:   65      ATG_NRF1_CIS
+49:   66  ATG_NRF2_ARE_CIS
+50:  100   ATG_NURR1_TRANS
+51:   67   ATG_Oct_MLP_CIS
+52:   68       ATG_p53_CIS
+53:   69      ATG_Pax6_CIS
+54:   70     ATG_PBREM_CIS
+55:  101   ATG_PPARa_TRANS
+56:  102   ATG_PPARd_TRANS
+57:  103   ATG_PPARg_TRANS
+58:   71      ATG_PPRE_CIS
+59:  104     ATG_PXR_TRANS
+60:   72      ATG_PXRE_CIS
+61:  105    ATG_RARa_TRANS
+62:  106    ATG_RARb_TRANS
+63:  107    ATG_RARg_TRANS
+64:  108    ATG_RORb_TRANS
+65:   73      ATG_RORE_CIS
+66:  109    ATG_RORg_TRANS
+67:  110    ATG_RXRa_TRANS
+68:  111    ATG_RXRb_TRANS
+69:   74       ATG_Sox_CIS
+70:   75       ATG_Sp1_CIS
+71:   76     ATG_SREBP_CIS
+72:   77     ATG_STAT3_CIS
+73:   78        ATG_TA_CIS
+74:   79       ATG_TAL_CIS
+75:   80 ATG_TCF_b_cat_CIS
+76:   81      ATG_TGFb_CIS
+77:  112   ATG_THRa1_TRANS
+78:  113     ATG_VDR_TRANS
+79:   82      ATG_VDRE_CIS
+80:   83      ATG_Xbp1_CIS
+    acid              acnm
+> # obtain the aeid's for the atg single concentration data
+> atg.aeid.sc <- tcplLoadAeid(fld = 'acid',val = atg.acid.sc) %>% 
++   filter(.,grepl(aenm,pattern = "up$"))
+> # obtain the level 2 sc data
+> tictoc::tic()
+> atg.sc2 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 2,type = "sc",
++                fld = 'aeid',val = atg.aeid.sc[,aeid])
++ )
+> tictoc::toc()
+0.393 sec elapsed
+> # randomly choose acid's that have at least 1 hitcall = 1
+> atg.aenm.active <- atg.sc2 %>% 
++   # keep only the cases where there is an active hit call
++   filter(.,hitc == 1)
+> 
+> set.seed(1007)
+> atg.aenm.sc.ss <- sample(1:nrow(atg.aenm.active),size = 1,replace = FALSE) %>% 
++   atg.aenm.active[.,aenm]
+> # obtain the acid for the example dataset
+> atg.acid.sc.ss <- tcplLoadAcid(fld = 'aenm',val = atg.aenm.sc.ss)
+> # obtain the aeid for the example dataset
+> atg.aeid.sc.ss <- tcplLoadAeid(fld = 'aenm',val = atg.aenm.sc.ss)
+> # obtain level 0 sc data
+> tictoc::tic()
+> atg.sc0 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 0,type = "sc",
++                fld = 'acid',val = atg.acid.sc.ss[,acid])
++ )
+> tictoc::toc()
+0.279 sec elapsed
+> # obtain level 1 sc data
+> tictoc::tic()
+> atg.sc1 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 1,type = "sc",
++                fld = 'acid',val = atg.acid.sc.ss[,acid])
++ )
+> tictoc::toc()
+0.609 sec elapsed
+> # reload the level 2 sc data
+> #   This time we only need the selected example dataset
+> tictoc::tic()
+> atg.sc2 <- tcplPrepOtpt(
++   tcplLoadData(lvl = 2,type = "sc",
++                fld = 'aeid',val = atg.aeid.sc.ss[,aeid])
++ )
+> tictoc::toc()
+0.291 sec elapsed
+> # narrow down to several compounds/spids
+> tictoc::tic()
+> atg.sc2.ss <- atg.sc2 %>%
++   # group the data by their hitcall - i.e. activity
++   dplyr::group_by(hitc) %>% 
++   # randomly select 10 compounds (5 active & 5 inactive)
++   dplyr::slice_sample(.,n = 5,replace = FALSE) %>% 
++   # ungroup the data
++   dplyr::ungroup() %>% 
++   # re-arrange the observations by compound name
++   dplyr::arrange(chnm) %>% 
++   # convert to a data.table format
++   as.data.table()
+> tictoc::toc()
+0.02 sec elapsed
+> # subset levels 0 and 1 data based on spids in the level 5 subset
+> tictoc::tic()
+> atg.sc0.ss <- atg.sc0 %>% 
++   # keep only those observations that are related to the level 2 spids
++   dplyr::filter(spid %in% atg.sc2.ss[,spid])
+> tictoc::toc()
+0.002 sec elapsed
+> 
+> tictoc::tic()
+> atg.sc1.ss <- atg.sc1 %>% 
++   # keep only those observations that are related to the level 2 spids
++   dplyr::filter(spid %in% atg.sc2.ss[,spid]) %>% 
++   # keep only those observations that are related to the 'up' endpoints
++   dplyr::filter(.,grepl(aenm,pattern = "up$"))
+> tictoc::toc()
+0.002 sec elapsed
+> 
+> # collate the data into a single object 'sc_vignette'
+> sc_vignette <- list(
++   sc0 = atg.sc0.ss,sc1 = atg.sc1.ss,sc2 = atg.sc2.ss
++ )
+> #---------------------------#
+> ## save the data
+> usethis::use_data(sc_vignette, overwrite = TRUE)
+✓ Setting active project to '/ccte/home2/sdavid01/Git/tcpl'
+✓ Saving 'sc_vignette' to 'data/sc_vignette.rda'
+• Document your data (see 'https://r-pkgs.org/data.html')
+> #---------------------------#
+> ## session information
+> Sys.time()
+[1] "2022-08-16 11:30:32 EDT"
+> sessionInfo()
+R version 3.6.0 (2019-04-26)
+Platform: x86_64-redhat-linux-gnu (64-bit)
+Running under: Red Hat Enterprise Linux
+
+Matrix products: default
+BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] numbers_0.7-5     tictoc_1.0        tidyr_1.1.3       dplyr_1.0.5      
+ [5] devtools_2.4.2    usethis_2.0.1     data.table_1.14.0 here_1.0.1       
+ [9] tcpl_2.1.0        tcplfit2_0.1.3   
+
+loaded via a namespace (and not attached):
+ [1] httr_1.4.2          pkgload_1.2.1       bit64_4.0.5        
+ [4] jsonlite_1.7.2      viridisLite_0.3.0   gsubfn_0.7         
+ [7] blob_1.2.3          remotes_2.3.0       sessioninfo_1.1.1  
+[10] globals_0.15.0      numDeriv_2016.8-1.1 pillar_1.5.1       
+[13] RSQLite_2.2.14      glue_1.4.2          chron_2.3-57       
+[16] digest_0.6.27       RColorBrewer_1.1-2  colorspace_2.0-0   
+[19] htmltools_0.5.1.1   pkgconfig_2.0.3     listenv_0.8.0      
+[22] purrr_0.3.4         scales_1.1.1        processx_3.5.2     
+[25] tibble_3.1.0        generics_0.1.0      ggplot2_3.3.6      
+[28] sqldf_0.4-11        ellipsis_0.3.1      cachem_1.0.5       
+[31] withr_2.4.1         lazyeval_0.2.2      cli_2.5.0          
+[34] proto_1.0.0         magrittr_2.0.1      crayon_1.4.1       
+[37] memoise_2.0.0       ps_1.6.0            fs_1.5.0           
+[40] future_1.26.1       fansi_0.4.2         parallelly_1.31.1  
+[43] pkgbuild_1.2.0      tools_3.6.0         RMariaDB_1.2.1     
+[46] prettyunits_1.1.1   hms_1.0.0           lifecycle_1.0.0    
+[49] stringr_1.4.0       plotly_4.10.0       munsell_0.5.0      
+[52] callr_3.7.0         compiler_3.6.0      rlang_0.4.10       
+[55] grid_3.6.0          rstudioapi_0.13     htmlwidgets_1.5.3  
+[58] testthat_3.0.2      gtable_0.3.0        codetools_0.2-16   
+[61] DBI_1.1.2           R6_2.5.0            gridExtra_2.3      
+[64] lubridate_1.8.0     fastmap_1.1.0       future.apply_1.9.0 
+[67] bit_4.0.4           utf8_1.2.1          rprojroot_2.0.2    
+[70] desc_1.3.0          stringi_1.5.3       parallel_3.6.0     
+[73] Rcpp_1.0.8.3        vctrs_0.3.6         tidyselect_1.1.0   
+> #---------------------------#
+> 
+> proc.time()
+   user  system elapsed 
+  4.857   0.678   7.835 

@@ -4,7 +4,7 @@
 \alias{tcplLoadData}
 \title{Load tcpl data}
 \usage{
-tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc")
+tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL)
 }
 \arguments{
 \item{lvl}{Integer of length 1, the level of data to load}
@@ -15,6 +15,9 @@ tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc")
 the same order as 'fld'.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
+
+\item{add.fld}{Boolean if true we want to return 
+the additional parameters fit with tcplfit2}
 }
 \value{
 A data.table containing data for the given fields.
@@ -54,12 +57,12 @@ mc \tab 7 \tab mc4, mc7
 }
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
+## Store the current config settings, so they can be reloaded at the end
 ## of the examples
 conf_store <- tcplConfList()
 tcplConfExample()
 
-## Load all of level 0 for multiple-concentration data, note 'mc' is the 
+## Load all of level 0 for multiple-concentration data, note 'mc' is the
 ## default value for type
 tcplLoadData(lvl = 0)
 
@@ -70,13 +73,12 @@ tcplLoadData(lvl = 1, type = "sc")
 tcplListFlds(tbl = "mc0")
 tcplListFlds(tbl = "mc1")
 
-## Load level 0 data where the well type is "t" and the concentration 
+## Load level 0 data where the well type is "t" and the concentration
 ## index is 3 or 4
 tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
 
 ## Reset configuration
 options(conf_store)
-
 }
 \seealso{
 \code{\link{tcplQuery}}, \code{\link{data.table}}

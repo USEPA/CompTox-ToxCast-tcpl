@@ -10,3 +10,6 @@ README.md
 CONTRIBUTING.md
 cran-comments.md
 ^CRAN-RELEASE$
+^CRAN-SUBMISSION$
+^data-raw$
+^LICENSE\.md$

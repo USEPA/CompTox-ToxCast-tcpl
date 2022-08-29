@@ -580,7 +580,32 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)),
                        resp := 1-(cval/bval)])
       list(e1)
+    },    
+    
+      bval.apid.nullconc.med = function(aeids) {
+        
+        e1 <- bquote(dat[J(.(aeids)), 
+                         bval := median(cval[wllt == "z"],
+                                        na.rm = TRUE),
+                         by = list(aeid, apid)])
+        list(e1)
       
+    },
+    bval.apid.lowconc.nmad = function(aeids) {
+      #nMad = mad(d, constant=1.4826, na.rm=T)
+      e1 <- bquote(dat[J(.(aeids)),
+                       bval := mad(cval[cndx %in% 1:2 & wllt == "t"],
+                                   constant = 1.4826,
+                                   na.rm = TRUE),
+                       by = list(aeid, apid)])
+      list(e1)
+    },
+    
+    resp.apid.lowconc.bmed= function(aeids) {
+      #Median = median(d, na.rm=T)
+      e1 <- bquote(dat[J(.(aeids)),
+                       resp := cval - median(cval[cndx %in% 1:2 & wllt == "t"],na.rm = TRUE),
+                       by = list(aeid, apid)])
     },
     
     bval.aeid.nwlls.med = function(aeids) {
@@ -589,9 +614,39 @@ mc3_mthds <- function() {
                        by = list(aeid)])
       list(e1)
       
-    }
+    },
+    
+    resp.incr.zerocenter.fc = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)),
+                       resp := (cval/bval)-1])
+      list(e1)
+    },
+    
+    resp.mult100 = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), resp := resp * 100])
+      list(e1)
+      
+    }, 
+    
+    pval.twlls.99pct = function(aeids) {
+      e1 <- bquote(dat[J(.(aeids)), pval := quantile(cval[wllt=='t'], probs = 0.99, na.rm=TRUE),
+                       by=list(aeid)])
+      list(e1)
+      },
+    
+  	pval.neg.100 = function(aeids) {
+      e1 <- bquote(dat[J(.(aeids)), pval := -100,
+                       by=list(aeid)])
+      list(e1)
+      }
+    
+  
     
   )
+  
+  
   
 }
 

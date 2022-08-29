@@ -6,7 +6,8 @@
 #' @templateVar LVL 5
 #' @templateVar type mc
 #' 
-#' @inheritParams mc4
+#' @param ae 	Integer of length 1, assay endpoint id (aeid) for processing.
+#' @param wr Logical, whether the processed data should be written to the tcpl database
 #' 
 #' @details
 #' Level 5 multiple-concentration hit-calling uses the fit parameters and the 
@@ -48,7 +49,7 @@ mc5 <- function(ae, wr = FALSE) {
   
   stime <- Sys.time()
   
-  ## Load level 4 data
+    ## Load level 4 data
   dat <- tcplLoadData(lvl = 4L, type = "mc", fld = "aeid", val = ae)
   
   ## Check if any level 4 data was loaded
@@ -93,6 +94,23 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Determine final cutoff
   dat[ , coff := max(coff)]
+  
+  ## Check to see if we are using the v3 schema
+  # currently can only use one coff
+  if (check_tcpl_db_schema()) {
+    cutoff <- max(dat$coff)
+    #can remove this once loading of data is working correctly
+    dat <- tcplQuery(paste0("SELECT  
+    `mc4`.`m4id`,    `mc4`.`aeid`,    `mc4`.`spid`,    `mc4`.`bmad`,    `mc4`.`resp_max`,    `mc4`.`resp_min`,    `mc4`.`max_mean`,    `mc4`.`max_mean_conc`,
+    `mc4`.`max_med`,    `mc4`.`max_med_conc`,    `mc4`.`logc_max`,    `mc4`.`logc_min`,    `mc4`.`nconc`,    `mc4`.`npts`,    `mc4`.`nrep`,    `mc4`.`nmed_gtbl`,
+    `mc4`.`tmpi`,	  `mc4_param`.`model`,    `mc4_param`.`model_param`,    `mc4_param`.`model_val`
+    FROM mc4 inner join mc4_param on mc4.m4id = mc4_param.m4id where mc4.aeid = ",ae,";"))
+    # if we're using v3 schema we want to tcplfit2
+    dat <- tcplHit2(dat, coff = cutoff)
+  } else {
+    # Legacy fitting
+  
+  
   
   ## Apply the model type
   dat[ , model_type := model_type]
@@ -323,6 +341,11 @@ mc5 <- function(ae, wr = FALSE) {
     
   }
   
+  outcols <- c("m4id", "aeid", "modl", "hitc", "fitc", 
+               "coff", "actp", "model_type", modl_pars) # Added model_type here
+  dat <- dat[ , .SD, .SDcols = outcols]
+  }
+  
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
   cat("Processed L5 AEID", ae, " (", nrow(dat), 
@@ -330,9 +353,7 @@ mc5 <- function(ae, wr = FALSE) {
   
   res <- TRUE
   
-  outcols <- c("m4id", "aeid", "modl", "hitc", "fitc", 
-               "coff", "actp", "model_type", modl_pars) # Added model_type here
-  dat <- dat[ , .SD, .SDcols = outcols]
+  
   
   ## Load into mc5 table -- else return results
   if (wr) {

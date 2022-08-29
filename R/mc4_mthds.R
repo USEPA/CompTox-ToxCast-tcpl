@@ -57,7 +57,36 @@ mc4_mthds <- function() {
       e1 <- bquote(dat[ , bmad := mad(resp[wllt == "n"], na.rm = TRUE)])
       list(e1)
       
+    },
+    
+    onesd.aeid.lowconc.twells = function() {
+      
+      e1 <- bquote(dat[ , osd := sd(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
+      list(e1)
+      
+    },
+    bmed.aeid.lowconc.twells = function() {
+      
+      e1 <- bquote(dat[ , bmed := median(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
+      list(e1)
+      
+    },
+    no.gnls.fit = function() {
+      
+      e1 <- bquote(dat[ ,fitmodels := list(c("cnst", "hill",  "poly1", "poly2", "pow", "exp2", "exp3","exp4", "exp5"))])
+      list(e1)
+      
+    },
+    nmad.apid.null.zwells = function() {
+      
+      e1 <- bquote(dat[, 
+                       bmad := mad(resp[wllt == "z"], constant=1.4826,
+                                      na.rm = TRUE),
+                       by = list(aeid, apid)])
+      list(e1)
+      
     }
+    
   )
 }
 

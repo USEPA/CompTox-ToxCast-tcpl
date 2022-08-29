@@ -13,7 +13,9 @@
 #' @param fld Character, the field(s) to query on
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
-#'
+#' @param add.fld Boolean if true we want to return 
+#' the additional parameters fit with tcplfit2
+#' 
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
 #' for single concentration data. Multiple concentration data will be loaded
@@ -25,7 +27,7 @@
 #' information.
 #'
 #' Leaving \code{fld} NULL will return all data.
-#' 
+#'
 #' Valid \code{fld} inputs are based on the data level and type:
 #' \tabular{ccl}{
 #' type \tab lvl \tab  Queried tables \cr
@@ -43,40 +45,43 @@
 #' mc \tab 6 \tab mc4, mc6 \cr
 #' mc \tab 7 \tab mc4, mc7
 #' }
-#' 
+#'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end 
+#' ## Store the current config settings, so they can be reloaded at the end
 #' ## of the examples
 #' conf_store <- tcplConfList()
 #' tcplConfExample()
-#' 
-#' ## Load all of level 0 for multiple-concentration data, note 'mc' is the 
+#'
+#' ## Load all of level 0 for multiple-concentration data, note 'mc' is the
 #' ## default value for type
 #' tcplLoadData(lvl = 0)
-#' 
+#'
 #' ## Load all of level 1 for single-concentration
 #' tcplLoadData(lvl = 1, type = "sc")
-#' 
+#'
 #' ## List the fields available for level 1, coming from tables mc0 and mc1
 #' tcplListFlds(tbl = "mc0")
 #' tcplListFlds(tbl = "mc1")
-#' 
-#' ## Load level 0 data where the well type is "t" and the concentration 
+#'
+#' ## Load level 0 data where the well type is "t" and the concentration
 #' ## index is 3 or 4
 #' tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
-#' 
+#'
 #' ## Reset configuration
 #' options(conf_store)
-#'
 #' @return A data.table containing data for the given fields.
 #'
 #' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
 #'
 #' @import data.table
+#' @importFrom tidyr pivot_wider
 #' @export
 
-tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
-
+tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL) {
+  #variable binding
+  model <- model_param <- model_val <- NULL
+  hit_param <- hit_val <- NULL
+  
   if (length(lvl) > 1 | length(type) > 1) {
     stop("'lvl' & 'type' must be of length 1.")
   }
@@ -84,7 +89,6 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
   tbls <- NULL
 
   if (lvl == 0L && type == "mc") {
-
     tbls <- c("mc0")
 
     qformat <-
@@ -104,11 +108,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       FROM
         mc0
       "
-
   }
 
   if (lvl == 0L && type == "sc") {
-
     tbls <- c("sc0")
 
     qformat <-
@@ -128,11 +130,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       FROM
         sc0
       "
-
   }
 
   if (lvl == 1L && type == "mc") {
-
     tbls <- c("mc0", "mc1")
 
     qformat <-
@@ -158,11 +158,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       WHERE
         mc0.m0id = mc1.m0id
       "
-
   }
 
   if (lvl == 1L && type == "sc") {
-
     tbls <- c("sc0", "sc1")
 
     qformat <-
@@ -185,11 +183,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       WHERE
         sc0.s0id = sc1.s0id
       "
-
   }
 
   if (lvl == 2L && type == "mc") {
-
     tbls <- c("mc0", "mc1", "mc2")
 
     qformat <-
@@ -217,11 +213,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
         AND
         mc1.m0id = mc2.m0id
       "
-
   }
 
   if (lvl == 2L && type == "sc") {
-
     tbls <- c("sc2")
 
     qformat <-
@@ -237,13 +231,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       FROM
         sc2
       "
-    
   }
-  
+
   if (lvl == "agg" && type == "sc") {
-    
     tbls <- c("sc1", "sc2_agg")
-    
+
     qformat <-
       "
       SELECT
@@ -259,11 +251,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       WHERE
         sc1.s1id = sc2_agg.s1id
       "
-    
   }
 
   if (lvl == 3L && type == "mc") {
-
     tbls <- c("mc0", "mc1", "mc3")
 
     qformat <-
@@ -292,11 +282,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
         AND
         mc1.m0id = mc3.m0id
       "
-
   }
 
   if (lvl == "agg" && type == "mc") {
-
     tbls <- c("mc3", "mc4_agg", "mc4")
 
     qformat <-
@@ -320,11 +308,66 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
         AND
         mc4.m4id = mc4_agg.m4id
       "
-
   }
+  if (lvl == 4L && type == "mc" && check_tcpl_db_schema()) {
+    tbls <- c("mc4")
+    if (is.null(add.fld)) {
+      qformat <-
+        "
+      SELECT
+        m4id,
+        aeid,
+        spid,
+        bmad,
+        resp_max,
+        resp_min,
+        max_mean,
+        max_mean_conc,
+        max_med,
+        max_med_conc,
+        logc_max,
+        logc_min,
+        nconc,
+        npts,
+        nrep,
+        nmed_gtbl
+        FROM
+        mc4
+        "
+    }
+    else {
+      tbls <- c("mc4","mc4_param")
+      qformat <-
+        "
+      SELECT
+        mc4.m4id,
+        mc4.aeid,
+        spid,
+        bmad,
+        resp_max,
+        resp_min,
+        max_mean,
+        max_mean_conc,
+        max_med,
+        max_med_conc,
+        logc_max,
+        logc_min,
+        nconc,
+        npts,
+        nrep,
+        nmed_gtbl,
+        model,
+        model_param,
+        model_val
+        FROM
+        mc4_param,
+        mc4
+      WHERE
+        mc4.m4id = mc4_param.m4id 
+        "
 
-  if (lvl == 4L && type == "mc") {
-
+    }
+  } else if (lvl == 4L && type == "mc") {
     tbls <- c("mc4")
 
     qformat <-
@@ -384,11 +427,83 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       FROM
         mc4
       "
-
   }
 
-  if (lvl == 5L && type == "mc") {
-
+  if (lvl == 5L && type == "mc" && check_tcpl_db_schema()) {
+    if (is.null(add.fld)) {
+      tbls <- c("mc4", "mc5")
+      
+      qformat <-
+        "
+      SELECT
+        m5id,
+        mc5.m4id,
+        mc5.aeid,
+        spid,
+        bmad,
+        resp_max,
+        resp_min,
+        max_mean,
+        max_mean_conc,
+        max_med,
+        max_med_conc,
+        logc_max,
+        logc_min,
+        nconc,
+        npts,
+        nrep,
+        nmed_gtbl,
+        hitc,
+        modl,
+        fitc,
+        coff
+      FROM
+        mc4,
+        mc5
+      WHERE
+        mc4.m4id = mc5.m4id
+      "
+    }
+    else {
+      tbls <- c("mc4","mc5","mc5_param")
+      qformat <-
+        "
+      SELECT
+        mc5.m5id,
+        mc5.m4id,
+        mc5.aeid,
+        spid,
+        bmad,
+        resp_max,
+        resp_min,
+        max_mean,
+        max_mean_conc,
+        max_med,
+        max_med_conc,
+        logc_max,
+        logc_min,
+        nconc,
+        npts,
+        nrep,
+        nmed_gtbl,
+        hitc,
+        modl,
+        fitc,
+        coff,
+        hit_param,
+        hit_val
+      FROM
+        mc4,
+        mc5,
+        mc5_param
+      WHERE
+        mc4.m4id = mc5.m4id
+      AND
+        mc5.m5id = mc5_param.m5id
+        "
+      
+    }
+  } else if (lvl == 5L && type == "mc") {
     tbls <- c("mc4", "mc5")
 
     qformat <-
@@ -468,11 +583,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       WHERE
         mc4.m4id = mc5.m4id
       "
-
   }
 
   if (lvl == 6L && type == "mc") {
-
     tbls <- c("mc4", "mc6")
 
     qformat <-
@@ -493,13 +606,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
       WHERE
         mc6.m4id = mc4.m4id
       "
-
   }
-  
+
   if (lvl == 7L && type == "mc") {
-    
     tbls <- c("mc7")
-    
+
     qformat <-
       "
     SELECT
@@ -510,38 +621,41 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc") {
     WHERE
       mc7.m4id = mc4.m4id
     "
-    
   }
 
   if (is.null(tbls)) stop("Invalid 'lvl' and 'type' combination.")
 
   if (!is.null(fld)) {
-
     fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
 
     wtest <- lvl %in% c(0, 4) | (lvl == 2 & type == "sc")
+    if(!is.null(add.fld)) wtest <- FALSE
     qformat <- paste(qformat, if (wtest) "WHERE" else "AND")
 
-    qformat <- paste0(qformat,
-                      "  ",
-                      paste(fld, "IN (%s)", collapse = " AND "))
+    qformat <- paste0(
+      qformat,
+      "  ",
+      paste(fld, "IN (%s)", collapse = " AND ")
+    )
     qformat <- paste0(qformat, ";")
 
     if (!is.list(val)) val <- list(val)
     val <- lapply(val, function(x) paste0("\"", x, "\"", collapse = ","))
 
     qstring <- do.call(sprintf, args = c(qformat, val))
-
   } else {
-
     qstring <- qformat
-
   }
 
-  dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbls))
+  dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = tbls))
+  
+  # pivot table so 1 id per return and only return added fields
+  if(!is.null(add.fld)){
+    if(lvl == 4L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(model,model_param), values_from = model_val))
+    if(lvl == 5L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(hit_param), values_from = hit_val))
+  }
 
   dat[]
-
 }
 
 #-------------------------------------------------------------------------------
