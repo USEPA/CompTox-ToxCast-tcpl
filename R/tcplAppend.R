@@ -42,6 +42,9 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
                     host = getOption("TCPL_HOST"),
                     dbname = db,
                     bigint = "numeric")
+    additional_pars <- .Options[grepl("TCPL_(?!USER|HOST|DB|DRVR|HOST|PASS)",names(.Options),perl = TRUE)]
+    names(additional_pars) <- tolower(gsub("TCPL_","",names(additional_pars)))
+    db_pars <- append(db_pars,additional_pars)
     
     dbcon <- do.call(dbConnect, db_pars)
 
