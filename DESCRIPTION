@@ -52,7 +52,7 @@ Suggests:
     kableExtra,
     colorspace,
     magrittr
-License: GPL-2
+License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
