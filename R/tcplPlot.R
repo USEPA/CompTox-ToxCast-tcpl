@@ -35,6 +35,7 @@
 #' @import data.table
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom ggplot2 ggsave
+#' @importFrom dplyr %>% all_of pull
 #' @export
 #'
 #' @examples
@@ -92,13 +93,19 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         return(tcplggplot(dat,verbose = verbose))
       )
     } else {
-      plot_list <- by(dat,seq(nrow(dat)),tcplggplot,verbose = verbose)
-      # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
-      m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
-      if(!verbose){
-        ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
-      else{
-        ggsave(paste0(fileprefix, ".pdf"), m1,width = ncol*7, height = nrow*5)
+      split_dat <- list(dat)
+      if(!is.null(by)){
+        split_dat <- split(dat,f = factor(dat %>% pull(all_of(by))))
+      }
+      for(d in split_dat){
+        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose)
+        # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
+        m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
+        if(!verbose){
+          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
+        else{
+          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
+        }
       }
     }
     
