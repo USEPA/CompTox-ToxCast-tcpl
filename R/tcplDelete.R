@@ -23,7 +23,7 @@
 tcplDelete <- function(tbl, fld, val, db) {
   
   # Check for valid inputs
-  if (length(tbl) != 1 | class(tbl) != "character") {
+  if (length(tbl) != 1 || !is(tbl,"character")) {
     stop("The input 'tbl' must be a character of length one.")
   }
   
