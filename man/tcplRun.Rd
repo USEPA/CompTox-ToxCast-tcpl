@@ -33,7 +33,7 @@ when using Windows operating system}
 \item{outfile}{Character of length 1, the name of the log file (optional)}
 
 \item{runname}{Character of length 1, the name of the run to be used in the 
-oufile (optional)}
+outfile (optional)}
 }
 \value{
 A list containing the results from each level of processing. Each 

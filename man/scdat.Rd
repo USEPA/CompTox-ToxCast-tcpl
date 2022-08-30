@@ -21,7 +21,7 @@ A data frame with 320 rows and 10 variables:
 }
 }
 \source{
-Toxcast database
+ToxCast database
 }
 \usage{
 scdat

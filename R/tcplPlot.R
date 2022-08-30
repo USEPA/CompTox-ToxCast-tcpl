@@ -13,7 +13,7 @@
 #' @param fld Character, the field(s) to query on
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
-#' @param output how should the output be presnted
+#' @param output how should the output be presented
 #' @param multi Boolean, if multi is TRUE output 6 plots per page
 #' @param fileprefix prefix of filename
 #' @param by Paramater to divide files into e.g. aeid

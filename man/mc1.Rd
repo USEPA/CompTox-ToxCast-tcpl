@@ -15,7 +15,7 @@ database}
 }
 \value{
 A boolean of length 1, indicating the success of the processing, or 
-when 'wr' is FALSE, a list where the first element is a boolean indiciating 
+when 'wr' is FALSE, a list where the first element is a boolean indicating 
 the success of processing and the second element is a data.table containing 
 the processed data
 }

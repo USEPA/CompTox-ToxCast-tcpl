@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcpldbStats.R
 \name{tcpldbStats}
 \alias{tcpldbStats}
-\title{Get summary statisitcs for the database}
+\title{Get summary statistics for the database}
 \usage{
 tcpldbStats(type = "all", val = NULL)
 }

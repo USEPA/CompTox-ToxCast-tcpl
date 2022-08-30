@@ -31,7 +31,7 @@ the same order as 'fld'.}
 
 \item{by}{Paramater to divide files into e.g. aeid}
 
-\item{output}{how should the output be presnted}
+\item{output}{how should the output be presented}
 
 \item{fileprefix}{prefix of filename}
 

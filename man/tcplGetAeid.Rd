@@ -11,7 +11,7 @@ tcplGetAeid(name)
 }
 \description{
 \code{tcplGetAeid} takes a string(name) and finds the assay component endpoint names that match the string and the 
-aeids associated with those names.The function performes a regular expression like matching for strings in the 
+aeids associated with those names.The function performs a regular expression like matching for strings in the 
 assay component endpoint name column in the assay component endpoint table.
 }
 \examples{

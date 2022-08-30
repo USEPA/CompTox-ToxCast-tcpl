@@ -17,7 +17,7 @@
 #'          \item{srcf}{source file containing the data}
 #'           \item{acsn}{assay component source name}
 #' }
-#' @source Toxcast database
+#' @source ToxCast database
 "scdat"
 #' A subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor.
 #'
@@ -37,7 +37,7 @@
 #'          \item{srcf}{source file containing the data}
 #'           \item{acsn}{assay component source name}
 #' }
-#' @source Toxcast database
+#' @source ToxCast database
 "mcdat"
 #' Chemical library of tested chemicals in the example datasets with the corresponding sample IDs.
 #'
@@ -52,7 +52,7 @@
 #'       \item{chid}{unique chemical ID number for tcpl}
 #'
 #' }
-#' @source Toxcast database
+#' @source ToxCast database
 "chdat"
 
 

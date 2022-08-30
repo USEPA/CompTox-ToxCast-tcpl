@@ -17,7 +17,7 @@ A data frame with 6 rows and 6 variables:
 }
 }
 \source{
-Toxcast database
+ToxCast database
 }
 \usage{
 chdat
