@@ -18,7 +18,7 @@
 #' when using Windows operating system
 #' @param outfile Character of length 1, the name of the log file (optional)
 #' @param runname Character of length 1, the name of the run to be used in the 
-#' oufile (optional)
+#' outfile (optional)
 #'                
 #' @details
 #' The \code{tcplRun} function is the core processing function within the 

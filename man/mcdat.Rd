@@ -20,7 +20,7 @@ A data frame with 14183 rows and 10 variables:
 }
 }
 \source{
-Toxcast database
+ToxCast database
 }
 \usage{
 mcdat

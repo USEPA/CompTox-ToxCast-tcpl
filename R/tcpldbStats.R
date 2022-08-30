@@ -2,7 +2,7 @@
 # Generate summary stats for the table
 #----------------------------------------------------------------------------------
 
-#' @title Get summary statisitcs for the database
+#' @title Get summary statistics for the database
 #' 
 #' @description 
 #' \code{tcpldbStats} takes a string(type) and an optional parameter(val) to return the summary statistics on the entire tcplLite database

@@ -126,7 +126,7 @@ tcplRegister(what = "spid",
                           by = "casn")[ , list(spid, chid)])
 ```
 
-Optionally, the user can subdivide the chemcial IDs into different groups or libraries. For illustration, the chemical IDs will be arbitrarily divided into two chemical libraries, with the even numbered chemical IDs in group 1 and the odd numbered chemical IDs in group 2.
+Optionally, the user can subdivide the chemical IDs into different groups or libraries. For illustration, the chemical IDs will be arbitrarily divided into two chemical libraries, with the even numbered chemical IDs in group 1 and the odd numbered chemical IDs in group 2.
 
 ```{r eval = FALSE}
 ## Register Chemical Libraries ##
@@ -273,7 +273,7 @@ Normalizing to fold-change also requires three methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 2. one to calculate the fold-change, and <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 3. one to log-transform the fold-change values ("resp.fc"). <br /><br />
 
-Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formluae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
+Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
 
 $$  resp.pc = \frac{cval - bval}{pval - bval}*100  $$
 
