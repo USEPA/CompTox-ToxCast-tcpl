@@ -7,7 +7,7 @@ Authors@R: c(
     person("Jason","Brown",role = "ctb", email = "brown.jason@epa.gov"),
     person("Sarah E","Davidson-Fritz",role = "ctb",email = "davidsonfritz.sarah@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
     person("Madison","Feshuk",role = "ctb",email = "feshuk.madison@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
-    person("Lori","Kolaczkowski",role = "ctb",email = "kolaczkowski.lori@epa.gov")
+    person("Lori","Kolaczkowski",role = "ctb",email = "kolaczkowski.lori@epa.gov"),
     person("Todd", "Zurlinden", role="ctb"),
     person("Parth", "Kothiya", role = "ctb"),
     person("Woodrow R", "Setzer", role = "ctb"),

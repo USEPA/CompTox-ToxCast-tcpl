@@ -13,7 +13,7 @@
 \alias{tcplConfSave}
 \title{Functions for configuring the tcpl package}
 \usage{
-tcplConf(drvr = NULL, user = NULL, pass = NULL, host = NULL, db = NULL)
+tcplConf(drvr = NULL, user = NULL, pass = NULL, host = NULL, db = NULL, ...)
 
 tcplConfDefault()
 
@@ -37,6 +37,8 @@ tcplConfSave()
 \item{host}{Character of length 1, the database server}
 
 \item{db}{Character of length 1, the name of the tcpl database}
+
+\item{...}{Additional arguments that should be passed to dbConnect function}
 
 \item{show.pass}{Logical, should the password be returned}
 
