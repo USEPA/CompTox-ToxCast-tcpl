@@ -295,7 +295,7 @@
   \item{modl}{Best model fit from tcplFit2 curve-fitting}
   \item{fitc}{Fit category}
   \item{coff}{Cutoff}
-  \item{top_over_cutoff}{Ratio of the top of the best model fit curve and the cutoff, \frac{tp}{coff}}
+  \item{top_over_cutoff}{Ratio of the top of the best model fit curve and the cutoff}
   \item{rmse}{Root mean squared error}
   \item{a}{The y-scale parameter for poly1, poly2, pow, exp2, or exp3 model}
   \item{er}{Error term}
