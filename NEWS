@@ -1,3 +1,9 @@
+tcpl v3.0.0
+==============
+*add functionality for additional model fitting with tcplfit2
+*updated vignettes for new fitting
+*created updated plotting function
+
 tcpl v2.1.0
 ==============
 *updated for release with toxcast invitrodb data
