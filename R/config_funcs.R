@@ -11,6 +11,7 @@
 #' @param host Character of length 1, the database server 
 #' @param db   Character of length 1, the name of the tcpl database
 #' @param show.pass Logical, should the password be returned
+#' @param ... Additional arguments that should be passed to dbConnect function
 #' 
 #' @details
 #' Currently, the tcpl package only supports the "MySQL" and "tcplLite" database
