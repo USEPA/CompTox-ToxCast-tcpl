@@ -946,7 +946,7 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         caption="Table 7: *tcplfit2* model details.",
-        tfoot = "Model descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/web/packages/tcplfit2/tcplfit2.pdf>."
+        tfoot = "Model descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/package=tcplfit2/tcplfit2.pdf>."
 )
 
 ```
