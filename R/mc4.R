@@ -101,14 +101,20 @@ mc4 <- function(ae, wr = FALSE) {
   if (check_tcpl_db_schema()) {
     # if we're using v3 schema we want to tcplfit2
 
-    # check to see if we specified fit models for tcplfit2
+    # check to see if we specified fit models or bidirectional for tcplfit2
+    fitmodels <- c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5")
+    bidirectional <- TRUE
     if ("fitmodels" %in% names(dat)) {
       #extract the fitmodels from dat and pass to fitting
-      dat <- tcplFit2(dat, fitmodels = unique(dat$fitmodels)[[1]])
+      fitmodels <- unique(dat$fitmodels)[[1]]
 
-    } else {
-      dat <- tcplFit2(dat)
     }
+    if("bidirectional" %in% names(dat)){
+      bidirectional <- unique(dat$bidirectional)[[1]]
+    }
+    
+    dat <- tcplFit2(dat, fitmodels = fitmodels,bidirectional = bidirectional )
+    
     
     
   } else {
