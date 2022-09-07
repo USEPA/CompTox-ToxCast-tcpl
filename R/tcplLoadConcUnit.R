@@ -20,15 +20,15 @@
 tcplLoadConcUnit <- function(spid) {
   
   qformat <- 
-    "
+    '
     SELECT
       spid,
       tested_conc_unit AS conc_unit
     FROM
       sample
     WHERE
-      spid IN ('%s');
-    "
+      spid IN ("%s");
+    '
   
   qstring <- sprintf(qformat, paste(spid, collapse = "','"))
   
