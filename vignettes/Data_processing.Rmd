@@ -152,7 +152,7 @@ tcplLoadClib(field = "chid", val = 1:2)
 
 ## Source Data
 
-After registering the chemical and assay information, the data can be loaded into the <font face="CMTT10"> tcpl </font> local directory. The package includes two datasets from the ToxCast program, "scdat" and "mcdat", with a subset of single- and multiple-concentration data, respectively. The single- and multiple-concentration processing require the same level 0 fields; more information about level 0 pre-processing is in Introduction vignette.
+After registering the chemical and assay information, the data can be loaded into the <font face="CMTT10"> tcpl </font> local directory. The package includes two datasets from the ToxCast program, "scdat" and "mcdat", with a subset of single- and multiple-concentration data, respectively. The single- and multiple-concentration processing require the same level 0 fields; more information about level 0 pre-processing is in the Introduction vignette.
 
 ```{r eval = FALSE}
 ## Obtain the Data ##
@@ -273,7 +273,7 @@ Normalizing to fold-change also requires three methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 2. one to calculate the fold-change, and <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 3. one to log-transform the fold-change values ("resp.fc"). <br /><br />
 
-Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
+The ($\mathit{cval}$) is the corrected response value for a test well. Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
 
 $$  resp.pc = \frac{cval - bval}{pval - bval}*100  $$
 
@@ -1549,7 +1549,8 @@ tcplMthdAssign(lvl = 5, # data level
                type = "mc") # data type - multiple concentration
 ```
 
-Now that we have assigned methods for each level we can run pipeline with data with <font face="CMTT10">tcpl</font>.  This can be done in two ways (a) from start to finish (i.e. Level 0 to 5) with the assay component ID (acid) or (b) Level 0 to 3 with the assay component ID (acid) and Level 4 to 5 with the assay endpoint ID (aeid).
+Now that we have assigned methods for each level we can pipeline the data with <font face="CMTT10">tcpl</font>.  This can be done in two ways (a) from start to finish (i.e. Level 0 to 5) with the assay component ID (acid) or (b) Level 0 to 3 with the assay component ID (acid) and Level 4 to 5 with the assay endpoint ID (aeid).
+Option A may be helpful in scenarios when the data are new to the pipeline, whereas Option B or derivatives of Option B may be helpful in making pipeline updates or corrections to data already pipelined and stored in the database.
 
 **Option A:**
 
