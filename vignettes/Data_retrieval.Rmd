@@ -109,9 +109,9 @@ samples <- tcplQuery("SELECT * FROM sample;")
 The <font face="CMTT10">tcplLoadData</font> function can be used to load the data from the MySQL database into the R session. Further, the <font face="CMTT10">tcplPrepOtpt</font> function can be used in combination with <font face="CMTT10">tcplLoadData</font> to add useful chemical and assay annotation information, mapped to the retrieved data.
 
 ```{r tcplPrepOtpt, eval=FALSE}
-# Load single concentration data from level 1,
+# Load multi concentration data from level 2,
 # and map only the chemical annotation information.
-mc1_fmtd <- tcplPrepOtpt(
+mc2_fmtd <- tcplPrepOtpt(
   tcplLoadData(
     lvl = 2, # data level
     fld = 'acid', # field to query on
@@ -124,11 +124,11 @@ mc1_fmtd <- tcplPrepOtpt(
                # - 'acid' OR 'aeid': map only assay annotation
                # - 'spid': map only chemical annotation
 )
-# Print the first 6 rows of 'sc1_fmtd'
-head(mc1_fmtd)
+# Print the first 6 rows of 'mc2_fmtd'
+head(mc2_fmtd)
 ```
 
-When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the tcpl Data Processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5 one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
+When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the tcpl Data Processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5, one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
 
 ### Chemical Information
 
