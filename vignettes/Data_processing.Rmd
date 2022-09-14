@@ -79,7 +79,7 @@ tcplConf(db = dbfile_temp, drvr = 'tcplLite')
 
 # Introduction
 
-This vignette explains in the first section how to upload and process the newly-registered data through the data analysis pipeline using a small subset of ToxCast data. The <font face="CMTT10"> tcpl </font> R package provides three functions for adding new data:
+This vignette explains in the first section how to upload and process the newly-registered assay data through the data analysis pipeline using a small subset of ToxCast data. The <font face="CMTT10"> tcpl </font> R package provides three functions for adding new data:
 
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; **tcplRegister** -- to register a new assay element or chemical <br /> <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; **tcplUpdate** -- to change or add additional information for existing assay or chemical ids <br />  <br />
@@ -87,7 +87,7 @@ This vignette explains in the first section how to upload and process the newly-
 
 # Uploading New Data
 
-Before writing any data to the  <font face="CMTT10"> tcpl </font> database, the user has to register the assay and chemical information. All processing occurs by assay component or assay endpoint, depending on the processing type (single-concentration or multiple-concentration) and level. No data is stored at the assay or assay source level. The “assay” and “assay_source” tables store annotations to help in the processing and down-stream understanding of the data. Additional details for registering each assay element and updating annotations are provided within the assay registration vignette.
+Before writing any data to the  <font face="CMTT10"> tcpl </font> database, the user has to register the assay and chemical information, i.e. assay identifiers (and minimal assay annotations) and chemical sample identifiers need to be available in the database before writing level 0 data to the database. All processing occurs by assay component or assay endpoint, depending on the processing type (single-concentration or multiple-concentration) and level. No data is stored at the assay or assay source level. The “assay” and “assay_source” tables store annotations to help in the processing and down-stream understanding of the data. Additional details for registering each assay element and updating annotations are provided within the assay registration vignette.
 
 ## Chemicals
 
@@ -193,7 +193,7 @@ The user must give a start and end level when using the <font face="CMTT10"> tcp
 
 The processing functions print messages to the console indicating the four steps of the processing. These steps include (1) data for the given assay component ID are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The 'outfile' parameter in the <font face="CMTT10"> tcplRun </font> function gives the user the option of printing all the output text to a file.
 
-The <font face="CMTT10"> tcplRun </font> function can execute processing of multiple assay components/endpoints simultaneously. This is done with the internal utilization of the <font face="CMTT10"> mclapply </font> function from the <face="CMTT10"> parallel </font> package.  Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. Users pipelining on a Windows operating system the default is $mc.cores = 1$, unless otherwise specified.  Users pipelining on a Unix-based operating system the default is $mc.cores = NULL$ indicating the utilization of all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the "mc.cores" parameter in the <font face="CMTT10"> tcplRun </font> function to the desired level of processing power. **Note, the specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
+The <font face="CMTT10"> tcplRun </font> function can execute processing of multiple assay components/endpoints simultaneously. This is done with the internal utilization of the <font face="CMTT10"> mclapply </font> function from the <font face="CMTT10"> parallel </font> package.  Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. Users pipelining on a Windows operating system the default is $mc.cores = 1$, unless otherwise specified.  Users pipelining on a Unix-based operating system the default is $mc.cores = NULL$ indicating the utilization of all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the "mc.cores" parameter in the <font face="CMTT10"> tcplRun </font> function to the desired level of processing power. **Note, the specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
 
 ```{r warning = FALSE, echo = FALSE}
 Type <- c('SC', 'SC', 'MC', 'MC', 'MC', 'MC', 'MC', 'MC')
@@ -294,7 +294,7 @@ output <-
 htmlTable(output,
           rnames = FALSE,
           rgroup = c("Scheme 1",
-                     "Scheme 2", "Scheme3"),
+                     "Scheme 2", "Scheme 3"),
           n.rgroup = c(2,2),
           cgroup = c("Fold-Change", "\\%Control"),
           n.cgroup = c(2,2), 
@@ -304,7 +304,7 @@ htmlTable(output,
 
 If the data does not require any normalization, the "none" method must be assigned for normalization. The "none" method simply copies the input data to the response field. Without assigning "none", the response field will not get generated and the processing will not complete.
 
-<font face="CMTT10"> tcpl_v2 </font> package only modeled responses in the positive direction. Therefore, a signal in the negative direction needed to be transformed to the positive direction during normalization. Creating multiple endpoints for one component was one way to enable multiple normalization approaches. Multiple normalization approaches were necessary when the assay component detected a signal in both positive and negative directions. Negative direction data was inverted by multiplying the final response values by ${-1}$ (see the "resp.mult.neg" methods in Table 2). <font face="CMTT10"> tcpl_v3 </font> onward will utilize the <font face="CMTT10"> tcplFit2 </font> package, which allows for bidirectional fitting, therefore the "resp.mult.neg" method is now only required in special use cases.
+The <font face="CMTT10"> tcpl_v2 </font> package only modeled responses in the positive direction. Therefore, a signal in the negative direction needed to be transformed to the positive direction during normalization. Creating multiple endpoints for one component was one way to enable multiple normalization approaches. Multiple normalization approaches were necessary when the assay component detected a signal in both positive and negative directions. Negative direction data was inverted by multiplying the final response values by ${-1}$ (see the "resp.mult.neg" methods in Table 2). <font face="CMTT10"> tcpl_v3 </font> onward will utilize the <font face="CMTT10"> tcplFit2 </font> package, which allows for bidirectional fitting, therefore the "resp.mult.neg" method is now only required in special use cases.
 
 In addition to the required normalization methods, the user can add additional methods to transform the normalized values. For example, the third fold-change example in Table 2 includes "resp.blineshift.50.spid", which corrects for baseline deviations by $\mathit{spid}$. A complete list of available methods, by processing type and level, can be listed with <font face="CMTT10"> tcplMthdList </font>. More information is available in the package documentation, and can be found by running <font face="CMTT10"> ??tcpl::Methods </font>.
 
@@ -443,7 +443,7 @@ htmlTable(output,
 
 To collapse the data by sample ID, the median response value of replicates within a concentration is calculated. (**Note**, in most cases each $\mathit{spid}$ will only have a single concentration level.) Data are then further collapsed by taking the maximum of those median values ($\mathit{max\_med}$).
 
-Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
+Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 2 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
 
 ```{r eval = FALSE}
 # Assign a cutoff value of log2(1.2).
@@ -1263,7 +1263,7 @@ tcplMthdAssign(
   type = "mc") # the data/processing type
 ```
 
-As described previously, since the continuous hit call is the product of three a probability values, then the resulting value is between 0 and 1.  The higher the hitcall (i.e. close to 1) the more probable the concentration-response series indicates true biological activity in the measured response (i.e. 'active' hit).
+As described previously, since the continuous hit call is the product of three probability values, then the resulting value is between 0 and 1.  The higher the hitcall (i.e. close to 1) the more probable the concentration-response series indicates true biological activity in the measured response (i.e. 'active' hit).
 
 For each concentration series several point-of-departure (POD) estimates are calculated for the winning model.  The major estimates include: (1) the activity concentration at the specified benchmark response (BMR) ($\mathit{bmd}$), (2) the activity concentration at $50\%$ of the maximal response ($\mathit{ac50}$), (3) the activity concentration at the efficacy cutoff ($\mathit{acc}$), (4) the activity concentration at $10\%$ of the maximal response, and (5) the concentration at $5\%$ of the maximal response.  Though there are several other potency estimates calculated as part of the level 5 pipeline these five are the major POD estimates. The POD estimates mentioned in here are summarized in Figure 4.
 
