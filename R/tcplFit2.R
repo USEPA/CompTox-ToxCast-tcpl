@@ -134,7 +134,8 @@ tcplFit2_unnest <- function(output) {
 
   test <- NULL
   for (m in modelnames) {
-    test <- rbind(test, data.frame(model = m, model_param = names(res[[m]]), model_val = unlist(res[[m]]), stringsAsFactors = FALSE, row.names = NULL))
+    lst <- lapply(res[[m]], function(x){ if(length(x) < 1) { x <- NA }; x })
+    test <- rbind(test, data.frame(model = m, model_param = names(lst), model_val = unlist(lst), stringsAsFactors = FALSE, row.names = NULL))
   }
   test
 }
