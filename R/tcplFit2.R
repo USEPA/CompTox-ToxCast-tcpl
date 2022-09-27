@@ -3,12 +3,14 @@
 #' @param dat output from level 3 processing
 #' @param fitmodels list of the models that should be fit with the data
 #' @param bmed baseline value, typically should be 0
+#' @param bidirectional boolean, default is TRUE (bidirectional fitting)
 #'
 #' @return Data.table with an additional column fitparams that includes all of the fitting parameters
 #' @importFrom tcplfit2 tcplfit2_core
 tcplFit2 <- function(dat,
                      fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5"),
-                     bmed = NULL) {
+                     bmed = NULL,
+                     bidirectional = TRUE) {
   #variable binding
   resp  <-bmad  <-aeid  <-osd  <-m3id <- concentration_unlogged  <-response <- NULL
   # do all the regular fitting things that still need to be done
@@ -31,7 +33,7 @@ tcplFit2 <- function(dat,
     `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
       unlist(response),
       cutoff = bmad,
-      bidirectional = TRUE,
+      bidirectional = bidirectional,
       verbose = FALSE, force.fit = TRUE,
       fitmodels = fitmodels
     ))),
@@ -132,7 +134,8 @@ tcplFit2_unnest <- function(output) {
 
   test <- NULL
   for (m in modelnames) {
-    test <- rbind(test, data.frame(model = m, model_param = names(res[[m]]), model_val = unlist(res[[m]]), stringsAsFactors = FALSE, row.names = NULL))
+    lst <- lapply(res[[m]], function(x){ if(length(x) < 1) { x <- NA }; x })
+    test <- rbind(test, data.frame(model = m, model_param = names(lst), model_val = unlist(lst), stringsAsFactors = FALSE, row.names = NULL))
   }
   test
 }

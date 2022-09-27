@@ -65,6 +65,12 @@ mc4_mthds <- function() {
       list(e1)
       
     },
+    bidirectional.false = function() {
+      
+      e1 <- bquote(dat[ ,bidirectional := FALSE])
+      list(e1)
+      
+    },
     bmed.aeid.lowconc.twells = function() {
       
       e1 <- bquote(dat[ , bmed := median(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
