@@ -1388,9 +1388,9 @@ basePlot <- mc3_ss %>%
 # displayed.
 potency_cols <-
   # choose 5 distinct colors
-  viridis::inferno(n = 5,direction = -1) %>% 
+  viridis::plasma(n = 5,direction = -1) %>% 
   # darken the original colors to make them more visible
-  colorspace::darken(.,amount = 0.2)
+  colorspace::darken(.,amount = 0.1)
   
 ## Compile the Full Level 5 Plot ##
 linePlot <-
