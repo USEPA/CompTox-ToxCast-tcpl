@@ -1388,82 +1388,101 @@ basePlot <- mc3_ss %>%
 # displayed.
 potency_cols <-
   # choose 5 distinct colors
-  viridis::inferno(n = 5,direction = -1) %>% 
+  viridis::plasma(n = 5,direction = -1) %>% 
   # darken the original colors to make them more visible
-  colorspace::darken(.,amount = 0.2)
+  colorspace::darken(.,amount = 0.1)
   
 ## Compile the Full Level 5 Plot ##
-fullPlot <- 
+linePlot <-
   # Start with the `basePlot` object.
-  basePlot+
+  basePlot +
   # Next, add the various potency layers.
   # BMD
-  geom_hline(data = mc5_ss,
-             aes(yintercept = bmr),
-             col = potency_cols[1])+
-  geom_segment(data = mc5_ss,
-               aes(x = log10(bmd),xend = log10(bmd),y = -0.5,yend = bmr),
-               col = potency_cols[1])+
-  geom_point(data = mc5_ss,
-             aes(x = log10(bmd),y = bmr,pch = "BMD"),
-             colour = potency_cols[1],cex = 2.5)+
-  # ACC
-  geom_hline(data = mc5_ss,
-             aes(yintercept = coff),
-             col = potency_cols[2])+
-  geom_segment(data = mc5_ss,
-               aes(x = log10(acc),xend = log10(acc),y = -0.5,yend = coff),
-               col = potency_cols[2])+
-  geom_point(data = mc5_ss,
-             aes(x = log10(acc),y = coff,pch = "ACC"),
-             col = potency_cols[2],cex = 2.5)+
-  # AC50
-  geom_hline(data = mc5_ss,
-             aes(yintercept = max_med*0.5),
-             col = potency_cols[3])+
-  geom_segment(data = mc5_ss,
-               aes(x = log10(ac50),xend = log10(ac50),
-                   y = -0.5,yend = max_med*0.5),
-               col = potency_cols[3])+
-  geom_point(data = mc5_ss,
-             aes(x = log10(ac50),y = max_med*0.5),
-             col = potency_cols[3],cex = 2.5)+
-  # AC10
-  geom_hline(data = mc5_ss,
-             aes(yintercept = max_med*0.1),
-             col = potency_cols[4])+
-  geom_segment(data = mc5_ss,
-               aes(x = log10(ac10),xend = log10(ac10),
-                   y = -0.5,yend = max_med*0.1),
-               col = potency_cols[4])+
-  geom_point(data = mc5_ss,
-             aes(x = log10(ac10),y = max_med*0.1),
-             col = potency_cols[4],cex = 2.5)+
-  # AC5
-  geom_hline(data = mc5_ss,
-             aes(yintercept = max_med*0.05),
-             col = potency_cols[5])+
-  geom_segment(data = mc5_ss,
-               aes(x = log10(ac5),xend = log10(ac5),
-                   y = -0.5,yend = max_med*0.05),
-               col = potency_cols[5])+
-  geom_point(data = mc5_ss,
-             aes(x = log10(ac5),y = max_med*0.05),
-             col = potency_cols[5],cex = 2.5)+
-  # Legend Information
-  scale_shape_manual(name = "Potency Estimates",
-                     values = c('BMD' = 16,
-                                'ACC' = 16,
-                                'AC50' = 16,
-                                'AC10' = 16,
-                                'AC5' = 16),
-                     guide = guide_legend(
-                       override.aes = list(
-                         colour = c(potency_cols),
-                         alpha = 1
-                        )
-                      )
-                     )
+  geom_hline(
+    data = mc5_ss,
+    aes(yintercept = bmr),
+    col = potency_cols[1]
+  ) +
+  geom_segment(
+    data = mc5_ss,
+    aes(x = log10(bmd), xend = log10(bmd), y = -0.5, yend = bmr),
+    col = potency_cols[1]
+  ) +
+  geom_hline(
+    data = mc5_ss,
+    aes(yintercept = coff),
+    col = potency_cols[2]
+  ) +
+  geom_segment(
+    data = mc5_ss,
+    aes(x = log10(acc), xend = log10(acc), y = -0.5, yend = coff),
+    col = potency_cols[2]
+  ) +
+  geom_hline(
+    data = mc5_ss,
+    aes(yintercept = max_med * 0.5),
+    col = potency_cols[3]
+  ) +
+  geom_segment(
+    data = mc5_ss,
+    aes(
+      x = log10(ac50), xend = log10(ac50),
+      y = -0.5, yend = max_med * 0.5
+    ),
+    col = potency_cols[3]
+  ) +
+  geom_hline(
+    data = mc5_ss,
+    aes(yintercept = max_med * 0.1),
+    col = potency_cols[4]
+  ) +
+  geom_segment(
+    data = mc5_ss,
+    aes(
+      x = log10(ac10), xend = log10(ac10),
+      y = -0.5, yend = max_med * 0.1
+    ),
+    col = potency_cols[4]
+  ) +
+  geom_hline(
+    data = mc5_ss,
+    aes(yintercept = max_med * 0.05),
+    col = potency_cols[5]
+  ) +
+  geom_segment(
+    data = mc5_ss,
+    aes(
+      x = log10(ac5), xend = log10(ac5),
+      y = -0.5, yend = max_med * 0.05
+    ),
+    col = potency_cols[5]
+  )
+
+
+# create data table for potency estimate points
+mc5_points <- mc5_ss %>%
+  select(bmd, acc, ac50, ac10, ac5) %>%
+  tidyr::pivot_longer(everything(), names_to = "Potency Estimates") %>%
+  mutate(x = log10(value)) %>%
+  mutate(mc_color = potency_cols) %>%
+  mutate(`Potency Estimates` = toupper(`Potency Estimates`))
+yvals <- mc5_ss %>%
+  select(bmr, coff, max_med) %>%
+  tidyr::pivot_longer(everything()) %>%
+  select(value) %>%
+  mutate(reps = c(1, 1, 3)) %>%
+  tidyr::uncount(reps) %>%
+  mutate(y = value * c(1, 1, .5, .1, .05)) %>%
+  select(y)
+mc5_points <- mc5_points %>% cbind(yvals)
+
+# add Potency Estimate Points and set colors
+fullPlot <- linePlot + geom_point(
+  data = mc5_points,
+  aes(x = x, y = y, fill = `Potency Estimates`), shape = 21, cex = 2.5
+) +
+  scale_fill_manual(values = mc5_points %>% arrange(`Potency Estimates`) %>% pull(mc_color))
+
 
 ## Display the Compiled Plot ##
 fullPlot
