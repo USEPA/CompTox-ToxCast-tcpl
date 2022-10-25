@@ -51,10 +51,12 @@
 tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE,verbose = FALSE, nrow = NULL, ncol = NULL) {
   #variable binding
   resp <- NULL
+  # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
     if (nrow(input) == 0) stop("No data for fld/val provided")
+    # needs additional logic here to work as intended
     if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
@@ -89,6 +91,8 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
+      # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
+      # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages    
         return(tcplPlotlyPlot(dat)),
         return(tcplggplot(dat,verbose = verbose))
       )
@@ -511,7 +515,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 
 
 #' tcplggplot
-#'
+#' 
 #' @param dat data table with all required conc/resp data
 #' @param lvl integer level of data that should be plotted
 #' level 4 - all fit models
