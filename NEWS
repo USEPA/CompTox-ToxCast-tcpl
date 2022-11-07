@@ -1,3 +1,8 @@
+tcpl v3.0.1
+==============
+*fixes error from ggplot2
+*minor bug fixes
+
 tcpl v3.0.0
 ==============
 *add functionality for additional model fitting with tcplfit2
