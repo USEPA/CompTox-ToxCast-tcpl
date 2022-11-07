@@ -1,31 +1,19 @@
-Major release for tcpl v3 updating models
-Maintainer is changing from Richard Judson to Jason Brown
+Minor release for fixing errors on CRAN
+Some small bug fixes included
 
 ## Test environments
 
-* local Windows 10 install, R 4.1.2
+* local Windows 10 install, R 4.2.1
+* R Under development (unstable) (2022-10-11 r83083 ucrt)
 * Rhub Fedora Linux, R-devel, clang, gfortran
 * Rhub Ubuntu Linux 20.04.1 LTS, R-release, GCC
 * Rhub Windows Server 2022, R-devel, 64 bit
 
 ## rhub CMD check results
-* checking CRAN incoming feasibility ... [24s] NOTE
-Maintainer: 'Jason Brown <brown.jason@epa.gov>'
-
-New maintainer:
-  Jason Brown <brown.jason@epa.gov>
-Old maintainer(s):
-  Richard S Judson <Judson.Richard@epa.gov>
+- Note appears to be related to testing environment
 * checking for detritus in the temp directory ... NOTE
 Found the following files/directories:
   'lastMiKTeXException'
-* checking HTML version of manual ... NOTE
-Skipping checking HTML validation: no command 'tidy' found
-Skipping checking math rendering: package 'V8' unavailable
-
-- Maintainer is changing from Richard to Jason
-- Other notes appear to be related to testing environment
-
 
 ## local R CMD check results
 
@@ -41,3 +29,4 @@ We checked 2 reverse dependencies, comparing R CMD check results across CRAN and
 
  * We saw 0 new problems
  * We failed to check 0 packages
+
