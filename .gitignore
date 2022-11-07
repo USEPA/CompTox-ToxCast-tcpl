@@ -17,3 +17,4 @@ tcpl.Rcheck
 tcplLite.Rproj
 inst/doc
 data-raw/db_cred.R
+/revdep/
