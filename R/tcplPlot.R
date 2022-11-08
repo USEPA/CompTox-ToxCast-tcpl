@@ -48,7 +48,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = FALSE,verbose = FALSE, nrow = NULL, ncol = NULL) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL,verbose = FALSE, nrow = NULL, ncol = NULL) {
   #variable binding
   resp <- NULL
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
@@ -56,8 +56,15 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
     if (nrow(input) == 0) stop("No data for fld/val provided")
-    # needs additional logic here to work as intended
+    # default assign for output="pdf" is multi=TRUE
+    if (output == "pdf" && is.null(multi)) {
+      multi <- TRUE
+    }
     if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    # default assign for output="console" is multi=FALSE
+    if (output =="console" && is.null(multi)) {
+      multi <- FALSE
+    }
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
     }
