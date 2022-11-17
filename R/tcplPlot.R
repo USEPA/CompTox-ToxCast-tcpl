@@ -60,13 +60,13 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
     }
+    # forced assign for output="console" is multi=FALSE
+    if (output =="console") {
+      multi <- FALSE
+    }
     # create error message for output="pdf" and multi=FALSE to acknowledge bug while in development
     if(nrow(input) > 1 && output == "pdf" && multi == FALSE) stop("Currently, plotting multiple plots per page (multi=TRUE) in pdf output is supported. Plotting multiple plots, one plot per page (multi=FALSE) in pdf output is currently in development.")
     if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
-    # default assign for output="console" is multi=FALSE
-    if (output =="console" && is.null(multi)) {
-      multi <- FALSE
-    }
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
     }
