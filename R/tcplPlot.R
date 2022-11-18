@@ -221,6 +221,14 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   model_stats <- model <- param <- value <- ac50 <- hitc <- NULL
   
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
+  
+  #check if winning model has negative top.  If so coff should be negative
+  if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
+    if(dat$top<0){
+      dat$coff <- dat$coff*-1
+    }
+  }
+  
   #get models from columns that have an ac50 listed
   models <- gsub("_ac50","",colnames(dat)[grepl("_ac50",colnames(dat))])
   ac50s <- tibble(model = models, ac50 = dat %>% select(colnames(dat)[grepl("_ac50",colnames(dat))]) %>% unlist)
