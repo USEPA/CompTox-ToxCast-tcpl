@@ -48,7 +48,7 @@ mc6 <- function(ae, wr = FALSE) {
   setkey(ms, mthd_id)
   
   ## Load level 5 and, if needed, level 3 data 
-  ft <- tcplLoadData(lvl = 5L, type = "mc", fld = "aeid", val = ae)
+  ft <- tcplLoadData(lvl = 5L, type = "mc", fld = "aeid", val = ae, add.fld = TRUE)
   setkey(ft, m4id)
   if (any(ms$nddr)) {
     dr <- .load6DR(ae)
@@ -90,7 +90,7 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Initialize f, the list of data.tables containing the flag information
   f <- vector(mode = "list", length = max(ms$mthd_id))
-  
+
   ## Generate and evaluate flag expressions
   mthd_funcs <- mc6_mthds()
   exprs <- lapply(ms$mthd_id, function(x) mthd_funcs[[ms[J(x), mthd]]](x)) # XXX this breaks if functions appear more than once in mc6_mthds() 
