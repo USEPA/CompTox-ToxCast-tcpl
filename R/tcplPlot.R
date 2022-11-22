@@ -56,17 +56,20 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
     if (nrow(input) == 0) stop("No data for fld/val provided")
-    # default assign for output="pdf" is multi=TRUE
+    # default assign multi=TRUE for output="pdf" 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
     }
-    # forced assign for output="console" is multi=FALSE
+    # forced assign multi=FALSE for output="console"
     if (output =="console") {
       multi <- FALSE
     }
-    # create error message for output="pdf" and multi=FALSE to acknowledge bug while in development
-    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) stop("Currently, plotting multiple plots per page (multi=TRUE) in pdf output is supported. Plotting multiple plots, one plot per page (multi=FALSE) in pdf output is currently in development.")
-    if (nrow(input) > 1  && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
+    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
+      nrow = ncol = 1
+    }
+    # error message for output="console" and multi=FALSE to avoid multiple plots in console
+    if(nrow(input) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
     }
