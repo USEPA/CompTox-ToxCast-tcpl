@@ -60,9 +60,10 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
     }
-    # forced assign multi=FALSE for output="console"
+    # forced assign multi=FALSE, verbose=FALSE for output="console"
     if (output =="console") {
       multi <- FALSE
+      verbose <- FALSE
     }
     # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
     if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
