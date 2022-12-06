@@ -16,7 +16,7 @@
 #' @param output how should the output be presented
 #' @param multi Boolean, if multi is TRUE output 6 plots per page
 #' @param fileprefix prefix of filename
-#' @param by Paramater to divide files into e.g. aeid
+#' @param by Parameter to divide files into e.g. aeid
 #' @param verbose By default FALSE, should a table with fitting parameters be included in the plot
 #' @param nrow Integer, number of rows in multiplot default of 2
 #' @param ncol Integer, number of columns in multiplot default of 3, 2 if verbose
