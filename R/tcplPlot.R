@@ -363,7 +363,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     title = "Concentration",
     # set zeroline to false so there is no vertical line at x = 0
     type = "log",
-    zeroline = FALSE
+    zeroline = FALSE,
+    dtick=1
   )
   
   # function to generate vertical line
