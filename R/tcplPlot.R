@@ -354,7 +354,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   )
   # formatting for y axis
   y <- list(
-    title = "Percent Activity",
+    title = stringr::str_to_title(gsub("_"," ",dat$normalized_data_type)),
     # set zeroline to false otherwise there would be a big horizontal line at y = 0
     zeroline = FALSE
   )
