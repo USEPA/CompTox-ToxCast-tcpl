@@ -93,8 +93,6 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Initialize f, the list of data.tables containing the flag information
   f <- vector(mode = "list", length = max(ms$mthd_id))
-  
-  browser()
 
   ## Generate and evaluate flag expressions
   mthd_funcs <- mc6_mthds()
