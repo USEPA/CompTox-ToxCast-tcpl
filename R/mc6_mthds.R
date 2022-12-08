@@ -60,6 +60,105 @@ mc6_mthds <- function() {
   
   list(
     
+    modl.directionality.fail = function(mthd) {
+      
+      flag <- "Model directionality questionable"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag", "fval", "fval_unit")
+      init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      e2 <- bquote(ft[ , coffsign := ifelse(top < 0, -1*coff, coff)])
+      e3 <- bquote(ft[ , gtabscoff := abs(resp) > abs(coffsign)])
+      e4 <- bquote(ft[ , nrsp_gtabscoff := sum(gtabscoff), by = m4id])
+      e5 <- bquote(ft[ , gtcoff := resp > coffsign])
+      e6 <- bquote(ft[ , ltcoff := resp < coffsign])
+      e7 <- bquote(ft[ , nrsp_gtcoff := sum(gtcoff), by = m4id])
+      e8 <- bquote(ft[ , nrsp_ltcoff := sum(ltcoff), by = m4id])
+      e9 <- bquote(ft[ , test := ifelse(coffsign > 0, nrsp_gtabscoff > 2*nrsp_gtcoff, nrsp_gtabscoff > 2*nrsp_ltcoff)])
+      e10 <- bquote(f[[.(mthd)]] <- unique(ft[which(test), .SD, .SDcols = .(out)], by = NULL))
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "coffsign", "gtabscoff", "nrsp_gtabscoff", "gtcoff", "ltcoff", "nrsp_gtcoff", "nrsp_ltcoff")
+      e11 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11)
+      
+    },
+    
+    low.nrep = function(mthd) { 
+      
+      flag <- "Average number of replicates per conc is less than 2"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag", "fval", "fval_unit")
+      init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      e2 <- bquote(ft[ , test := nrep < 2])
+      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
+      e4 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4)
+      
+    },
+    
+    low.nconc = function(mthd) { 
+      
+      flag <- "Number of concentrations tested is less than 4"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag", "fval", "fval_unit")
+      init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      e2 <- bquote(ft[ , test := nconc < 4])
+      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
+      e4 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4)
+      
+    },
+    
+    #bmd.highconc = function(mthd) {
+      
+      #flag <- "Bmd falling > 50% conc range tested, indicative of a steep curve"
+      #out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                #"flag", "fval", "fval_unit")
+      #init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      #e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      #e2 <- bquote(ft[ , crng := 10^logc_max - 10^logc_min])
+      #e3 <- bquote(ft[ , test :=  bmd > 0.5*crng & hitc >= 0.9])
+      #e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      #cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "crng")
+      #e5 <- bquote(ft[ , .(cr) := NULL])
+      #list(e1, e2, e3, e4, e5)
+      
+    #},
+    
+    #bmd.lowconc = function(mthd) { ##edit this copy
+      
+      #flag <- "Bmd falling < 50% conc range tested, indicative of a shallow curve"
+      #out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                #"flag", "fval", "fval_unit")
+      #init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      #e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      #e2 <- bquote(ft[ , crng := 10^logc_max - 10^logc_min])
+      #e3 <- bquote(ft[ , test :=  bmd < 0.5*crng & hitc >= 0.9])
+      #e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      #cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "crng")
+      #e5 <- bquote(ft[ , .(cr) := NULL])
+      #list(e1, e2, e3, e4, e5)
+      
+    #},
+    
+    bmd.high = function(mthd) { ##edit this copy
+      
+      flag <- "Bmd > ac50, indication of high baseline variability"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag", "fval", "fval_unit")
+      init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      e2 <- bquote(ft[ , test := bmd > ac50])
+      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
+      e4 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4)
+      
+    },
+    
     singlept.hit.high = function(mthd) {
       
       flag <- "Only highest conc above baseline, active"
@@ -114,7 +213,7 @@ mc6_mthds <- function() {
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
       e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      e2 <- bquote(ft[ , cmen := mean(c(10^(logc_min), 10^(logc_max)))])
+      e2 <- bquote(ft[ , cmen := mean(c(10^logc_min, 10^logc_max))])
       e3 <- bquote(ft[ , test := modl == "gnls" & ac50 < 10^(logc_min) & ac50_loss < cmen])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "cmen")

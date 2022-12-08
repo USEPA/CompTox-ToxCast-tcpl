@@ -52,9 +52,12 @@ mc6 <- function(ae, wr = FALSE) {
   setkey(ft, m4id)
   if (any(ms$nddr)) {
     dr <- .load6DR(ae)
-    setkey(dr, m4id)
-    dr <- dr[ft[ , list(m4id, m5id)]]
-    dr[ , bmad := unique(ft$bmad)]
+    setkey(dr, m4id, aeid, spid)
+    setkey(ft, m4id, aeid, spid)
+    #dr <- dr[ft[ , list(m4id, m5id)]]
+    #dr[ , bmad := unique(ft$bmad)]
+    #unique_ids <- unique(c(dr[ , m4id], ft[ , m4id]))
+    ft <- dr[ft]
   } 
   
   ## Check if any level 5 data was loaded
@@ -90,6 +93,8 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Initialize f, the list of data.tables containing the flag information
   f <- vector(mode = "list", length = max(ms$mthd_id))
+  
+  browser()
 
   ## Generate and evaluate flag expressions
   mthd_funcs <- mc6_mthds()
