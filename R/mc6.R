@@ -56,8 +56,7 @@ mc6 <- function(ae, wr = FALSE) {
     setkey(ft, m4id, aeid, spid)
     #dr <- dr[ft[ , list(m4id, m5id)]]
     #dr[ , bmad := unique(ft$bmad)]
-    #unique_ids <- unique(c(dr[ , m4id], ft[ , m4id]))
-    ft <- dr[ft]
+    dr <- dr[ft]
   } 
   
   ## Check if any level 5 data was loaded
