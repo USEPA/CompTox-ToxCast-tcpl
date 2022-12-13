@@ -60,7 +60,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
     }
-    # forced assign multi=FALSE for output = c("console",png","jpg","svg"), verbose=FALSE for output="console"
+    # forced assign multi=FALSE for output = c("console","png","jpg","svg"), verbose=FALSE for output="console"
     if (output !="pdf") {
       multi <- FALSE
       if(output =="console"){
@@ -121,19 +121,19 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose)
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
-        if(multi==FALSE){
+        if(output=="pdf"){
+          if(!verbose){
+            ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
+          else{
+            ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
+          }
+        } else {
           names(plot_list) <- d$m4id
           lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
                                                      plot=arrangeGrob(grobs=plot_list[x]), width = 9, height = 6))
-        } else {
-        if(!verbose){
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
-        else{
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
-         }
-       }
-     }
-   }
+        }
+      }
+    }
 
   } else {
     if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
