@@ -92,7 +92,7 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Initialize f, the list of data.tables containing the flag information
   f <- vector(mode = "list", length = max(ms$mthd_id))
-
+  
   ## Generate and evaluate flag expressions
   mthd_funcs <- mc6_mthds()
   exprs <- lapply(ms$mthd_id, function(x) mthd_funcs[[ms[J(x), mthd]]](x)) # XXX this breaks if functions appear more than once in mc6_mthds() 

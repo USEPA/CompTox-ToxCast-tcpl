@@ -213,12 +213,15 @@ mc6_mthds <- function() {
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
       e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      e2 <- bquote(ft[ , cmen := mean(c(10^logc_min, 10^logc_max))])
-      e3 <- bquote(ft[ , test := modl == "gnls" & ac50 < 10^(logc_min) & ac50_loss < cmen])
-      e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
-      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "cmen")
-      e5 <- bquote(ft[ , .(cr) := NULL])
-      list(e1, e2, e3, e4, e5)
+      e2 <- bquote(ft[ , c_min := 10^logc_min])
+      e3 <- bquote(ft[ , c_max := 10^logc_max])
+      conc_cols <- c("c_min", "c_max")
+      e4 <- bquote(ft[ , cmen := rowMeans(.SD), .SDcols = .(conc_cols)])
+      e5 <- bquote(ft[ , test := modl == "gnls" & ac50 < c_min & ac50_loss < cmen])
+      e6 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "c_min", "c_max","cmen")
+      e7 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4, e5, e6, e7)
       
     },
     
