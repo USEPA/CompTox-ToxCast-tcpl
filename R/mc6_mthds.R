@@ -20,6 +20,25 @@
 #' available in the package vignette, "Pipeline_Overview."
 #' 
 #' \describe{
+#'   \item{modl.directionality.fail}{The modl.directionality.fail flag 
+#'   identifies concentration series where, had the model direction been 
+#'   opposite, more responses would have exceeded the cutoff, i.e., series 
+#'   where the number of responses in absolute value which are greater than the 
+#'   absolute value of the cutoff exceeds twice the number of responses which 
+#'   are more extreme than the cutoff (< cutoff when cutoff is negative, 
+#'   > cutoff when cutoff is positive).}
+#'   \item{low.nrep}{The low.nrep flag identifies concentration series where 
+#'   the average number of replicates per concentration tested is less than 2.}
+#'   \item{low.nconc}{The low.nconc flag identifies concentration series where 
+#'   the number of concentrations tested is greater or equal to 4.}
+#'   \item{bmd.highconc}{The bmd.highconc flag identifies concentration series 
+#'   with a steep curve, i.e., series where the bmd is greater than 50% of the 
+#'   range of concentrations tested.}
+#'   \item{bmd.lowconc}{The bmd.lowconc flag identifies concentration series 
+#'   with a shallow curve, i.e., series where the bmd is less than 50% of the 
+#'   range of concentrations tested.}
+#'   \item{bmd.high}{The bmd.high flag attempts to identify noisy concentration
+#'   series by flagging series where the bmd is greater than the ac50.}
 #'   \item{singlept.hit.high}{The singlept.hit.high flag identifies 
 #'   concentration series where the median response was greater than 3*bmad 
 #'   only at the highest tested concentration and the series had an active 
@@ -39,9 +58,9 @@
 #'   series by flagging series where the root mean square error for the series
 #'   is greater than the cutoff for the assay endpoint.}
 #'   \item{border}{The border flag identifies concentration 
-#'   series where the top parameter of the winning model was greater than or 
-#'   equal to 0.8*cut-off and less than or equal 
-#'   to 1.2*cut-off.}
+#'   series which have borderline activity, i.e., series where the top 
+#'   parameter of the winning model was greater than or equal to 0.8*cutoff 
+#'   and less than or equal to 1.2*cutoff.}
 #'   \item{overfit.hit}{The overfit.hit flag recalculates the model winner 
 #'   after applying a small sample correction factor to the AIC values. If the 
 #'   hit-call would be changed after applying the small sample correction 
@@ -50,10 +69,13 @@
 #'   gain-loss model won are automatically flagged.}
 #'   \item{efficacy.50}{The efficacy.50 flag identifies concentration series 
 #'   with efficacy values (either the modeled top parameter for the winning
-#'   model or the maximum median response) are less than 50 for percent activity
+#'   model or the maximum median response) less than 50 for percent activity
 #'   data or log2(1.5) for fold induction data}
-#'   \item{modlga.lowconc}{The modlga.lowconc flag identifies concentration series 
-#'   with modl_ga (AC50) values less than the minimum tested concentration.}
+#'   \item{ac50.lowconc}{The ac50.lowconc flag identifies concentration series 
+#'   with ac50 values less than the minimum tested concentration.}
+#'   \item{viability.gnls}{The viability.gnls flag identifies concentration series 
+#'   of cell viability assays which were fit with gain-loss as the winning 
+#'   model and the series had an active hit-call.}
 #' }
 
 mc6_mthds <- function() {
@@ -104,7 +126,7 @@ mc6_mthds <- function() {
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
       e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := nconc < 4])
+      e2 <- bquote(ft[ , test := modl != "none" & nconc <= 4])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
@@ -128,7 +150,7 @@ mc6_mthds <- function() {
       
     #},
     
-    #bmd.lowconc = function(mthd) { ##edit this copy
+    #bmd.lowconc = function(mthd) { 
       
       #flag <- "Bmd falling < 50% conc range tested, indicative of a shallow curve"
       #out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
@@ -144,7 +166,7 @@ mc6_mthds <- function() {
       
     #},
     
-    bmd.high = function(mthd) { ##edit this copy
+    bmd.high = function(mthd) {
       
       flag <- "Bmd > ac50, indication of high baseline variability"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
@@ -311,7 +333,7 @@ mc6_mthds <- function() {
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
       e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      e2 <- bquote(ft[hitc >= 0.9, test := ac50 < 10^(logc_min)]) 
+      e2 <- bquote(ft[hitc >= 0.9, test := ac50 < 10^logc_min]) 
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
