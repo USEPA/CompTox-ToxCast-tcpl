@@ -515,7 +515,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
           hitcall == 1 ~ "ACTIVE",
           hitcall == 0 ~ "INACTIVE",
           hitcall == -1 ~ "NO CALL",
-          TRUE ~ paste0(hitcall)
+          TRUE ~ paste0("HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))))
         ), "<br>",
         dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ")", "<br>",
         dat %>% pull(.data$dsstox_substance_id), "<br>",
