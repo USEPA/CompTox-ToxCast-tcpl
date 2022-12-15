@@ -54,8 +54,6 @@ mc6 <- function(ae, wr = FALSE) {
     dr <- .load6DR(ae)
     setkey(dr, m4id, aeid, spid)
     setkey(ft, m4id, aeid, spid)
-    #dr <- dr[ft[ , list(m4id, m5id)]]
-    #dr[ , bmad := unique(ft$bmad)]
     dr <- dr[ft]
   } 
   
