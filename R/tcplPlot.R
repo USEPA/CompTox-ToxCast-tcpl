@@ -24,6 +24,7 @@
 #'  is included with the plot.
 #' @param nrow Integer, number of rows in multiplot. By default 2.
 #' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose.
+#' @param dpi Integer, image print resolution. By default 600. 
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -52,7 +53,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL,verbose = FALSE, nrow = NULL, ncol = NULL) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600) {
   #variable binding
   resp <- NULL
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
@@ -115,7 +116,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat)),
         return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
-                      plot=tcplggplot(dat,verbose = verbose), width = 9, height = 6, dpi = 600))
+                      plot=tcplggplot(dat,verbose = verbose), width = 9, height = 6, dpi=dpi))
       )
     } else {
       split_dat <- list(dat)
@@ -135,7 +136,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         } else {
           names(plot_list) <- d$m4id
           lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
-                                                     plot=arrangeGrob(grobs=plot_list[x]), width = 9, height = 6, dpi = 600))
+                                                     plot=arrangeGrob(grobs=plot_list[x]), width = 9, height = 6, dpi=dpi))
         }
       }
     }
