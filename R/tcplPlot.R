@@ -14,7 +14,7 @@
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
 #' @param output How should the plot be presented. To view the plot in application,
-#'  use "console", or to save as a file type, use "pdf", "jpg", "png", or "svg".
+#'  use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
 #' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
 #' by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
 #' 'verbose' = FALSE.
@@ -52,7 +52,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL,verbose = FALSE, nrow = NULL, ncol = NULL) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL,verbose = FALSE, nrow = NULL, ncol = NULL) {
   #variable binding
   resp <- NULL
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
@@ -64,7 +64,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
     }
-    # forced assign multi=FALSE for output = c("console","png","jpg","svg"), verbose=FALSE for output="console"
+    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
     if (output !="pdf") {
       multi <- FALSE
       if(output =="console"){
