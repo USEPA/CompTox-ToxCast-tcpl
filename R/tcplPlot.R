@@ -8,18 +8,22 @@
 #' \code{tcplLoadData} queries the tcpl databases and returns a plot
 #' for the given level and data type.
 #'
-#' @param lvl Integer of length 1, the level of data to load
-#' @param type Character of length 1, the data type, "sc" or "mc"
-#' @param fld Character, the field(s) to query on
+#' @param lvl Integer of length 1, the level of data to load.
+#' @param type Character of length 1, the data type, "sc" or "mc".
+#' @param fld Character, the field(s) to query on.
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
-#' @param output how should the output be presented
-#' @param multi Boolean, if multi is TRUE output 6 plots per page
-#' @param fileprefix prefix of filename
-#' @param by Parameter to divide files into e.g. aeid
-#' @param verbose By default FALSE, should a table with fitting parameters be included in the plot
-#' @param nrow Integer, number of rows in multiplot default of 2
-#' @param ncol Integer, number of columns in multiplot default of 3, 2 if verbose
+#' @param output How should the plot be presented. To view the plot in application,
+#'  use "console", or to save as a file type, use "pdf", "jpg", "png", or "svg".
+#' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
+#' by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
+#' 'verbose' = FALSE.
+#' @param fileprefix Prefix of file when saving.
+#' @param by Parameter to divide files into e.g. "aeid".
+#' @param verbose Boolean, by default FALSE. If TRUE, a table with fitting parameters
+#'  is included with the plot.
+#' @param nrow Integer, number of rows in multiplot. By default 2.
+#' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose.
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -80,17 +84,17 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       ncol <- ifelse(verbose,2,3)
     }
     m4id <- input$m4id
-  
+
     # load dat
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
     agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
-  
-  
+
+
     if (lvl >= 5L) {
       l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
       dat <- l4[l5, on = "m4id"]
     }
-  
+
     dat <- tcplPrepOtpt(dat)
     
     # add normalized data type for y axis
@@ -108,7 +112,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
       # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
-      # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages    
+      # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat)),
         return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
                       plot=tcplggplot(dat,verbose = verbose), width = 9, height = 6))
