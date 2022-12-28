@@ -98,11 +98,33 @@ tcplHit2 <- function(mc4, coff) {
   # }
 
   res <- cbind(test %>% as.data.table(), test %>% as.data.table() %>% pull(df) %>% rbindlist())
-
+  
+  # fitc calculations -------------------------------------------------------
+  res <- res %>%
+    rowwise() %>%
+    mutate(ac95 = tcplfit2::acy(.95 * top, list(a = a, b = b, ga = ga, la = la, p = p, q = q, tp = tp)[!is.na(list(a = a, b = b, ga = ga, la = la, p = p, q = q, tp = tp))], fit_method)) %>%
+    ungroup()
+  res <- res %>% mutate(coff_upper = 1.2 * cutoff, coff_lower = .8 * cutoff)
+  res <- res %>%
+    left_join(mc4 %>% select(m4id, logc_min, logc_max) %>% unique(), by = "m4id") %>%
+    mutate(fitc = case_when(
+      hitcall >= .9 & abs(top) <= coff_upper & ac50 <= logc_min ~ 36L,
+      hitcall >= .9 & abs(top) <= coff_upper & ac50 > logc_min & ac95 < logc_max ~ 37L,
+      hitcall >= .9 & abs(top) <= coff_upper & ac50 > logc_min & ac95 >= logc_max ~ 38L,
+      hitcall >= .9 & abs(top) > coff_upper & ac50 <= logc_min ~ 40L,
+      hitcall >= .9 & abs(top) > coff_upper & ac50 > logc_min & ac95 < logc_max ~ 41L,
+      hitcall >= .9 & abs(top) > coff_upper & ac50 > logc_min & ac95 >= logc_max ~ 42L,
+      hitcall < .9 & abs(top) < coff_lower ~ 13L,
+      hitcall < .9 & abs(top) >= coff_lower ~ 15L,
+      fit_method == "none" ~ 2L,
+      TRUE ~ NA_integer_
+    ))
+  
+  
   # mc5 table
   mc5 <- res %>%
     left_join(mc4 %>% select(m4id, aeid) %>% unique(), by = "m4id") %>%
-    select(m4id, aeid, modl = fit_method, hitc = hitcall, coff = cutoff) %>%
+    select(m4id, aeid, modl = fit_method, hitc = hitcall,fitc, coff = cutoff) %>%
     mutate(model_type = 2)
 
   # mc5 param table
@@ -116,6 +138,7 @@ tcplHit2 <- function(mc4, coff) {
   mc5 %>%
     inner_join(mc5_param, by = c("m4id", "aeid")) %>%
     as.data.table()
+  
 }
 
 
