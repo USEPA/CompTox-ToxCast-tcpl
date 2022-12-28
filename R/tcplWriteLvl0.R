@@ -109,6 +109,13 @@ tcplWriteLvl0 <- function(dat, type) {
   ## Subset to level 0 fields
   outcols <- c("acid", "spid", "apid", "rowi", "coli", "wllt", "wllq", "conc",
                "rval", "srcf")
+  # check to see if new QC columns are included
+  newcols <- c("clowder_uid","git_hash")
+  if(any(newcols %in% names(dat))){
+    outcols <- c(outcols,newcols[newcols %in% names(dat)])
+  }
+  
+  # reject unknown columns
   if (any(!names(dat) %in% outcols)) {
     not_used <- names(dat)[!names(dat) %in% outcols]
     warning(paste(not_used, collapse = ","), " not inserted to databse.")
