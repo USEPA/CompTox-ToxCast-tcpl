@@ -77,7 +77,7 @@
 #' @importFrom tidyr pivot_wider
 #' @export
 
-tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL) {
+tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE) {
   #variable binding
   model <- model_param <- model_val <- NULL
   hit_param <- hit_val <- NULL
@@ -311,7 +311,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
   }
   if (lvl == 4L && type == "mc" && check_tcpl_db_schema()) {
     tbls <- c("mc4")
-    if (is.null(add.fld)) {
+    if (add.fld) {
       qformat <-
         "
       SELECT
@@ -430,7 +430,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
   }
 
   if (lvl == 5L && type == "mc" && check_tcpl_db_schema()) {
-    if (is.null(add.fld)) {
+    if (add.fld) {
       tbls <- c("mc4", "mc5")
       
       qformat <-
@@ -629,7 +629,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
     fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
 
     wtest <- lvl %in% c(0, 4) | (lvl == 2 & type == "sc")
-    if(!is.null(add.fld)) wtest <- FALSE
+    if(add.fld) wtest <- FALSE
     qformat <- paste(qformat, if (wtest) "WHERE" else "AND")
 
     qformat <- paste0(
@@ -650,7 +650,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
   dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = tbls))
   
   # pivot table so 1 id per return and only return added fields
-  if(!is.null(add.fld)){
+  if(add.fld){
     if(lvl == 4L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(model,model_param), values_from = model_val))
     if(lvl == 5L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(hit_param), values_from = hit_val))
   }
