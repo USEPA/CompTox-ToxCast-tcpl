@@ -240,22 +240,6 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
   
-  #check if winning model has negative top.  If so coff should be negative
-  if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
-    if(dat$top<0){
-      dat$coff <- dat$coff*-1
-    }
-  }
-  
-  #get models from columns that have an ac50 listed
-  models <- gsub("_ac50","",colnames(dat)[grepl("_ac50",colnames(dat))])
-  ac50s <- tibble(model = models, ac50 = dat %>% select(colnames(dat)[grepl("_ac50",colnames(dat))]) %>% unlist)
-  #don't need loss direction ac50s
-  ac50s <- ac50s %>% filter(!grepl("_loss",model))
-  models <- models[!grepl("_loss",models)]
-  # dat$models <- NULL
-  # dat$ac50 <- NULL
-  # l4_dat <- as_tibble(dat[3:length(dat)])
   # extract range from level 3 data for creating plotting all the functions
   # increase resolution to get smoother curves
   resolution <- 100
@@ -266,65 +250,87 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   l3_range <- l3_range * resolution
   x_range <- floor(l3_range[1]):ceiling(l3_range[2]) / resolution
   
-  # calculate y values for each function
-  if ("hill" %in% models) y_hill <- tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x_range)
-  #tp = ps[1], ga = ps[2], p = ps[3], la = ps[4], q = ps[5]
-  if ("gnls" %in% models) y_gnls <- tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x_range)
-  #a = ps[1], b = ps[2]
-  if ("exp2" %in% models) y_exp2 <- tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x_range)
-  #a = ps[1], b = ps[2], p = ps[3]
-  if ("exp3" %in% models) y_exp3 <- tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x_range)
-  #tp = ps[1], ga = ps[2]
-  if ("exp4" %in% models) y_exp4 <- tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x_range)
-  #tp = ps[1], ga = ps[2], p = ps[3]
-  if ("exp5" %in% models) y_exp5 <- tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x_range)
-  #a = ps[1]
-  if ("poly1" %in% models) y_poly1 <- tcplfit2::poly1(ps = c(dat$poly1_a), x = x_range)
-  #a = ps[1], b = ps[2]
-  if ("poly2" %in% models) y_poly2 <- tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x_range)
-  #a = ps[1], p = ps[2]
-  if ("pow" %in% models) y_pow <- tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x_range)
+  #check if winning model = none 
+  if (!dat$modl == "none"){
   
-  if (dat$fitc == 100) {
-    # loec is stored as modl_acc
-    x_loec <- rep(dat$modl_acc, resolution)
-    l3_resp <- l3_dat %>%
-      pull(.data$resp) %>%
-      range()
-    y_loec <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
-  }
+    #check if winning model has negative top.  If so coff should be negative
+    if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
+      if(dat$top<0){
+        dat$coff <- dat$coff*-1
+      }
+    }
+    
+    #get models from columns that have an ac50 listed
+    models <- gsub("_ac50","",colnames(dat)[grepl("_ac50",colnames(dat))])
+    ac50s <- tibble(model = models, ac50 = dat %>% select(colnames(dat)[grepl("_ac50",colnames(dat))]) %>% unlist)
+    #don't need loss direction ac50s
+    ac50s <- ac50s %>% filter(!grepl("_loss",model))
+    models <- models[!grepl("_loss",models)]
+    # dat$models <- NULL
+    # dat$ac50 <- NULL
+    # l4_dat <- as_tibble(dat[3:length(dat)])
+    
+    
+    # calculate y values for each function
+    if ("hill" %in% models) y_hill <- tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x_range)
+    #tp = ps[1], ga = ps[2], p = ps[3], la = ps[4], q = ps[5]
+    if ("gnls" %in% models) y_gnls <- tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x_range)
+    #a = ps[1], b = ps[2]
+    if ("exp2" %in% models) y_exp2 <- tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x_range)
+    #a = ps[1], b = ps[2], p = ps[3]
+    if ("exp3" %in% models) y_exp3 <- tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x_range)
+    #tp = ps[1], ga = ps[2]
+    if ("exp4" %in% models) y_exp4 <- tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x_range)
+    #tp = ps[1], ga = ps[2], p = ps[3]
+    if ("exp5" %in% models) y_exp5 <- tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x_range)
+    #a = ps[1]
+    if ("poly1" %in% models) y_poly1 <- tcplfit2::poly1(ps = c(dat$poly1_a), x = x_range)
+    #a = ps[1], b = ps[2]
+    if ("poly2" %in% models) y_poly2 <- tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x_range)
+    #a = ps[1], p = ps[2]
+    if ("pow" %in% models) y_pow <- tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x_range)
+    
+    if (dat$fitc == 100) {
+      # loec is stored as modl_acc
+      x_loec <- rep(dat$modl_acc, resolution)
+      l3_resp <- l3_dat %>%
+        pull(.data$resp) %>%
+        range()
+      y_loec <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
+    }
+    
+    # for model type 0 (default) add constant model
+      y_cnst <- x_range * 0
+      ac50s <- ac50s %>% rbind(c(model = "cnst", ac50 = NA))
+      models <- c(models, "cnst")
   
-  # for model type 0 (default) add constant model
-    y_cnst <- x_range * 0
-    ac50s <- ac50s %>% rbind(c(model = "cnst", ac50 = NA))
-    models <- c(models, "cnst")
-
-  
-  model_stats <- dat %>%
-    select(ends_with("aic"), ends_with("rme"), ends_with("_top"), ends_with("_p")) %>%
-    tidyr::pivot_longer(everything(),
-                        names_to = c("model", "param"),
-                        names_pattern = "(.*)_(.*)"
-    ) %>%
-    tidyr::pivot_wider(names_from = param, values_from = value)
-  ac50s$ac50 <- as.numeric(ac50s$ac50)
-  
-  # set background opacity
-  op <- .2
-  opacity <- tibble(model = models, opacity = op) %>% mutate(opacity = ifelse(.data$model == dat$modl, 1, opacity))
-  line.fmt <- tibble(model = models, dash = "dash") %>% mutate(dash = ifelse(.data$model == dat$modl, "solid", .data$dash))
-  
-  # build data table for plotly
-  m <- opacity %>%
-    inner_join(line.fmt, by = "model") %>%
-    inner_join(ac50s, by = "model") %>%
-    rowwise() %>%
-    mutate(x = ifelse(dat$fitc == 100,list(x_loec),list(x_range)), y = list(get(paste0("y_", .data$model)))) %>%
-    tidyr::unnest(cols = c(x, y))
-  
-  # if we have model stats we want them included in the hoverover
-  if (!is.null(model_stats)) {
-    m <- m %>% inner_join(model_stats, by = "model")
+    
+    model_stats <- dat %>%
+      select(ends_with("aic"), ends_with("rme"), ends_with("_top"), ends_with("_p")) %>%
+      tidyr::pivot_longer(everything(),
+                          names_to = c("model", "param"),
+                          names_pattern = "(.*)_(.*)"
+      ) %>%
+      tidyr::pivot_wider(names_from = param, values_from = value)
+    ac50s$ac50 <- as.numeric(ac50s$ac50)
+    
+    # set background opacity
+    op <- .2
+    opacity <- tibble(model = models, opacity = op) %>% mutate(opacity = ifelse(.data$model == dat$modl, 1, opacity))
+    line.fmt <- tibble(model = models, dash = "dash") %>% mutate(dash = ifelse(.data$model == dat$modl, "solid", .data$dash))
+    
+    # build data table for plotly
+    m <- opacity %>%
+      inner_join(line.fmt, by = "model") %>%
+      inner_join(ac50s, by = "model") %>%
+      rowwise() %>%
+      mutate(x = ifelse(dat$fitc == 100,list(x_loec),list(x_range)), y = list(get(paste0("y_", .data$model)))) %>%
+      tidyr::unnest(cols = c(x, y))
+    
+    # if we have model stats we want them included in the hoverover
+    if (!is.null(model_stats)) {
+      m <- m %>% inner_join(model_stats, by = "model")
+    }
   }
   
   # function for truncating decimals
@@ -334,8 +340,6 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     }
     trimws(format(round(x, k), nsmall = k))
   }
-  
-  
   
   # start creation of actual plot
   fig <- plot_ly(
@@ -354,7 +358,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   )
   # formatting for y axis
   y <- list(
-    title = "Percent Activity",
+    title = stringr::str_to_title(gsub("_"," ",dat$normalized_data_type)),
     # set zeroline to false otherwise there would be a big horizontal line at y = 0
     zeroline = FALSE
   )
@@ -363,7 +367,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     title = "Concentration",
     # set zeroline to false so there is no vertical line at x = 0
     type = "log",
-    zeroline = FALSE
+    zeroline = FALSE,
+    dtick=1
   )
   
   # function to generate vertical line
@@ -432,16 +437,16 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       )
     )
   } else {
-    if (!dat$modl == "cnst") {
+    if (!dat$modl == "cnst" && !dat$modl == "none") {
       dat_lines <- vline(ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric())
       fig <- fig %>% plotly::layout(xaxis = x, yaxis = y, shapes = dat_lines)
     } else {
       fig <- fig %>% plotly::layout(xaxis = x, yaxis = y)
-    }
+  }
     
     
     # add ac50 line for appropriate models (hitc=1)
-    if (!dat$modl == "cnst") {
+    if (!dat$modl == "cnst" && !dat$modl == "none") {
       fig <- fig %>% add_annotations(
         yref = "paper",
         xref = "x",
@@ -454,55 +459,55 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       )
     }
     
-    
-    # add all non-winning models
-    fig <- fig %>% add_trace(
-      data = m %>% filter(.data$model != dat$modl),
-      x = ~x,
-      y = ~y,
-      type = "scatter",
-      mode = "lines",
-      split = ~model,
-      opacity = ~opacity,
-      line = list(dash = ~dash, width = 1.5, color = NULL),
-      inherit = FALSE,
-      hoverinfo = "text",
-      text = ~ paste(
-        "</br>", model,
-        "</br> ac50: ", specify_decimal(ac50, 2),
-        "</br> Concentration: ", specify_decimal(x,2),
-        "</br> Response: ", specify_decimal(y, 2),
-        "</br> AIC: ", specify_decimal(aic, 2),
-        "</br> RME: ", specify_decimal(rme, 2),
-        "</br> TOP: ", specify_decimal(top, 2),
-        "</br> SLOPE: ", specify_decimal(p, 2)
+    if (!dat$modl == "none"){
+      # add all non-winning models
+      fig <- fig %>% add_trace(
+        data = m %>% filter(.data$model != dat$modl),
+        x = ~x,
+        y = ~y,
+        type = "scatter",
+        mode = "lines",
+        split = ~model,
+        opacity = ~opacity,
+        line = list(dash = ~dash, width = 1.5, color = NULL),
+        inherit = FALSE,
+        hoverinfo = "text",
+        text = ~ paste(
+          "</br>", model,
+          "</br> ac50: ", specify_decimal(ac50, 2),
+          "</br> Concentration: ", specify_decimal(x,2),
+          "</br> Response: ", specify_decimal(y, 2),
+          "</br> AIC: ", specify_decimal(aic, 2),
+          "</br> RME: ", specify_decimal(rme, 2),
+          "</br> TOP: ", specify_decimal(top, 2),
+          "</br> SLOPE: ", specify_decimal(p, 2)
+        )
       )
-    )
-    
-    # add line for winning model
-    fig <- fig %>% add_trace(
-      data = m %>% filter(.data$model == dat$modl),
-      x = ~x,
-      y = ~y,
-      type = "scatter",
-      mode = "lines",
-      split = ~model,
-      opacity = ~opacity,
-      line = list(dash = ~dash, width = 1.5, color = NULL),
-      inherit = FALSE,
-      hoverinfo = "text",
-      text = ~ paste(
-        "</br>", model,
-        "</br> ac50: ", specify_decimal(ac50, 2),
-        "</br> Concentration: ", specify_decimal(x,2),
-        "</br> Response: ", specify_decimal(y, 2),
-        "</br> AIC: ", specify_decimal(aic, 2),
-        "</br> RME: ", specify_decimal(rme, 2),
-        "</br> TOP: ", specify_decimal(top, 2),
-        "</br> SLOPE: ", specify_decimal(p, 2)
+      
+      # add line for winning model
+      fig <- fig %>% add_trace(
+        data = m %>% filter(.data$model == dat$modl),
+        x = ~x,
+        y = ~y,
+        type = "scatter",
+        mode = "lines",
+        split = ~model,
+        opacity = ~opacity,
+        line = list(dash = ~dash, width = 1.5, color = NULL),
+        inherit = FALSE,
+        hoverinfo = "text",
+        text = ~ paste(
+          "</br>", model,
+          "</br> ac50: ", specify_decimal(ac50, 2),
+          "</br> Concentration: ", specify_decimal(x,2),
+          "</br> Response: ", specify_decimal(y, 2),
+          "</br> AIC: ", specify_decimal(aic, 2),
+          "</br> RME: ", specify_decimal(rme, 2),
+          "</br> TOP: ", specify_decimal(top, 2),
+          "</br> SLOPE: ", specify_decimal(p, 2)
+        )
       )
-    )
-    
+    }
     # get hitcall
     hitcall <- dat %>% pull(hitc)
     
@@ -511,10 +516,11 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       text = paste0(
         dat %>% pull(.data$aenm), "<br>",
         case_when(
-          hitcall == 1 ~ "ACTIVE",
-          hitcall == 0 ~ "INACTIVE",
-          hitcall == -1 ~ "NO CALL",
-          TRUE ~ paste0(hitcall)
+          #updated binary hitcall designation to three decimal rounding
+          #hitcall == 1 ~ "ACTIVE",
+          #hitcall == 0 ~ "INACTIVE",
+          #hitcall == -1 ~ "NO CALL",
+          TRUE ~ paste0("HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))))
         ), "<br>",
         dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ")", "<br>",
         dat %>% pull(.data$dsstox_substance_id), "<br>",
