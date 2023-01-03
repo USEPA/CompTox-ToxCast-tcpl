@@ -8,18 +8,23 @@
 #' \code{tcplLoadData} queries the tcpl databases and returns a plot
 #' for the given level and data type.
 #'
-#' @param lvl Integer of length 1, the level of data to load
-#' @param type Character of length 1, the data type, "sc" or "mc"
-#' @param fld Character, the field(s) to query on
+#' @param lvl Integer of length 1, the level of data to load.
+#' @param type Character of length 1, the data type, "sc" or "mc".
+#' @param fld Character, the field(s) to query on.
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
-#' @param output how should the output be presented
-#' @param multi Boolean, if multi is TRUE output 6 plots per page
-#' @param fileprefix prefix of filename
-#' @param by Paramater to divide files into e.g. aeid
-#' @param verbose By default FALSE, should a table with fitting parameters be included in the plot
-#' @param nrow Integer, number of rows in multiplot default of 2
-#' @param ncol Integer, number of columns in multiplot default of 3, 2 if verbose
+#' @param output How should the plot be presented. To view the plot in application,
+#'  use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
+#' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
+#' by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
+#' 'verbose' = FALSE.
+#' @param fileprefix Prefix of file when saving.
+#' @param by Parameter to divide files into e.g. "aeid".
+#' @param verbose Boolean, by default FALSE. If TRUE, a table with fitting parameters
+#'  is included with the plot.
+#' @param nrow Integer, number of rows in multiplot. By default 2.
+#' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose.
+#' @param dpi Integer, image print resolution. By default 600. 
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -48,7 +53,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL,verbose = FALSE, nrow = NULL, ncol = NULL) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600) {
   #variable binding
   resp <- NULL
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
@@ -60,10 +65,12 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
     }
-    # forced assign multi=FALSE, verbose=FALSE for output="console"
-    if (output =="console") {
+    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
+    if (output !="pdf") {
       multi <- FALSE
-      verbose <- FALSE
+      if(output =="console"){
+        verbose <- FALSE
+      }
     }
     # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
     if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
@@ -78,17 +85,17 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       ncol <- ifelse(verbose,2,3)
     }
     m4id <- input$m4id
-  
+
     # load dat
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
     agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
-  
-  
+
+
     if (lvl >= 5L) {
       l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
       dat <- l4[l5, on = "m4id"]
     }
-  
+
     dat <- tcplPrepOtpt(dat)
     
     # add normalized data type for y axis
@@ -106,9 +113,10 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
       # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
-      # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages    
+      # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat)),
-        return(tcplggplot(dat,verbose = verbose))
+        return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
+                      plot=tcplggplot(dat,verbose = verbose), width = 9, height = 6, dpi=dpi))
       )
     } else {
       split_dat <- list(dat)
@@ -119,14 +127,19 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose)
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
-        if(!verbose){
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
-        else{
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
+        if(output=="pdf"){
+          if(!verbose){
+            ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
+          else{
+            ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
+          }
+        } else {
+          names(plot_list) <- d$m4id
+          lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
+                                                     plot=arrangeGrob(grobs=plot_list[x]), width = 9, height = 6, dpi=dpi))
         }
       }
     }
-    
 
   } else {
     if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")

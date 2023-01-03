@@ -8,6 +8,7 @@ Authors@R: c(
     person("Sarah E","Davidson-Fritz",role = "ctb",email = "davidsonfritz.sarah@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
     person("Madison","Feshuk",role = "ctb",email = "feshuk.madison@epa.gov", comment = c(ORCID = "0000-0002-1390-6405")),
     person("Lori","Kolaczkowski",role = "ctb",email = "kolaczkowski.lori@epa.gov"),
+    person("Kurt", "Dunham", role = "ctb", email = "dunham.kurt@epa.gov"),
     person("Todd", "Zurlinden", role="ctb"),
     person("Parth", "Kothiya", role = "ctb"),
     person("Woodrow R", "Setzer", role = "ctb"),
@@ -54,6 +55,6 @@ Suggests:
     magrittr
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Encoding: UTF-8
