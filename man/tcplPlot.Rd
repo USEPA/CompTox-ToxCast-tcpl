@@ -11,37 +11,44 @@ tcplPlot(
   val = NULL,
   type = "mc",
   by = NULL,
-  output = c("console", "pdf"),
+  output = c("console", "pdf", "png", "jpg", "svg", "tiff"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
-  multi = FALSE,
+  multi = NULL,
   verbose = FALSE,
   nrow = NULL,
-  ncol = NULL
+  ncol = NULL,
+  dpi = 600
 )
 }
 \arguments{
-\item{lvl}{Integer of length 1, the level of data to load}
+\item{lvl}{Integer of length 1, the level of data to load.}
 
-\item{fld}{Character, the field(s) to query on}
+\item{fld}{Character, the field(s) to query on.}
 
 \item{val}{List, vectors of values for each field to query on. Must be in
 the same order as 'fld'.}
 
-\item{type}{Character of length 1, the data type, "sc" or "mc"}
+\item{type}{Character of length 1, the data type, "sc" or "mc".}
 
-\item{by}{Paramater to divide files into e.g. aeid}
+\item{by}{Parameter to divide files into e.g. "aeid".}
 
-\item{output}{how should the output be presented}
+\item{output}{How should the plot be presented. To view the plot in application,
+use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".}
 
-\item{fileprefix}{prefix of filename}
+\item{fileprefix}{Prefix of file when saving.}
 
-\item{multi}{Boolean, if multi is TRUE output 6 plots per page}
+\item{multi}{Boolean, by default TRUE for "pdf". If multi is TRUE, output
+by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
+'verbose' = FALSE.}
 
-\item{verbose}{By default FALSE, should a table with fitting parameters be included in the plot}
+\item{verbose}{Boolean, by default FALSE. If TRUE, a table with fitting parameters
+is included with the plot.}
 
-\item{nrow}{Integer, number of rows in multiplot default of 2}
+\item{nrow}{Integer, number of rows in multiplot. By default 2.}
 
-\item{ncol}{Integer, number of columns in multiplot default of 3, 2 if verbose}
+\item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose.}
+
+\item{dpi}{Integer, image print resolution. By default 600.}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot
