@@ -269,7 +269,7 @@ mc6_mthds <- function() {
                 "flag", "fval", "fval_unit")
       init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
       e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := top <= 1.2*coff & top >= 0.8*coff])
+      e2 <- bquote(ft[ , test := abs(top) <= 1.2*coff & abs(top) >= 0.8*coff])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
