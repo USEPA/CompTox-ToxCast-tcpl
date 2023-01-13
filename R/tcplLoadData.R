@@ -78,10 +78,10 @@
 #' @export
 
 tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL) {
-  #variable binding
+  # variable binding
   model <- model_param <- model_val <- NULL
   hit_param <- hit_val <- NULL
-  
+
   if (length(lvl) > 1 | length(type) > 1) {
     stop("'lvl' & 'type' must be of length 1.")
   }
@@ -90,46 +90,51 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
 
   if (lvl == 0L && type == "mc") {
     tbls <- c("mc0")
+    cols <- c(
+      "m0id",
+      "spid",
+      "acid",
+      "apid",
+      "rowi",
+      "coli",
+      "wllt",
+      "wllq",
+      "conc",
+      "rval",
+      "srcf"
+    )
 
-    qformat <-
-      "
-      SELECT
-        m0id,
-        spid,
-        acid,
-        apid,
-        rowi,
-        coli,
-        wllt,
-        wllq,
-        conc,
-        rval,
-        srcf
-      FROM
-        mc0
-      "
+    if (check_tcpl_db_schema()) {
+      cols <- c(cols, "clowder_uid", "git_hash")
+    }
+
+    col_str <- paste0(cols, collapse = ",")
+    qformat <- paste0("SELECT ", col_str, " FROM mc0 ")
   }
 
   if (lvl == 0L && type == "sc") {
     tbls <- c("sc0")
 
-    qformat <-
-      "
-      SELECT
-        s0id,
-        spid,
-        acid,
-        apid,
-        rowi,
-        coli,
-        wllt,
-        wllq,
-        conc,
-        rval,
-        srcf
-      FROM
-        sc0
-      "
+    cols <- c(
+      "s0id",
+      "spid",
+      "acid",
+      "apid",
+      "rowi",
+      "coli",
+      "wllt",
+      "wllq",
+      "conc",
+      "rval",
+      "srcf"
+    )
+
+    if (check_tcpl_db_schema()) {
+      cols <- c(cols, "clowder_uid", "git_hash")
+    }
+
+    col_str <- paste0(cols, collapse = ",")
+    qformat <- paste0("SELECT ", col_str, " FROM sc0 ")
   }
 
   if (lvl == 1L && type == "mc") {
@@ -334,9 +339,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
         FROM
         mc4
         "
-    }
-    else {
-      tbls <- c("mc4","mc4_param")
+    } else {
+      tbls <- c("mc4", "mc4_param")
       qformat <-
         "
       SELECT
@@ -365,7 +369,6 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
       WHERE
         mc4.m4id = mc4_param.m4id 
         "
-
     }
   } else if (lvl == 4L && type == "mc") {
     tbls <- c("mc4")
@@ -432,7 +435,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
   if (lvl == 5L && type == "mc" && check_tcpl_db_schema()) {
     if (is.null(add.fld)) {
       tbls <- c("mc4", "mc5")
-      
+
       qformat <-
         "
       SELECT
@@ -463,9 +466,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
       WHERE
         mc4.m4id = mc5.m4id
       "
-    }
-    else {
-      tbls <- c("mc4","mc5","mc5_param")
+    } else {
+      tbls <- c("mc4", "mc5", "mc5_param")
       qformat <-
         "
       SELECT
@@ -501,7 +503,6 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
       AND
         mc5.m5id = mc5_param.m5id
         "
-      
     }
   } else if (lvl == 5L && type == "mc") {
     tbls <- c("mc4", "mc5")
@@ -629,7 +630,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
     fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
 
     wtest <- lvl %in% c(0, 4) | (lvl == 2 & type == "sc")
-    if(!is.null(add.fld)) wtest <- FALSE
+    if (!is.null(add.fld)) wtest <- FALSE
     qformat <- paste(qformat, if (wtest) "WHERE" else "AND")
 
     qformat <- paste0(
@@ -648,11 +649,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
   }
 
   dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = tbls))
-  
+
   # pivot table so 1 id per return and only return added fields
-  if(!is.null(add.fld)){
-    if(lvl == 4L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(model,model_param), values_from = model_val))
-    if(lvl == 5L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(hit_param), values_from = hit_val))
+  if (!is.null(add.fld)) {
+    if (lvl == 4L) dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(model, model_param), values_from = model_val))
+    if (lvl == 5L) dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(hit_param), values_from = hit_val))
   }
 
   dat[]
