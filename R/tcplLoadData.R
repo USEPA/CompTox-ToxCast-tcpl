@@ -627,6 +627,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NUL
   if (is.null(tbls)) stop("Invalid 'lvl' and 'type' combination.")
 
   if (!is.null(fld)) {
+    if (is.null(val)) stop("'val' cannot be NULL check that a valid value was provided for the specified field")
+    
     fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
 
     wtest <- lvl %in% c(0, 4) | (lvl == 2 & type == "sc")
