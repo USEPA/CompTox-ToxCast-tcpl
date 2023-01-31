@@ -645,7 +645,16 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
       tidyr::pivot_longer(cols = everything()) %>% as_tibble()
   })
   
-  round_n <- function(x,n){format(round(x, n), nsmall = 3)}
+  # general function to round/shorten values for plotting tables
+  round_n <- function(x,n){
+  # if x>=1000, convert value to scientific notation
+    if(x>=1000){
+      formatC(x, format = "e", digits = n)
+    } else { #else, round the value to 3 decimal places
+    format(round(x, n), nsmall = 3)
+    }
+  }
+  round_n <- Vectorize(round_n)
   
   combined_p <- data.table::rbindlist(p)
   pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
