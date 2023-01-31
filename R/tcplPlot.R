@@ -99,13 +99,9 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     dat <- tcplPrepOtpt(dat)
     
     # correct concentration unit label for x-axis
-    if (is.na(dat$conc_unit)) {
-      dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
-    } else if (dat$conc_unit == "uM") {
-      dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
-    } else if (dat$conc_unit == "mg/l") {
-      dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
-    }
+    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
     
     # add normalized data type for y axis
     ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
