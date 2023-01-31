@@ -174,7 +174,7 @@ tcplWriteData <- function(dat, lvl, type) {
     )
   } else if (lvl == 5 & check_tcpl_db_schema()) {
     tcplAppend(
-      dat = unique(dat[,c("m4id","aeid","modl","hitc","coff","model_type","modified_by")]),
+      dat = unique(dat[,c("m4id","aeid","modl","hitc","fitc","coff","model_type","modified_by")]),
       tbl = "mc5",
       db = getOption("TCPL_DB")
     )
