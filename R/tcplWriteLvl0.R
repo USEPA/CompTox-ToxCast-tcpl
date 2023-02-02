@@ -103,6 +103,7 @@ tcplWriteLvl0 <- function(dat, type) {
   ## Check for acid
   if (dat[, any(is.na(acid))]) {
     stop("No ACID supplied for some samples.  Ensure all samples have an ACID then rerun.")
+  }
 
   ## Check for 0 concentration values
   if (dat[,any(conc == 0)]) {
