@@ -100,6 +100,11 @@ tcplWriteLvl0 <- function(dat, type) {
     stop("No concentration values for some test compounds.")
   }
   
+  ## Check for acid
+  if (dat[, any(is.na(acid))]) {
+    stop("No ACID supplied for some samples.  Ensure all samples have an ACID then rerun.")
+  }
+  
   ## Likely unnecessary step to correct some unexplained string lookup 
   ## behavior, ie. dat[spid == "DMSO"] returns only 5 rows, but 
   ## dat[wllt == "n"] returns 10 rows AND dat[wllt == "n", unique(spid)] only 
