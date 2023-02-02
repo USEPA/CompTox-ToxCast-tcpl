@@ -104,6 +104,16 @@ tcplWriteLvl0 <- function(dat, type) {
   if (dat[, any(is.na(acid))]) {
     stop("No ACID supplied for some samples.  Ensure all samples have an ACID then rerun.")
   }
+
+  ## Check for 0 concentration values
+  if (dat[,any(conc == 0)]) {
+    stop("Cannot process a concentration value of 0. Confirm source document lists 0 as concentration value and rerun with dummy value of .01")
+  }
+  
+  ## Check wllt has been set for all samples
+  if (dat[, any(is.na(wllt))]) {
+    stop("No `wllt` specified for some samples. Confirm all samples have a `wllt` specified then rerun.")
+  }
   
   ## Likely unnecessary step to correct some unexplained string lookup 
   ## behavior, ie. dat[spid == "DMSO"] returns only 5 rows, but 
