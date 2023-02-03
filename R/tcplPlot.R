@@ -95,8 +95,13 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
       dat <- l4[l5, on = "m4id"]
     }
-
+    
     dat <- tcplPrepOtpt(dat)
+    
+    # correct concentration unit label for x-axis
+    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
     
     # add normalized data type for y axis
     ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
@@ -377,7 +382,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   )
   # formatting for x axis
   x <- list(
-    title = "Concentration",
+    title = paste0("Concentration ","(",dat$conc_unit,")"),
     # set zeroline to false so there is no vertical line at x = 0
     type = "log",
     zeroline = FALSE,
@@ -620,7 +625,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
     scale_x_continuous(limits = l3_range, trans='log10') +
     scale_color_viridis_d("",direction = -1, guide = guide_legend(reverse = TRUE, order = 2)) +
     scale_linetype_manual("",guide = guide_legend(reverse = TRUE, order = 2), values = c(2,2,3,1)) +
-    xlab("Concentration (\u03BCM)") + 
+    xlab(paste0("Concentration ","(",dat$conc_unit,")")) + 
     ylab(stringr::str_to_title(gsub("_"," ",dat$normalized_data_type))) +
     geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText)) +
     labs(
