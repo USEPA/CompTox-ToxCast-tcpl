@@ -653,7 +653,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
   # general function to round/shorten values for plotting tables
   round_n <- function(x,n){
   # if x>=1000, convert value to scientific notation
-    if(x>=1000){
+    if(is.numeric(x>=1000)){
       formatC(x, format = "e", digits = n)
     } else { #else, round the value to 3 decimal places
     format(round(x, n), nsmall = 3)
