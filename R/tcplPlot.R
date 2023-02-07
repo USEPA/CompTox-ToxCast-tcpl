@@ -577,106 +577,116 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @importFrom ggplot2 margin unit
 #' @import gridExtra
 #' @import stringr
-tcplggplot <- function(dat, lvl = 5, verbose = FALSE){
-  
-  #variable binding
+tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
+  # variable binding
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
   l3_range <- l3_dat %>%
-      pull(.data$conc) %>%
-      range()
-  
+    pull(.data$conc) %>%
+    range()
+
   annotations <- data.frame(
     xpos = c(l3_range[1]),
-    ypos =  c(Inf),
-    annotateText = c(paste0(ifelse(verbose,"",paste0(
-      "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3))))), "\n",
+    ypos = c(Inf),
+    annotateText = c(paste0(
+      ifelse(verbose, "", paste0(
+        "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+      )), "\n",
       ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
     )),
-    hjustvar = c(0) ,
-    vjustvar = c(1)) #<- adjust
-  
-  #check if winning model has negative top.  If so coff should be negative
-  if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
-    if(dat$top<0){
-      dat$coff <- dat$coff*-1
+    hjustvar = c(0),
+    vjustvar = c(1)
+  ) #<- adjust
+
+  # check if winning model has negative top.  If so coff should be negative
+  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)) {
+    if (dat$top < 0) {
+      dat$coff <- dat$coff * -1
     }
   }
 
-  winning_model_string <- paste0("Winning Model\n(",dat$modl,")")
-  model_test <- function(modeltype){
-    ifelse(dat$modl == modeltype,winning_model_string,"Losing Models")
+  winning_model_string <- paste0("Winning Model\n(", dat$modl, ")")
+  model_test <- function(modeltype) {
+    ifelse(dat$modl == modeltype, winning_model_string, "Losing Models")
   }
-  
-  gg <- ggplot(l3_dat, aes(conc, resp)) + 
-    geom_function(aes(color = !!model_test("gnls"),linetype = !!model_test("gnls")),fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x)) +
-    geom_function(aes(color = !!model_test("exp2"),linetype = !!model_test("exp2")),fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a,dat$exp2_b), x = x)) +
-    geom_function(aes(color = !!model_test("exp3"),linetype = !!model_test("exp3")),fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a,dat$exp3_b,dat$exp3_p), x = x)) +
-    geom_function(aes(color = !!model_test("exp4"),linetype = !!model_test("exp4")),fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp,dat$exp4_ga), x = x)) +
-    geom_function(aes(color = !!model_test("exp5"),linetype = !!model_test("exp5")),fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp,dat$exp5_ga,dat$exp5_p), x = x)) +
-    geom_function(aes(color = !!model_test("poly1"),linetype = !!model_test("poly1")),fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) + 
-    geom_function(aes(color = !!model_test("poly2"),linetype = !!model_test("poly2")),fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a,dat$poly2_b), x = x)) + 
-    geom_function(aes(color = !!model_test("pow"),linetype = !!model_test("pow")),fun = function(x) tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x)) +
-    geom_function(aes(color = !!model_test("hill"),linetype = !!model_test("hill")),fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x)) +
-    geom_vline(aes(xintercept=dat$ac50, color = "AC50",linetype = "AC50")) +
-    geom_hline(aes(yintercept=dat$coff, color = "Cutoff", linetype = "Cutoff")) +
-    geom_point() + 
-    scale_x_continuous(limits = l3_range, trans='log10') +
-    scale_color_viridis_d("",direction = -1, guide = guide_legend(reverse = TRUE, order = 2)) +
-    scale_linetype_manual("",guide = guide_legend(reverse = TRUE, order = 2), values = c(2,2,3,1)) +
-    xlab(paste0("Concentration ","(",dat$conc_unit,")")) + 
-    ylab(stringr::str_to_title(gsub("_"," ",dat$normalized_data_type))) +
-    geom_text(data=annotations,aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText)) +
+
+  gg <- ggplot(l3_dat, aes(conc, resp)) +
+    geom_function(aes(color = !!model_test("gnls"), linetype = !!model_test("gnls")), fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x)) +
+    geom_function(aes(color = !!model_test("exp2"), linetype = !!model_test("exp2")), fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a, dat$exp2_b), x = x)) +
+    geom_function(aes(color = !!model_test("exp3"), linetype = !!model_test("exp3")), fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a, dat$exp3_b, dat$exp3_p), x = x)) +
+    geom_function(aes(color = !!model_test("exp4"), linetype = !!model_test("exp4")), fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp, dat$exp4_ga), x = x)) +
+    geom_function(aes(color = !!model_test("exp5"), linetype = !!model_test("exp5")), fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp, dat$exp5_ga, dat$exp5_p), x = x)) +
+    geom_function(aes(color = !!model_test("poly1"), linetype = !!model_test("poly1")), fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) +
+    geom_function(aes(color = !!model_test("poly2"), linetype = !!model_test("poly2")), fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a, dat$poly2_b), x = x)) +
+    geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x)) +
+    geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x)) +
+    geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
+    geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
+    geom_point() +
+    scale_x_continuous(limits = l3_range, trans = "log10") +
+    scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2)) +
+    scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 3, 1)) +
+    xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
+    ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
+    geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
     labs(
       title = stringr::str_wrap(paste0(
         dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ") ",
         dat %>% pull(.data$dsstox_substance_id)
-      ),50),
+      ), 50),
       subtitle = paste0(
         "SPID: ", dat %>% pull(.data$spid), " ",
         "AENM: ", dat %>% pull(.data$aenm)
       )
     ) +
-    theme(legend.title=element_blank(),
-          legend.margin = margin(0, 0, 0, 0),
-          legend.spacing.x = unit(0, "mm"),
-          legend.spacing.y = unit(0, "mm"))
-  
-  
+    theme(
+      legend.title = element_blank(),
+      legend.margin = margin(0, 0, 0, 0),
+      legend.spacing.x = unit(0, "mm"),
+      legend.spacing.y = unit(0, "mm")
+    )
+
+
   p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
     dat %>%
-      select(contains(paste0(x,c("_aic","_rme")))) %>%
-      tidyr::pivot_longer(cols = everything()) %>% as_tibble()
+      select(contains(paste0(x, c("_aic", "_rme")))) %>%
+      tidyr::pivot_longer(cols = everything()) %>%
+      as_tibble()
   })
-  
+
   # general function to round/shorten values for plotting tables
-  round_n <- function(x,n){
-  # if x>=1000, convert value to scientific notation
-    if(is.numeric(x>=1000)){
-      formatC(x, format = "e", digits = n)
-    } else { #else, round the value to 3 decimal places
-    format(round(x, n), nsmall = 3)
+  round_n <- function(x, n) {
+    if (!is.na(x)) {
+      if (x >= 1000) {
+        # if x>=1000, convert value to scientific notation
+        formatC(x, format = "e", digits = n)
+      } else { # else, round the value to 3 decimal places
+        format(round(x, n), nsmall = 3)
+      }
+    } else {
+      return(NA)
     }
   }
   round_n <- Vectorize(round_n)
-  
-  combined_p <- data.table::rbindlist(p)
-  pivoted_p <- combined_p %>% tidyr::extract(name,c("model","param"),"([[:alnum:]]+)_([[:alnum:]]+)") %>% pivot_wider(names_from = "param",values_from = "value")
-  pivoted_p <- pivoted_p %>% mutate_if(is.numeric,~round_n(.,3))
-  pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
-  #print(pivoted_p)
-  t <- tableGrob(pivoted_p,rows = NULL)
-  
-  l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
-  l5_details <- l5_details %>% mutate_if(is.numeric,~round_n(.,3))
-  l5_t <- tableGrob(l5_details,rows = NULL)
-  
-  
-  valigned <- gtable_combine(l5_t,t, along=2)
-  
-  ifelse(verbose,
-         return(arrangeGrob(gg,valigned,nrow = 1,widths = 2:1)),
-         return(gg))
 
+  combined_p <- data.table::rbindlist(p)
+  pivoted_p <- combined_p %>%
+    tidyr::extract(name, c("model", "param"), "([[:alnum:]]+)_([[:alnum:]]+)") %>%
+    pivot_wider(names_from = "param", values_from = "value")
+  pivoted_p <- pivoted_p %>% mutate_if(is.numeric, ~ round_n(., 3))
+  pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
+  # print(pivoted_p)
+  t <- tableGrob(pivoted_p, rows = NULL)
+  l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
+  l5_details <- l5_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+  l5_t <- tableGrob(l5_details, rows = NULL)
+
+
+  valigned <- gtable_combine(l5_t, t, along = 2)
+
+  ifelse(verbose,
+    return(arrangeGrob(gg, valigned, nrow = 1, widths = 2:1)),
+    return(gg)
+  )
 }
