@@ -107,6 +107,11 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
     dat <- dat[ndt, on = "aeid"]
     
+    # check for null bmd in dat table
+    if (verbose){
+      dat <- dat[is.null(dat$bmd), bmd:=NA]
+    }
+    
     # unlog concs
     conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
     dat <- dat[conc_resp_table, on = "m4id"]
