@@ -138,11 +138,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
-          if(!verbose){
-            ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*4.88, height = nrow*3.04)}
-          else{
-            ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
-          }
+          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
         } else {
           names(plot_list) <- d$m4id
           lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
@@ -636,14 +632,15 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
     geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
     labs(
-      title = stringr::str_wrap(paste0(
-        dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ") ",
-        dat %>% pull(.data$dsstox_substance_id)
-      ), 50),
-      subtitle = paste0(
-        "SPID: ", dat %>% pull(.data$spid), " ",
+      title = stringr::str_trunc(paste0(
+        dat %>% pull(.data$dsstox_substance_id), " ",
+        dat %>% pull(.data$chnm)
+      ), 70),
+      subtitle = stringr::str_trunc(paste0(
+        "SPID: ", dat %>% pull(.data$spid), "  ",
+        "AEID: ", dat %>% pull(.data$aeid), "  ",
         "AENM: ", dat %>% pull(.data$aenm)
-      )
+      ), 75)
     ) +
     theme(
       legend.title = element_blank(),
