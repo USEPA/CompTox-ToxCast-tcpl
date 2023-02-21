@@ -590,12 +590,9 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   annotations <- data.frame(
     xpos = c(l3_range[1]),
     ypos = c(Inf),
-    annotateText = c(paste0(
-      ifelse(verbose, "", paste0(
-        "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
-      )), "\n",
+    annotateText = paste0(
       ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
-    )),
+    ),
     hjustvar = c(0),
     vjustvar = c(1)
   ) #<- adjust
@@ -636,11 +633,16 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
         dat %>% pull(.data$dsstox_substance_id), " ",
         dat %>% pull(.data$chnm)
       ), 70),
-      subtitle = stringr::str_trunc(paste0(
-        "SPID: ", dat %>% pull(.data$spid), "  ",
-        "AEID: ", dat %>% pull(.data$aeid), "  ",
-        "AENM: ", dat %>% pull(.data$aenm)
-      ), 75)
+      subtitle = paste0(
+        stringr::str_trunc(paste0(
+          "SPID: ", dat %>% pull(.data$spid), "  ",
+          "AEID: ", dat %>% pull(.data$aeid), "  ",
+          "AENM: ", dat %>% pull(.data$aenm)), 80),"\n",
+        "M4ID: ", dat %>% pull(.data$m4id), "  ",
+        ifelse(verbose, "", paste0(
+          "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+        ))
+      )
     ) +
     theme(
       legend.title = element_blank(),
