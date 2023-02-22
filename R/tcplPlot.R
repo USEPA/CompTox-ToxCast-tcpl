@@ -126,7 +126,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat)),
         return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
-                      plot=tcplggplot(dat,verbose = verbose), width = 9, height = 6, dpi=dpi))
+                      plot=tcplggplot(dat,verbose = verbose), width = 7, height = 5, dpi=dpi))
       )
     } else {
       split_dat <- list(dat)
@@ -142,7 +142,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         } else {
           names(plot_list) <- d$m4id
           lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
-                                                     plot=arrangeGrob(grobs=plot_list[x]), width = 9, height = 6, dpi=dpi))
+                                                     plot=arrangeGrob(grobs=plot_list[x]), width = 7, height = 5, dpi=dpi))
         }
       }
     }
