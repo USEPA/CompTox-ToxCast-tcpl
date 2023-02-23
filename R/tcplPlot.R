@@ -629,22 +629,23 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
     geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
     labs(
-      title = stringr::str_trunc(paste0(
-        dat %>% pull(.data$dsstox_substance_id), " ",
-        dat %>% pull(.data$chnm)
-      ), 70),
-      subtitle = paste0(
+      title = paste0(
         stringr::str_trunc(paste0(
-          "SPID: ", dat %>% pull(.data$spid), "  ",
-          "AEID: ", dat %>% pull(.data$aeid), "  ",
-          "AENM: ", dat %>% pull(.data$aenm)), 80),"\n",
-        "M4ID: ", dat %>% pull(.data$m4id), "  ",
+          dat %>% pull(.data$dsstox_substance_id), " ",
+          dat %>% pull(.data$chnm)
+        ), 75), "\n",
+        stringr::str_trunc(paste0(
+          "SPID:", dat %>% pull(.data$spid), "  ",
+          "AEID:", dat %>% pull(.data$aeid), "  ",
+          "AENM:", dat %>% pull(.data$aenm)), 70),"\n",
+        "M4ID:", dat %>% pull(.data$m4id), "  ",
         ifelse(verbose, "", paste0(
-          "HITC: ", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
         ))
       )
     ) +
     theme(
+      plot.title = element_text(size = 12),
       legend.title = element_blank(),
       legend.margin = margin(0, 0, 0, 0),
       legend.spacing.x = unit(0, "mm"),
