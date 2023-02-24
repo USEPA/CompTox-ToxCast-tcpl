@@ -620,11 +620,13 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x)) +
     geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x)) +
     geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
+    geom_vline(aes(xintercept = dat$bmd, color = "BMD", linetype = "BMD")) +
     geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
+    geom_hline(aes(yintercept = dat$bmr, color = "BMR", linetype = "BMR")) +
     geom_point() +
     scale_x_continuous(limits = l3_range, trans = "log10") +
     scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2)) +
-    scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 3, 1)) +
+    scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 2, 3, 1)) +
     xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
     ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
     geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
