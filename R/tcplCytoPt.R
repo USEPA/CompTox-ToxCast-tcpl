@@ -116,26 +116,28 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   ac50var <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- modl <- NULL
   ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
   
+  cat("1: Checking if aeid or chid is specified\n")
   if (!is.null(aeid) & !is.vector(aeid)) {
     stop("'aeid' must be NULL or a vector.")
   }
-  print(1)
+  
   if (!is.null(chid) & !is.vector(chid)) {
     stop("'chid' must be NULL or a vector.")
   }
-  print(2)
+  
+  cat("2: Checking if min.test is specified\n")
   mt_type <- (is.numeric(min.test) | is.null(min.test) | is.logical(min.test))
   if (!(length(min.test) == 1 & mt_type)) {
     stop("Invalid 'min.test' input. See details.")
   }
-  print(3)
+  cat("3: Checking if aeid values are set to override the 'burst assay' definitions\n")
   if (is.null(aeid)) {
-    print(3.1)
+    cat("3.1: Loading burst assays from database\n")
     ae <- suppressWarnings(tcplLoadAeid("burst_assay", 1)$aeid)
   } else {
     ae <- aeid
   }
-  print(4)
+  cat("4: Confirming burst assays and minimum tested assays required\n")
   if (length(ae) == 0) stop("No burst assays defined.")
   
   if (is.null(min.test)) {
@@ -148,20 +150,20 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   } else {
     mtst <- 0
   }
-  print(5)
+  cat("5: Loading level 5 data\n")
   zdat <- tcplLoadData(lvl = 5L, fld = "aeid", val = ae, type = "mc")
-  print(6)
+  cat("6: Appending chemical information to level 5 data\n")
   zdat <- tcplPrepOtpt(dat = zdat)
-  print(7)
+  cat("7: Filtering chemical data (if necessary)\n")
   if (!is.null(chid)) {
     ch <- chid
     zdat <- zdat[chid %in% ch]
   }
-  print(8)
+  cat("8: Determining representative sample\n")
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
   #filter out gnls curves
   zdat <- zdat[modl != "gnls",]
-  print(9)
+  cat("9: Calculating intermediate summary statistics\n")
   # prior to version 4.0 modl_ga was used as ac50 variable
   # check schema and if using new schema use ac50 instead.
   ac50var <- ifelse(check_tcpl_db_schema(),quote(ac50),quote(modl_ga)) 
@@ -172,7 +174,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                       burstpct = (lw(hitc==1)/.N)), # added burst percent as condition instead of number of hits
                by = list(chid,code, chnm, casn)]
   
-  print(10)
+  cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
   zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
   gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
