@@ -106,7 +106,8 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
   }
 
   #setkeyv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga"))
-  setorderv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga","max_med"),c(1,1,1,1,1,-1), na.last = TRUE)
+  ac50var <- ifelse(check_tcpl_db_schema(),"ac50","modl_ga") 
+  setorderv(dat, c("aeid", "chid", "fitc.ordr", "nflg", ac50var,"max_med"),c(1,1,1,1,1,-1), na.last = TRUE)
 
   min_modl_ga <- dat[ , list(ind = .I[1]), by = list(aeid, casn)]
 
