@@ -56,8 +56,7 @@
 #'  \item "code" -- The chemical code.
 #'  \item "chnm" -- The chemical name.
 #'  \item "casn" -- The chemical CASRN.
-#'  \item "med" -- The median of the "burst" endpoint log(AC50) ("modl_ga" in 
-#'  the level 5 output) values.
+#'  \item "med" -- The median of the "burst" endpoint log(AC50)
 #'  \item "mad" -- The MAD of the "burst" endpoint log(AC50) values.
 #'  \item "ntst" -- The number of "burst" endpoints tested.
 #'  \item "nhit" -- The number of active "burst" endpoints.
@@ -114,7 +113,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                        min.test = TRUE, default.pt = 3) {
   
   ## Variable-binding to pass R CMD Check
-  modl_ga <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- modl <- NULL
+  ac50var <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- modl <- NULL
   ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
   
   if (!is.null(aeid) & !is.vector(aeid)) {
@@ -163,12 +162,16 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   #filter out gnls curves
   zdat <- zdat[modl != "gnls",]
   print(9)
-  zdst <- zdat[, list(med = median(modl_ga[hitc == 1]), mad = mad(modl_ga[hitc == 
-                                                                            1]), 
+  # prior to version 4.0 modl_ga was used as ac50 variable
+  # check schema and if using new schema use ac50 instead.
+  ac50var <- ifelse(check_tcpl_db_schema(),quote(ac50),quote(modl_ga)) 
+  zdst <- zdat[, list(med = median(eval(ac50var)[hitc == 1]),
+                      mad = mad(eval(ac50var)[hitc == 1]), 
                       ntst = .N, 
                       nhit = lw(hitc == 1), 
                       burstpct = (lw(hitc==1)/.N)), # added burst percent as condition instead of number of hits
                by = list(chid,code, chnm, casn)]
+  
   print(10)
   zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
   gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
