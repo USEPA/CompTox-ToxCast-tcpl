@@ -630,10 +630,13 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     if (is.null(val)) stop("'val' cannot be NULL check that a valid value was provided for the specified field")
     
     fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
-
-    wtest <- lvl %in% c(0, 4) | (lvl == 2 & type == "sc")
-
+    
     if(add.fld) wtest <- FALSE
+    wtest <- lvl %in% c(0) | (lvl == 2 & type == "sc")
+    if(!check_tcpl_db_schema() & lvl == 4){
+      wtest <- TRUE
+    }
+
     qformat <- paste(qformat, if (wtest) "WHERE" else "AND")
 
     qformat <- paste0(
@@ -654,7 +657,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
   dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = tbls))
 
   # pivot table so 1 id per return and only return added fields
-  if(add.fld){
+  if(add.fld & check_tcpl_db_schema()){
     if(lvl == 4L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(model,model_param), values_from = model_val))
     if(lvl == 5L)    dat <- as.data.table(tidyr::pivot_wider(dat, names_from = c(hit_param), values_from = hit_val))
   }
