@@ -166,19 +166,19 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   cat("9: Calculating intermediate summary statistics\n")
   # prior to version 4.0 modl_ga was used as ac50 variable
   # check schema and if using new schema use ac50 instead.
-  ac50var <- ifelse(check_tcpl_db_schema(),quote(ac50),quote(modl_ga)) 
-  zdst <- zdat[, list(med = median(eval(ac50var)[hitc == 1]),
-                      mad = mad(eval(ac50var)[hitc == 1]), 
+  ac50var <- ifelse(check_tcpl_db_schema(),quote(ac50),quote(modl_ga))
+  hitc_num <- ifelse(check_tcpl_db_schema(),.9,1)
+  zdst <- zdat[, list(med = median(eval(ac50var)[hitc >= hitc_num]),
+                      mad = mad(eval(ac50var)[hitc >= hitc_num]), 
                       ntst = .N, 
-                      nhit = lw(hitc == 1), 
-                      burstpct = (lw(hitc==1)/.N)), # added burst percent as condition instead of number of hits
+                      nhit = lw(hitc >= hitc_num), 
+                      burstpct = (lw(hitc>=hitc_num)/.N)), # added burst percent as condition instead of number of hits
                by = list(chid,code, chnm, casn)]
   
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
   zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
   gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
-  #zdst[, `:=`(global_mad, median(mad[use_global_mad]))] #old calculation for global mad
   zdst[, `:=`(cyto_pt, med)] #set cyto_pt to the median value
   zdst[burstpct < 0.05, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 use the default pt instead
   zdst[, `:=`(cyto_pt_um, 10^cyto_pt)]
