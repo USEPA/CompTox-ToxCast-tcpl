@@ -47,7 +47,7 @@ Suggests:
     prettydoc,
     rmarkdown,
     htmlTable,
-    testthat (>= 2.1.0),
+    testthat (>= 3.0.0),
     reshape2,
     viridis,
     kableExtra,
@@ -58,3 +58,4 @@ LazyData: true
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Encoding: UTF-8
+Config/testthat/edition: 3
