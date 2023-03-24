@@ -178,8 +178,13 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
   zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
   gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
+  gb_mad <- ifelse(check_tcpl_db_schema(),log10(gb_mad),gb_mad)
   zdst[,global_mad := gb_mad] # add column for global mad
-  zdst[, `:=`(cyto_pt, med)] #set cyto_pt to the median value
+  if(check_tcpl_db_schema()){
+    zdst[, cyto_pt := log10(med)] #set cyto_pt to the median value
+  } else {
+    zdst[, cyto_pt := med]
+  }
   zdst[burstpct < 0.05, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 use the default pt instead
   zdst[, `:=`(cyto_pt_um, 10^cyto_pt)]
   zdst[, `:=`(lower_bnd_um, 10^(cyto_pt - 3 * global_mad))]
