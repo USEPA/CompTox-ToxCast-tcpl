@@ -168,23 +168,28 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   # check schema and if using new schema use ac50 instead.
   ac50var <- ifelse(check_tcpl_db_schema(),quote(ac50),quote(modl_ga))
   hitc_num <- ifelse(check_tcpl_db_schema(),.9,1)
-  zdst <- zdat[, list(med = median(eval(ac50var)[hitc >= hitc_num]),
-                      mad = mad(eval(ac50var)[hitc >= hitc_num]), 
-                      ntst = .N, 
-                      nhit = lw(hitc >= hitc_num), 
-                      burstpct = (lw(hitc>=hitc_num)/.N)), # added burst percent as condition instead of number of hits
-               by = list(chid,code, chnm, casn)]
+  
+  if(check_tcpl_db_schema()){
+    zdst <- zdat[, list(med = log10(median(eval(ac50var)[hitc >= hitc_num])),
+                        mad = log10(mad(eval(ac50var)[hitc >= hitc_num])), 
+                        ntst = .N, 
+                        nhit = lw(hitc >= hitc_num), 
+                        burstpct = (lw(hitc>=hitc_num)/.N)), # added burst percent as condition instead of number of hits
+                 by = list(chid,code, chnm, casn)]
+  } else {
+    zdst <- zdat[, list(med = median(eval(ac50var)[hitc >= hitc_num]),
+                        mad = mad(eval(ac50var)[hitc >= hitc_num]), 
+                        ntst = .N, 
+                        nhit = lw(hitc >= hitc_num), 
+                        burstpct = (lw(hitc>=hitc_num)/.N)), # added burst percent as condition instead of number of hits
+                 by = list(chid,code, chnm, casn)]
+  }
   
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
   zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
   gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
-  gb_mad <- ifelse(check_tcpl_db_schema(),log10(gb_mad),gb_mad)
   zdst[,global_mad := gb_mad] # add column for global mad
-  if(check_tcpl_db_schema()){
-    zdst[, cyto_pt := log10(med)] #set cyto_pt to the median value
-  } else {
-    zdst[, cyto_pt := med]
-  }
+  zdst[, cyto_pt := med]
   zdst[burstpct < 0.05, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 use the default pt instead
   zdst[, `:=`(cyto_pt_um, 10^cyto_pt)]
   zdst[, `:=`(lower_bnd_um, 10^(cyto_pt - 3 * global_mad))]
