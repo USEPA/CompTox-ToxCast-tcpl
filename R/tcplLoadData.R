@@ -699,14 +699,10 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     if (!is.null(fld)) {
       if (is.null(val)) stop("'val' cannot be NULL check that a valid value was provided for the specified field")
       
-      fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
+      #Check if where clause was used before this and append appropriate clause
+      qformat <- paste(qformat, if (!grepl("where",tolower(qformat))) "WHERE" else "AND")
       
-      if(add.fld) wtest <- FALSE
-      wtest <- lvl %in% c(0) | (lvl == 2 & type == "sc")
-      if(!check_tcpl_db_schema() & lvl == 4){
-        wtest <- TRUE
-      }
-      
+      #Add fld(s) as parameters to sql query
       qformat <- paste(qformat, if (wtest) "WHERE" else "AND")
       
       qformat <- paste0(
