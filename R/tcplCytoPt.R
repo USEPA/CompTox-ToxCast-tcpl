@@ -60,9 +60,9 @@
 #'  \item "mad" -- The MAD of the "burst" endpoint log(AC50) values.
 #'  \item "ntst" -- The number of "burst" endpoints tested.
 #'  \item "nhit" -- The number of active "burst" endpoints.
-#'  \item "use_global_mad" -- TRUE/FALSE, whether the mad value was used in the
+#'  \item "used_in_global_mad_calc" -- TRUE/FALSE, whether the mad value was used in the
 #'  global MAD calculation.
-#'  \item "global_mad" -- The median of the "mad" values where "use_global_mad" 
+#'  \item "global_mad" -- The median of the "mad" values where "used_in_global_mad_calc" 
 #'  is TRUE.
 #'  \item "cyto_pt" -- The cytotoxicity point, or the value in "med" when 
 #'  "nhit" is at least 2.
@@ -113,7 +113,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                        min.test = TRUE, default.pt = 3) {
   
   ## Variable-binding to pass R CMD Check
-  ac50var <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- modl <- NULL
+  ac50var <- hitc <- code <- chnm <- casn <- used_in_global_mad_calc <- nhit <- modl <- NULL
   ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
   
   cat("1: Checking if aeid or chid is specified\n")
@@ -176,8 +176,8 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                by = list(chid,code, chnm, casn)]
   
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
-  zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
-  gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
+  zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
+  gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
   gb_mad <- ifelse(check_tcpl_db_schema(),log10(gb_mad),gb_mad)
   zdst[,global_mad := gb_mad] # add column for global mad
   if(check_tcpl_db_schema()){
