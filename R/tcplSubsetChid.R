@@ -76,7 +76,8 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
          " more information.")
   }
   if (!"casn" %in% names(dat)) dat <- tcplPrepOtpt(dat)
-  
+  #for now we treat all >=.9 hitcall equally
+  dat[, hitc := hitc >= .9]
   dat[ , chit := mean(hitc[hitc %in% 0:1]) >= 0.5, by = list(aeid, chid)]
   dat <- dat[hitc == chit | (is.na(chit) & (hitc == -1 | is.na(m4id)))]
   
