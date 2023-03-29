@@ -239,7 +239,7 @@ mc6_mthds <- function() {
       e3 <- bquote(ft[ , c_max := 10^logc_max])
       conc_cols <- c("c_min", "c_max")
       e4 <- bquote(ft[ , cmen := rowMeans(.SD), .SDcols = .(conc_cols)])
-      e5 <- bquote(ft[ , test := modl == "gnls" & ac50 < c_min & ac50_loss < cmen])
+      e5 <- bquote(ifelse("ac50_loss" %in% names(ft), ft[ , test := modl == "gnls" & ac50 < c_min & ac50_loss < cmen], ft))
       e6 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "c_min", "c_max","cmen")
       e7 <- bquote(ft[ , .(cr) := NULL])
