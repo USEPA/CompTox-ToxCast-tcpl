@@ -60,7 +60,7 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Collapse by spid
   dat[ , tmp := median(resp), by = list(spid, wllt, logc)]
-  dat[ , c("tmpi", "max_med") := list(.GRP, max(tmp)), by = spid]
+  dat[ , c("tmpi", "max_med") := list(.GRP, max(abs(tmp))), by = spid]
   
   ## Initialize coff vector
   coff <- 0
