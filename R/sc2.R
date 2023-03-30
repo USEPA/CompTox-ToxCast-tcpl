@@ -60,6 +60,8 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Collapse by spid
   dat[ , tmp := median(resp), by = list(spid, wllt, logc)]
+  
+  ## take absolute value for bidirectional fitting.
   dat[ , c("tmpi", "max_med") := list(.GRP, max(abs(tmp))), by = spid]
   
   ## Initialize coff vector
@@ -96,6 +98,8 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Determine hit-call
   dat[ , hitc := as.integer(max_med >= coff)]
+  
+  ## set max med back to the tmp value so we conserve directionality.
   dat[ , max_med := tmp]
 
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
