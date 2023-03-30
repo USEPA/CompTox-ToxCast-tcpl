@@ -60,7 +60,7 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Collapse by spid
   dat[ , tmp := median(resp), by = list(spid, wllt, logc)]
-  dat[ , c("tmpi", "max_med") := list(.GRP, max(abs(tmp))), by = spid]
+  dat[ , c("tmpi", "max_med") := list(.GRP, max(tmp)), by = spid]
   
   ## Initialize coff vector
   coff <- 0
@@ -95,8 +95,8 @@ sc2 <- function(ae, wr = FALSE) {
   dat[ , coff := max(coff)]
   
   ## Determine hit-call
-  dat[ , hitc := as.integer(max_med >= coff)]
-  
+  dat[ , hitc := as.integer(abs(max_med) >= coff)]
+
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
   cat("Processed L2 AEID", ae, " (", nrow(dat), 
