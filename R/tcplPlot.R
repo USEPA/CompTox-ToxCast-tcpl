@@ -575,7 +575,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @importFrom dplyr tibble contains everything as_tibble arrange .data
 #' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_color_viridis_d
 #' @importFrom ggplot2 guide_legend scale_linetype_manual xlab ylab geom_text labs theme element_blank
-#' @importFrom ggplot2 margin unit element_text
+#' @importFrom ggplot2 margin unit element_text geom_segment
 #' @import gridExtra
 #' @import stringr
 tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
