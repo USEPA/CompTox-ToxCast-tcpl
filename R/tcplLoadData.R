@@ -91,7 +91,6 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
   drvr <- getOption("TCPL_DRVR")
   if (drvr == "example"){
     if (type == "sc"){
-      data(sc_vignette, package = 'tcpl')
       if (lvl == 0L) {
         sc0 <- sc_vignette[["sc0"]]
         sc0 <- sc0[,c("s0id","spid","acid","apid","rowi","coli","wllt","wllq","conc","rval","srcf")]
@@ -111,7 +110,6 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     }
     
     if (type == "mc" ) {
-      data(mc_vignette,package = 'tcpl')
       if (lvl == 0L) {
         mc0 <- mc_vignette[["mc0"]]
         mc0 <- mc0[,c("m0id","spid","acid","apid","rowi","coli","wllt","wllq","conc","rval","srcf")]
