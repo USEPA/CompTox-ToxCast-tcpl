@@ -60,7 +60,9 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Collapse by spid
   dat[ , tmp := median(resp), by = list(spid, wllt, logc)]
-  dat[ , c("tmpi", "max_med") := list(.GRP, max(tmp)), by = spid]
+  
+  ## take absolute value for bidirectional fitting.
+  dat[ , c("tmpi", "max_med","max_tmp") := list(.GRP, max(abs(tmp)), tmp[which.max(abs(tmp))]), by = spid]
   
   ## Initialize coff vector
   coff <- 0
@@ -96,7 +98,10 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Determine hit-call
   dat[ , hitc := as.integer(max_med >= coff)]
-  
+
+  ## set max med back to the tmp value so we conserve directionality.
+  dat[ , max_med := max_tmp]
+
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
   cat("Processed L2 AEID", ae, " (", nrow(dat), 
