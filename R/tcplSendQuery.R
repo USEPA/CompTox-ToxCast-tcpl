@@ -80,7 +80,7 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
     dbcon <- do.call(dbConnect, db_pars)
     temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
     if (!is(temp, "try-error")) dbClearResult(temp)
-    dbDisconnect(dbcon)
+    on.exit(dbDisconnect(dbcon), add = TRUE)
   }
   
   if (!is(temp, "try-error")) return(TRUE)
