@@ -14,6 +14,10 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   # Allow drvr='tcplLite' for writing flat files for each level of analysis
   # db=<local dir for writing files>
   
+  # Notes for example
+  # ==================
+  # Allow drvr='example' for loading example data from data directory in tcpl package
+  
   check <- function(x) length(x) == 1 && is.character(x)
   setop <- function(x) {
     xn <- deparse(substitute(x))
@@ -42,11 +46,14 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   
   if (!is.null(drvr)) {
     
-    if (!drvr %in% c( "MySQL", "tcplLite")) {
+    if (!drvr %in% c( "MySQL", "tcplLite", "example")) {
       stop(drvr, " is not a supported database driver. Must be ",
-           "'MySQL' or 'tcplLite.'")
+           "'MySQL', 'tcplLite', or 'example'.")
     }
     
+    if (drvr == "example"){
+      options("TCPL_DRVR" = "example")
+    }
     
     if (drvr == "MySQL") {
       options("TCPL_DRVR" = "MySQL")
