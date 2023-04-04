@@ -95,17 +95,17 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       if (lvl == 0L) {
         sc0 <- sc_vignette[["sc0"]]
         sc0 <- sc0[,c("s0id","spid","acid","apid","rowi","coli","wllt","wllq","conc","rval","srcf")]
-        View(sc0)
+        return(sc0)
       }
       else if (lvl == 1L) {
         sc1 <- sc_vignette[["sc1"]]
         sc1 <- sc1[,c("s0id","s1id","spid","acid","aeid","apid","rowi","coli","wllt","logc","resp")]
-        View(sc1)
+        return(sc1)
       }
       else if (lvl == 2L) {
         sc2 <- sc_vignette[["sc2"]]
         sc2 <- sc2[,c("s2id", "spid", "aeid", "bmad", "max_med", "hitc", "coff")]
-        View(sc2)
+        return(sc2)
       } 
       else stop("example tables for sc0, sc1, sc2 available.")
     }
@@ -115,22 +115,22 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       if (lvl == 0L) {
         mc0 <- mc_vignette[["mc0"]]
         mc0 <- mc0[,c("m0id","spid","acid","apid","rowi","coli","wllt","wllq","conc","rval","srcf")]
-        View(mc0)
+        return(mc0)
       }
       else if (lvl == 1L) {
         mc1 <- mc_vignette[["mc1"]]
         mc1 <- mc1[,c("m0id","m1id","spid","acid","apid","rowi","coli","wllt", "wllq","conc","rval","cndx","repi","srcf")]
-        View(mc1)
+        return(mc1)
       }
       else if (lvl == 2L) {
         mc2 <- mc_vignette[["mc2"]]
         mc2 <- mc2[,c("m0id","m1id","m2id","spid","acid","apid","rowi","coli","wllt","conc","cval","cndx","repi")]
-        View(mc2)
+        return(mc2)
       } 
       else if (lvl == 3L) {
         mc3 <- mc_vignette[["mc3"]]
         mc3 <- mc3[,c("m0id","m1id","m2id","m3id","spid","aeid","logc","resp","cndx","wllt","apid","rowi","coli","repi")]
-        View(mc3)
+        return(mc3)
       } 
       else if (lvl == 4L) {
         mc4 <- mc_vignette[["mc4"]]
@@ -141,7 +141,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
           mc4 <- mc4[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm","resp_unit","conc_unit")]
           setcolorder(mc4, c("m4id", "aeid", "spid"))
         }
-        View(mc4)
+        return(mc4)
       }
       else if (lvl == 5L) {
         mc5 <- mc_vignette[["mc5"]]
@@ -152,14 +152,14 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
           mc5 <- mc5[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm","resp_unit","conc_unit","tp","ga","q","la","ac50_loss")]
           setcolorder(mc5, c("m5id", "m4id","aeid", "spid"))
         }
-        View(mc5)
+        return(mc5)
       }
       else stop("example tables for mc0, mc1, mc2, mc3, mc4, mc5 available.")
     }
   }
   
   if (drvr != "example"){
-    browser()
+    
     if (lvl == 0L && type == "mc") {
       tbls <- c("mc0")
       cols <- c(
