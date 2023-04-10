@@ -155,7 +155,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       else stop("example tables for mc0, mc1, mc2, mc3, mc4, mc5 available.")
     }
     
-  else stop("Invalid 'lvl' and 'type' combination.")
+    else stop("Invalid 'lvl' and 'type' combination.")
     }
   
   if (drvr != "example"){
