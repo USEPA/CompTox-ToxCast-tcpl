@@ -48,13 +48,13 @@ mc6 <- function(ae, wr = FALSE) {
   setkey(ms, mthd_id)
   
   ## Load level 5 and, if needed, level 3 data 
-  ft <- tcplLoadData(lvl = 5L, type = "mc", fld = "aeid", val = ae)
+  ft <- tcplLoadData(lvl = 5L, type = "mc", fld = "aeid", val = ae, add.fld = TRUE)
   setkey(ft, m4id)
   if (any(ms$nddr)) {
     dr <- .load6DR(ae)
-    setkey(dr, m4id)
-    dr <- dr[ft[ , list(m4id, m5id)]]
-    dr[ , bmad := unique(ft$bmad)]
+    setkey(dr, m4id, aeid, spid)
+    setkey(ft, m4id, aeid, spid)
+    dr <- dr[ft]
   } 
   
   ## Check if any level 5 data was loaded

@@ -70,7 +70,7 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     dbcon <- do.call(dbConnect, db_pars)
     result <- dbGetQuery(dbcon, query)
     
-    dbDisconnect(dbcon)
+    on.exit(dbDisconnect(dbcon), add = TRUE)
     
     result <- as.data.table(result)
   }

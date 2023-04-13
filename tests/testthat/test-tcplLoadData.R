@@ -1,121 +1,121 @@
 tcplConf(drvr = "example")
 
 test_that("sc0 loads sc0 data table", {
-  tcplLoadData(lvl = 0, type = "sc")
+  sc0 <- tcplLoadData(lvl = 0, type = "sc")
   expect_true(
     is.data.table(sc0)
-    )
-  tcplLoadData(lvl = 0L, type = "sc")
+  )
+  sc0 <- tcplLoadData(lvl = 0L, type = "sc")
   expect_true(
     is.data.table(sc0)
   )
 })
 
 test_that("sc1 loads sc1 data table", {
-  tcplLoadData(lvl = 1, type = "sc")
+  sc1 <- tcplLoadData(lvl = 1, type = "sc")
   expect_true(
     is.data.table(sc1)
-    )
-  tcplLoadData(lvl = 1L, type = "sc")
+  )
+  sc1 <- tcplLoadData(lvl = 1L, type = "sc")
   expect_true(
     is.data.table(sc1)
   )
 })
 
 test_that("sc2 loads sc2 data table", {
-  tcplLoadData(lvl = 2, type = "sc")
+  sc2 <- tcplLoadData(lvl = 2, type = "sc")
   expect_true(
     is.data.table(sc2)
   )
-  tcplLoadData(lvl = 2L, type = "sc")
+  sc2 <- tcplLoadData(lvl = 2L, type = "sc")
   expect_true(
     is.data.table(sc2)
   )
 })
 
 test_that("mc0 loads mc0 data table", {
-  tcplLoadData(lvl = 0, type = "mc")
+  mc0 <- tcplLoadData(lvl = 0, type = "mc")
   expect_true(
     is.data.table(mc0)
   )
-  tcplLoadData(lvl = 0L, type = "mc")
+  mc0 <- tcplLoadData(lvl = 0L, type = "mc")
   expect_true(
     is.data.table(mc0)
   )
 })
 
 test_that("mc1 loads mc1 data table", {
-  tcplLoadData(lvl = 1, type = "mc")
+  mc1 <- tcplLoadData(lvl = 1, type = "mc")
   expect_true(
     is.data.table(mc1)
   )
-  tcplLoadData(lvl = 1L, type = "mc")
+  mc1 <- tcplLoadData(lvl = 1L, type = "mc")
   expect_true(
     is.data.table(mc1)
   )
 })
 
 test_that("mc2 loads mc2 data table", {
-  tcplLoadData(lvl = 2, type = "mc")
+  mc2 <- tcplLoadData(lvl = 2, type = "mc")
   expect_true(
     is.data.table(mc2)
   )
-  tcplLoadData(lvl = 2L, type = "mc")
+  mc2 <- tcplLoadData(lvl = 2L, type = "mc")
   expect_true(
     is.data.table(mc2)
   )
 })
 
 test_that("mc3 loads mc3 data table", {
-  tcplLoadData(lvl = 3, type = "mc")
+  mc3 <- tcplLoadData(lvl = 3, type = "mc")
   expect_true(
     is.data.table(mc3)
   )
-  tcplLoadData(lvl = 3L, type = "mc")
+  mc3 <- tcplLoadData(lvl = 3L, type = "mc")
   expect_true(
     is.data.table(mc3)
   )
 })
 
 test_that("mc4 loads mc4 data table", {
-  tcplLoadData(lvl = 4, type = "mc")
+  mc4 <- tcplLoadData(lvl = 4, type = "mc")
   expect_true(
     is.data.table(mc4)
   )
-  tcplLoadData(lvl = 4L, type = "mc")
+  mc4 <- tcplLoadData(lvl = 4L, type = "mc")
   expect_true(
     is.data.table(mc4)
   )
 })
 
 test_that("mc4 !add.fld loads mc4 data table", {
-  tcplLoadData(lvl = 4, type = "mc", add.fld=FALSE)
+  mc4 <- tcplLoadData(lvl = 4, type = "mc", add.fld=FALSE)
   expect_true(
     is.data.table(mc4)
   )
-  tcplLoadData(lvl = 4L, type = "mc", add.fld=FALSE)
+  mc4 <- tcplLoadData(lvl = 4L, type = "mc", add.fld=FALSE)
   expect_true(
     is.data.table(mc4)
   )
 })
 
 test_that("mc5 loads mc5 data table", {
-  tcplLoadData(lvl = 5, type = "mc")
+  mc5 <- tcplLoadData(lvl = 5, type = "mc")
   expect_true(
     is.data.table(mc5)
   )
-  tcplLoadData(lvl = 5L, type = "mc")
+  mc5 <- tcplLoadData(lvl = 5L, type = "mc")
   expect_true(
     is.data.table(mc5)
   )
 })
 
 test_that("mc5 !add.fld loads mc5 data table", {
-  tcplLoadData(lvl = 5, type = "mc", add.fld=FALSE)
+  mc5 <- tcplLoadData(lvl = 5, type = "mc", add.fld=FALSE)
   expect_true(
     is.data.table(mc5)
   )
-  tcplLoadData(lvl = 5L, type = "mc", add.fld=FALSE)
+  mc5 <- tcplLoadData(lvl = 5L, type = "mc", add.fld=FALSE)
   expect_true(
     is.data.table(mc5)
   )
@@ -124,24 +124,24 @@ test_that("mc5 !add.fld loads mc5 data table", {
 test_that("invalid input error message", {
   expect_error(
     tcplLoadData(lvl = "sc", type = 0),
-               "Invalid 'lvl' and 'type' combination."
-    )
-  })
-  
+    "Invalid 'lvl' and 'type' combination."
+  )
+})
+
 test_that("sc example error message appears", {
   expect_error(
     tcplLoadData(lvl = 4, type = "sc"),
-               "example tables for sc0, sc1, sc2 available."
-    )
-  })
-  
+    "example tables for sc0, sc1, sc2 available."
+  )
+})
+
 test_that("mc example error message appears", {
   expect_error(
     tcplLoadData(lvl = 6, type = "mc"),
-               "example tables for mc0, mc1, mc2, mc3, mc4, mc5 available."
-    )
-  })
-  
+    "example tables for mc0, mc1, mc2, mc3, mc4, mc5 available."
+  )
+})
+
 # test_that("description", {
 #   expect_*(code)
 # })

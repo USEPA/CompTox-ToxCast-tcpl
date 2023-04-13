@@ -55,7 +55,7 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
                  row.names = FALSE, 
                  append = TRUE)
     
-    dbDisconnect(dbcon)
+    on.exit(dbDisconnect(dbcon), add = TRUE)
     
     return(TRUE)
     

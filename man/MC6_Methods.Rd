@@ -21,6 +21,25 @@ More information about the level 6 multiple-concentration processing is
 available in the package vignette, "Pipeline_Overview."
 
 \describe{
+  \item{modl.directionality.fail}{The modl.directionality.fail flag 
+  identifies concentration series where, had the model direction been 
+  opposite, more responses would have exceeded the cutoff, i.e., series 
+  where the number of responses in absolute value which are greater than the 
+  absolute value of the cutoff exceeds twice the number of responses which 
+  are more extreme than the cutoff (< cutoff when cutoff is negative, 
+  > cutoff when cutoff is positive).}
+  \item{low.nrep}{The low.nrep flag identifies concentration series where 
+  the average number of replicates per concentration tested is less than 2.}
+  \item{low.nconc}{The low.nconc flag identifies concentration series where 
+  the number of concentrations tested is greater or equal to 4.}
+  \item{bmd.highconc}{The bmd.highconc flag identifies concentration series 
+  with a steep curve, i.e., series where the bmd is greater than 50% of the 
+  range of concentrations tested.}
+  \item{bmd.lowconc}{The bmd.lowconc flag identifies concentration series 
+  with a shallow curve, i.e., series where the bmd is less than 50% of the 
+  range of concentrations tested.}
+  \item{bmd.high}{The bmd.high flag attempts to identify noisy concentration
+  series by flagging series where the bmd is greater than the ac50.}
   \item{singlept.hit.high}{The singlept.hit.high flag identifies 
   concentration series where the median response was greater than 3*bmad 
   only at the highest tested concentration and the series had an active 
@@ -39,12 +58,10 @@ available in the package vignette, "Pipeline_Overview."
   \item{noise}{The noise flag attempts to identify noisy concentration
   series by flagging series where the root mean square error for the series
   is greater than the cutoff for the assay endpoint.}
-  \item{border.hit}{The border.hit flag identifies active concentration 
-  series where the top parameter of the winning model was less than or equal 
-  to 1.2*cut-off or the the activity probability was less than 0.9.}
-  \item{border.miss}{The border.miss flag identifies inactive concentration
-  series where either the Hill or gain-loss top parameter was greater than 
-  or equal to 0.8*cut-off and the activity probability was greater than 0.5.}
+  \item{border}{The border flag identifies concentration 
+  series which have borderline activity, i.e., series where the top 
+  parameter of the winning model was greater than or equal to 0.8*cutoff 
+  and less than or equal to 1.2*cutoff.}
   \item{overfit.hit}{The overfit.hit flag recalculates the model winner 
   after applying a small sample correction factor to the AIC values. If the 
   hit-call would be changed after applying the small sample correction 
@@ -53,10 +70,13 @@ available in the package vignette, "Pipeline_Overview."
   gain-loss model won are automatically flagged.}
   \item{efficacy.50}{The efficacy.50 flag identifies concentration series 
   with efficacy values (either the modeled top parameter for the winning
-  model or the maximum median response) are less than 50 for percent activity
+  model or the maximum median response) less than 50 for percent activity
   data or log2(1.5) for fold induction data}
-  \item{modlga.lowconc}{The modlga.lowconc flag identifies concentration series 
-  with modl_ga (AC50) values less than the minimum tested concentration.}
+  \item{ac50.lowconc}{The ac50.lowconc flag identifies concentration series 
+  with ac50 values less than the minimum tested concentration.}
+  \item{viability.gnls}{The viability.gnls flag identifies concentration series 
+  of cell viability assays which were fit with gain-loss as the winning 
+  model and the series had an active hit-call.}
 }
 }
 
