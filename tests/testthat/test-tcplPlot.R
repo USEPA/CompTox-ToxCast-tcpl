@@ -165,6 +165,7 @@ test_that("one m4id tcplPlot works", {
     summarise(conc = list(10^logc), resp = list(resp)) %>% 
     as.data.table()
   dat <- dat[conc_resp_table, on = "m4id"]
+  dat <- dat[,normalized_data_type:="log2_fold_induction"]
   dat <- dat[spid == "01504209"]
   mc5_tcplplot <- tcplggplot(dat,verbose = verbose)
   #expect_snapshot_file(mc5_tcplplot, "test_output_482273.svg")
