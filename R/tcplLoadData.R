@@ -107,7 +107,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         sc2 <- sc2[,c("s2id", "spid", "aeid", "bmad", "max_med", "hitc", "coff")]
         return(sc2)
         }
-      else if (lvl = "agg") {
+      else if (lvl == "agg") {
         sc1 <- sc_vignette[["sc1"]]
         sc2 <- sc_vignette[["sc2"]]
         agg <- sc1[sc2, on = c("spid","aeid")]

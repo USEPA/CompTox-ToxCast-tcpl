@@ -33,6 +33,13 @@ test_that("sc2 loads sc2 data table", {
   )
 })
 
+test_that("lvl = 'agg' loads sc agg data table", {
+  agg <- tcplLoadData(lvl = "agg", type = "sc")
+  expect_true(
+    is.data.table(agg)
+  )
+})
+
 test_that("mc0 loads mc0 data table", {
   mc0 <- tcplLoadData(lvl = 0, type = "mc")
   expect_true(
@@ -121,6 +128,13 @@ test_that("mc5 !add.fld loads mc5 data table", {
   )
 })
 
+test_that("lvl = 'agg' loads mc agg data table", {
+  agg <- tcplLoadData(lvl = "agg", type = "mc")
+  expect_true(
+    is.data.table(agg)
+  )
+})
+
 test_that("invalid input error message", {
   expect_error(
     tcplLoadData(lvl = "sc", type = 0),
@@ -131,14 +145,14 @@ test_that("invalid input error message", {
 test_that("sc example error message appears", {
   expect_error(
     tcplLoadData(lvl = 4, type = "sc"),
-    "example tables for sc0, sc1, sc2 available."
+    "example tables for sc0, sc1, sc2, agg available."
   )
 })
 
 test_that("mc example error message appears", {
   expect_error(
     tcplLoadData(lvl = 6, type = "mc"),
-    "example tables for mc0, mc1, mc2, mc3, mc4, mc5 available."
+    "example tables for mc0, mc1, mc2, mc3, mc4, mc5, agg available."
   )
 })
 
