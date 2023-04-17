@@ -103,7 +103,6 @@ test_that("m4id filters mc5 input", {
 test_that("dat table loads", {
   lvl = 5
   l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
-  #agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
   if (lvl >= 5L) {
     l5 <- tcplLoadData(lvl = 5, type = "mc", add.fld = TRUE)
     dat <- l4[l5, on = "m4id"]
@@ -111,32 +110,65 @@ test_that("dat table loads", {
   expect_length(dat,length(l5)+length(l4)-1)
 })
 
-# test for dat <- tcplPrepOtpt(dat)
-
-# test for correct concentration unit label for x-axis
-
-# test for add normalized data type for y axis
-
-# test for check for null bmd in dat table
-
-# test for unlog concs
-
-
-test_that("one m4id tcplPlot works" {
+test_that("tcplPrepOtpt loads chemical and units", {
   lvl = 5
-  output = "svg"
-  fileprefix = "test_output"
-  verbose = TRUE
-  dpi = 600
+  l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
+  if (lvl >= 5L) {
+    l5 <- mc_vignette[["mc5"]]
+    dat <- l4[l5, on = c("m4id","aeid")]
+    dat <- dat[,!c("tp","ga","q","la","ac50_loss")]
+  }
+  expect_length(dat,188)
+  expect_type(dat$dsstox_substance_id,"character")
+  expect_type(dat$conc_unit,"character")
+})
+
+test_that("unlog conc data table works", {
+  agg <- tcplLoadData(lvl = "agg", type = "mc")
+  conc_resp_table <- agg %>% 
+    group_by(m4id) %>% 
+    summarise(conc = list(10^logc), resp = list(resp)) %>% 
+    as.data.table()
+  expect_true(is.data.table(conc_resp_table))
+  expect_length(conc_resp_table,3)
+  expect_length(conc_resp_table$conc,5)
+})
+
+test_that("conc_resp_table joins dat table correctly", {
+  lvl = 5
   l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
   if (lvl >= 5L) {
     l5 <- tcplLoadData(lvl = 5, type = "mc", add.fld = TRUE)
     dat <- l4[l5, on = "m4id"]
   }
+  agg <- tcplLoadData(lvl = "agg", type = "mc")
+  conc_resp_table <- agg %>% 
+    group_by(m4id) %>% 
+    summarise(conc = list(10^logc), resp = list(resp)) %>% 
+    as.data.table()
+  dat <- dat[conc_resp_table, on = "m4id"]
+  expect_length(dat,183)
+})
+
+test_that("one m4id tcplPlot works", {
+  lvl = 5
+  verbose = TRUE
+  l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
+  if (lvl >= 5L) {
+    l5 <- mc_vignette[["mc5"]]
+    dat <- l4[l5, on = c("m4id","aeid")]
+    dat <- dat[,!c("tp","ga","q","la","ac50_loss")]
+  }
+  agg <- tcplLoadData(lvl = "agg", type = "mc")
+  conc_resp_table <- agg %>% 
+    group_by(m4id) %>% 
+    summarise(conc = list(10^logc), resp = list(resp)) %>% 
+    as.data.table()
+  dat <- dat[conc_resp_table, on = "m4id"]
   dat <- dat[spid == "01504209"]
-  mc5_tcplplot <- ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
-         plot=tcplggplot(dat,verbose = verbose), width = 7, height = 5, dpi=dpi)
-  vdiffr::expect_doppelganger("mc5 plot", mc5_tcplplot)
+  mc5_tcplplot <- tcplggplot(dat,verbose = verbose)
+  #expect_snapshot_file(mc5_tcplplot, "test_output_482273.svg")
+  vdiffr::expect_doppelganger("test_output_482273", mc5_tcplplot)
 })
 
 # test_that("description", {
