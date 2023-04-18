@@ -1,4 +1,5 @@
 tcplConf(drvr="example")
+
 test_that("round_n function works", {
   expect_equal(
     round_n(c(1234.5678, NA_real_, 0.3333),3),
@@ -167,8 +168,8 @@ test_that("one m4id tcplPlot works", {
   dat <- dat[conc_resp_table, on = "m4id"]
   dat <- dat[,normalized_data_type:="log2_fold_induction"]
   dat <- dat[spid == "01504209"]
+  expect_no_warning(tcplggplot(dat,verbose = verbose))
   mc5_tcplplot <- tcplggplot(dat,verbose = verbose)
-  #expect_snapshot_file(mc5_tcplplot, "test_output_482273.svg")
   vdiffr::expect_doppelganger("test_output_482273", mc5_tcplplot)
 })
 
