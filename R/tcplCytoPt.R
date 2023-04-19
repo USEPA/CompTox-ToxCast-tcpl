@@ -159,6 +159,10 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
     ch <- chid
     zdat <- zdat[chid %in% ch]
   }
+  
+  #for bidirectional burst endpoints only consider down response (BSK and APR aeids below)
+  zdat <- zdat[!(aeid %in% c(26, 46, 158, 160, 178, 198, 222, 226, 252, 254, 270, 292, 316, 318, 2873, 2929, 2931) & top>0),]
+  
   cat("8: Determining representative sample\n")
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
   #filter out gnls curves
@@ -170,8 +174,8 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   hitc_num <- ifelse(check_tcpl_db_schema(),.9,1)
   
   if(check_tcpl_db_schema()){
-    zdst <- zdat[, list(med = log10(median(eval(ac50var)[hitc >= hitc_num])),
-                        mad = log10(mad(eval(ac50var)[hitc >= hitc_num])), 
+    zdst <- zdat[, list(med = median(eval(log10(ac50)[hitc >= .9])),
+                        mad = mad(eval(log10(ac50)[hitc >= .9])),  
                         ntst = .N, 
                         nhit = lw(hitc >= hitc_num), 
                         burstpct = (lw(hitc>=hitc_num)/.N)), # added burst percent as condition instead of number of hits
@@ -186,7 +190,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   }
   
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
-  zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
+  zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst>=60)] 
   gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
   zdst[, cyto_pt := med]
