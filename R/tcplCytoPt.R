@@ -56,14 +56,13 @@
 #'  \item "code" -- The chemical code.
 #'  \item "chnm" -- The chemical name.
 #'  \item "casn" -- The chemical CASRN.
-#'  \item "med" -- The median of the "burst" endpoint log(AC50) ("modl_ga" in 
-#'  the level 5 output) values.
+#'  \item "med" -- The median of the "burst" endpoint log(AC50)
 #'  \item "mad" -- The MAD of the "burst" endpoint log(AC50) values.
 #'  \item "ntst" -- The number of "burst" endpoints tested.
 #'  \item "nhit" -- The number of active "burst" endpoints.
-#'  \item "use_global_mad" -- TRUE/FALSE, whether the mad value was used in the
+#'  \item "used_in_global_mad_calc" -- TRUE/FALSE, whether the mad value was used in the
 #'  global MAD calculation.
-#'  \item "global_mad" -- The median of the "mad" values where "use_global_mad" 
+#'  \item "global_mad" -- The median of the "mad" values where "used_in_global_mad_calc" 
 #'  is TRUE.
 #'  \item "cyto_pt" -- The cytotoxicity point, or the value in "med" when 
 #'  "nhit" is at least 2.
@@ -114,29 +113,31 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                        min.test = TRUE, default.pt = 3) {
   
   ## Variable-binding to pass R CMD Check
-  modl_ga <- hitc <- code <- chnm <- casn <- use_global_mad <- nhit <- modl <- NULL
+  ac50var <- hitc <- code <- chnm <- casn <- used_in_global_mad_calc <- nhit <- modl <- NULL
   ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
   
+  cat("1: Checking if aeid or chid is specified\n")
   if (!is.null(aeid) & !is.vector(aeid)) {
     stop("'aeid' must be NULL or a vector.")
   }
-  print(1)
+  
   if (!is.null(chid) & !is.vector(chid)) {
     stop("'chid' must be NULL or a vector.")
   }
-  print(2)
+  
+  cat("2: Checking if min.test is specified\n")
   mt_type <- (is.numeric(min.test) | is.null(min.test) | is.logical(min.test))
   if (!(length(min.test) == 1 & mt_type)) {
     stop("Invalid 'min.test' input. See details.")
   }
-  print(3)
+  cat("3: Checking if aeid values are set to override the 'burst assay' definitions\n")
   if (is.null(aeid)) {
-    print(3.1)
+    cat("3.1: Loading burst assays from database\n")
     ae <- suppressWarnings(tcplLoadAeid("burst_assay", 1)$aeid)
   } else {
     ae <- aeid
   }
-  print(4)
+  cat("4: Confirming burst assays and minimum tested assays required\n")
   if (length(ae) == 0) stop("No burst assays defined.")
   
   if (is.null(min.test)) {
@@ -149,38 +150,46 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   } else {
     mtst <- 0
   }
-  print(5)
+  cat("5: Loading level 5 data\n")
   zdat <- tcplLoadData(lvl = 5L, fld = "aeid", val = ae, type = "mc")
-  print(6)
+  cat("6: Appending chemical information to level 5 data\n")
   zdat <- tcplPrepOtpt(dat = zdat)
-  print(7)
+  cat("7: Filtering chemical data (if necessary)\n")
   if (!is.null(chid)) {
     ch <- chid
     zdat <- zdat[chid %in% ch]
   }
-  print(8)
+  
+  #for bidirectional burst endpoints only consider down response (BSK and APR aeids below)
+  zdat <- zdat[!(aeid %in% c(26, 46, 158, 160, 178, 198, 222, 226, 252, 254, 270, 292, 316, 318, 2873, 2929, 2931) & top>0),]
+  
+  cat("8: Determining representative sample\n")
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
   #filter out gnls curves
   zdat <- zdat[modl != "gnls",]
-  print(9)
-  zdst <- zdat[, list(med = median(modl_ga[hitc == 1]), mad = mad(modl_ga[hitc == 
-                                                                            1]), 
+  cat("9: Calculating intermediate summary statistics\n")
+  # prior to version 4.0 modl_ga was used as ac50 variable
+  # check schema and if using new schema use ac50 instead.
+  ac50var <- ifelse(check_tcpl_db_schema(),quote(ac50),quote(modl_ga))
+  hitc_num <- ifelse(check_tcpl_db_schema(),.9,1)
+  zdst <- zdat[, list(med = median(log10(eval(ac50var))[hitc >= hitc_num]),
+                      mad = mad(log10(eval(ac50var))[hitc >= hitc_num]), 
                       ntst = .N, 
-                      nhit = lw(hitc == 1), 
-                      burstpct = (lw(hitc==1)/.N)), # added burst percent as condition instead of number of hits
+                      nhit = lw(hitc >= hitc_num), 
+                      burstpct = (lw(hitc>=hitc_num)/.N)), # added burst percent as condition instead of number of hits
                by = list(chid,code, chnm, casn)]
-  print(10)
-  zdst[, `:=`(use_global_mad, burstpct > 0.05 & ntst == length(ae))] # updated to 5% from nhit > 1 and ntst= all 88 burst assays tested
-  gb_mad <- median(zdst[use_global_mad=='TRUE', mad])  #calculate global mad
+  
+  cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
+  zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst>=60)] 
+  gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
-  #zdst[, `:=`(global_mad, median(mad[use_global_mad]))] #old calculation for global mad
-  zdst[, `:=`(cyto_pt, med)] #set cyto_pt to the median value
+  zdst[, cyto_pt := med]
   zdst[burstpct < 0.05, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 use the default pt instead
   zdst[, `:=`(cyto_pt_um, 10^cyto_pt)]
   zdst[, `:=`(lower_bnd_um, 10^(cyto_pt - 3 * global_mad))]
   zdst[,burstpct:=NULL] # remove burstpct from final results to match previous iterations of tcplCytopt
   zdst[]
-
+  
 }
 
 #-------------------------------------------------------------------------------
