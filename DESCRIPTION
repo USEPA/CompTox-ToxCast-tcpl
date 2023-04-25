@@ -34,13 +34,14 @@ Imports:
     graphics,
     grDevices,
     sqldf,
-	dplyr,
-	tidyr,
-	plotly,
-	tcplfit2,
-	ggplot2,
-	gridExtra,
-	stringr
+    dplyr,
+    tidyr,
+    plotly,
+    tcplfit2,
+    ggplot2,
+    gridExtra,
+    stringr,
+    vdiffr
 Suggests:
     roxygen2,
     knitr,
