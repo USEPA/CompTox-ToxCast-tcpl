@@ -1,4 +1,5 @@
 tcplConf(drvr="example")
+if (!interactive()) pdf(NULL)
 
 test_that("round_n function works", {
   expect_equal(
