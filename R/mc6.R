@@ -49,19 +49,28 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Load level 5 and, if needed, level 3 data 
   ft <- tcplLoadData(lvl = 5L, type = "mc", fld = "aeid", val = ae, add.fld = TRUE)
-  setkey(ft, m4id)
-  if (any(ms$nddr)) {
-    dr <- .load6DR(ae)
-    setkey(dr, m4id, aeid, spid)
-    setkey(ft, m4id, aeid, spid)
-    dr <- dr[ft]
-  } 
   
   ## Check if any level 5 data was loaded
   if (nrow(ft) == 0) {
     warning("No level 5 data for AEID", ae, ". Level 6 processing incomplete;",
             " no updates\n  made to the mc6 table for AEID", ae, ".")
     if(wr) return(FALSE) else return(list(FALSE, NULL))
+  }
+
+  ## Remove modl == none and check if any data remains
+  ft <- ft[modl != "none",]
+  if (nrow(ft) == 0) {
+    warning("All level 5 data for AEID", ae, " have winning model of 'none'. Level 6 processing incomplete;",
+            " no updates\n  made to the mc6 table for AEID", ae, ".")
+    if(wr) return(FALSE) else return(list(FALSE, NULL))
+  }
+  
+  setkey(ft, m4id)
+  if (any(ms$nddr)) {
+    dr <- .load6DR(ae)
+    setkey(dr, m4id, aeid, spid)
+    setkey(ft, m4id, aeid, spid)
+    dr <- dr[ft]
   }
   
   ## Load assay information to check for cell viability. Fill with 0 if unavailable.
@@ -90,7 +99,7 @@ mc6 <- function(ae, wr = FALSE) {
   
   ## Initialize f, the list of data.tables containing the flag information
   f <- vector(mode = "list", length = max(ms$mthd_id))
-  
+
   ## Generate and evaluate flag expressions
   mthd_funcs <- mc6_mthds()
   exprs <- lapply(ms$mthd_id, function(x) mthd_funcs[[ms[J(x), mthd]]](x)) # XXX this breaks if functions appear more than once in mc6_mthds() 
