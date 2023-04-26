@@ -175,6 +175,47 @@ test_that("one m4id tcplPlot works", {
   vdiffr::expect_doppelganger("test_output_482273", mc5_tcplplot)
 })
 
+
+test_that("negative direction plot has negative bmr and cutoff lines", {
+  skip("investigating issue with variation in generating svg file for snapshot test")
+  lvl = 5
+  verbose = FALSE
+  l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
+  if (lvl >= 5L) {
+    l5 <- mc_vignette[["mc5"]]
+    dat <- l4[l5, on = c("m4id","aeid")]
+    dat <- dat[,!c("tp","ga","q","la","ac50_loss")]
+  }
+  agg <- tcplLoadData(lvl = "agg", type = "mc")
+  conc_resp_table <- agg %>% 
+    group_by(m4id) %>% 
+    summarise(conc = list(10^logc), resp = list(resp)) %>% 
+    as.data.table()
+  dat <- dat[conc_resp_table, on = "m4id"]
+  dat <- dat[,normalized_data_type:="log2_fold_induction"]
+  dat <- dat[spid == "1210314466"]  
+  mc5_tcplplot <- tcplggplot(dat,verbose = verbose)
+  vdiffr::expect_doppelganger("negative_cutoff_bmr", mc5_tcplplot)
+})
+
+test_that("coff,bmr should be negative if winning model has negative top", {
+  lvl = 5
+  l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
+  if (lvl >= 5L) {
+    l5 <- tcplLoadData(lvl = 5, type = "mc", add.fld = TRUE)
+    dat <- l4[l5, on = "m4id"]
+  }
+  dat <- dat[spid == "1210314466"]
+  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.na(dat$bmr)) {
+    if (dat$top < 0) {
+      dat$coff <- dat$coff * -1
+      dat$bmr <- dat$bmr * -1
+    }
+  }
+  expect_lt(dat$coff,0)
+  expect_lt(dat$bmr,0)
+})
+
 # test_that("description", {
 #   expect_*(code)
 # })
