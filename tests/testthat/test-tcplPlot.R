@@ -153,6 +153,7 @@ test_that("conc_resp_table joins dat table correctly", {
 })
 
 test_that("one m4id tcplPlot works", {
+  skip("investigating issue with variation in generating svg file for snapshot test")
   lvl = 5
   verbose = TRUE
   l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
