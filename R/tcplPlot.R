@@ -597,10 +597,11 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     vjustvar = c(1)
   ) #<- adjust
 
-  # check if winning model has negative top.  If so coff should be negative
-  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)) {
+  # check if winning model has negative top.  If so coff,bmr should be negative
+  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.na(dat$bmr)) {
     if (dat$top < 0) {
       dat$coff <- dat$coff * -1
+      dat$bmr <- dat$bmr * -1
     }
   }
 
