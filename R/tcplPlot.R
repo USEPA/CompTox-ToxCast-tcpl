@@ -622,7 +622,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
     geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD")) +
     geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
-    geom_segment(aes(x=0, xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD")) +
+    geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD")) +
     geom_point() +
     scale_x_continuous(limits = l3_range, trans = "log10") +
     scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +

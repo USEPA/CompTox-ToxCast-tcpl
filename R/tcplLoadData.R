@@ -101,12 +101,20 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         sc1 <- sc1[,c("s0id","s1id","spid","acid","aeid","apid","rowi","coli","wllt","logc","resp")]
         return(sc1)
       }
+      
       else if (lvl == 2L) {
         sc2 <- sc_vignette[["sc2"]]
         sc2 <- sc2[,c("s2id", "spid", "aeid", "bmad", "max_med", "hitc", "coff")]
         return(sc2)
-      } 
-      else stop("example tables for sc0, sc1, sc2 available.")
+        }
+      else if (lvl == "agg") {
+        sc1 <- sc_vignette[["sc1"]]
+        sc2 <- sc_vignette[["sc2"]]
+        agg <- sc1[sc2, on = c("spid","aeid")]
+        agg <- agg[,c("aeid","s2id","s1id","s0id","logc","resp")]
+        return(agg)
+      }
+      else stop("example tables for sc0, sc1, sc2, agg available.")
     }
     
     if (type == "mc" ) {
@@ -152,8 +160,18 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         }
         return(mc5)
       }
-      else stop("example tables for mc0, mc1, mc2, mc3, mc4, mc5 available.")
+      else if (lvl == "agg") {
+        mc3 <- mc_vignette[["mc3"]]
+        mc4 <- mc_vignette[["mc4"]]
+        agg <- mc3[mc4, on = c("spid","aeid")]
+        agg <- agg[, c("aeid", "m4id", "m3id", "m2id", "m1id", "m0id", "spid", "logc", "resp")]
+        return(agg)
+
+      }
+      else stop("example tables for mc0, mc1, mc2, mc3, mc4, mc5, agg available.")
     }
+    
+    else stop("Invalid 'lvl' and 'type' combination.")
   }
   
   if (drvr != "example"){
