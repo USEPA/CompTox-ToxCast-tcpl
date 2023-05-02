@@ -177,7 +177,6 @@ test_that("one m4id tcplPlot works", {
 
 
 test_that("negative direction plot has negative bmr and cutoff lines", {
-  skip("investigating issue with variation in generating svg file for snapshot test")
   lvl = 5
   verbose = FALSE
   l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
@@ -206,7 +205,7 @@ test_that("coff,bmr should be negative if winning model has negative top", {
     dat <- l4[l5, on = "m4id"]
   }
   dat <- dat[spid == "1210314466"]
-  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.na(dat$bmr)) {
+  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
     if (dat$top < 0) {
       dat$coff <- dat$coff * -1
       dat$bmr <- dat$bmr * -1
