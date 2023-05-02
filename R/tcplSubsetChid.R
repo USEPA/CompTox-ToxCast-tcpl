@@ -71,48 +71,50 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
   }
   
   if(type == "mc"){
-  if (!"m5id" %in% names(dat)) {
-    stop("'dat' must be a data.table with level 5 data. See ?tcplLoadData for",
-         " more information.")
-  }
-  if (!"casn" %in% names(dat)) dat <- tcplPrepOtpt(dat)
-  
-  dat[ , chit := mean(hitc[hitc %in% 0:1]) >= 0.5, by = list(aeid, chid)]
-  dat <- dat[hitc == chit | (is.na(chit) & (hitc == -1 | is.na(m4id)))]
-  
-  
-  dat[ , fitc.ordr := NA_integer_]  
-  dat[fitc %in% c(37, 41, 46, 50), fitc.ordr := 0]
-  dat[fitc %in% c(38, 42, 47, 51), fitc.ordr := 1]
-  dat[fitc %in% c(36, 40, 45, 49), fitc.ordr := 2]
-  if (is.null(flag)) flag <- TRUE
-
-  if (flag[1] | length(flag) > 1) {
+    if (!"m5id" %in% names(dat)) {
+      stop("'dat' must be a data.table with level 5 data. See ?tcplLoadData for",
+           " more information.")
+    }
+    if (!"casn" %in% names(dat)) dat <- tcplPrepOtpt(dat)
+    #for now we treat all >=.9 hitcall equally
+    dat[, hitc := hitc >= .9]
+    dat[ , chit := mean(hitc[hitc %in% 0:1]) >= 0.5, by = list(aeid, chid)]
+    dat <- dat[hitc == chit | (is.na(chit) & (hitc == -1 | is.na(m4id)))]
     
-    tst <- is.logical(flag)
-    prs <- if (tst) list() else list(fld = "mc6_mthd_id", val = flag) 
-    flg <- do.call(tcplLoadData, c(lvl = 6L, prs))
-    flg <- flg[ , list(nflg = .N), by = m4id]
-    setkey(flg, m4id)
-    setkey(dat, m4id)
     
-    dat <- flg[dat]
-    dat[is.na(nflg), nflg := 0]
+    dat[ , fitc.ordr := NA_integer_]  
+    dat[fitc %in% c(37, 41, 46, 50), fitc.ordr := 0]
+    dat[fitc %in% c(38, 42, 47, 51), fitc.ordr := 1]
+    dat[fitc %in% c(36, 40, 45, 49), fitc.ordr := 2]
+    if (is.null(flag)) flag <- TRUE
     
-  } else {
+    if (flag[1] | length(flag) > 1) {
+      
+      tst <- is.logical(flag)
+      prs <- if (tst) list() else list(fld = "mc6_mthd_id", val = flag) 
+      flg <- do.call(tcplLoadData, c(lvl = 6L, prs))
+      flg <- flg[ , list(nflg = .N), by = m4id]
+      setkey(flg, m4id)
+      setkey(dat, m4id)
+      
+      dat <- flg[dat]
+      dat[is.na(nflg), nflg := 0]
+      
+    } else {
+      
+      dat[ , nflg := FALSE]
+      
+    }
     
-    dat[ , nflg := FALSE]
+    #setkeyv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga"))
+    ac50var <- ifelse(check_tcpl_db_schema(),"ac50","modl_ga") 
+    setorderv(dat, c("aeid", "chid", "fitc.ordr", "nflg", ac50var,"max_med"),c(1,1,1,1,1,-1), na.last = TRUE)
     
-  }
-
-  #setkeyv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga"))
-  setorderv(dat, c("aeid", "chid", "fitc.ordr", "nflg", "modl_ga","max_med"),c(1,1,1,1,1,-1), na.last = TRUE)
-
-  min_modl_ga <- dat[ , list(ind = .I[1]), by = list(aeid, casn)]
-
-  dat <- dat[min_modl_ga$ind]
-
-  return(dat[])
+    min_modl_ga <- dat[ , list(ind = .I[1]), by = list(aeid, casn)]
+    
+    dat <- dat[min_modl_ga$ind]
+    
+    return(dat[])
   }
   
   if(type == "sc"){
