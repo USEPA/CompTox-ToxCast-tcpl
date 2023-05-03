@@ -597,10 +597,11 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     vjustvar = c(1)
   ) #<- adjust
 
-  # check if winning model has negative top.  If so coff should be negative
-  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)) {
+  # check if winning model has negative top.  If so coff,bmr should be negative
+  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
     if (dat$top < 0) {
       dat$coff <- dat$coff * -1
+      dat$bmr <- dat$bmr * -1
     }
   }
 
@@ -608,7 +609,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   model_test <- function(modeltype) {
     ifelse(dat$modl == modeltype, winning_model_string, "Losing Models")
   }
-
+  
   gg <- ggplot(l3_dat, aes(conc, resp)) +
     geom_function(aes(color = !!model_test("gnls"), linetype = !!model_test("gnls")), fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x)) +
     geom_function(aes(color = !!model_test("exp2"), linetype = !!model_test("exp2")), fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a, dat$exp2_b), x = x)) +
@@ -620,9 +621,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x)) +
     geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x)) +
     geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
-    geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD")) +
     geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
-    geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD")) +
     geom_point() +
     scale_x_continuous(limits = l3_range, trans = "log10") +
     scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
@@ -653,7 +652,10 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
       legend.spacing.x = unit(0, "mm"),
       legend.spacing.y = unit(0, "mm")
     )
-
+  if (!is.null(dat$bmd) && !is.null(dat$bmr)){ gg = gg + 
+    geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD")) + 
+    geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD"))
+  }
 
   p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
     dat %>%
