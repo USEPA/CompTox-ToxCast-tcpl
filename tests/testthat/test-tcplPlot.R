@@ -153,7 +153,7 @@ test_that("conc_resp_table joins dat table correctly", {
 })
 
 test_that("one m4id tcplPlot works", {
-  skip("investigating issue with variation in generating svg file for snapshot test")
+  skip_on_ci()
   lvl = 5
   verbose = TRUE
   l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
@@ -170,11 +170,10 @@ test_that("one m4id tcplPlot works", {
   dat <- dat[conc_resp_table, on = "m4id"]
   dat <- dat[,normalized_data_type:="log2_fold_induction"]
   dat <- dat[spid == "01504209"]
-  expect_no_warning(tcplggplot(dat,verbose = verbose))
   mc5_tcplplot <- tcplggplot(dat,verbose = verbose)
+  expect_no_warning(mc5_tcplplot)
   vdiffr::expect_doppelganger("test_output_482273", mc5_tcplplot)
 })
-
 
 test_that("negative direction plot has negative bmr and cutoff lines", {
   lvl = 5
