@@ -214,6 +214,31 @@ test_that("coff,bmr should be negative if winning model has negative top", {
   expect_lt(dat$bmr,0)
 })
 
+test_that("missing values removed silently", {
+  skip("need to load example data with missing values")
+  lvl = 5
+  verbose = TRUE
+  l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
+  if (lvl >= 5L) {
+    l5 <- mc_vignette[["mc5"]]
+    dat <- l4[l5, on = c("m4id","aeid")]
+    dat <- dat[,!c("tp","ga","q","la","ac50_loss")]
+  }
+  agg <- tcplLoadData(lvl = "agg", type = "mc")
+  conc_resp_table <- agg %>% 
+    group_by(m4id) %>% 
+    summarise(conc = list(10^logc), resp = list(resp)) %>% 
+    as.data.table()
+  dat <- dat[conc_resp_table, on = "m4id"]
+  dat <- dat[,normalized_data_type:="log2_fold_induction"]
+  dat <- dat[spid == "TP0001652A01"]
+  dat <- dat[,c("spid", "aeid", "aenm", "m4id", "m5id", "chnm", "dsstox_substance_id", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", 
+                "max_med", "max_med_conc", "logc_max", "logc_min", "nconc", "npts", "nrep", "nmed_gtbl", 
+                "all_onesd", "all_bmed", "i.spid", "normalized_data_type", "resp", "conc")]
+  expect_silent(tcplggplot(dat,verbose = verbose))
+})
+
+
 # test_that("description", {
 #   expect_*(code)
 # })
