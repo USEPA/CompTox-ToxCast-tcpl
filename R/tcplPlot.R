@@ -609,8 +609,11 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   model_test <- function(modeltype) {
     ifelse(dat$modl == modeltype, winning_model_string, "Losing Models")
   }
+  
+  gg <- ggplot(l3_dat, aes(conc, resp)) 
 
-  gg <- ggplot(l3_dat, aes(conc, resp)) +
+  if(dat$modl != "none") {
+  gg <- gg + 
     geom_function(aes(color = !!model_test("gnls"), linetype = !!model_test("gnls")), fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x), na.rm = TRUE) +
     geom_function(aes(color = !!model_test("exp2"), linetype = !!model_test("exp2")), fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a, dat$exp2_b), x = x), na.rm = TRUE) +
     geom_function(aes(color = !!model_test("exp3"), linetype = !!model_test("exp3")), fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a, dat$exp3_b, dat$exp3_p), x = x), na.rm = TRUE) +
@@ -621,12 +624,21 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x), na.rm = TRUE) +
     geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x), na.rm = TRUE) +
     geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50"), na.rm = TRUE) +
-    geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff"), na.rm = TRUE) +
     geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD"), na.rm = TRUE) + 
-    geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD"), na.rm = TRUE) +
+    geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD"), na.rm = TRUE)
+  }
+
+  gg <- gg + 
+    geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff"), na.rm = TRUE) +
     geom_point() +
-    scale_x_continuous(limits = l3_range, trans = "log10") +
-    scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
+    scale_x_continuous(limits = l3_range, trans = "log10") 
+  
+  ifelse(dat$modl != "none",
+         gg <- gg + scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9), 
+         gg <- gg + scale_color_manual("", guide = guide_legend(order = 2), values = "#25848EFF")
+  )
+  
+  gg <-  gg +
     scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
     xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
     ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
@@ -654,7 +666,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
       legend.spacing.x = unit(0, "mm"),
       legend.spacing.y = unit(0, "mm")
     )
-
+  
   p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
     dat %>%
       select(contains(paste0(x, c("_aic", "_rme")))) %>%
