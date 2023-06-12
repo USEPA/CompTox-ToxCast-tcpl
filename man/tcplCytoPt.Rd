@@ -73,14 +73,13 @@ The resulting data.table has the following fields:
  \item "code" -- The chemical code.
  \item "chnm" -- The chemical name.
  \item "casn" -- The chemical CASRN.
- \item "med" -- The median of the "burst" endpoint log(AC50) ("modl_ga" in 
- the level 5 output) values.
+ \item "med" -- The median of the "burst" endpoint log(AC50)
  \item "mad" -- The MAD of the "burst" endpoint log(AC50) values.
  \item "ntst" -- The number of "burst" endpoints tested.
  \item "nhit" -- The number of active "burst" endpoints.
- \item "use_global_mad" -- TRUE/FALSE, whether the mad value was used in the
+ \item "used_in_global_mad_calc" -- TRUE/FALSE, whether the mad value was used in the
  global MAD calculation.
- \item "global_mad" -- The median of the "mad" values where "use_global_mad" 
+ \item "global_mad" -- The median of the "mad" values where "used_in_global_mad_calc" 
  is TRUE.
  \item "cyto_pt" -- The cytotoxicity point, or the value in "med" when 
  "nhit" is at least 2.
