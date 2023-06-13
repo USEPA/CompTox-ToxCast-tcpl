@@ -28,7 +28,7 @@ every field with the given name, regardless of which table they belong to.
 ## Store the current config settings, so they can be reloaded at the end 
 ## of the examples
 conf_store <- tcplConfList()
-tcplConfExample()
+tcplConf(drvr = "example")
 
 ## Passing no parameters returns all of the fields described in the data
 ## dictionary
@@ -36,11 +36,11 @@ tcplDefine()
 
 ## Specifying table names of 'chemical' and 'sample' yields all of the
 ## fields from the 'chemical' and 'sample' tables
-tcplDefine(val=c("chemical", "sample"))
+tcplDefine(c("chemical", "sample"))
 
 ## Specifying a field of 'wllt' yields all of the fields from any table that
 ## contains 'wllt' as a field
-tcplDefine(val=c("wllt"))
+tcplDefine("wllt")
 
 ## Specifying a combination of table and field names results in all of the
 ## fields which are contained in the given tables and all of the given fields
