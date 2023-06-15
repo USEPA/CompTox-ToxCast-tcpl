@@ -45,7 +45,7 @@ This flexible analysis pipeline is capable of efficiently processing and storing
 
 <center>
 
-![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png){width="90%"}
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png)
 
 </center>
 

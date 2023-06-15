@@ -191,7 +191,7 @@ The processing is sequential, and every level of processing requires successful 
 
 <center>
 
-![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png){width=90%"}
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png)
 
 </center>
 
