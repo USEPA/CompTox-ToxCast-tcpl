@@ -189,6 +189,12 @@ Once the data are uploaded, data processing occurs through the <font face="CMTT1
 
 The processing is sequential, and every level of processing requires successful processing at the antecedent level. Any processing changes will cause a "delete cascade," removing any subsequent data affected by the processing change to ensure complete data fidelity at any given time. For example, processing level 3 data for multiple-concentration data will cause the data from levels 4 through 6 to be deleted for the corresponding IDs. Level 6 is related to inspecting and flagging curve fits, though this processing step is not currently included in  <font face="CMTT10"> tcpl v3.0 </font> it may be included in future versions.  **Changing any method assignments will also trigger a delete cascade for any corresponding data** (more on method assignments below).
 
+<center>
+
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png){width=90%"}
+
+</center>
+
 The user must give a start and end level when using the <font face="CMTT10"> tcplRun </font> function. If processing more than one assay component or endpoint, the function will not stop if one component or endpoint fails. If a component or endpoint fails while processing multiple levels, the function will not attempt to process the failed component/endpoint in subsequent levels. When finished processing, the <font face="CMTT10"> tcplRun </font> function returns a list indicating the processing success of each id. For each level processed, the list will contain two elements: (1) "l#" a named Boolean vector where <font face="CMTT10"> TRUE </font> indicates successful processing, and (2) "l#_failed" containing the names of any ids that failed processing, where "#" is the processing level.
 
 The processing functions print messages to the console indicating the four steps of the processing. These steps include (1) data for the given assay component ID are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The 'outfile' parameter in the <font face="CMTT10"> tcplRun </font> function gives the user the option of printing all the output text to a file.
