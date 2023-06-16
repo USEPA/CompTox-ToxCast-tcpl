@@ -130,6 +130,32 @@ head(mc2_fmtd)
 
 When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the tcpl Data Processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5, one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
 
+### Assay Annotations
+
+Assay source, assay, assay component, and assay endpoint are registered via tcpl scripting into a collection of tables. The database structure takes the annotations and organizes them as attributes of the assay conductors, the assays (i.e., experiments), the assay components (i.e., raw readouts), or the assay endpoints (i.e., normalized component data) enabling aggregation and differentiation of the data generated through ToxCast and Tox21. The annotations capture four types of information:
+
+i. Identification information
+ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations,
+iii. Target information such as the target of technological measurement and the
+biologically intended target, and
+iv. Analysis information about how the data were processed and analyzed.
+
+```{r annotation_query_ex, eval = FALSE}
+#load libraries and connections
+library(RMySQL)
+con <- dbConnect(drv = RMySQL::MySQL(), user="user", pass="pass", db="InvitroDB", host="host")
+#query database using RMySQL:
+#use source table to identify which ids are needed in subsequent queries.
+tcplLoadAsid()
+source <- tcplLoadAeid(fld="asid",val=1, add.fld = c("aid", "anm", "acid", "acnm"))
+#select annotation and subset by ids or name
+assay <- dbGetQuery(con, "SELECT * FROM invitrodb.assay where aid=1;")
+component <- dbGetQuery(con, "SELECTFROM invitrodb.assay_component;")
+component <- subset(component, acid %in% source$acid)
+endpoint <- dbGetQuery(con, "SELECTFROM invitrodb.assay_component_endpoint;")
+endpoint <- endpoint [grepl("ATG", endpoint $assay_component_endpoint_name),]
+```
+
 ### Chemical Information
 
 The <font face="CMTT10">tcplLoadChem</font> function returns chemical information for user specified parameters, e.g. the chemical name (chnm) and chemical id (chid). The <font face="CMTT10">tcplLoadClib</font> function provides more information about the ToxCast chemical library used for sample generation.
