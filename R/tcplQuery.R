@@ -55,7 +55,13 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     }
 
     result <- as.data.table(sqldf(query, stringsAsFactors=F))
-
+    
+  }
+  
+  if (drvr == "example") {
+    db_pars <- "Using example data"
+    
+    result <- as.data.table(sqldf(query, stringsAsFactors=F))
     
   }
   
