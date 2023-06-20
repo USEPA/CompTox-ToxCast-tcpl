@@ -50,59 +50,36 @@
 #' @export
 
 tcplDefine <- function(val = NULL) {
+    
+  tbl = c("invitrodb_dd")
   
-  drvr <- getOption("TCPL_DRVR")
+  qformat <- "SELECT invitrodb_table, invitrodb_field, description FROM invitrodb_dd"
   
-  # example driver
-  if (drvr == "example"){
+  if (!is.null(val)) {
     
-    dd <- invitrodb_dd[]
+    vstring <- paste0("\"", val, "\"", collapse = ",")
+    qformat <- paste(qformat, "WHERE invitrodb_table IN (%s) OR invitrodb_field IN (%s);")
+    qstring <- sprintf(qformat, vstring, vstring)
     
-    if (!is.null(val)) {
-      dd <- dd[dd$invitrodb_table %in% val | dd$invitrodb_field %in% val,]
-      
-      if (nrow(dd) == 0) {
-        warning("The given table and/or field names were not found.")
-      }
-    }
+  } else {
     
-    return(dd)
-    
-  }
-  # MySQL driver
-  if (drvr != "example") { 
-    
-    tbl = c("invitrodb_dd")
-    
-    qformat <- "SELECT invitrodb_table, invitrodb_field, description FROM invitrodb_dd"
-    
-    if (!is.null(val)) {
-      
-      vstring <- paste0("\"", val, "\"", collapse = ",")
-      qformat <- paste(qformat, "WHERE invitrodb_table IN (%s) OR invitrodb_field IN (%s);")
-      qstring <- sprintf(qformat, vstring, vstring)
-      
-    } else {
-      
-      qstring <- paste0(qformat, ";")
-      
-    }
-    
-    dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
-    
-    if (!is.null(val)) {
-      
-      if (nrow(dat) == 0) {
-        warning("The given table and/or field names were not found.")
-        return(dat[])
-      }
-      
-    }
-    
-    dat[]
+    qstring <- paste0(qformat, ";")
     
   }
   
+  dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
+  
+  if (!is.null(val)) {
+    
+    if (nrow(dat) == 0) {
+      warning("The given table and/or field names were not found.")
+      return(dat[])
+    }
+    
+  }
+  
+  dat[]
+    
 }
 
 #-------------------------------------------------------------------------------
