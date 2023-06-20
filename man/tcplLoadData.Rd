@@ -4,7 +4,7 @@
 \alias{tcplLoadData}
 \title{Load tcpl data}
 \usage{
-tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc", add.fld = NULL)
+tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE)
 }
 \arguments{
 \item{lvl}{Integer of length 1, the level of data to load}
