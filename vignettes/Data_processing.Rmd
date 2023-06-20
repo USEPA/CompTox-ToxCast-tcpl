@@ -183,6 +183,12 @@ fields in the multiple-concentration data are the primary keys for each level of
 
 This section is intended to help the user understand the general aspects of how the data are processed before diving into the specifics of each processing level for both screening paradigms (i.e. processing types). The details of the two screening paradigms are provided in later sections.
 
+<center>
+
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png)
+
+</center>
+
 All processing in the <font face="CMTT10"> tcpl </font> package occurs at the assay component or assay endpoint level. There is no capability within either screening paradigm to do any processing which combines data from multiple assay components or assay endpoints. Any combining of data must occur before or after the pipeline processing. For example, a ratio of two values could be processed through the pipeline if the user calculated the ratio during the level 0 pre-processing and uploaded a single "component".
 
 Once the data are uploaded, data processing occurs through the <font face="CMTT10"> tcplRun </font> function for both single- and multiple-concentration screening. The <font face="CMTT10"> tcplRun </font> function can either take a single ID ($\mathit{acid}$ or $\mathit{aeid}$, depending on the processing type and level) or an $\mathit{asid}$. If given an $\mathit{asid}$, the <font face="CMTT10"> tcplRun </font> function will attempt to process all corresponding components/endpoints. When processing by $\mathit{acid}$ or $\mathit{aeid}$, the user must know which ID to give for each level (Table 1).
