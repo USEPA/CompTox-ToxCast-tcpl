@@ -147,13 +147,13 @@ con <- dbConnect(drv = RMySQL::MySQL(), user="user", pass="pass", db="InvitroDB"
 #query database using RMySQL:
 #use source table to identify which ids are needed in subsequent queries.
 tcplLoadAsid()
-source <- tcplLoadAeid(fld="asid",val=1, add.fld = c("aid", "anm", "acid", "acnm"))
+source <- tcplLoadAeid(fld="asid", val=1, add.fld = c("aid", "anm", "acid", "acnm"))
 #select annotation and subset by ids or name
 assay <- dbGetQuery(con, "SELECT * FROM invitrodb.assay where aid=1;")
-component <- dbGetQuery(con, "SELECTFROM invitrodb.assay_component;")
+component <- dbGetQuery(con, "SELECT * FROM invitrodb.assay_component;")
 component <- subset(component, acid %in% source$acid)
-endpoint <- dbGetQuery(con, "SELECTFROM invitrodb.assay_component_endpoint;")
-endpoint <- endpoint [grepl("ATG", endpoint $assay_component_endpoint_name),]
+endpoint <- dbGetQuery(con, "SELECT * FROM invitrodb.assay_component_endpoint;")
+endpoint <- endpoint[grepl("ATG", endpoint$assay_component_endpoint_name),]
 ```
 
 ### Chemical Information
