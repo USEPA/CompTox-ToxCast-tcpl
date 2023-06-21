@@ -1,206 +1,175 @@
 # empty returns full dictionary
 
-    Code
-      tcplDefine()
-    Output
-          invitrodb_table     invitrodb_field
-       1:             sc0                s0id
-       2:             sc0                acid
-       3:             sc0                spid
-       4:             sc0                apid
-       5:             sc0                rowi
-       6:             sc0                coli
-       7:             sc0                wllt
-       8:             sc0                wllq
-       9:             sc0                conc
-      10:             sc0                rval
-      11:             sc0                srcf
-      12:             sc1                s1id
-      13:             sc1                s0id
-      14:             sc1                acid
-      15:             sc1                aeid
-      16:             sc1                logc
-      17:             sc1                bval
-      18:             sc1                pval
-      19:             sc1                resp
-      20:             mc0                m0id
-      21:             mc0                acid
-      22:             mc0                spid
-      23:             mc0                apid
-      24:             mc0                rowi
-      25:             mc0                coli
-      26:             mc0                wllt
-      27:             mc0                wllq
-      28:             mc0                conc
-      29:             mc0                rval
-      30:             mc0                srcf
-      31:             mc1                m1id
-      32:             mc1                m0id
-      33:             mc1                acid
-      34:             mc1                cndx
-      35:             mc1                repi
-      36:        chemical                chid
-      37:        chemical                casn
-      38:        chemical                chnm
-      39:        chemical dsstox_substance_id
-      40:          sample                spid
-      41:          sample                chid
-      42:          sample                stkc
-      43:          sample           stkc_unit
-      44:          sample    tested_conc_unit
-          invitrodb_table     invitrodb_field
-                                                                                                                                                                                                                                                                                                                          description
-       1:                                                                                                                                                                                                                                                                                                                  Level 0 ID
-       2:                                                                                                                                                                                                                                                                                                          Assay component ID
-       3:                                                                                                                                                                                                                                                                                                                   Sample ID
-       4:                                                                                                                                                                                                                                                                                                              Assay plate ID
-       5:                                                                                                                                                                                                                                                                                                       Assay plate row index
-       6:                                                                                                                                                                                                                                                                                                    Assay plate column index
-       7: Well type, where: t, Test compound; c, Gain-of-signal control in multiple concentrations; p, Gain-of-signal control in single concentration; n, Neutral/negative control; m, Loss-of-signal control in multiple concentrations; o, Loss-of-signal control in single concentration; b, Blank well; and v, Viability control.
-       8:                                                                                                                                                                                                                                                                                      1 if the well quality was good, else 0
-       9:                                                                                                                                                                                                                                                                                                 Concentration is micromolar
-      10:                                                                                                                                                                                                                                                                               Raw assay component value/readout from vendor
-      11:                                                                                                                                                                                                                                                                             Filename of the source file containing the data
-      12:                                                                                                                                                                                                                                                                                                                  Level 1 ID
-      13:                                                                                                                                                                                                                                                                                                                  Level 0 ID
-      14:                                                                                                                                                                                                                                                                                                          Assay component ID
-      15:                                                                                                                                                                                                                                                                                                 Assay component endpoint ID
-      16:                                                                                                                                                                                                                                                                                                   Log base 10 concentration
-      17:                                                                                                                                                                                                                                                                                                              Baseline value
-      18:                                                                                                                                                                                                                                                                                                      Positive control value
-      19:                                                                                                                                                                                                                                                                                                   Normalized response value
-      20:                                                                                                                                                                                                                                                                                                                  Level 0 ID
-      21:                                                                                                                                                                                                                                                                                                          Assay component ID
-      22:                                                                                                                                                                                                                                                                                                                   Sample ID
-      23:                                                                                                                                                                                                                                                                                                              Assay plate ID
-      24:                                                                                                                                                                                                                                                                                                       Assay plate row index
-      25:                                                                                                                                                                                                                                                                                                    Assay plate column index
-      26: Well type, where: t, Test compound; c, Gain-of-signal control in multiple concentrations; p, Gain-of-signal control in single concentration; n, Neutral/negative control; m, Loss-of-signal control in multiple concentrations; o, Loss-of-signal control in single concentration; b, Blank well; and v, Viability control.
-      27:                                                                                                                                                                                                                                                                                      1 if the well quality was good, else 0
-      28:                                                                                                                                                                                                                                                                                                 Concentration is micromolar
-      29:                                                                                                                                                                                                                                                                               Raw assay component value/readout from vendor
-      30:                                                                                                                                                                                                                                                                             Filename of the source file containing the data
-      31:                                                                                                                                                                                                                                                                                                                  Level 1 ID
-      32:                                                                                                                                                                                                                                                                                                                  Level 0 ID
-      33:                                                                                                                                                                                                                                                                                                          Assay component ID
-      34:                                                                                                                                                                                                                                                                                                         Concentration index
-      35:                                                                                                                                                                                                                                                                                                             Replicate index
-      36:                                                                                                                                                                                                                                                                                                                 Chemical ID
-      37:                                                                                                                                                                                                                                                                                                         CAS Registry Number
-      38:                                                                                                                                                                                                                                                                                                               Chemical name
-      39:                                                                                                                                                                                                                                 Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database
-      40:                                                                                                                                                                                                                                                                                                                   Sample ID
-      41:                                                                                                                                                                                                                                                                                                                 Chemical ID
-      42:                                                                                                                                                                                                                                                                                                         Stock concentration
-      43:                                                                                                                                                                                                                                                                                                    Stock concentration unit
-      44:                                                                                                                                                                                                                                           The concentration unit for the concentration values in the data-containing tables
-                                                                                                                                                                                                                                                                                                                          description
+    WAoAAAACAAQCAgACAwAAAAMTAAAAAwAAABAAAAAsAAQACQAAAANzYzAABAAJAAAAA3NjMAAE
+    AAkAAAADc2MwAAQACQAAAANzYzAABAAJAAAAA3NjMAAEAAkAAAADc2MwAAQACQAAAANzYzAA
+    BAAJAAAAA3NjMAAEAAkAAAADc2MwAAQACQAAAANzYzAABAAJAAAAA3NjMAAEAAkAAAADc2Mx
+    AAQACQAAAANzYzEABAAJAAAAA3NjMQAEAAkAAAADc2MxAAQACQAAAANzYzEABAAJAAAAA3Nj
+    MQAEAAkAAAADc2MxAAQACQAAAANzYzEABAAJAAAAA21jMAAEAAkAAAADbWMwAAQACQAAAANt
+    YzAABAAJAAAAA21jMAAEAAkAAAADbWMwAAQACQAAAANtYzAABAAJAAAAA21jMAAEAAkAAAAD
+    bWMwAAQACQAAAANtYzAABAAJAAAAA21jMAAEAAkAAAADbWMwAAQACQAAAANtYzEABAAJAAAA
+    A21jMQAEAAkAAAADbWMxAAQACQAAAANtYzEABAAJAAAAA21jMQAEAAkAAAAIY2hlbWljYWwA
+    BAAJAAAACGNoZW1pY2FsAAQACQAAAAhjaGVtaWNhbAAEAAkAAAAIY2hlbWljYWwABAAJAAAA
+    BnNhbXBsZQAEAAkAAAAGc2FtcGxlAAQACQAAAAZzYW1wbGUABAAJAAAABnNhbXBsZQAEAAkA
+    AAAGc2FtcGxlAAAAEAAAACwABAAJAAAABHMwaWQABAAJAAAABGFjaWQABAAJAAAABHNwaWQA
+    BAAJAAAABGFwaWQABAAJAAAABHJvd2kABAAJAAAABGNvbGkABAAJAAAABHdsbHQABAAJAAAA
+    BHdsbHEABAAJAAAABGNvbmMABAAJAAAABHJ2YWwABAAJAAAABHNyY2YABAAJAAAABHMxaWQA
+    BAAJAAAABHMwaWQABAAJAAAABGFjaWQABAAJAAAABGFlaWQABAAJAAAABGxvZ2MABAAJAAAA
+    BGJ2YWwABAAJAAAABHB2YWwABAAJAAAABHJlc3AABAAJAAAABG0waWQABAAJAAAABGFjaWQA
+    BAAJAAAABHNwaWQABAAJAAAABGFwaWQABAAJAAAABHJvd2kABAAJAAAABGNvbGkABAAJAAAA
+    BHdsbHQABAAJAAAABHdsbHEABAAJAAAABGNvbmMABAAJAAAABHJ2YWwABAAJAAAABHNyY2YA
+    BAAJAAAABG0xaWQABAAJAAAABG0waWQABAAJAAAABGFjaWQABAAJAAAABGNuZHgABAAJAAAA
+    BHJlcGkABAAJAAAABGNoaWQABAAJAAAABGNhc24ABAAJAAAABGNobm0ABAAJAAAAE2Rzc3Rv
+    eF9zdWJzdGFuY2VfaWQABAAJAAAABHNwaWQABAAJAAAABGNoaWQABAAJAAAABHN0a2MABAAJ
+    AAAACXN0a2NfdW5pdAAEAAkAAAAQdGVzdGVkX2NvbmNfdW5pdAAAABAAAAAsAAQACQAAAApM
+    ZXZlbCAwIElEAAQACQAAABJBc3NheSBjb21wb25lbnQgSUQABAAJAAAACVNhbXBsZSBJRAAE
+    AAkAAAAOQXNzYXkgcGxhdGUgSUQABAAJAAAAFUFzc2F5IHBsYXRlIHJvdyBpbmRleAAEAAkA
+    AAAYQXNzYXkgcGxhdGUgY29sdW1uIGluZGV4AAQACQAAATtXZWxsIHR5cGUsIHdoZXJlOiB0
+    LCBUZXN0IGNvbXBvdW5kOyBjLCBHYWluLW9mLXNpZ25hbCBjb250cm9sIGluIG11bHRpcGxl
+    IGNvbmNlbnRyYXRpb25zOyBwLCBHYWluLW9mLXNpZ25hbCBjb250cm9sIGluIHNpbmdsZSBj
+    b25jZW50cmF0aW9uOyBuLCBOZXV0cmFsL25lZ2F0aXZlIGNvbnRyb2w7IG0sIExvc3Mtb2Yt
+    c2lnbmFsIGNvbnRyb2wgaW4gbXVsdGlwbGUgY29uY2VudHJhdGlvbnM7IG8sIExvc3Mtb2Yt
+    c2lnbmFsIGNvbnRyb2wgaW4gc2luZ2xlIGNvbmNlbnRyYXRpb247IGIsIEJsYW5rIHdlbGw7
+    IGFuZCB2LCBWaWFiaWxpdHkgY29udHJvbC4ABAAJAAAAJjEgaWYgdGhlIHdlbGwgcXVhbGl0
+    eSB3YXMgZ29vZCwgZWxzZSAwAAQACQAAABtDb25jZW50cmF0aW9uIGlzIG1pY3JvbW9sYXIA
+    BAAJAAAALVJhdyBhc3NheSBjb21wb25lbnQgdmFsdWUvcmVhZG91dCBmcm9tIHZlbmRvcgAE
+    AAkAAAAvRmlsZW5hbWUgb2YgdGhlIHNvdXJjZSBmaWxlIGNvbnRhaW5pbmcgdGhlIGRhdGEA
+    BAAJAAAACkxldmVsIDEgSUQABAAJAAAACkxldmVsIDAgSUQABAAJAAAAEkFzc2F5IGNvbXBv
+    bmVudCBJRAAEAAkAAAAbQXNzYXkgY29tcG9uZW50IGVuZHBvaW50IElEAAQACQAAABlMb2cg
+    YmFzZSAxMCBjb25jZW50cmF0aW9uAAQACQAAAA5CYXNlbGluZSB2YWx1ZQAEAAkAAAAWUG9z
+    aXRpdmUgY29udHJvbCB2YWx1ZQAEAAkAAAAZTm9ybWFsaXplZCByZXNwb25zZSB2YWx1ZQAE
+    AAkAAAAKTGV2ZWwgMCBJRAAEAAkAAAASQXNzYXkgY29tcG9uZW50IElEAAQACQAAAAlTYW1w
+    bGUgSUQABAAJAAAADkFzc2F5IHBsYXRlIElEAAQACQAAABVBc3NheSBwbGF0ZSByb3cgaW5k
+    ZXgABAAJAAAAGEFzc2F5IHBsYXRlIGNvbHVtbiBpbmRleAAEAAkAAAE7V2VsbCB0eXBlLCB3
+    aGVyZTogdCwgVGVzdCBjb21wb3VuZDsgYywgR2Fpbi1vZi1zaWduYWwgY29udHJvbCBpbiBt
+    dWx0aXBsZSBjb25jZW50cmF0aW9uczsgcCwgR2Fpbi1vZi1zaWduYWwgY29udHJvbCBpbiBz
+    aW5nbGUgY29uY2VudHJhdGlvbjsgbiwgTmV1dHJhbC9uZWdhdGl2ZSBjb250cm9sOyBtLCBM
+    b3NzLW9mLXNpZ25hbCBjb250cm9sIGluIG11bHRpcGxlIGNvbmNlbnRyYXRpb25zOyBvLCBM
+    b3NzLW9mLXNpZ25hbCBjb250cm9sIGluIHNpbmdsZSBjb25jZW50cmF0aW9uOyBiLCBCbGFu
+    ayB3ZWxsOyBhbmQgdiwgVmlhYmlsaXR5IGNvbnRyb2wuAAQACQAAACYxIGlmIHRoZSB3ZWxs
+    IHF1YWxpdHkgd2FzIGdvb2QsIGVsc2UgMAAEAAkAAAAbQ29uY2VudHJhdGlvbiBpcyBtaWNy
+    b21vbGFyAAQACQAAAC1SYXcgYXNzYXkgY29tcG9uZW50IHZhbHVlL3JlYWRvdXQgZnJvbSB2
+    ZW5kb3IABAAJAAAAL0ZpbGVuYW1lIG9mIHRoZSBzb3VyY2UgZmlsZSBjb250YWluaW5nIHRo
+    ZSBkYXRhAAQACQAAAApMZXZlbCAxIElEAAQACQAAAApMZXZlbCAwIElEAAQACQAAABJBc3Nh
+    eSBjb21wb25lbnQgSUQABAAJAAAAE0NvbmNlbnRyYXRpb24gaW5kZXgABAAJAAAAD1JlcGxp
+    Y2F0ZSBpbmRleAAEAAkAAAALQ2hlbWljYWwgSUQABAAJAAAAE0NBUyBSZWdpc3RyeSBOdW1i
+    ZXIABAAJAAAADUNoZW1pY2FsIG5hbWUABAAJAAAAW1VuaXF1ZSBpZGVudGlmaWVyIGZyb20g
+    VS5TLiBFUEEgRGlzdHJpYnV0ZWQgU3RydWN0dXJlLVNlYXJjaGFibGUgVG94aWNpdHkgKERT
+    U1RveCkgRGF0YWJhc2UABAAJAAAACVNhbXBsZSBJRAAEAAkAAAALQ2hlbWljYWwgSUQABAAJ
+    AAAAE1N0b2NrIGNvbmNlbnRyYXRpb24ABAAJAAAAGFN0b2NrIGNvbmNlbnRyYXRpb24gdW5p
+    dAAEAAkAAABRVGhlIGNvbmNlbnRyYXRpb24gdW5pdCBmb3IgdGhlIGNvbmNlbnRyYXRpb24g
+    dmFsdWVzIGluIHRoZSBkYXRhLWNvbnRhaW5pbmcgdGFibGVzAAAEAgAAAAEABAAJAAAABW5h
+    bWVzAAAAEAAAAAMABAAJAAAAD2ludml0cm9kYl90YWJsZQAEAAkAAAAPaW52aXRyb2RiX2Zp
+    ZWxkAAQACQAAAAtkZXNjcmlwdGlvbgAABAIAAAABAAQACQAAAAlyb3cubmFtZXMAAAANAAAA
+    AoAAAAD////UAAAEAgAAAAEABAAJAAAABWNsYXNzAAAAEAAAAAIABAAJAAAACmRhdGEudGFi
+    bGUABAAJAAAACmRhdGEuZnJhbWUAAAQCAAAAAQAEAAkAAAARLmludGVybmFsLnNlbGZyZWYA
+    AAAWAAAAFgAAAP4AAAD+AAAAEAAAAAMABAAJAAAAD2ludml0cm9kYl90YWJsZQAEAAkAAAAP
+    aW52aXRyb2RiX2ZpZWxkAAQACQAAAAtkZXNjcmlwdGlvbgAAAP4=
 
 # multiple values returns all necessary definitions
 
-    Code
-      tcplDefine(c("chemical", "sample"))
-    Output
-         invitrodb_table     invitrodb_field
-      1:        chemical                chid
-      2:        chemical                casn
-      3:        chemical                chnm
-      4:        chemical dsstox_substance_id
-      5:          sample                spid
-      6:          sample                chid
-      7:          sample                stkc
-      8:          sample           stkc_unit
-      9:          sample    tested_conc_unit
-                                                                                         description
-      1:                                                                                 Chemical ID
-      2:                                                                         CAS Registry Number
-      3:                                                                               Chemical name
-      4: Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database
-      5:                                                                                   Sample ID
-      6:                                                                                 Chemical ID
-      7:                                                                         Stock concentration
-      8:                                                                    Stock concentration unit
-      9:           The concentration unit for the concentration values in the data-containing tables
+    WAoAAAACAAQCAgACAwAAAAMTAAAAAwAAABAAAAAJAAQACQAAAAhjaGVtaWNhbAAEAAkAAAAI
+    Y2hlbWljYWwABAAJAAAACGNoZW1pY2FsAAQACQAAAAhjaGVtaWNhbAAEAAkAAAAGc2FtcGxl
+    AAQACQAAAAZzYW1wbGUABAAJAAAABnNhbXBsZQAEAAkAAAAGc2FtcGxlAAQACQAAAAZzYW1w
+    bGUAAAAQAAAACQAEAAkAAAAEY2hpZAAEAAkAAAAEY2FzbgAEAAkAAAAEY2hubQAEAAkAAAAT
+    ZHNzdG94X3N1YnN0YW5jZV9pZAAEAAkAAAAEc3BpZAAEAAkAAAAEY2hpZAAEAAkAAAAEc3Rr
+    YwAEAAkAAAAJc3RrY191bml0AAQACQAAABB0ZXN0ZWRfY29uY191bml0AAAAEAAAAAkABAAJ
+    AAAAC0NoZW1pY2FsIElEAAQACQAAABNDQVMgUmVnaXN0cnkgTnVtYmVyAAQACQAAAA1DaGVt
+    aWNhbCBuYW1lAAQACQAAAFtVbmlxdWUgaWRlbnRpZmllciBmcm9tIFUuUy4gRVBBIERpc3Ry
+    aWJ1dGVkIFN0cnVjdHVyZS1TZWFyY2hhYmxlIFRveGljaXR5IChEU1NUb3gpIERhdGFiYXNl
+    AAQACQAAAAlTYW1wbGUgSUQABAAJAAAAC0NoZW1pY2FsIElEAAQACQAAABNTdG9jayBjb25j
+    ZW50cmF0aW9uAAQACQAAABhTdG9jayBjb25jZW50cmF0aW9uIHVuaXQABAAJAAAAUVRoZSBj
+    b25jZW50cmF0aW9uIHVuaXQgZm9yIHRoZSBjb25jZW50cmF0aW9uIHZhbHVlcyBpbiB0aGUg
+    ZGF0YS1jb250YWluaW5nIHRhYmxlcwAABAIAAAABAAQACQAAAAlyb3cubmFtZXMAAAANAAAA
+    AoAAAAD////3AAAEAgAAAAEABAAJAAAABWNsYXNzAAAAEAAAAAIABAAJAAAACmRhdGEudGFi
+    bGUABAAJAAAACmRhdGEuZnJhbWUAAAQCAAAAAQAEAAkAAAARLmludGVybmFsLnNlbGZyZWYA
+    AAAWAAAAFgAAAP4AAAD+AAAAEAAAAAMABAAJAAAAD2ludml0cm9kYl90YWJsZQAEAAkAAAAP
+    aW52aXRyb2RiX2ZpZWxkAAQACQAAAAtkZXNjcmlwdGlvbgAABAIAAAABAAQACQAAAAVuYW1l
+    cwAAABAAAAADAAQACQAAAA9pbnZpdHJvZGJfdGFibGUABAAJAAAAD2ludml0cm9kYl9maWVs
+    ZAAEAAkAAAALZGVzY3JpcHRpb24AAAD+
 
 ---
 
-    Code
-      tcplDefine(c("spid", "rval", "wllt"))
-    Output
-         invitrodb_table invitrodb_field
-      1:             sc0            spid
-      2:             sc0            wllt
-      3:             sc0            rval
-      4:             mc0            spid
-      5:             mc0            wllt
-      6:             mc0            rval
-      7:          sample            spid
-                                                                                                                                                                                                                                                                                                                         description
-      1:                                                                                                                                                                                                                                                                                                                   Sample ID
-      2: Well type, where: t, Test compound; c, Gain-of-signal control in multiple concentrations; p, Gain-of-signal control in single concentration; n, Neutral/negative control; m, Loss-of-signal control in multiple concentrations; o, Loss-of-signal control in single concentration; b, Blank well; and v, Viability control.
-      3:                                                                                                                                                                                                                                                                               Raw assay component value/readout from vendor
-      4:                                                                                                                                                                                                                                                                                                                   Sample ID
-      5: Well type, where: t, Test compound; c, Gain-of-signal control in multiple concentrations; p, Gain-of-signal control in single concentration; n, Neutral/negative control; m, Loss-of-signal control in multiple concentrations; o, Loss-of-signal control in single concentration; b, Blank well; and v, Viability control.
-      6:                                                                                                                                                                                                                                                                               Raw assay component value/readout from vendor
-      7:                                                                                                                                                                                                                                                                                                                   Sample ID
+    WAoAAAACAAQCAgACAwAAAAMTAAAAAwAAABAAAAAHAAQACQAAAANzYzAABAAJAAAAA3NjMAAE
+    AAkAAAADc2MwAAQACQAAAANtYzAABAAJAAAAA21jMAAEAAkAAAADbWMwAAQACQAAAAZzYW1w
+    bGUAAAAQAAAABwAEAAkAAAAEc3BpZAAEAAkAAAAEd2xsdAAEAAkAAAAEcnZhbAAEAAkAAAAE
+    c3BpZAAEAAkAAAAEd2xsdAAEAAkAAAAEcnZhbAAEAAkAAAAEc3BpZAAAABAAAAAHAAQACQAA
+    AAlTYW1wbGUgSUQABAAJAAABO1dlbGwgdHlwZSwgd2hlcmU6IHQsIFRlc3QgY29tcG91bmQ7
+    IGMsIEdhaW4tb2Ytc2lnbmFsIGNvbnRyb2wgaW4gbXVsdGlwbGUgY29uY2VudHJhdGlvbnM7
+    IHAsIEdhaW4tb2Ytc2lnbmFsIGNvbnRyb2wgaW4gc2luZ2xlIGNvbmNlbnRyYXRpb247IG4s
+    IE5ldXRyYWwvbmVnYXRpdmUgY29udHJvbDsgbSwgTG9zcy1vZi1zaWduYWwgY29udHJvbCBp
+    biBtdWx0aXBsZSBjb25jZW50cmF0aW9uczsgbywgTG9zcy1vZi1zaWduYWwgY29udHJvbCBp
+    biBzaW5nbGUgY29uY2VudHJhdGlvbjsgYiwgQmxhbmsgd2VsbDsgYW5kIHYsIFZpYWJpbGl0
+    eSBjb250cm9sLgAEAAkAAAAtUmF3IGFzc2F5IGNvbXBvbmVudCB2YWx1ZS9yZWFkb3V0IGZy
+    b20gdmVuZG9yAAQACQAAAAlTYW1wbGUgSUQABAAJAAABO1dlbGwgdHlwZSwgd2hlcmU6IHQs
+    IFRlc3QgY29tcG91bmQ7IGMsIEdhaW4tb2Ytc2lnbmFsIGNvbnRyb2wgaW4gbXVsdGlwbGUg
+    Y29uY2VudHJhdGlvbnM7IHAsIEdhaW4tb2Ytc2lnbmFsIGNvbnRyb2wgaW4gc2luZ2xlIGNv
+    bmNlbnRyYXRpb247IG4sIE5ldXRyYWwvbmVnYXRpdmUgY29udHJvbDsgbSwgTG9zcy1vZi1z
+    aWduYWwgY29udHJvbCBpbiBtdWx0aXBsZSBjb25jZW50cmF0aW9uczsgbywgTG9zcy1vZi1z
+    aWduYWwgY29udHJvbCBpbiBzaW5nbGUgY29uY2VudHJhdGlvbjsgYiwgQmxhbmsgd2VsbDsg
+    YW5kIHYsIFZpYWJpbGl0eSBjb250cm9sLgAEAAkAAAAtUmF3IGFzc2F5IGNvbXBvbmVudCB2
+    YWx1ZS9yZWFkb3V0IGZyb20gdmVuZG9yAAQACQAAAAlTYW1wbGUgSUQAAAQCAAAAAQAEAAkA
+    AAAJcm93Lm5hbWVzAAAADQAAAAKAAAAA////+QAABAIAAAABAAQACQAAAAVjbGFzcwAAABAA
+    AAACAAQACQAAAApkYXRhLnRhYmxlAAQACQAAAApkYXRhLmZyYW1lAAAEAgAAAAEABAAJAAAA
+    ES5pbnRlcm5hbC5zZWxmcmVmAAAAFgAAABYAAAD+AAAA/gAAABAAAAADAAQACQAAAA9pbnZp
+    dHJvZGJfdGFibGUABAAJAAAAD2ludml0cm9kYl9maWVsZAAEAAkAAAALZGVzY3JpcHRpb24A
+    AAQCAAAAAQAEAAkAAAAFbmFtZXMAAAAQAAAAAwAEAAkAAAAPaW52aXRyb2RiX3RhYmxlAAQA
+    CQAAAA9pbnZpdHJvZGJfZmllbGQABAAJAAAAC2Rlc2NyaXB0aW9uAAAA/g==
 
 ---
 
-    Code
-      tcplDefine(c("sc0", "chid"))
-    Output
-          invitrodb_table invitrodb_field
-       1:             sc0            s0id
-       2:             sc0            acid
-       3:             sc0            spid
-       4:             sc0            apid
-       5:             sc0            rowi
-       6:             sc0            coli
-       7:             sc0            wllt
-       8:             sc0            wllq
-       9:             sc0            conc
-      10:             sc0            rval
-      11:             sc0            srcf
-      12:        chemical            chid
-      13:          sample            chid
-                                                                                                                                                                                                                                                                                                                          description
-       1:                                                                                                                                                                                                                                                                                                                  Level 0 ID
-       2:                                                                                                                                                                                                                                                                                                          Assay component ID
-       3:                                                                                                                                                                                                                                                                                                                   Sample ID
-       4:                                                                                                                                                                                                                                                                                                              Assay plate ID
-       5:                                                                                                                                                                                                                                                                                                       Assay plate row index
-       6:                                                                                                                                                                                                                                                                                                    Assay plate column index
-       7: Well type, where: t, Test compound; c, Gain-of-signal control in multiple concentrations; p, Gain-of-signal control in single concentration; n, Neutral/negative control; m, Loss-of-signal control in multiple concentrations; o, Loss-of-signal control in single concentration; b, Blank well; and v, Viability control.
-       8:                                                                                                                                                                                                                                                                                      1 if the well quality was good, else 0
-       9:                                                                                                                                                                                                                                                                                                 Concentration is micromolar
-      10:                                                                                                                                                                                                                                                                               Raw assay component value/readout from vendor
-      11:                                                                                                                                                                                                                                                                             Filename of the source file containing the data
-      12:                                                                                                                                                                                                                                                                                                                 Chemical ID
-      13:                                                                                                                                                                                                                                                                                                                 Chemical ID
+    WAoAAAACAAQCAgACAwAAAAMTAAAAAwAAABAAAAANAAQACQAAAANzYzAABAAJAAAAA3NjMAAE
+    AAkAAAADc2MwAAQACQAAAANzYzAABAAJAAAAA3NjMAAEAAkAAAADc2MwAAQACQAAAANzYzAA
+    BAAJAAAAA3NjMAAEAAkAAAADc2MwAAQACQAAAANzYzAABAAJAAAAA3NjMAAEAAkAAAAIY2hl
+    bWljYWwABAAJAAAABnNhbXBsZQAAABAAAAANAAQACQAAAARzMGlkAAQACQAAAARhY2lkAAQA
+    CQAAAARzcGlkAAQACQAAAARhcGlkAAQACQAAAARyb3dpAAQACQAAAARjb2xpAAQACQAAAAR3
+    bGx0AAQACQAAAAR3bGxxAAQACQAAAARjb25jAAQACQAAAARydmFsAAQACQAAAARzcmNmAAQA
+    CQAAAARjaGlkAAQACQAAAARjaGlkAAAAEAAAAA0ABAAJAAAACkxldmVsIDAgSUQABAAJAAAA
+    EkFzc2F5IGNvbXBvbmVudCBJRAAEAAkAAAAJU2FtcGxlIElEAAQACQAAAA5Bc3NheSBwbGF0
+    ZSBJRAAEAAkAAAAVQXNzYXkgcGxhdGUgcm93IGluZGV4AAQACQAAABhBc3NheSBwbGF0ZSBj
+    b2x1bW4gaW5kZXgABAAJAAABO1dlbGwgdHlwZSwgd2hlcmU6IHQsIFRlc3QgY29tcG91bmQ7
+    IGMsIEdhaW4tb2Ytc2lnbmFsIGNvbnRyb2wgaW4gbXVsdGlwbGUgY29uY2VudHJhdGlvbnM7
+    IHAsIEdhaW4tb2Ytc2lnbmFsIGNvbnRyb2wgaW4gc2luZ2xlIGNvbmNlbnRyYXRpb247IG4s
+    IE5ldXRyYWwvbmVnYXRpdmUgY29udHJvbDsgbSwgTG9zcy1vZi1zaWduYWwgY29udHJvbCBp
+    biBtdWx0aXBsZSBjb25jZW50cmF0aW9uczsgbywgTG9zcy1vZi1zaWduYWwgY29udHJvbCBp
+    biBzaW5nbGUgY29uY2VudHJhdGlvbjsgYiwgQmxhbmsgd2VsbDsgYW5kIHYsIFZpYWJpbGl0
+    eSBjb250cm9sLgAEAAkAAAAmMSBpZiB0aGUgd2VsbCBxdWFsaXR5IHdhcyBnb29kLCBlbHNl
+    IDAABAAJAAAAG0NvbmNlbnRyYXRpb24gaXMgbWljcm9tb2xhcgAEAAkAAAAtUmF3IGFzc2F5
+    IGNvbXBvbmVudCB2YWx1ZS9yZWFkb3V0IGZyb20gdmVuZG9yAAQACQAAAC9GaWxlbmFtZSBv
+    ZiB0aGUgc291cmNlIGZpbGUgY29udGFpbmluZyB0aGUgZGF0YQAEAAkAAAALQ2hlbWljYWwg
+    SUQABAAJAAAAC0NoZW1pY2FsIElEAAAEAgAAAAEABAAJAAAACXJvdy5uYW1lcwAAAA0AAAAC
+    gAAAAP////MAAAQCAAAAAQAEAAkAAAAFY2xhc3MAAAAQAAAAAgAEAAkAAAAKZGF0YS50YWJs
+    ZQAEAAkAAAAKZGF0YS5mcmFtZQAABAIAAAABAAQACQAAABEuaW50ZXJuYWwuc2VsZnJlZgAA
+    ABYAAAAWAAAA/gAAAP4AAAAQAAAAAwAEAAkAAAAPaW52aXRyb2RiX3RhYmxlAAQACQAAAA9p
+    bnZpdHJvZGJfZmllbGQABAAJAAAAC2Rlc2NyaXB0aW9uAAAEAgAAAAEABAAJAAAABW5hbWVz
+    AAAAEAAAAAMABAAJAAAAD2ludml0cm9kYl90YWJsZQAEAAkAAAAPaW52aXRyb2RiX2ZpZWxk
+    AAQACQAAAAtkZXNjcmlwdGlvbgAAAP4=
 
 # one value returns all necessary definitions
 
-    Code
-      tcplDefine("chemical")
-    Output
-         invitrodb_table     invitrodb_field
-      1:        chemical                chid
-      2:        chemical                casn
-      3:        chemical                chnm
-      4:        chemical dsstox_substance_id
-                                                                                         description
-      1:                                                                                 Chemical ID
-      2:                                                                         CAS Registry Number
-      3:                                                                               Chemical name
-      4: Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database
+    WAoAAAACAAQCAgACAwAAAAMTAAAAAwAAABAAAAAEAAQACQAAAAhjaGVtaWNhbAAEAAkAAAAI
+    Y2hlbWljYWwABAAJAAAACGNoZW1pY2FsAAQACQAAAAhjaGVtaWNhbAAAABAAAAAEAAQACQAA
+    AARjaGlkAAQACQAAAARjYXNuAAQACQAAAARjaG5tAAQACQAAABNkc3N0b3hfc3Vic3RhbmNl
+    X2lkAAAAEAAAAAQABAAJAAAAC0NoZW1pY2FsIElEAAQACQAAABNDQVMgUmVnaXN0cnkgTnVt
+    YmVyAAQACQAAAA1DaGVtaWNhbCBuYW1lAAQACQAAAFtVbmlxdWUgaWRlbnRpZmllciBmcm9t
+    IFUuUy4gRVBBIERpc3RyaWJ1dGVkIFN0cnVjdHVyZS1TZWFyY2hhYmxlIFRveGljaXR5IChE
+    U1NUb3gpIERhdGFiYXNlAAAEAgAAAAEABAAJAAAACXJvdy5uYW1lcwAAAA0AAAACgAAAAP//
+    //wAAAQCAAAAAQAEAAkAAAAFY2xhc3MAAAAQAAAAAgAEAAkAAAAKZGF0YS50YWJsZQAEAAkA
+    AAAKZGF0YS5mcmFtZQAABAIAAAABAAQACQAAABEuaW50ZXJuYWwuc2VsZnJlZgAAABYAAAAW
+    AAAA/gAAAP4AAAAQAAAAAwAEAAkAAAAPaW52aXRyb2RiX3RhYmxlAAQACQAAAA9pbnZpdHJv
+    ZGJfZmllbGQABAAJAAAAC2Rlc2NyaXB0aW9uAAAEAgAAAAEABAAJAAAABW5hbWVzAAAAEAAA
+    AAMABAAJAAAAD2ludml0cm9kYl90YWJsZQAEAAkAAAAPaW52aXRyb2RiX2ZpZWxkAAQACQAA
+    AAtkZXNjcmlwdGlvbgAAAP4=
 
 ---
 
-    Code
-      tcplDefine("spid")
-    Output
-         invitrodb_table invitrodb_field description
-      1:             sc0            spid   Sample ID
-      2:             mc0            spid   Sample ID
-      3:          sample            spid   Sample ID
+    WAoAAAACAAQCAgACAwAAAAMTAAAAAwAAABAAAAADAAQACQAAAANzYzAABAAJAAAAA21jMAAE
+    AAkAAAAGc2FtcGxlAAAAEAAAAAMABAAJAAAABHNwaWQABAAJAAAABHNwaWQABAAJAAAABHNw
+    aWQAAAAQAAAAAwAEAAkAAAAJU2FtcGxlIElEAAQACQAAAAlTYW1wbGUgSUQABAAJAAAACVNh
+    bXBsZSBJRAAABAIAAAABAAQACQAAAAlyb3cubmFtZXMAAAANAAAAAoAAAAD////9AAAEAgAA
+    AAEABAAJAAAABWNsYXNzAAAAEAAAAAIABAAJAAAACmRhdGEudGFibGUABAAJAAAACmRhdGEu
+    ZnJhbWUAAAQCAAAAAQAEAAkAAAARLmludGVybmFsLnNlbGZyZWYAAAAWAAAAFgAAAP4AAAD+
+    AAAAEAAAAAMABAAJAAAAD2ludml0cm9kYl90YWJsZQAEAAkAAAAPaW52aXRyb2RiX2ZpZWxk
+    AAQACQAAAAtkZXNjcmlwdGlvbgAABAIAAAABAAQACQAAAAVuYW1lcwAAABAAAAADAAQACQAA
+    AA9pbnZpdHJvZGJfdGFibGUABAAJAAAAD2ludml0cm9kYl9maWVsZAAEAAkAAAALZGVzY3Jp
+    cHRpb24AAAD+
 
