@@ -133,8 +133,17 @@ sc2_mthds <- function() {
       
       e1 <- bquote(dat[ , bmad := mad(resp[wllt == "n"], na.rm = TRUE)])
       list(e1)
+      
     },
-     bmad2 = function() {
+    
+    ow_bidirectional_false = function() {
+      
+      e1 <- bquote(dat[ , c("max_med","max_tmp") := list(max(tmp), tmp[which.max(tmp)]), by = spid])
+      list(e1)
+      
+    },
+    
+    bmad2 = function() {
       
       e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*2]))
       list(e1)
