@@ -186,6 +186,8 @@ tcplRegister(what = "acsn",
 ```
 The data are now ready to be loaded with the <font face="CMTT10"> tcplWriteLvl0 </font> function.
 ```{r eval = TRUE, message = FALSE}
+## Cannot process a concentration value of 0; use .01 as a dummy value
+mcdat$conc[mcdat$conc == 0] <- .01
 tcplWriteLvl0(dat = mcdat, type = "mc")
 
 ```
