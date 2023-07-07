@@ -6,6 +6,9 @@ on:
 
 name: test-coverage
 
+env:
+  DISPLAY: 99.0
+
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
