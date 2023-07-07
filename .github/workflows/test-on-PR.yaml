@@ -29,6 +29,7 @@ jobs:
 
       - name: Test coverage
         run: |
+          sh -e /etc/init.d/xvfb start
           covr::codecov(
             quiet = FALSE,
             clean = FALSE,
@@ -40,6 +41,7 @@ jobs:
         if: always()
         run: |
           ## --------------------------------------------------------------------
+          sh -e /etc/init.d/xvfb start
           find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
