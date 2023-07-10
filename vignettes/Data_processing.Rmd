@@ -1479,7 +1479,7 @@ fullPlot
 
 #### Fit Categories
 
-<center>![<font style="font-size:15px"><i>Fit Category Tree</i></font>](img/Fig5_mc5_fitc.png)</center>
+<center>![<font style="font-size:15px"><i>Fit Category Tree</i></font>](img/Fig5_fitc_tree_10jul2023.png)</center>
 
 **Figure 5:** A hierarchical fit category ($\mathit{fitc}$) decision tree is used to bin each fit. Each fit falls into one leaf of the tree using the described logic with the final $\mathit{fitc}$ indicated with gray boxes. Abbreviations are defined as: $\mathit{conc}$ = concentration; $\mathit{hitc}$ = hit call; $\mathit{|top|}$ = absolute value of the modeled curve top; $\mathit{coff}$ = cutoff; $log_c(min)$ = minimum log~10~ concentration tested; $log_c(max)$ = maximum log~10~ concentration tested; AC~50~ = $50 \%$ activity concentration; AC~95~ = $95 \%$ activity concentration.
 
