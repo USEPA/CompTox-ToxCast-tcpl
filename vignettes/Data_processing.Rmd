@@ -1481,38 +1481,15 @@ fullPlot
 
 <center>![<font style="font-size:15px"><i>Fit Category Tree</i></font>](img/Fig5_mc5_fitc.png)</center>
 
-**Figure 5:** All concentration series enter the fit category ($\mathit{fitc}$) hierarchical tree and move through activity, efficacy,
-and potency comparisons to assign final $\mathit{fitc}$ (indicated by gray shading). For continuity purposes, $\mathit{fitc}$
-numbering has been conserved from past <font face="CMTT10">tcpl</font> versions. $\mathit{Conc}$ = concentration; $\mathit{hitc}$ = hit call; $\mathit{|top|}$ =
-absolute value of the modeled curve top; $\mathit{coff}$ = cutoff; $\mathit{log_c(min)}$ = minimum log~10~ concentration tested;
-$\mathit{log_c(max)}$ = maximum log~10~ concentration tested; AC~50~ = $50 \%$ activity concentration; AC~95~ = $95 \%$ activity
-concentration.
+**Figure 5:** A hierarchical fit category ($\mathit{fitc}$) decision tree is used to bin each fit. Each fit falls into one leaf of the tree using the described logic with the final $\mathit{fitc}$ indicated with gray boxes. Abbreviations are defined as: $\mathit{conc}$ = concentration; $\mathit{hitc}$ = hit call; $\mathit{|top|}$ = absolute value of the modeled curve top; $\mathit{coff}$ = cutoff; $log_c(min)$ = minimum log~10~ concentration tested; $log_c(max)$ = maximum log~10~ concentration tested; AC~50~ = $50 \%$ activity concentration; AC~95~ = $95 \%$ activity concentration.
 
-Fit category ($\mathit{fitc}$) is largely based upon the relative efficacy and, in the case of actives, the location of the AC~50~ and
-concentration at $95 \%$ activity (an estimate of maximum activity concentration, AC~95~) compared to the
-tested concentration range. Figure 5 illustrates the $\mathit{fitc}$ hierarchical tree used to determine the $\mathit{fitc}$. All
-concentration response curves are first split into active, inactive, or cannot determine. “Cannot
-determine” is indicative of exceptions that cannot be curve-fit, e.g. a concentration series with fewer than
-4 concentrations or an apparent negative response within a positively-analyzed, unidirectional endpoint.
-Active designations are determined for $\mathit{fitc}$ based on whether the $\mathit{hitc}$ surpasses the 0.90 threshold. For
-those series that are designated inactive with a $\mathit{hitc}$ less than 0.90, $\mathit{fitc}$ can be used to indicate to what
-extent the curve represents borderline inactivity via comparison of top modeled efficacy to the cutoff (i.e.,
-the absolute value of the modeled top is less than 0.8 times the cutoff).
+After curve fitting, all concentration series are assigned a fit category ($\mathit{fitc}$) based on similar characteristics and shape. Logic is based on relative activity, efficacy, and potency comparisons as shown in Figure 5. For continuity purposes, $\mathit{fitc}$ numbering has been conserved from past <font face="CMTT10">tcpl</font> versions. Grouping all series into $\mathit{fitc}$ enables quality control and can be useful in data cleaning applications, especially when considered with Level 6 flags. In <font face="CMTT10">invitrodb v3-3.5</font>, a common filtering approach removed the least reproducible curve-fits, i.e. those with very low AC~50~ (below the screened $\mathit{conc}$ range) and low efficacy (within 1.2-fold of the cutoff) as well as 3+ flags. 
 
-For active curves, efficacy, as represented by the modeled top, is compared to 1.2 times the cutoff
-(less than or equal to, or greater than), thereby differentiating curves that may represent borderline
-activity from moderate activity. Active curves also have potency metrics estimated, e.g., AC~50~ and AC~95~
-values, that can be compared to the range of concentrations screened to indicate curves for which
-potency estimates are more quantitatively informative. Curves for which the AC~50~ is less than or equal to
-the minimum concentration tested ($\mathit{fitc}$ = 36, 40) may indicate AC~50~ values that are less quantitatively
-informative than AC~50~ values within the concentration range screened. When the AC~50~ is greater than
-the minimum concentration tested but the AC~95~ is greater than or equal to the maximum concentration
-tested ($\mathit{fitc}$ = 38, 42), it is possible the maximum activity was not fully observed in the concentration range
-screened. $\mathit{Fitc}$ for curves where the AC~50~ and AC~95~ are both within the concentration range screened ($\mathit{fitc}$
-= 37, 41) represent the most quantitatively informative AC~50~ values. In some previous applications, curves
-with the modeled top less than or equal to 1.2 times the cutoff and an AC~50~ less than the concentration
-range screened ($\mathit{fitc}$ = 36) have been excluded from quantitative estimates of potency as potential noise
-resultant to overfitting.
+Fit category is largely based upon the relative efficacy and, in the case of actives, the location of the AC~50~ and concentration at $95 \%$ activity (an estimate of maximum activity concentration, AC~95~) compared to the tested concentration range. All concentration response curves are first split into active, inactive, or cannot determine. “Cannot determine” is indicative of exceptions that cannot be curve-fit, e.g. a concentration series with fewer than 4 concentrations or an apparent negative response within a positively-analyzed, unidirectional endpoint. Active designations are determined for $\mathit{fitc}$ based on whether the $\mathit{hitc}$ surpasses the 0.90 threshold. For those series that are designated inactive with a $\mathit{hitc}$ less than 0.90, $\mathit{fitc}$ can be used to indicate to what extent the curve represents borderline inactivity via comparison of top modeled efficacy to the cutoff (i.e, the absolute value of the modeled top is less than 0.8 times the cutoff).
+
+For active curves, efficacy, as represented by the modeled top, is compared to 1.2 times the cutoff (less than or equal to, or greater than), thereby differentiating curves that may represent borderline activity from moderate activity. Active curves also have potency metrics estimated, e.g., AC~50~ and AC~95~ values, that can be compared to the range of concentrations screened to indicate curves for which potency estimates are more quantitatively informative. Curves for which the AC~50~ is less than or equal to the minimum concentration tested ($\mathit{fitc}$ = 36, 40) may indicate AC~50~ values that are less quantitatively informative than AC~50~ values within the concentration range screened. When the AC~50~ is greater than the minimum concentration tested but the AC~95~ is greater than or equal to the maximum concentration tested ($\mathit{fitc}$ = 38, 42), it is possible the maximum activity was not fully observed in the concentration range screened. $\mathit{Fitc}$ for curves where the AC~50~ and AC~95~ are both within the concentration range screened ($\mathit{fitc}$ = 37, 41) represent the most quantitatively informative AC~50~ values.
+
+$\mathit{Fitc}$ 36 describes a curve that is of low efficacy and with a low AC~50~, below the concentration range screened. These are more likely to be noise or less reproducible fits. $\mathit{Fitc}$ 41 and 42 are the ideal $\mathit{fitc}$ for reproducible curves, as demonstrated by these two $\mathit{fitc}$ comprising the majority of positive ($\mathit{hitc}$ > 0.9) curves in <font face="CMTT10">invitrodb v4.1</font>. $\mathit{Fitc}$ 40 indicates a curve with at least moderate efficacy, but an AC~50~ below the concentration range screened. These chemicals may be positive or reference chemicals screened in the incorrect concentration window to observe their minimum activity. These curves may also represent high-confidence positives for which we have limited understanding of the slope of the concentration-response curve, and as such, the AC~50~ may be associated with more uncertainty.
 
 In <font face="CMTT10"> tcpl v3.0.0 </font>, there are no level 6 (mc6) methods to apply since the introduction of new curve-fitting models requires further investigation for behaviors that may warrant caution flags.  Caution flags may be developed in future versions of <font face="CMTT10">tcpl</font> if such behaviors are identified.
 
