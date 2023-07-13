@@ -94,8 +94,6 @@ mc4 <- function(ae, wr = FALSE) {
   # ## Calculate the baseline mad
   # dat[ , bmad := mad(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)]
 
-  ## Check to see if all samples should be fit
-  fit_all <- as.logical(tcplLoadAeid("aeid", ae, "fit_all")$fit_all)
 
   ## Check to see if we are using the v3 schema
   if (check_tcpl_db_schema()) {
@@ -119,6 +117,10 @@ mc4 <- function(ae, wr = FALSE) {
     
   } else {
     # Legacy fitting
+    
+    ## Check to see if all samples should be fit
+    fit_all <- as.logical(tcplLoadAeid("aeid", ae, "fit_all")$fit_all)
+    
     fitpars <- c(
       "resp_max",
       "resp_min",
