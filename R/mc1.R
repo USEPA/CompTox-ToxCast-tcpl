@@ -70,18 +70,11 @@ mc1 <- function(ac, wr = FALSE) {
   # Define rpid column for non-test compound wells
   dat[wllt != "t", 
       rpid := paste(acid, spid, wllt, srcf, apid, "rep1", conc, sep = "_")] 
-  # Increment rpid 
-  dat_rpid <- dat[ , rpid]
-  j = 2L
-  while (any(duplicated(dat_rpid))) {
-    ind <- duplicated(dat_rpid)
-    dat_rpid[ind] <- sub("_rep[0-9]+", paste0("_rep", j), dat_rpid[ind])
-    j <- j + 1
-  }
-  dat[ , rpid := dat_rpid]
-  rm(dat_rpid)
-  # Remove conc values from rpid
-  dat[ , rpid := sub("_([^_]+)$", "", rpid, useBytes = TRUE)]
+
+  # set repid based on rowid
+  dat[, dat_rpid := rowid(rpid)]
+  dat[, rpid := sub("_rep[0-9]+.*", "",rpid, useBytes = TRUE)]
+  dat[, rpid := paste0(rpid,"_rep",dat_rpid)]
   
   ## Define concentration index
   indexfunc <- function(x) as.integer(rank(unique(x))[match(x, unique(x))])
@@ -93,11 +86,7 @@ mc1 <- function(ac, wr = FALSE) {
   trdt <- unique(dat[wllt %in% c("t", "c") , list(acid, spid, wllt, rpid)])
   trdt_rpid <- trdt[ , rpid]
   trdt[ , rpid := NULL]
-  trdt[ , repi := 1]
-  # Increment repi
-  while (any(duplicated(trdt))) {
-    trdt[duplicated(trdt), repi := repi + 1]
-  }
+  trdt[ , repi := rowidv(trdt)]
   trdt[ , rpid := trdt_rpid]
   rm(trdt_rpid)
   # Map replicate index back to dat
