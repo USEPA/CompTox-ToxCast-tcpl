@@ -70,16 +70,11 @@ mc1 <- function(ac, wr = FALSE) {
   # Define rpid column for non-test compound wells
   dat[wllt != "t", 
       rpid := paste(acid, spid, wllt, srcf, apid, "rep1", conc, sep = "_")] 
-  # Increment rpid 
-  dat_rpid <- dat[ , rpid]
-  j = 2L
-  while (any(duplicated(dat_rpid))) {
-    ind <- duplicated(dat_rpid)
-    dat_rpid[ind] <- sub("_rep[0-9]+", paste0("_rep", j), dat_rpid[ind])
-    j <- j + 1
-  }
-  dat[ , rpid := dat_rpid]
-  rm(dat_rpid)
+
+  # set repid based on rowid
+  dat[, dat_rpid := rowid(rpid)]
+  dat[, rpid := paste(acid, spid, wllt, srcf, apid, paste0("rep",dat_rpid), conc, sep = "_")]
+
   # Remove conc values from rpid
   dat[ , rpid := sub("_([^_]+)$", "", rpid, useBytes = TRUE)]
   
