@@ -73,10 +73,8 @@ mc1 <- function(ac, wr = FALSE) {
 
   # set repid based on rowid
   dat[, dat_rpid := rowid(rpid)]
-  dat[, rpid := paste(acid, spid, wllt, srcf, apid, paste0("rep",dat_rpid), conc, sep = "_")]
-
-  # Remove conc values from rpid
-  dat[ , rpid := sub("_([^_]+)$", "", rpid, useBytes = TRUE)]
+  dat[, rpid := sub("_rep[0-9]+.*", "",rpid, useBytes = TRUE)]
+  dat[, rpid := paste0(rpid,"_rep",dat_rpid)]
   
   ## Define concentration index
   indexfunc <- function(x) as.integer(rank(unique(x))[match(x, unique(x))])
