@@ -86,11 +86,7 @@ mc1 <- function(ac, wr = FALSE) {
   trdt <- unique(dat[wllt %in% c("t", "c") , list(acid, spid, wllt, rpid)])
   trdt_rpid <- trdt[ , rpid]
   trdt[ , rpid := NULL]
-  trdt[ , repi := 1]
-  # Increment repi
-  while (any(duplicated(trdt))) {
-    trdt[duplicated(trdt), repi := repi + 1]
-  }
+  trdt[ , repi := rowidv(trdt)]
   trdt[ , rpid := trdt_rpid]
   rm(trdt_rpid)
   # Map replicate index back to dat
