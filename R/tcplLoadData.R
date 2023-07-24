@@ -721,8 +721,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       
       if(add.fld) wtest <- FALSE
       wtest <- lvl %in% c(0) | (lvl == 2 & type == "sc")
-      if(!check_tcpl_db_schema() & lvl == 4){
-        wtest <- TRUE
+      if(lvl == 4){
+        if (!check_tcpl_db_schema() || !add.fld) wtest <- TRUE
       }
       
       qformat <- paste(qformat, if (wtest) "WHERE" else "AND")
