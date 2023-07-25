@@ -4,7 +4,7 @@
 
 #' @name MC6_Methods
 #' @title Load list of level 6 multiple-concentration flag methods
-#' 
+#'
 #' @description 
 #' \code{mc6_mthds} returns a list of flag methods to be used 
 #' during level 6 multiple-concentration processing.
@@ -61,9 +61,9 @@
 #'   series which have borderline activity, i.e., series where the top 
 #'   parameter of the winning model was greater than or equal to 0.8*cutoff 
 #'   and less than or equal to 1.2*cutoff.}
-#'   \item{overfit.hit}{The overfit.hit flag recalculates the model winner 
-#'   after applying a small sample correction factor to the AIC values. If the 
-#'   hit-call would be changed after applying the small sample correction 
+#'   \item{overfit.hit}{Method not yet updated for tcpl implementation. The overfit.hit flag 
+#'   recalculates the model winner after applying a small sample correction factor to the AIC 
+#'   values. If the hit-call would be changed after applying the small sample correction 
 #'   factor the series is flagged. Series with less than 5 concentrations where
 #'   the hill model won and series with less than 7 concentrations where the 
 #'   gain-loss model won are automatically flagged.}
@@ -76,6 +76,9 @@
 #'   \item{viability.gnls}{The viability.gnls flag identifies concentration series 
 #'   of cell viability assays which were fit with gain-loss as the winning 
 #'   model and the series had an active hit-call.}
+#'   \item{medresp.3bmad}{Flag series where no median response values are greater than baseline as 
+#'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
+#'   nmed_gtbl is the number of medians greater than 3*bmad.}
 #' }
 
 mc6_mthds <- function() {
