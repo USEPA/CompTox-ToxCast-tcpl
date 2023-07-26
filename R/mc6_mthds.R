@@ -20,62 +20,48 @@
 #' available in the package vignette, "Pipeline_Overview."
 #' 
 #' \describe{
-#'   \item{modl.directionality.fail}{The modl.directionality.fail flag 
-#'   identifies concentration series where, had the model direction been 
-#'   opposite, more responses would have exceeded the cutoff, i.e., series 
-#'   where the number of responses in absolute value which are greater than the 
-#'   absolute value of the cutoff exceeds twice the number of responses which 
-#'   are more extreme than the cutoff (< cutoff when cutoff is negative, 
-#'   > cutoff when cutoff is positive).}
-#'   \item{low.nrep}{The low.nrep flag identifies concentration series where 
-#'   the average number of replicates per concentration tested is less than 2.}
-#'   \item{low.nconc}{The low.nconc flag identifies concentration series where 
-#'   the number of concentrations tested is greater or equal to 4.}
-#'   \item{bmd.highconc}{The bmd.highconc flag identifies concentration series 
-#'   with a steep curve, i.e., series where the bmd is greater than 50% of the 
-#'   range of concentrations tested.}
-#'   \item{bmd.lowconc}{The bmd.lowconc flag identifies concentration series 
-#'   with a shallow curve, i.e., series where the bmd is less than 50% of the 
-#'   range of concentrations tested.}
-#'   \item{bmd.high}{The bmd.high flag attempts to identify noisy concentration
-#'   series by flagging series where the bmd is greater than the ac50.}
-#'   \item{singlept.hit.high}{The singlept.hit.high flag identifies 
-#'   concentration series where the median response was greater than 3*bmad 
-#'   only at the highest tested concentration and the series had an active 
-#'   hit-call.}
-#'   \item{singlept.hit.mid}{The singlept.hit.mid flag identifies concentration 
-#'   series where the median response was greater than 3*bmad at only one 
-#'   concentration (not the highest tested concentration) and the series had 
-#'   an active hit-call.}
-#'   \item{multipoint.neg}{The multipoint.neg flag identifies concentration 
-#'   series with response medians greater than 3*bmad at multiple 
-#'   concentrations and an inactive hit-call.}
-#'   \item{gnls.lowconc}{The gnls.lowconc flag identifies concentration series
-#'   where the gain-loss model won, the gain AC50 is less than the minimum 
-#'   tested concentration, and the loss AC50 is less than the mean tested 
+#'   \item{modl.directionality.fail}{Flag series if model directionality is questionable, i.e. if 
+#'   the winning model direction was opposite, more responses (resp) would have exceeded the cutoff 
+#'   (coff). If loss was winning directionality (top < 0), flag if 
+#'   count(resp < -1(coff)) < 2(count(resp > coff)). If gain was winning directionality (top > 0), 
+#'   flag if count(resp > coff) < 2(count(resp < -1*coff)).}
+#'   \item{low.nrep}{Flag series if the average number of replicates per concentration is less than 
+#'   2; nrep < 2.}
+#'   \item{low.nconc}{Flag series if 4 concentrations or less were tested; nconc <= 4.}
+#'   \item{bmd.highconc}{Flag series if modeled benchmark dose (BMD) is greater than AC50 
+#'   (concentration at 50 percent maximal response). This is indicates high variability in baseline 
+#'   response in excess of more than half of the maximal response.}
+#'   \item{bmd.lowconc}{}
+#'   \item{bmd.high}{Flag series if modeled benchmark dose (BMD) is greater than AC50 
+#'   (concentration at 50 percent maximal response). This is indicates high variability in baseline 
+#'   response in excess of more than half of the maximal response.}
+#'   \item{singlept.hit.high}{Flag single-point hit that's only at the highest conc tested, where 
+#'   series is an active hit call (hitc >= 0.9) with the median response observed above baseline 
+#'   occurring only at the highest tested concentration tested. }
+#'   \item{singlept.hit.mid}{Flag single-point hit that's not at the highest conc tested, where 
+#'   series is an active hit call (hitc >= 0.9) with the median response observed above baseline 
+#'   occurring only at one concentration and not the highest concentration tested.}
+#'   \item{multipoint.neg}{Flag multi-point miss, where series is an inactive hit call (hitc < 0.9) 
+#'   with multiple median responses observed above baseline.}
+#'   \item{gnls.lowconc}{Flag series where winning model is gain-loss (gnls) and the gain AC50 is 
+#'   less than the minimum tested concentration, and the loss AC50 is less than the mean tested 
 #'   concentration.}
-#'   \item{noise}{The noise flag attempts to identify noisy concentration
-#'   series by flagging series where the root mean square error for the series
-#'   is greater than the cutoff for the assay endpoint.}
-#'   \item{border}{The border flag identifies concentration 
-#'   series which have borderline activity, i.e., series where the top 
-#'   parameter of the winning model was greater than or equal to 0.8*cutoff 
-#'   and less than or equal to 1.2*cutoff.}
-#'   \item{overfit.hit}{Method not yet updated for tcpl implementation. The overfit.hit flag 
-#'   recalculates the model winner after applying a small sample correction factor to the AIC 
-#'   values. If the hit-call would be changed after applying the small sample correction 
-#'   factor the series is flagged. Series with less than 5 concentrations where
-#'   the hill model won and series with less than 7 concentrations where the 
-#'   gain-loss model won are automatically flagged.}
-#'   \item{efficacy.50}{The efficacy.50 flag identifies concentration series 
-#'   with efficacy values (either the modeled top parameter for the winning
-#'   model or the maximum median response) less than 50 for percent activity
-#'   data or log2(1.5) for fold induction data}
-#'   \item{ac50.lowconc}{The ac50.lowconc flag identifies concentration series 
-#'   with ac50 values less than the minimum tested concentration.}
-#'   \item{viability.gnls}{The viability.gnls flag identifies concentration series 
-#'   of cell viability assays which were fit with gain-loss as the winning 
-#'   model and the series had an active hit-call.}
+#'   \item{noise}{Flag series as noisy if the quality of fit as calculated by the root mean square 
+#'   error (rmse) for the series is greater than the cutoff (coff); rmse > coff.}
+#'   \item{border}{Flag series if borderline activity is suspected based on modeled top parameter 
+#'   (top) relative to cutoff (coff); |top| <= 1.2(coff) or |top| >= 0.8(coff).}
+#'   \item{overfit.hit}{Method not yet updated for tcpl implementation. Flag hit-calls that would 
+#'   get changed after doing the small N correction to the aic values.}
+#'   \item{efficacy.50}{Flag low efficacy hits if series has an active hit call (hitc >= 0.9) and 
+#'   efficacy values (e.g. top and maximum median response) less than 50 percent; intended for 
+#'   biochemical assays. If hitc >= 0.9 and coff >= 5, then flag when top < 50 or max_med < 50. 
+#'   If hitc >= 0.9 and coff < 5, then flag when top < log2(1.5) or max_med < log2(1.5).}
+#'   \item{ac50.lowconc}{Flag series with an active hit call (hitc >= 0.9) if AC50 (concentration 
+#'   at 50 percent maximal response) is less than the lowest concentration tested;if hitc >= 0.9 
+#'   and ac50 < 10^logc_min, then flag.}
+#'   \item{viability.gnls}{Flag series with an active hit call (hitc >= 0.9) if denoted as cell 
+#'   viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl=="gnls" and 
+#'   cell_viability_assay == 1, then flag.}
 #'   \item{medresp.3bmad}{Flag series where no median response values are greater than baseline as 
 #'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
 #'   nmed_gtbl is the number of medians greater than 3*bmad.}

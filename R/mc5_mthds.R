@@ -23,7 +23,7 @@
 #'
 #' \describe{
 #'   \item{bmad3}{Add a cutoff value of 3 multiplied by the baseline median absolute deviation 
-#'   (bmad). By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   (bmad) as defined at Level 4.}
 #'   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
 #'   \item{log2_1.2}{Add a cutoff value of log2(1.2). Typically for fold change data.}
 #'   \item{log10_1.2}{Add a cutoff value of log10(1.2). Typically for fold change data.}
