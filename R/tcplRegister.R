@@ -41,7 +41,6 @@ tcplRegister <- function(what, flds) {
     flds[ , c(xtra) := NULL]
   }
   
-  ## add try catch here to catch UNIQUE mysql error
   tryCatch(
     {
       tcplAppend(dat = flds, tbl = i[[1]], db = getOption("TCPL_DB"), lvl=what)
