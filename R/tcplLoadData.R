@@ -686,9 +686,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         m5id,
         spid,
         mc6_mthd_id,
-        flag,
-        fval,
-        fval_unit
+        flag
       FROM
         mc4,
         mc6
