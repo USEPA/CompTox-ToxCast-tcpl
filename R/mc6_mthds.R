@@ -28,10 +28,6 @@
 #'   \item{low.nrep}{Flag series if the average number of replicates per concentration is less than 
 #'   2; nrep < 2.}
 #'   \item{low.nconc}{Flag series if 4 concentrations or less were tested; nconc <= 4.}
-#'   \item{bmd.highconc}{Flag series if modeled benchmark dose (BMD) is greater than AC50 
-#'   (concentration at 50 percent maximal response). This is indicates high variability in baseline 
-#'   response in excess of more than half of the maximal response.}
-#'   \item{bmd.lowconc}{}
 #'   \item{bmd.high}{Flag series if modeled benchmark dose (BMD) is greater than AC50 
 #'   (concentration at 50 percent maximal response). This is indicates high variability in baseline 
 #'   response in excess of more than half of the maximal response.}
@@ -122,38 +118,6 @@ mc6_mthds <- function() {
       list(e1, e2, e3, e4)
       
     },
-    
-    #bmd.highconc = function(mthd) {
-      
-      #flag <- "Bmd falling > 50% conc range tested, indicative of a steep curve"
-      #out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
-                #"flag", "fval", "fval_unit")
-      #init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      #e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      #e2 <- bquote(ft[ , crng := 10^logc_max - 10^logc_min])
-      #e3 <- bquote(ft[ , test :=  bmd > 0.5*crng & hitc >= 0.9])
-      #e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
-      #cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "crng")
-      #e5 <- bquote(ft[ , .(cr) := NULL])
-      #list(e1, e2, e3, e4, e5)
-      
-    #},
-    
-    #bmd.lowconc = function(mthd) { 
-      
-      #flag <- "Bmd falling < 50% conc range tested, indicative of a shallow curve"
-      #out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
-                #"flag", "fval", "fval_unit")
-      #init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
-      #e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
-      #e2 <- bquote(ft[ , crng := 10^logc_max - 10^logc_min])
-      #e3 <- bquote(ft[ , test :=  bmd < 0.5*crng & hitc >= 0.9])
-      #e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
-      #cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test", "crng")
-      #e5 <- bquote(ft[ , .(cr) := NULL])
-      #list(e1, e2, e3, e4, e5)
-      
-    #},
     
     bmd.high = function(mthd) {
       
