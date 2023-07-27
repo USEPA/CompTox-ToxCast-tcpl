@@ -354,6 +354,21 @@ mc6_mthds <- function() {
       e4 <- bquote(ft[ , .(cr) := NULL])
       list(e1, e2, e3, e4)
       
+    },
+    
+    no.med.gt.3bmad = function(mthd) {
+      
+      flag <- "Flag series where no median response values are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag", "fval", "fval_unit")
+      init <- bquote(list(.(mthd), .(flag), NA_real_, NA_character_, FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:7], "test")) := .(init)])
+      e2 <- bquote(ft[ , test := nmed_gtbl == 0])
+      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "fval", "fval_unit", "test")
+      e4 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4)
+      
     }
     
   )
