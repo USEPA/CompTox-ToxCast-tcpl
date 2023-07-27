@@ -110,7 +110,7 @@
 #'     minimum, by assay plate ID (apid), of the medians of the corrected values (cval) for 
 #'     viability control wells (wllt = v) by apid and concentration.}
 #'     \item{pval.zero}{Set the positive control value (pval) to 0; pval = 0.}
-#'     \items{pval.apid.owlls.med}{Calculate the positive control value (pval) as the plate-wise 
+#'     \item{pval.apid.owlls.med}{Calculate the positive control value (pval) as the plate-wise 
 #'     median, by assay plate ID (apid), of the corrected values (cval) for single-concentration 
 #'     negative control wells (wllt = o).}
 #'     \item{pval.2bval}{Calculate the positive control value (pval) as the plate-wise median, by 

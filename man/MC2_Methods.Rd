@@ -34,17 +34,27 @@ More information about the level 2 multiple-concentration processing is
 available in the package vignette, "Pipeline_Overview."
 
 \describe{
-  \item{log2}{Take the logarithm of cval with the base 2.}
-  \item{log10}{Take the logarithm of cval with the base 10.}
-  \item{rmneg}{Remove entries where cval is less than 0.}
-  \item{rmzero}{Remove entries where cval is 0.}
-  \item{mult25}{Multiply cval by 25.}
-  \item{mult100}{Multiply cval by 100.}
-  \item{negshift}{Shift cval by subtracting out the minimum of cval and 
-  adding 1, such that the new minimum of cval is 1.}
-  \item{mult25}{Multiply cval by 2.5.}
-  \item{mult3}{Multiply cval by 3.}
-  \item{mult6}{Multiply cval by 6.}
+  \item{log2}{Transform the corrected response value (cval) to log-scale (base 2).}
+  \item{log10}{Transform the corrected response value (cval) to log-scale (base 10).}
+  \item{rmneg}{Exclude wells with negative corrected response values (cval) and downgrading 
+  their well quality (wllq); if cval < 0, wllq = 0.}
+  \item{rmzero}{Exclude wells with corrected response values (cval) equal to zero and 
+  downgrading their well quality (wllq); if cval = 0, wllq = 0.}
+  \item{mult25}{Multiply corrected response value (cval) by 25; 25*cval.}
+  \item{mult100}{Multiply corrected response value (cval) by 100; 100*cval.}
+  \item{negshift}{Shift corrected response values (cval) by subtracting the minimum cval and 
+  adding 1, such that the new minimum is 1; cval - min + 1.}
+  \item{mult2.5}{Multiply corrected response value (cval) by 2.5; 2.5*cval.}
+  \item{mult3}{Multiply corrected response value (cval) by 3; 3*cval.}
+  \item{mult6}{Multiply corrected response value (cval) by 6; 6*cval.}
+  \item{sub100}{Center data around zero by subtracting the corrected response value (cval) from 
+  100; 100 - cval. Typically used if data was pre-normalized around 100 with responses 
+  decreasing to 0.}
+  \item{zscore.npwlls}{Convert the corrected response value (cval) to an absolute Z-Score based 
+  on the neutral and positive control wells (wllts = n and p), by assay plate ID (apid); 
+  cval = |(cval - (mean cval for wllt = n and p)) / (sd cval for wllt = n and p)|.}
+  \item{sub1}{Center data around zero by subtracting the corrected response value (cval) from 1; 
+  1 - cval. Typically used if data was pre-normalized around 1 with responses decreasing to 0.}
 }
 }
 
