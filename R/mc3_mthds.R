@@ -38,101 +38,148 @@
 #' 
 #' \subsection{bval Methods}{
 #'   \describe{
-#'     \item{bval.apid.nwlls.med}{Calculate bval as the median of cval for 
-#'     wells with wllt equal to "n," by apid.}
-#'     \item{bval.apid.lowconc.med}{Calculate bval as the median of cval for 
-#'     wells with wllt equal to "t" and cndx equal to 1 or 2, by apid.}
-#'     \item{bval.apid.twlls.med}{Calculate bval as the median of cval for 
-#'     wells with wllt equal to "t," by apid.}
-#'     \item{bval.apid.tn.med}{Calculate bval as the median of cval for wells 
-#'     with wllt equal to "t" or "n," by apid.}
-#'     \item{bval.apid.nwllslowconc.med}{Calculate bval as the median of cval 
-#'     for wells with wllt equal to "n" or wells with wllt equal to "t" and 
-#'     cndx equal to 1 or 2, by apid.}
-#'     \item{bval.spid.lowconc.med}{Calculate bval as the median of cval for 
-#'     wells with wllt equal to "t" and cndx equal to 1, 2, or 3, by spid.}
-#'     \item{bval.apid.nwllstcwllslowconc.med}{Calculate bval as the median of 
-#'     cval for wells with wllt equal to "n" or cndx equal to 1 or 2 and
-#'     wllt equal to "t" or "c" by apid.}
+#'     \item{bval.apid.nwlls.med}{Calculate the baseline value (bval) as the plate-wise median, by 
+#'     assay plate ID (apid), of the corrected values (cval) for neutral control wells (wllt = n).}
+#'     \item{bval.apid.lowconc.med}{Calculate the baseline value (bval) as the plate-wise median, 
+#'     by assay plate ID (apid), of the corrected values (cval) for test compound wells (wllt = t) 
+#'     with a concentration index (cndx) of 1 or 2.}
+#'     \item{bval.apid.twlls.med}{Calculate the baseline value (bval) as the plate-wise median, by 
+#'     assay plate ID (apid), of the corrected values (cval) of test compound wells (wllt = t).}
+#'     \item{bval.apid.tn.med}{Calculate the baseline value (bval) as the plate-wise median, by 
+#'     assay plate ID (apid), of the corrected values (cval) for test compound wells (wllt = t) and 
+#'     neutral control wells (wllt = n).}
+#'     \item{bval.apid.nwllslowconc.med}{Calculate the baseline value (bval) as the plate-wise 
+#'     median, by assay plate ID (apid), of the corrected values (cval) of test compound wells 
+#'     (wllt = t) with a concentration index (cndx) of 1 or 2 or neutral control wells (wllt = n).}
+#'     \item{bval.spid.lowconc.med}{Calculate the baseline value (bval) as the sample-wise median, 
+#'     by sample ID (spid), of the corrected values (cval) of the three lowest concentration test 
+#'     compound wells (wllt = t and cndx =  1, 2, & 3).}
+#'     \item{bval.apid.nwllstcwllslowconc.med}{Calculate the baseline value (bval) as the 
+#'     plate-wise median, by assay plate ID (apid), of the corrected values (cval) for neutral 
+#'     control wells (wllt = n) or wells with a concentration index (cndx) of 1 or 2 and well 
+#'     type of test compound (wllt = t) or gain-of-signal control in multiple concentrations 
+#'     (wllt = c).}
+#'     \item{bval.aeid.nwlls.med}{Calculate the baseline value (bval) as the endpoint-wise median, 
+#'     by assay component endpoint ID (aeid), corrected value (cval) for neutral control wells 
+#'     (wllt = n).}
 #'      
 #'   }
 #' } 
 #' 
 #' \subsection{pval Methods}{
 #'   \describe{
-#'     \item{pval.apid.pwlls.med}{Calculate pval as the median of cval for 
-#'     wells with wllt equal to "p," by apid.}
-#'     \item{pval.apid.mwlls.med}{Calculate pval as the median of cval for 
-#'     wells with wllt equal to "m," by apid.}
-#'     \item{pval.apid.medpcbyconc.max}{First calculate the median of cval for
-#'     wells with wllt equal to "p" or "c," by wllt, conc, and apid. Then 
-#'     calculate pval as the maximum of the calculated medians, by apid.}
-#'     \item{pval.apid.medpcbyconc.min}{First calculate the median of cval for
-#'     wells with wllt equal to "p" or "c," by wllt, conc, and apid. Then 
-#'     calculate pval as the minimum of the calculated medians, by apid.}
-#'     \item{pval.apid.medncbyconc.min}{First calculate the median of cval for
-#'     wells with wllt equal to "m" or "o," by wllt, conc, and apid. Then 
-#'     calculate pval as the minimum of the calculated medians, by apid.}
-#'     \item{pval.apid.pmv.min}{First calculate the median of cval for
-#'     wells with wllt equal to "p," "m," or "v," by wllt, conc, and apid. Then 
-#'     calculate pval as the minimum of the calculated medians, by apid.}
-#'     \item{pval.apid.pmv.max}{First calculate the median of cval for
-#'     wells with wllt equal to "p," "m," or "v," by wllt, conc, and apid. Then 
-#'     calculate pval as the maximum of the calculated medians, by apid.}
-#'     \item{pval.apid.f.max}{First calculate the median of cval for
-#'     wells with wllt equal to "f," by wllt, conc, and apid. Then calculate 
-#'     pval as the maximum of the calculated medians, by apid.}
-#'     \item{pval.apid.f.min}{First calculate the median of cval for
-#'     wells with wllt equal to "f," by wllt, conc, and apid. Then calculate 
-#'     pval as the minimum of the calculated medians, by apid.}
-#'     \item{pval.apid.p.max}{First calculate the median of cval for
-#'     wells with wllt equal to "p," by wllt, conc, and apid. Then calculate 
-#'     pval as the maximum of the calculated medians, by apid.}
-#'     \item{pval.apid.p.min}{First calculate the median of cval for
-#'     wells with wllt equal to "p," by wllt, conc, and apid. Then calculate 
-#'     pval as the minimum of the calculated medians, by apid.}
-#'     \item{pval.apid.v.min}{First calculate the median of cval for
-#'     wells with wllt equal to "v," by wllt, conc, and apid. Then calculate 
-#'     pval as the minimum of the calculated medians, by apid.}
-#'     \item{pval.zero}{Define pval as 0.}
+#'     \item{pval.apid.pwlls.med}{Calculate the positive control value (pval) as the plate-wise 
+#'     median, by assay plate ID (apid), of the corrected values (cval) for single-concentration 
+#'     gain-of-signal positive control wells (wllt = p).}
+#'     \item{pval.apid.mwlls.med}{Calculate the positive control value (pval) as the plate-wise 
+#'     median, by assay plate ID (apid), of the corrected values (cval) for multiple-concentration 
+#'     loss-of-signal negative control wells (wllt = m).}
+#'     \item{pval.apid.medpcbyconc.max}{Calculate the positive control value (pval) as the 
+#'     plate-wise maximum, by assay plate ID (apid), of the medians of the corrected values (cval) 
+#'     for gain-of-signal single- or multiple-concentration negative control wells (wllt = m or o) 
+#'     by apid, well type, and concentration.}
+#'     \item{pval.apid.medpcbyconc.min}{Calculate the positive control value (pval) as the 
+#'     plate-wise minimum, by assay plate ID (apid), of the medians of corrected value (cval) of 
+#'     gain-of-signal single- or multiple-concentration positive control wells (wllt = p or c) by 
+#'     apid, well type, and concentration.}
+#'     \item{pval.apid.medncbyconc.min}{Calculate the positive control value (pval) as the 
+#'     plate-wise minimum, by assay plate ID (apid), of the medians of the corrected values (cval) 
+#'     for gain-of-signal single- or multiple-concentration negative control wells (wllt = m or o) 
+#'     by apid, well type, and concentration.}
+#'     \item{pval.apid.pmv.min}{Calculate the positive control value (pval) as the plate-wise 
+#'     minimum, by assay plate ID (apid), of the medians of the corrected values (cval) for 
+#'     single-concentration gain-of-signal, multiple-concentration loss-of-signal, or viability 
+#'     control wells (wllt = p, m, or v) by apid, well type, and concentration.}
+#'     \item{pval.apid.pmv.max}{Calculate the positive control value (pval) as the plate-wise 
+#'     maximum, by assay plate ID (apid), of the medians of the corrected values (cval) for 
+#'     single-concentration gain-of-signal, multiple-concentration loss-of-signal, or viability 
+#'     control wells (wllt = p, m, or v) by apid, well type, and concentration.}
+#'     \item{pval.apid.f.max}{Calculate the positive control value (pval) as the plate-wise 
+#'     maximum, by assay plate ID (apid), of the medians of important reference wells (wllt = f) 
+#'     values by apid and concentration.}
+#'     \item{pval.apid.f.min}{Calculate the positive control value (pval) as the plate-wise 
+#'     minimum, by assay plate ID (apid), of the medians of important reference wells (wllt = f) 
+#'     values by apid and concentration.}
+#'     \item{pval.apid.p.max}{Calculate the positive control value (pval) as the plate-wise 
+#'     maximum, by assay plate ID (apid), of the medians of the corrected values (cval) for 
+#'     single-concentration gain-of-signal control wells (wllt = p) by apid.}
+#'     \item{pval.apid.p.min}{Calculate the positive control value (pval) as the plate-wise 
+#'     minimum, by assay plate ID (apid), of the medians of corrected values (cval) for 
+#'     single-concentration gain-of-signal control wells (wllt = p) by apid.}
+#'     \item{pval.apid.v.min}{Calculate the positive control value (pval) as the plate-wise 
+#'     minimum, by assay plate ID (apid), of the medians of the corrected values (cval) for 
+#'     viability control wells (wllt = v) by apid and concentration.}
+#'     \item{pval.zero}{Set the positive control value (pval) to 0; pval = 0.}
+#'     \item{pval.apid.owlls.med}{Calculate the positive control value (pval) as the plate-wise 
+#'     median, by assay plate ID (apid), of the corrected values (cval) for single-concentration 
+#'     negative control wells (wllt = o).}
+#'     \item{pval.2bval}{Calculate the positive control value (pval) as the plate-wise median, by 
+#'     assay plate ID (apid), of the corrected values (cval) for neutral control wells (wllt = n) 
+#'     multiplied by 2.}
+#'     \item{pval.maxp}{Calculate the positive control value (pval) as the endpoint-wise maximum, 
+#'     by assay component ID (aeid), of the corrected values for single-concentration 
+#'     gain-of-signal wells (wllt = p).}
+#'     \item{pval.apid.bwlls.med}{Calculate the positive control value (pval) as the plate-wise 
+#'     median, by assay plate ID (apid), of the corrected values (cval) for blank wells (wllt= b).}
+#'     \item{pval.twlls.99pct}{Calculate positive control value (pval) as the 99th percentile of 
+#'     all corrected value (cvals) of the test compound wells (wllt = t).}
+#'     \item{pval.neg.100}{Calculate positive control value (pval) as -100 for endpoints in the 
+#'     down direction; pval = -100.}
 #'   }
 #' } 
 #' 
 #' \subsection{resp Methods}{
 #'   \describe{
-#'     \item{resp.pc}{Calculate resp as \eqn{\frac{\mathit{cval} - 
-#'     \mathit{bval}}{\mathit{pval} - \mathit{bval}}100}{(cval - bval)/(pval 
-#'     - bval)*100}.}
-#'     \item{resp.pc.pval.cor}{Calculate resp as \eqn{\frac{\mathit{cval} - 
-#'     \mathit{bval}}{\mathit{pval}}100}{(cval - bval)/(pval)*100}.}
-#'     \item{resp.fc}{Calculate resp as \eqn{\mathit{cval}/\mathit{bval}}{
-#'     cval/bval}.}
-#'     \item{resp.logfc}{Calculate resp as \eqn{\mathit{cval} - \mathit{bval}}{
-#'     cval - bval}.}
-#'     \item{resp.log2}{Take the logarithm of resp with base 2.}
-#'     \item{resp.mult25}{Multiply resp by 25.}
-#'     \item{resp.scale.mad.log2fc}{Multiply resp by the scale factor 
-#'     \eqn{\frac{\log_2 \left( 1.2 \right)}{3\mathit{bmad}}}{
-#'     log2(1.2)/(3*bmad)}.}
-#'     \item{resp.scale.quant.log2fc}{Determine the maximum response 
-#'     \eqn{\mathit{md}}{md} where \eqn{\mathit{md}}{md} = abs(1st centile - 
-#'     50th centile) or abs(99th centile - 50th centile), whichever is greater. 
-#'     Scale the response such that 20 percent of md equals
-#'     \eqn{\log_2 \left( 1.2 \right)}{log2(1.2)}.}
-#'     \item{resp.multneg1}{Multiply resp by -1.}
-#'     \item{resp.shiftneg.3bmad}{Shift all resp values less than -3*bmad to 0.}
-#'     \item{resp.shiftneg.6bmad}{Shift all resp values less than -6*bmad to 0.}
-#'     \item{resp.shiftneg.10bmad}{Shift all resp values less than -10*bmad to 
-#'     0.}
-#'     \item{resp.blineshift.3bmad.repi}{Shift resp values with the blineShift
-#'     function by repi, where the window (wndw) is 3*bmad.}
-#'     \item{resp.blineshift.50.repi}{Shift resp values with the blineShift
-#'     function by repi, where the window (wndw) is 50.}
-#'     \item{resp.blineshift.3bmad.spid}{Shift resp values with the blineShift
-#'     function by spid, where the window (wndw) is 3*bmad.}
-#'     \item{resp.blineshift.50.spid}{Shift resp values with the blineShift
-#'     function by spid, where the window (wndw) is 50.}
-#'     \item{none}{Do no normalization; make resp equal to cval.}
+#'     \item{resp.pc}{Calculate the normalized response (resp) as a percent of control, i.e. the 
+#'     ratio of the difference between the corrected (cval) and baseline (bval) values divided the 
+#'     difference between the positive control (pval) and baseline (bval) values multiplied by 100; 
+#'     resp = (cval-bval)/(pval-bval)*100.}
+#'     \item{resp.pc.pval.cor}{Calculate the normalized response (resp) as a percent of control, 
+#'     i.e. the ratio of the difference between the corrected (cval) and baseline (bval) values 
+#'     divided the positive control (pval) value multiplied by 100; resp = (cval-bval)/pval*100.}
+#'     \item{resp.fc}{Calculate the normalized response (resp) as the fold change, i.e. the ratio 
+#'     of the corrected (cval) and baseline (bval) values; resp = cval/bal.}
+#'     \item{resp.logfc}{Calculate the normalized response (resp) as the fold change of logged,
+#'      i.e. the difference between corrected (cval) and baseline (bval) log-scale values.}
+#'     \item{resp.log2}{Transform the response values to log-scale (base 2).}
+#'     \item{resp.mult25}{Multiply the normalized response value (resp) by 25; 25*resp.}
+#'     \item{resp.scale.mad.log2fc}{Scale the normalized response value (resp) by the ratio of 
+#'     log2(1.2) and 3 multiplied by the baseline median absolute deviation (bmad) of the unscaled 
+#'     normalized response values (resp); log2(1.2) / 3(bmad)*resp.}
+#'     \item{resp.scale.quant.log2fc}{Scale the normalized response value (resp). First, determine 
+#'     the maximum difference (md) by finding the maximum between the absolute difference of the 
+#'     1st percentile minus the 50th percentile and the absolute difference of the 99th percentile 
+#'     minus the 50th percentile. Then multiply resp by log2(1.2) divided by 20 percent of md; 
+#'     log2(1.2) / 0.2(md)*resp.}
+#'     \item{resp.multneg1}{Multiply the normalized response value (resp) by -1; -1*resp.}
+#'     \item{resp.shiftneg.3bmad}{Shift all the normalized response values (resp) less than -3 
+#'     multiplied by the baseline median absolute deviation (bmad) to 0; if resp < -3*bmad, 
+#'     resp = 0.}
+#'     \item{resp.shiftneg.6bmad}{Shift all the normalized response values (resp) less than -6 
+#'     multiplied by the baseline median absolute deviation (bmad) to 0; if resp < -6*bmad, 
+#'     resp = 0.}
+#'     \item{resp.shiftneg.10bmad}{Shift all the normalized response values (resp) less than 10 
+#'     multiplied by the baseline median absolute deviation (bmad) to 0; if resp < -10*bmad, 
+#'     resp = 0.}
+#'     \item{resp.blineshift.3bmad.repi}{Shift the normalized response value (resp) with a baseline 
+#'     correction, by replicate index (repi), with a window of 3 multiplied by the baseline median 
+#'     absolute deviation (bmad).}
+#'     \item{resp.blineshift.50.repi}{Shift the normalized response value (resp) with a baseline 
+#'     correction, by replicate index (repi), with a window of 50.}
+#'     \item{resp.blineshift.3bmad.spid}{Shift the normalized response value (resp) with a baseline 
+#'     correction, by sample ID (spid), with a window of 3 multiplied by the baseline median 
+#'     absolute deviation (bmad).}
+#'     \item{resp.blineshift.50.spid}{Shift the normalized response value (resp) with a baseline 
+#'     correction, by sample ID (spid), with a window of 50.}
+#'     \item{none}{Set the corrected response value (cval) as the normalized response value (resp); 
+#'     cval = resp. No additional mc3 methods needed for endpoint-specific normalization.}
+#'     \item{resp.zerocenter.fc}{Calculate the normalized response (resp) as a zero center fold 
+#'     change, i.e. 1 minus the ratio of corrected (cval) and baseline (bval) values; 
+#'     resp = 1 - (cval/bval). Typically used for increasing responses.}
+#'     \item{resp.incr.zerocenter.fc}{Calculate the normalized response (resp) as a zero center 
+#'     fold change, i.e. the ratio of the the corrected (cval) and baseline (bval) values minus 1; 
+#'     resp = cval/bval - 1. Typically used for increasing responses.}
+#'     \item{resp.mult100}{Multiply the normalized response value (resp) by 100; 100*resp.}
 #'   }
 #' }
 #' 

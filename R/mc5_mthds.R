@@ -22,18 +22,41 @@
 #' available in the package vignette, "Pipeline_Overview."
 #'
 #' \describe{
-#'   \item{bmad3}{Add a cutoff value of 3*bmad.}
-#'   \item{pc20}{Add a cutoff value of 20.}
-#'   \item{log2_1.2}{Add a cutoff value of log2(1.2).}
-#'   \item{log10_1.2}{Add a cutoff value of log10(1.2).}
-#'   \item{bmad5}{Add a cutoff value of 5*bmad.}
-#'   \item{bmad6}{Add a cutoff value of 6*bmad.}
-#'   \item{bmad10}{Add a cutoff value of 10*bmad.}
-#'   \item{log2_2}{Add a cutoff value of log2(2).}
-#'   \item{log10_2}{Add a cutoff value of log10(2).}
-#'   \item{neglog2_0.88}{Add a cutoff value of -1*log2(0.88).}
+#'   \item{bmad3}{Add a cutoff value of 3 multiplied by the baseline median absolute deviation 
+#'   (bmad) as defined at Level 4.}
+#'   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
+#'   \item{log2_1.2}{Add a cutoff value of log2(1.2). Typically for fold change data.}
+#'   \item{log10_1.2}{Add a cutoff value of log10(1.2). Typically for fold change data.}
+#'   \item{bmad5}{Add a cutoff value of 5 multiplied the baseline median absolute deviation (bmad). 
+#'   By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   \item{bmad6}{Add a cutoff value of 6 multiplied by the baseline median absolute deviation 
+#'   (bmad). By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   \item{bmad10}{Add a cutoff value of 10 multiplied by the baseline median absolute deviation 
+#'   (bmad). By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   \item{maxmed20pct}{Add a cutoff value of 20 percent of the maximum of all endpoint maximal 
+#'   average response values (max_med).}
+#'   \item{pc70}{Add a cutoff value of 70. Typically for percent of control data.}
+#'   \item{pc50}{Add a cutoff value of 50. Typically for percent of control data.}
+#'   \item{log2_2}{Add a cutoff value log2(2). Typically for fold change data.}
+#'   \item{log10_2}{Add a cutoff value of log10(2). Typically for fold change data.}
+#'   \item{neglog2_0.88}{Add a cutoff value of -1 times log2(0.88).}
 #'   \item{coff_2.32}{Add a cutoff value of 2.32.}
-#'   
+#'   \item{loec.coff}{Method not yet updated for tcpl implementation. Identify the lowest observed 
+#'   effective concentration (loec) compared to baseline.}
+#'   \item{fc0.2}{Add a cutoff value of 0.2. Typically for zero centered fold change data.}
+#'   \item{fc0.3}{Add a cutoff value of 0.3. Typically for zero centered fold change data.}
+#'   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
+#'   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
+#'   \item{bmad1}{Add a cutoff value of 1 multiplied by baseline median absolute value (bmad). By 
+#'   default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   \item{bmad2}{Add a cutoff value of 2 multiplied by the baseline median absolute deviation 
+#'   (bmad). By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   \item{pc10}{Add a cutoff value of 10. Typically for percent of control data.}
+#'   \item{pc05}{Add a cutoff value of 5. Typically for percent of control data.}
+#'   \item{pc95}{Add a cutoff value of 95. Typically for percent of control data.}
+#'   \item{bmad4}{Add a cutoff value of 4 multiplied the baseline median absolute deviation (bmad). 
+#'   By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
+#'   \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
 #' }
 
 

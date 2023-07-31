@@ -10,6 +10,7 @@ Authors@R: c(
     person("Lori","Kolaczkowski",role = "ctb",email = "kolaczkowski.lori@epa.gov"),
     person("Kurt", "Dunham", role = "ctb", email = "dunham.kurt@epa.gov"),
     person("Carter", "Thunes", role = "ctb", email = "thunes.carter@epa.gov"),
+    person("Ashley", "Ko", role = "ctb", email = "ko.ashley@epa.gov"),
     person("Todd", "Zurlinden", role="ctb"),
     person("Parth", "Kothiya", role = "ctb"),
     person("Woodrow R", "Setzer", role = "ctb"),
