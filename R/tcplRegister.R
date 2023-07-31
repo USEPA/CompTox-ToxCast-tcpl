@@ -41,8 +41,17 @@ tcplRegister <- function(what, flds) {
     flds[ , c(xtra) := NULL]
   }
   
-  tcplAppend(dat = flds, tbl = i[[1]], db = getOption("TCPL_DB"), lvl=what)
-  
-  TRUE
+  tryCatch(
+    {
+      tcplAppend(dat = flds, tbl = i[[1]], db = getOption("TCPL_DB"), lvl=what)
+      TRUE
+    },
+    error=function(error) {
+      message(paste(what, "was not inserted into the database:"))
+      message(error)
+      if (grepl("Duplicate entry", error)) message("\nDuplicate values are not permitted; this source may already be registered!")
+      FALSE
+    }
+    )
   
 }
