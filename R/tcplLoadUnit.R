@@ -30,7 +30,7 @@ tcplLoadUnit <- function(aeid) {
       aeid IN (%s);
     "
   
-  qstring <- sprintf(qformat, paste(aeid, collapse = ","))
+  qstring <- sprintf(qformat, paste0("\"", aeid, "\"", collapse = ","))
   
   dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=c("assay_component_endpoint"))
   
