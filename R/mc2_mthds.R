@@ -182,7 +182,7 @@ mc2_mthds <- function() {
     agg.percent.rep.spid = function() {
       
       e1 <- bquote(dat[ , cval := sum(cval)/.N * 100,
-                        by = list(acid, spid, cndx)]
+                        by = list(acid, spid, cndx)])
       list(e1)
 
     },
