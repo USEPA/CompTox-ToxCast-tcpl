@@ -192,7 +192,7 @@ mc2_mthds <- function() {
       e1 <- bquote(dat[.N>1, cval := sum(cval)/.N * 100,
                        by = list(acid, spid, cndx)])
     list(e1)
-
+}
     
   )
 }
