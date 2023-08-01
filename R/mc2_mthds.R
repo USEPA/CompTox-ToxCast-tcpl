@@ -29,6 +29,7 @@
 #' More information about the level 2 multiple-concentration processing is 
 #' available in the package vignette, "Pipeline_Overview."
 #' 
+#' \subsection{Correction Methods}{
 #' \describe{
 #'   \item{log2}{Transform the corrected response value (cval) to log-scale (base 2).}
 #'   \item{log10}{Transform the corrected response value (cval) to log-scale (base 10).}
@@ -51,6 +52,16 @@
 #'   cval = |(cval - (mean cval for wllt = n and p)) / (sd cval for wllt = n and p)|.}
 #'   \item{sub1}{Center data around zero by subtracting the corrected response value (cval) from 1; 
 #'   1 - cval. Typically used if data was pre-normalized around 1 with responses decreasing to 0.}
+#'   }
+#' }
+#' 
+#' \subsection{Aggregation Methods}{
+#' \describe{
+#'  \item{agg.mean.rep.apid}{Aggregate technical replicates by taking the plate-wise mean per sample id and concentration index.}
+#'  \item{agg.median.rep.apid}{Aggregate technical replicates by taking the plate-wise median per sample id and concentration index.}
+#'  \item{agg.percent.rep.spid}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of hits relative to total replicates per sample id and concentration index.}
+#'  \item{agg.percent.rep.spid.min1}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of hits relative to total replicates per sample id and concentration index, where at least one hit is required.}
+#'   }
 #' }
 #' 
 #' @note
@@ -150,7 +161,38 @@ mc2_mthds <- function() {
       e1 <- bquote(dat[ , cval := 1 - cval])
       list(e1)
       
-    }
+    }, 
+    
+    agg.mean.rep.apid = function() {
+      
+      e1 <- bquote(dat[ , cval := mean(cval, na.rm = TRUE),
+                        by = list(acid, spid, apid, cndx)])
+      list(e1)
+      
+    },
+    
+    agg.median.rep.apid = function() {
+      
+      e1 <- bquote(dat[ , cval := median(cval, na.rm = TRUE),
+                        by = list(acid, spid, apid, cndx)])
+      list(e1)
+
+    },
+    
+    agg.percent.rep.spid = function() {
+      
+      e1 <- bquote(dat[ , cval := sum(cval)/.N * 100,
+                        by = list(acid, spid, cndx)]
+      list(e1)
+
+    },
+    
+    agg.percent.rep.spid.min1 = function() {
+      
+      e1 <- bquote(dat[.N>1, cval := sum(cval)/.N * 100,
+                       by = list(acid, spid, cndx)])
+    list(e1)
+
     
   )
 }
