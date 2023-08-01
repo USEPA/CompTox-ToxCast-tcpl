@@ -165,7 +165,7 @@ mc2_mthds <- function() {
     
     agg.mean.rep.apid = function() {
       
-      e1 <- bquote(dat[ , cval := mean(cval, na.rm = TRUE),
+      e1 <- bquote(dat[ , cval := mean(cval),
                         by = list(acid, spid, apid, cndx)])
       list(e1)
       
@@ -173,7 +173,7 @@ mc2_mthds <- function() {
     
     agg.median.rep.apid = function() {
       
-      e1 <- bquote(dat[ , cval := median(cval, na.rm = TRUE),
+      e1 <- bquote(dat[ , cval := median(cval),
                         by = list(acid, spid, apid, cndx)])
       list(e1)
 
