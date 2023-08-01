@@ -14,6 +14,7 @@
 #' @param flag Integer, the mc6_mthd_id values to go into the flag count, see
 #' details for more information
 #' @param type Character of length 1, the data type, "sc" or "mc"
+#' @param export_ready Boolean, default TRUE, should only export ready 1 values be included in calculation
 #'  
 #' @details
 #' \code{tcplSubsetChid} is intended to work with level 5 data that has 
@@ -60,7 +61,7 @@
 #' @import data.table
 #' @export
 
-tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
+tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = TRUE) {
   
   ## Variable-binding to pass R CMD Check
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
@@ -68,6 +69,25 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc") {
   
   if (!type %in% c("mc","sc")) {
     stop("type must be sc (single concentration) or mc (multi-concentration)")
+  }
+  
+  #if only using export ready, filter data by export ready status
+  if(export_ready){
+    #try catch here to make sure db has available annotation information
+    tryCatch(
+      {
+        assay_info <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "export_ready")
+      },
+      error=function(error) {
+        message(error)
+        if (grepl("Not all given fields available in query", error)) stop(paste0("\n'export_ready' column is not available in ",options()$TCPL_DB,".  Consider setting export_ready to FALSE."))
+      }
+    )
+    
+    # join assay information
+    dat <- dat[assay_info, on = .(aeid)]
+    #filter export ready column
+    dat <- dat[export_ready == 1]
   }
   
   if(type == "mc"){
