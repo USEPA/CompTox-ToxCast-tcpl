@@ -498,29 +498,31 @@ mmthds <- mc_methods(aeids)
 mmthds
 ```
 
-# Plotting MC Data
+# Plotting
 
-In <font face="CMTT10">tcpl v3.0</font> onwards, a single plotting function with many customizable options, <font face="CMTT10">tcplPlot</font>, allows for interactive, yet consistent visualization of concentration-response curves. As a new standalone plotting utility built with the R library plotly to display the additional curve-fitting models, <font face="CMTT10">tcplPlot</font> implements the R library plumber to provide representational state transfer-application programming interface (REST API) functionality, which also works with web applications. Plotly concentration-response plots are akin to the bioactivity plots surfaced via the CompTox Chemicals Dashboard. The <font face="CMTT10">tcplPlot</font> function requires a level (`lvl`), field (`fld`), and value (`val`) input combination to load the necessary data and display the associated plots and tables as `output`. The plotting utility supports a variety of publication-quality file type options, including raster graphics (PNG, JPG, and TIFF) to retain color quality when printing to photograph and vector graphics (SVG and PDF) to retain image resolution when scaled to large formats.
+<font face="CMTT10">tcplPlot</font> is tcpl’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via several customizable parameters. As a standalone plotting utility built with the R library <font face="CMTT10">plotly</font> to display the additional curve-fitting models, <font face="CMTT10">tcplPlot</font> implements the R library plumber to provide representational state transfer-application programming interface (“REST API”) functionality. The <font face="CMTT10">tcplPlot</font> function requires a level (`lvl`), field (`fld`), and value (`val`) input combination to load the necessary data and display the associated plots and tables as output. Level 4 plots the concentration-response series fit by all models, whereas Level 5 also includes the winning model highlighted with an activity hit call presented. Level 6 multi-concentration and single-concentration plotting are not currently supported by <font face="CMTT10">tcplPlot</font>. 
 
-Further customization of outputs is possible via parameters, `multi` and `verbose`. The `multi` parameter allows for single or multiple plots per page. The PDF `output` option must be selected to generate multiple plots per page. The `verbose` parameter results in a plot that includes a table containing potency and model performance metrics and is available for all output types aside from "console".
+Customization of outputs is possible by specifying parameters, including `output`, `multi`,
+`fileprefix`, `by`, `verbose`, `nrow`, `ncol`, and `dpi`.  
 
-## Plotting Examples
+- The output parameter indicates how the plots will be presented. In addition to outputs viewable with the R console, tcplPlot supports a variety of publication-quality file type options, including raster graphics (PNG, JPG, and TIFF) to retain color quality when printing to photograph and vector graphics (SVG and PDF) to retain image resolution when scaled to large formats.
 
-This section demonstrates <font face="CMTT10">tcplPlot</font> functionality. For all but the first two examples, an image of the generated output follows the corresponding code block.
+- The multi parameter allows for single or multiple plots per page. `Multi=TRUE` is the default option for PDF outputs, whereas Multi=FALSE is only option for other outputs. If `‘multi’ = TRUE`: default 4 plots per page for 'verbose' = TRUE and 6 plots per page for 'verbose' = FALSE.
 
-Due to the dynamic nature of "m#" fields, the following example does not include a corresponding plot. Here, the $m4id$ value (482273) corresponds with the <font face="CMTT10"> mc_vignette </font> R data object. To run test this code, please select a valid $m4id$ value.
-```{r mc_plot_ma4id, eval = FALSE}
-# Create Level 4 plot for a single m4id.
-tcplPlot(lvl = 4,  # data level
-         fld = "m4id", # field to query on 
-         val = 482273, # value for each field, values should match their corresponding 'fld'
-         multi = FALSE, # single plot per page - output 6 per page if TRUE
-         verbose = FALSE, # output all details if TRUE
-         output = "console") # output in R console
-```
+- The `by` parameter indicates how files should be divided, typically by $aeid$ or $spid$. The `fileprefix` parameter allows the user to set a prefix of file when saving. Standard filenames are tcplPlot_sysDate().Output (tcplPlot_20230802.pdf), or can be customized as fileprefix _by_. Output (Plots_AEID.pdf) 
 
+- The `verbose` parameter results in a plot that includes a table containing potency and model performance metrics; `verbose = FALSE` is default and the only option in console outputs.  
 
-The following two examples produce plots of Level 5 MC data for the selected $aeids$. The a new pdf is generated for each $aeid$ and contains multiple plots per page. Example output from the second <font face="CMTT10">tcplPlot</font> call follows this code block.
+- The `nrow` parameter specifies the number of rows in the multiple plots per page; this is 2 by default. The `ncol` parameter specifies the number of columns in the multiple plots per page; this is 3 by default. If `verbose = FALSE`, `ncol` is 2. `Nrow` and `ncol` can customize the number of plots included per page.
+
+- The `dpi` parameter specifies image print resolution for image file output types (PNG, JPG, TIFF, SVG); this is 600 by default. 
+
+The following examples demonstrate <font face="CMTT10">tcplPlot</font> functionality through available the variety of customization options: 
+
+## Output PDF of Verbose, Multiple Plots per Page, by AEID and/or SPID
+
+The following two examples produce plots of Level 5 MC data for the selected $aeids$. A new pdf is generated for each endpoint. Filtering can be applied if only plots for a subset of samples ($spids$) are desired.
+
 ```{r mc_plot_pdf_aeid, eval = FALSE}
 # Plot Level 5 MC data for aeids 3157-3159 and outputs plots separate pdfs by aeid.
 tcplPlot(lvl = 5, # data level
@@ -549,12 +551,14 @@ tcplPlot(lvl = 5, # data level
          output = "pdf", # output as pdf
          fileprefix = "output_pdf") # prefix of the filename
 ```
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and verbose = TRUE</i></font>](img/output_pdf.png)</center>
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and verbose = TRUE for aeid 80 and spid 01504209</i></font>](img/output_pdf.png)</center>
 
+## Output Image File (JPG) of Single Verbose Plot, by AEID and SPID
 
-This example illustrates a level 5 verbose plot for $aeid$ 80 and $spid$ 01504209 of output type "jpg".
+This example illustrates a level 5 verbose plot for a single endpoint and single sample of output type “jpg”. 
+
 ```{r mc_plot_jpg, eval = FALSE}
-# Plot a verbose plot of Level 5 MC data for single aeid and spid and output as jpg.
+# Plot a verbose plot of Level 5 MC data for single aeid 80 and spid 01504209 and output as jpg.
 tcplPlot(lvl = 5, # data level
          fld = c('aeid','spid'), # field to query on
          val = list(80,'01504209'), # value for each field
@@ -564,12 +568,25 @@ tcplPlot(lvl = 5, # data level
          output = "jpg", # output as jpg
          fileprefix = "output_jpg")
 ```
-<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "jpg", multi = FALSE, and verbose = TRUE</i></font>](img/output_jpg.jpg)</center>
 
+<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "jpg" and verbose = TRUE for </i></font>](img/output_jpg.jpg)</center>
 
-The following code creates a level 5 plot for $aeid$ 80 and $spid$ 01504209 of output type "console". 
+## Output to Console, by M4ID or AEID and SPID
+
+Due to the dynamic nature of "m#"ids, the first example code chunk does not include a corresponding plot. Here, the $m4id$ value (482273) corresponds with the <font face="CMTT10">mc_vignette,/font> R data object. To run test this code, a valid $m4id$ value must be supplied. 
+
+ 
+The second example includes a level 5 plot for endpoint and sample of output type “console”. Only 1 concentration series can be output in console at a time. 
 ```{r mc_plot_console, eval = FALSE}
-# Plot of Level 5 MC data for single aeid and spid and output to console.
+# Create Level 4 plot for a single m4id.
+tcplPlot(lvl = 4,  # data level
+         fld = "m4id", # field to query on 
+         val = 482273, # value for each field, values should match their corresponding 'fld'
+         multi = FALSE, # single plot per page - output 6 per page if TRUE
+         verbose = FALSE, # output all details if TRUE
+         output = "console") # output in R console
+
+# Plot of Level 5 MC data for single aeid (80) and spid (01504209) and output to console.
 tcplPlot(lvl = 5, # data level
          fld = c('aeid','spid'), # field to query on
          val = list(80, '01504209'), # value for each field
@@ -577,9 +594,8 @@ tcplPlot(lvl = 5, # data level
          multi = FALSE, # single plot per page, TRUE not valid with output = console
          verbose = FALSE, # do not output all details, TRUE not valid with output = console
          output = "console") # output in R console
-
 ```
-<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console", multi = FALSE, and verbose = FALSE</i></font>](img/output_console.png)</center>
+<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209</i></font>](img/output_console.png)</center>
 
 
 # Additional Examples
