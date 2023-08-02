@@ -262,12 +262,9 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   # extract range from level 3 data for creating plotting all the functions
   # increase resolution to get smoother curves
   resolution <- 100
-  l3_range <- l3_dat %>%
-    pull(.data$conc) %>%
-    range()
+  x_min_max <- range(l3_dat$conc)
+  x_range <- 10^(seq(from = log10(x_min_max[1]), to = log10(x_min_max[2]), length.out = resolution))
   
-  l3_range <- l3_range * resolution
-  x_range <- floor(l3_range[1]):ceiling(l3_range[2]) / resolution
   
   #check if winning model = none 
   if (!dat$modl == "none"){
