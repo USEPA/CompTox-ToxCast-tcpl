@@ -33,6 +33,7 @@ This function is not exported and is not intended to be used by the user.
 More information about the level 2 multiple-concentration processing is 
 available in the package vignette, "Pipeline_Overview."
 
+\subsection{Correction Methods}{
 \describe{
   \item{log2}{Transform the corrected response value (cval) to log-scale (base 2).}
   \item{log10}{Transform the corrected response value (cval) to log-scale (base 10).}
@@ -55,6 +56,16 @@ available in the package vignette, "Pipeline_Overview."
   cval = |(cval - (mean cval for wllt = n and p)) / (sd cval for wllt = n and p)|.}
   \item{sub1}{Center data around zero by subtracting the corrected response value (cval) from 1; 
   1 - cval. Typically used if data was pre-normalized around 1 with responses decreasing to 0.}
+  }
+}
+
+\subsection{Aggregation Methods}{
+\describe{
+ \item{agg.mean.rep.apid}{Aggregate technical replicates by taking the plate-wise mean per sample id (spid), assay plate (apid), and concentration index (cndx).}
+ \item{agg.median.rep.apid}{Aggregate technical replicates by taking the plate-wise median per sample id (spid), assay plate (apid), and concentration index (cndx).}
+ \item{agg.percent.rep.spid}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of hits relative to total replicates per sample id (spid) and concentration index (cndx); cval = (sum(rval)/.N)*100.}
+ \item{agg.percent.rep.spid.min1}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of hits relative to total replicates per per sample id (spid) and concentration index (cndx), where there is more than one replicate; cval = (sum(rval)/.N)*100, where .N>1.}
+  }
 }
 }
 
