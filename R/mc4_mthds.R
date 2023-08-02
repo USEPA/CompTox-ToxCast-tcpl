@@ -91,7 +91,7 @@ mc4_mthds <- function() {
       
       e1 <- bquote(dat[ , bmad := 5])
       e2 <- bquote(dat[ , osd := 16])
-      list(e1)
+      list(e1, e2)
       
     }
 
