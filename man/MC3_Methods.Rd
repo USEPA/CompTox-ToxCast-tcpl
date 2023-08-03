@@ -16,7 +16,7 @@ during level 3 multiple-concentration processing.
 }
 \details{
 The functions contained in the list returned by \code{mc3_mthds} take 
-'aeids' (a numeric vector of aeid values) and returns a list of expressions 
+\code{aeids} (a numeric vector of aeid values) and returns a list of expressions 
 to be executed in the \code{mc3} (not exported) function environment. The 
 functions are described here for reference purposes, The 
 \code{mc3_mthds} function is not exported, nor is it intended for use.
@@ -38,7 +38,7 @@ Although it does not say so specifically in each description, all methods
 are applied by aeid.
 
 More information about the level 3 multiple-concentration processing is 
-available in the package vignette, "Pipeline_Overview."
+available in the package vignette, "Data_processing."
 
 \subsection{bval Methods}{
   \describe{
@@ -113,7 +113,7 @@ available in the package vignette, "Pipeline_Overview."
     \item{pval.apid.v.min}{Calculate the positive control value (pval) as the plate-wise 
     minimum, by assay plate ID (apid), of the medians of the corrected values (cval) for 
     viability control wells (wllt = v) by apid and concentration.}
-    \item{pval.zero}{Set the positive control value (pval) to 0; pval = 0.}
+    \item{pval.zero}{Set the positive control value (pval) to 0; \eqn{pval = 0}{pval = 0}.}
     \item{pval.apid.owlls.med}{Calculate the positive control value (pval) as the plate-wise 
     median, by assay plate ID (apid), of the corrected values (cval) for single-concentration 
     negative control wells (wllt = o).}
@@ -128,7 +128,7 @@ available in the package vignette, "Pipeline_Overview."
     \item{pval.twlls.99pct}{Calculate positive control value (pval) as the 99th percentile of 
     all corrected value (cvals) of the test compound wells (wllt = t).}
     \item{pval.neg.100}{Calculate positive control value (pval) as -100 for endpoints in the 
-    down direction; pval = -100.}
+    down direction; \eqn{pval = -100}{pval = -100}.}
   }
 } 
 
@@ -137,34 +137,37 @@ available in the package vignette, "Pipeline_Overview."
     \item{resp.pc}{Calculate the normalized response (resp) as a percent of control, i.e. the 
     ratio of the difference between the corrected (cval) and baseline (bval) values divided the 
     difference between the positive control (pval) and baseline (bval) values multiplied by 100; 
-    resp = (cval-bval)/(pval-bval)*100.}
+    \eqn{resp = (cval-bval)/(pval-bval)*100}{resp = (cval-bval)/(pval-bval)*100}.}
     \item{resp.pc.pval.cor}{Calculate the normalized response (resp) as a percent of control, 
     i.e. the ratio of the difference between the corrected (cval) and baseline (bval) values 
-    divided the positive control (pval) value multiplied by 100; resp = (cval-bval)/pval*100.}
+    divided the positive control (pval) value multiplied by 100; 
+    \eqn{resp = (cval-bval)/pval*100}{resp = (cval-bval)/pval*100}.}
     \item{resp.fc}{Calculate the normalized response (resp) as the fold change, i.e. the ratio 
-    of the corrected (cval) and baseline (bval) values; resp = cval/bal.}
+    of the corrected (cval) and baseline (bval) values; \eqn{resp = cval/bal}{resp = cval/bal}.}
     \item{resp.logfc}{Calculate the normalized response (resp) as the fold change of logged,
      i.e. the difference between corrected (cval) and baseline (bval) log-scale values.}
     \item{resp.log2}{Transform the response values to log-scale (base 2).}
-    \item{resp.mult25}{Multiply the normalized response value (resp) by 25; 25*resp.}
+    \item{resp.mult25}{Multiply the normalized response value (resp) by 25; 
+     \eqn{25*resp}{25*resp}.}
     \item{resp.scale.mad.log2fc}{Scale the normalized response value (resp) by the ratio of 
     log2(1.2) and 3 multiplied by the baseline median absolute deviation (bmad) of the unscaled 
-    normalized response values (resp); log2(1.2) / 3(bmad)*resp.}
+    normalized response values (resp); \eqn{\log_{2}{1.2}/3*bmad*resp}{log2(1.2)/3*bmad*resp}.}
     \item{resp.scale.quant.log2fc}{Scale the normalized response value (resp). First, determine 
     the maximum difference (md) by finding the maximum between the absolute difference of the 
     1st percentile minus the 50th percentile and the absolute difference of the 99th percentile 
     minus the 50th percentile. Then multiply resp by log2(1.2) divided by 20 percent of md; 
-    log2(1.2) / 0.2(md)*resp.}
-    \item{resp.multneg1}{Multiply the normalized response value (resp) by -1; -1*resp.}
+    \eqn{\log_{2}{1.2}/0.2*md*resp}{log2(1.2)/0.2*md*resp}.}
+    \item{resp.multneg1}{Multiply the normalized response value (resp) by -1; 
+     \eqn{-1*resp}{-1*resp}.}
     \item{resp.shiftneg.3bmad}{Shift all the normalized response values (resp) less than -3 
-    multiplied by the baseline median absolute deviation (bmad) to 0; if resp < -3*bmad, 
-    resp = 0.}
+    multiplied by the baseline median absolute deviation (bmad) to 0; if 
+     \eqn{resp < -3*bmad, resp = 0}{resp < -3*bmad, resp = 0}.}
     \item{resp.shiftneg.6bmad}{Shift all the normalized response values (resp) less than -6 
-    multiplied by the baseline median absolute deviation (bmad) to 0; if resp < -6*bmad, 
-    resp = 0.}
+    multiplied by the baseline median absolute deviation (bmad) to 0; if 
+     \eqn{resp < -6*bmad, resp = 0}{resp < -6*bmad, resp = 0}.}
     \item{resp.shiftneg.10bmad}{Shift all the normalized response values (resp) less than 10 
-    multiplied by the baseline median absolute deviation (bmad) to 0; if resp < -10*bmad, 
-    resp = 0.}
+    multiplied by the baseline median absolute deviation (bmad) to 0; if 
+     \eqn{resp < -10*bmad, resp = 0}{resp < -10*bmad, resp = 0}.}
     \item{resp.blineshift.3bmad.repi}{Shift the normalized response value (resp) with a baseline 
     correction, by replicate index (repi), with a window of 3 multiplied by the baseline median 
     absolute deviation (bmad).}
@@ -176,14 +179,17 @@ available in the package vignette, "Pipeline_Overview."
     \item{resp.blineshift.50.spid}{Shift the normalized response value (resp) with a baseline 
     correction, by sample ID (spid), with a window of 50.}
     \item{none}{Set the corrected response value (cval) as the normalized response value (resp); 
-    cval = resp. No additional mc3 methods needed for endpoint-specific normalization.}
+    \eqn{cval = resp}{cval = resp}. No additional mc3 methods needed for endpoint-specific 
+    normalization.}
     \item{resp.zerocenter.fc}{Calculate the normalized response (resp) as a zero center fold 
     change, i.e. 1 minus the ratio of corrected (cval) and baseline (bval) values; 
-    resp = 1 - (cval/bval). Typically used for increasing responses.}
+     \eqn{resp = 1 - (cval/bval)}{resp = 1 - (cval/bval)}. Typically used for increasing 
+     responses.}
     \item{resp.incr.zerocenter.fc}{Calculate the normalized response (resp) as a zero center 
     fold change, i.e. the ratio of the the corrected (cval) and baseline (bval) values minus 1; 
-    resp = cval/bval - 1. Typically used for increasing responses.}
-    \item{resp.mult100}{Multiply the normalized response value (resp) by 100; 100*resp.}
+     \eqn{resp = cval/bval - 1}{resp = cval/bval - 1}. Typically used for increasing responses.}
+    \item{resp.mult100}{Multiply the normalized response value (resp) by 100; 
+     \eqn{100*resp}{100*resp}.}
   }
 }
 }

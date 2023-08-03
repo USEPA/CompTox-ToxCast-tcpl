@@ -27,21 +27,19 @@
 #' 
 #' @section Available Methods:
 #' 
-#' The methods are broken down into five types based on the type of cutoff they assign. Different 
-#' methods are used to define cutoffs for "bmad" (baseline median absolute value), "fc" (fold 
-#' change), "log" (\eqn{\log_{2}}{log2} or \eqn{\log_{10}}{log10}), "pc" (percent of control), and 
-#'  "other" (uncategorized cutoffs).
+#' The methods are broken down into five categories based on the type of cutoff they assign. 
+#' Different methods are used to define cutoffs for "bmad" (baseline median absolute value), "fc" 
+#' (fold change), "log" (\eqn{\log_{2}}{log2} or \eqn{\log_{10}}{log10}), "pc" (percent of 
+#' control), and "other" (uncategorized cutoffs).
 #' 
-#' Although it does not say so specifically in each description, all methods are applied by aeid.
+#' All methods are applied by aeid.
 #'
-#' It is important to note that only highest calculated cuttoff based on assigned methods will be 
-#' selected for hitcalling. Therefore, only largest cutoff method per method type should be 
-#' assigned.
+#' Although there are method exceptions (notably within the “other” category), only highest 
+#' calculated cutoff value based on assigned methods will be selected for hitcalling. Therefore, 
+#' only the largest cutoff method per method type should be assigned.
 #' 
 #' More information about the level 5 multiple-concentration processing is available in the package 
-#' vignette, "Data_processing".
-#' 
-#' \verb{}
+#' vignette, "Data_processing."
 #'
 #' \subsection{BMAD Methods}{
 #'  \describe{
@@ -62,31 +60,29 @@
 #'  }
 #' }
 #'
-#' \verb{}
-#'
 #' \subsection{Fold Change Methods}{
 #'  \describe{
 #'   \item{fc0.2}{Add a cutoff value of 0.2. Typically for zero centered fold change data.}
 #'   \item{fc0.3}{Add a cutoff value of 0.3. Typically for zero centered fold change data.}
 #'  }
 #' }
-#' \verb{}
 #'
 #' \subsection{Log Methods}{
 #' Log Base 2
 #'  \describe{
 #'   \item{neglog2_0.88}{Add a cutoff value of \eqn{-\log_{2}{0.88}}{-log2(0.88)}.}
-#'   \item{log2_1.2}{Add a cutoff value of \eqn{\log_{2}{1.2}}{log2(1.2)}. Typically for fold change data.}
+#'   \item{log2_1.2}{Add a cutoff value of \eqn{\log_{2}{1.2}}{log2(1.2)}. Typically for fold 
+#'   change data.}
 #'   \item{log2_2}{Add a cutoff value \eqn{\log_{2}{2}}{log2(2)}. Typically for fold change data.}
 #'  }
 #'  Log Base 10
 #'  \describe{
-#'  \item{log10_1.2}{Add a cutoff value of \eqn{\log_{10}{1.2}}{log10(1.2)}. Typically for fold change data.}
-#'  \item{log10_2}{Add a cutoff value of \eqn{\log_{10}{2}}{log10(2)}. Typically for fold change data.}
+#'  \item{log10_1.2}{Add a cutoff value of \eqn{\log_{10}{1.2}}{log10(1.2)}. Typically for fold 
+#'  change data.}
+#'  \item{log10_2}{Add a cutoff value of \eqn{\log_{10}{2}}{log10(2)}. Typically for fold change 
+#'  data.}
 #'  }
 #' }
-#'
-#' \verb{}
 #'
 #' \subsection{Percent of Control Methods}{
 #'  \describe{
@@ -100,9 +96,8 @@
 #'   \item{pc95}{Add a cutoff value of 95. Typically for percent of control data.}
 #'  }
 #' }
-#' \verb{}
 #' 
-#' \subsection{Other Cutoff Methods}{
+#' \subsection{Other Methods}{
 #'  \describe{
 #'   \item{maxmed20pct}{Add a cutoff value of 20 percent of the maximum of all endpoint maximal 
 #'   average response values (max_med).}
@@ -111,7 +106,9 @@
 #'   effective concentration (loec) compared to baseline.}
 #'  }
 #' }
-
+#'
+#' @note
+#' This function is not exported and is not intended to be used by the user.
 
 mc5_mthds <- function(ae) {
 
