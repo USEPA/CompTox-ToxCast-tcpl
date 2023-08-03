@@ -4,7 +4,7 @@
 \alias{tcplSubsetChid}
 \title{Subset level 5 data to a single sample per chemical}
 \usage{
-tcplSubsetChid(dat, flag = TRUE, type = "mc")
+tcplSubsetChid(dat, flag = TRUE, type = "mc", export_ready = TRUE)
 }
 \arguments{
 \item{dat}{data.table, a data.table with level 5 data}
@@ -13,34 +13,36 @@ tcplSubsetChid(dat, flag = TRUE, type = "mc")
 details for more information}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
+
+\item{export_ready}{Boolean, default TRUE, should only export ready 1 values be included in calculation}
 }
 \value{
-A data.table with a single sample for every given chemical-assay 
+A data.table with a single sample for every given chemical-assay
 pair.
 }
 \description{
-\code{tcplSubsetChid} subsets level 5 data to a single tested sample per 
+\code{tcplSubsetChid} subsets level 5 data to a single tested sample per
 chemical. In other words, if a chemical is tested more than once (a chid
-has more than one spid) for a given assay endpoint, the function uses a 
+has more than one spid) for a given assay endpoint, the function uses a
 series of logic to select a single "representative" sample.
 }
 \details{
-\code{tcplSubsetChid} is intended to work with level 5 data that has 
+\code{tcplSubsetChid} is intended to work with level 5 data that has
 chemical and assay information mapped with \code{\link{tcplPrepOtpt}}.
 
-To select a single sample, first a "consensus hit-call" is made by majority 
-rule, with ties defaulting to active. After the chemical-wise hit call is 
-made, the samples corresponding to to chemical-wise hit call are logically 
-ordered using the fit category, the number of the flags, and the modl_ga, 
+To select a single sample, first a "consensus hit-call" is made by majority
+rule, with ties defaulting to active. After the chemical-wise hit call is
+made, the samples corresponding to to chemical-wise hit call are logically
+ordered using the fit category, the number of the flags, and the modl_ga,
 then the first sample for every chemical is selected.
 
-The \code{flag} param can be used to specify a subset of flags to be used in 
+The \code{flag} param can be used to specify a subset of flags to be used in
 the flag count. Leaving \code{flag} TRUE utilize all the available flags.
-Setting \code{flag} to \code{FALSE} will do the subsetting without 
+Setting \code{flag} to \code{FALSE} will do the subsetting without
 considering any flags.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
+## Store the current config settings, so they can be reloaded at the end
 ## of the examples
 conf_store <- tcplConfList()
 tcplConfExample()
@@ -51,12 +53,12 @@ d1 <- tcplPrepOtpt(d1)
 
 ## Subset to an example of a duplicated chid
 d2 <- d1[chid == 20182]
-d2[ , list(m4id, hitc, fitc, modl_ga)]
+d2[, list(m4id, hitc, fitc, modl_ga)]
 
-## Here the consensus hit-call is 1 (active), and the fit categories are 
+## Here the consensus hit-call is 1 (active), and the fit categories are
 ## all equal. Therefore, if the flags are ignored, the selected sample will
 ## be the sample with the lowest modl_ga.
-tcplSubsetChid(dat = d2, flag = FALSE)[ , list(m4id, modl_ga)]
+tcplSubsetChid(dat = d2, flag = FALSE)[, list(m4id, modl_ga)]
 
 ## Reset configuration
 options(conf_store)
