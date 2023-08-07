@@ -53,7 +53,8 @@ available in the package vignette, "Data_processing."
   responses decreasing to 0.}
   \item{zscore.npwlls}{Convert the corrected response value (cval) to an absolute Z-Score based 
   on the neutral and positive control wells (wllts = n and p), by assay plate ID (apid); 
-   \eqn{cval=|(cval-mean(cval)/sd(cval)|}{cval=|(cval-mean(cval)/sd(cval)|}, for wllt = n and p.}
+   \eqn{cval=|(cval-mean(cval~for~wllt~=~n~and~p)/sd(cval~for~wllt~=~n~and~p)|}{cval=
+   |(cval-mean(cval for wllt = n and p)/sd(cval for wllt = n and p)|}.}
   \item{sub1}{Center data around zero by subtracting the corrected response value (cval) from 1; 
    \eqn{1-cval}{1-cval}. Typically used if data was pre-normalized around 1 with responses 
    decreasing to 0.}
@@ -72,7 +73,7 @@ available in the package vignette, "Data_processing."
  \item{agg.percent.rep.spid.min1}{Use for binary data. Aggregate technical replicates as 
  percentage by taking the sum of hits relative to total replicates per per sample id (spid) and 
  concentration index (cndx), where there is more than one replicate; 
- \eqn{cval=(sum(rval)/.N)*100}{cval=(sum(rval)/.N)*100,} \eqn{where}{where} \eqn{.N>1}{.N>1}.}
+ \eqn{cval=(sum(rval)/.N)*100,~where~.N>1}{cval = (sum(rval)/.N)*100, where .N>1}.}
   }
 }
 }

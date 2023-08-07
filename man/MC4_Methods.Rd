@@ -46,7 +46,7 @@ available in the package vignette, "Data_processing."
     (wllt = n).}
     \item{onesd.aeid.lowconc.twells}{Calculate one standard deviation of the normalized response 
     for test compound wells (wllt = t) with a concentration index (cndx) of 1 or 2; 
-     \eqn{onesd=\sqrt{\sum{resp-mean(resp))^{2}}/(n-1)}}{onesd = sqrt(sum((resp - mean 
+     \eqn{onesd=\sqrt{\sum{(resp-mean(resp))^{2}}/(n-1)}}{onesd = sqrt(sum((resp - mean 
      resp)^2)/sample size - 1)}. Used to establish BMR and therefore required for tcplfit2 
      processing.}
     \item{bidirectional.false}{Limits bidirectional fitting and processes data in positive 

@@ -51,8 +51,8 @@ available in the package vignette, "Data_processing."
   \item{noise}{Flag series as noisy if the quality of fit as calculated by the root mean square 
   error (rmse) for the series is greater than the cutoff (coff); \eqn{rmse > coff}{rmse > coff}.}
   \item{border}{Flag series if borderline activity is suspected based on modeled top parameter 
-  (top) relative to cutoff (coff); \eqn{|top|<=1.2*coff}{|top|<= 1.2*coff} or 
-  \eqn{|top|>=0.8*coff}{|top|>=0.8*coff}.}
+  (top) relative to cutoff (coff); \eqn{|top|<=1.2*coff~or~|top|>=0.8*coff}{|top| <= 1.2(coff) or
+   |top| >= 0.8(coff)}.}
   \item{overfit.hit}{Method not yet updated for tcpl implementation. Flag hit-calls that would 
   get changed after doing the small N correction to the aic values.}
   \item{efficacy.50}{Flag low efficacy hits if series has an active hit call (hitc >= 0.9) and 
@@ -62,14 +62,14 @@ available in the package vignette, "Data_processing."
    \eqn{coff<5}{coff<5}, then flag when \eqn{top<\log_{2}{1.5}}{top<log2(1.5)} or 
    \eqn{maxmed<\log_{2}{1.5}}{max_med<log2(1.5)}.}
   \item{ac50.lowconc}{Flag series with an active hit call (hitc >= 0.9) if AC50 (concentration 
-  at 50 percent maximal response) is less than the lowest concentration tested;if 
+  at 50 percent maximal response) is less than the lowest concentration tested; if 
   \eqn{hitc>=0.9}{hitc>=0.9} and \eqn{ac50<10^{log_{c}{min}}}{ac50<10^logc_min}, then flag.}
   \item{viability.gnls}{Flag series with an active hit call (hitc >= 0.9) if denoted as cell 
-  viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl == "gnls" and 
-  cell_viability_assay == 1, then flag.}
+  viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl = "gnls" and 
+  cell_viability_assay = 1, then flag.}
   \item{no.med.gt.3bmad}{Flag series where no median response values are greater than baseline as 
   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
-  nmed_gtbl is the number of medians greater than 3*bmad.}
+  nmed_gtbl is the number of medians greater than 3 * bmad.}
 }
 }
 

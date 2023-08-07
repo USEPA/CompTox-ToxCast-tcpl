@@ -147,23 +147,23 @@
 #'      \eqn{25*resp}{25*resp}.}
 #'     \item{resp.scale.mad.log2fc}{Scale the normalized response value (resp) by the ratio of 
 #'     log2(1.2) and 3 multiplied by the baseline median absolute deviation (bmad) of the unscaled 
-#'     normalized response values (resp); \eqn{\log_{2}{1.2}/3*bmad*resp}{log2(1.2)/3*bmad*resp}.}
+#'     normalized response values (resp); \eqn{(\log_{2}{1.2})/3*bmad*resp}{log2(1.2)/3*bmad*resp}.}
 #'     \item{resp.scale.quant.log2fc}{Scale the normalized response value (resp). First, determine 
 #'     the maximum difference (md) by finding the maximum between the absolute difference of the 
 #'     1st percentile minus the 50th percentile and the absolute difference of the 99th percentile 
 #'     minus the 50th percentile. Then multiply resp by log2(1.2) divided by 20 percent of md; 
-#'     \eqn{\log_{2}{1.2}/0.2*md*resp}{log2(1.2)/0.2*md*resp}.}
+#'     \eqn{(\log_{2}{1.2})/0.2*md*resp}{log2(1.2)/0.2*md*resp}.}
 #'     \item{resp.multneg1}{Multiply the normalized response value (resp) by -1; 
 #'      \eqn{-1*resp}{-1*resp}.}
 #'     \item{resp.shiftneg.3bmad}{Shift all the normalized response values (resp) less than -3 
 #'     multiplied by the baseline median absolute deviation (bmad) to 0; if 
-#'      \eqn{resp < -3*bmad, resp = 0}{resp < -3*bmad, resp = 0}.}
+#'      \eqn{resp < -3*bmad,~resp = 0}{resp < -3*bmad, resp = 0}.}
 #'     \item{resp.shiftneg.6bmad}{Shift all the normalized response values (resp) less than -6 
 #'     multiplied by the baseline median absolute deviation (bmad) to 0; if 
-#'      \eqn{resp < -6*bmad, resp = 0}{resp < -6*bmad, resp = 0}.}
+#'      \eqn{resp < -6*bmad,~resp = 0}{resp < -6*bmad, resp = 0}.}
 #'     \item{resp.shiftneg.10bmad}{Shift all the normalized response values (resp) less than 10 
 #'     multiplied by the baseline median absolute deviation (bmad) to 0; if 
-#'      \eqn{resp < -10*bmad, resp = 0}{resp < -10*bmad, resp = 0}.}
+#'      \eqn{resp < -10*bmad,~resp = 0}{resp < -10*bmad, resp = 0}.}
 #'     \item{resp.blineshift.3bmad.repi}{Shift the normalized response value (resp) with a baseline 
 #'     correction, by replicate index (repi), with a window of 3 multiplied by the baseline median 
 #'     absolute deviation (bmad).}
@@ -179,16 +179,15 @@
 #'     normalization.}
 #'     \item{resp.zerocenter.fc}{Calculate the normalized response (resp) as a zero center fold 
 #'     change, i.e. 1 minus the ratio of corrected (cval) and baseline (bval) values; 
-#'      \eqn{resp = 1 - (cval/bval)}{resp = 1 - (cval/bval)}. Typically used for increasing 
-#'      responses.}
+#'      \eqn{resp=1-cval/bval}{resp = 1 - cval/bval}. Typically used for increasing responses.}
 #'     \item{resp.incr.zerocenter.fc}{Calculate the normalized response (resp) as a zero center 
 #'     fold change, i.e. the ratio of the the corrected (cval) and baseline (bval) values minus 1; 
-#'      \eqn{resp = cval/bval - 1}{resp = cval/bval - 1}. Typically used for increasing responses.}
+#'      \eqn{resp=cval/bval-1}{resp = cval/bval - 1}. Typically used for increasing responses.}
 #'     \item{resp.mult100}{Multiply the normalized response value (resp) by 100; 
 #'      \eqn{100*resp}{100*resp}.}
 #'   }
 #' }
-#' 
+#'
 #' @note
 #' This function is not exported and is not intended to be used by the user.
 
