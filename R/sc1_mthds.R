@@ -34,7 +34,7 @@
 #' are applied by acid.
 #' 
 #' More information about the level 3 single-concentration processing is 
-#' available in the package vignette, "Pipeline_Overview."
+#' available in the package vignette, "Data_processing."
 #' 
 #' \subsection{bval Methods}{
 #'   \describe{
@@ -81,18 +81,19 @@
 #'     \item{resp.pc}{Calculate the normalized response (resp) as a percent of control, i.e. the 
 #'     ratio of the difference between the raw (rval) and baseline (bval) values divided by the 
 #'     difference between positive control (pval) and baseline (bval) values multiplied by 100; 
-#'     resp = (rval-bval)/(pval-bval)*100.}
+#'     \eqn{resp=(rval-bval)/(pval-bval)*100}{resp=(rval-bval)/(pval-bval)*100}.}
 #'     \item{resp.fc}{Calculate the normalized response (resp) as fold change, i.e. the ratio of 
-#'     the raw (rval) and baseline (bval) values; resp = rval/bval.}
+#'     the raw (rval) and baseline (bval) values; \eqn{resp = rval/bval}{resp = rval/bval}.}
 #'     \item{resp.logfc}{Calculate the normalized response (resp) as the fold change of logged,
 #'      i.e. the difference between raw (rval) and baseline (bval) log-scale values.}
 #'     \item{resp.log2}{Transform the response values to log-scale (base 2).}
-#'     \item{resp.multneg1}{Multiply the normalized response value (resp) by -1; -1*resp.}
+#'     \item{resp.multneg1}{Multiply the normalized response value (resp) by -1; 
+#'     \eqn{-1*resp}{-1*resp}.}
 #'     \item{none}{Use raw value (rval) as is. This may be necessary for additional 
 #'     endpoint-specific adjustments, or where no additional sc1 methods are needed.}
 #'     \item{resp.incr.zerocenter.fc}{Calculate the normalized response (resp) as a zero center 
 #'     fold change, i.e. the ratio of the raw (rval) and baseline (bval) values minus 1; 
-#'     resp = rval/bval - 1. Typically used for increasing responses.}
+#'     \eqn{resp=rval/bval-1}{resp=rval/bval-1}. Typically used for increasing responses.}
 #'   }
 #' }
 #' 
