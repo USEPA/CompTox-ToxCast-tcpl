@@ -81,6 +81,10 @@ mc5 <- function(ae, wr = FALSE) {
     loec.mthd = TRUE
     ms <- ms[!mthd=='loec.coff']
   }
+  ## Extract methods that need to overwrite hitc and hit_val
+  ms_overwrite <- ms[grepl("ow_",mthd),]
+  ## Extract methods that don't overwrite
+  ms <- ms[!grepl("ow_",mthd),]
   
   
   if (nrow(ms) == 0) {
@@ -345,6 +349,15 @@ mc5 <- function(ae, wr = FALSE) {
                "coff", "actp", "model_type", modl_pars) # Added model_type here
   dat <- dat[ , .SD, .SDcols = outcols]
   }
+  
+  
+  # apply overwrite methods
+  if (nrow(ms_overwrite) > 0) {
+    exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
+    fenv <- environment()
+    invisible(rapply(exprs, eval, envir = fenv))
+  }
+  
   
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))

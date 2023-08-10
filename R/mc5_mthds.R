@@ -57,6 +57,14 @@
 #'   \item{bmad4}{Add a cutoff value of 4 multiplied the baseline median absolute deviation (bmad). 
 #'   By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
 #'   \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
+#'   \item{ow_bidirectional_loss}{Overwrite winning model hitcalls to -1 and
+#'   potency metrics to NA for models that were not fit in the negative
+#'   direction. Typically used for assays where only negative responses are
+#'   biologically relevant.}
+#'   \item{ow_bidirectional_gain}{Overwrite winning model hitcalls to -1 and
+#'   potency metrics to NA for models that were not fit in the positive
+#'   direction. Typically used for assays where only positive responses are
+#'   biologically relevant.}
 #' }
 
 
@@ -228,6 +236,36 @@ mc5_mthds <- function(ae) {
 	  
 	  e1 <- bquote(coff <- c(coff, 0.5))
 	  list(e1)
+	  
+	},
+	
+	ow_bidirectional_loss = function() {
+	  
+	  top <- c("tp", "top")
+	  potency <- c("ac5", "ac10", "ac20", "ac50", "ac1sd", "acc", "ac50_loss")
+	  # get all endpoint sample m4ids where the top param is greater than 0
+	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% top) & hit_val > 0, unique(m4id)])
+	  # set potency metrics to NA if found in m4id list
+	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param %in% potency] <- NA)
+	  # set hitcall param and hitc to -1 if found in m4id list
+	  e3 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- -1)
+	  e4 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- -1)
+	  list(e1, e2, e3, e4)
+	  
+	},
+	
+	ow_bidirectional_gain = function() {
+	  
+	  top <- c("tp", "top")
+	  potency <- c("ac5", "ac10", "ac20", "ac50", "ac1sd", "acc", "ac50_loss")
+	  # get all endpoint sample m4ids where the top param is greater than 0
+	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% top) & hit_val < 0, unique(m4id)])
+	  # set potency metrics to NA if found in m4id list
+	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param %in% potency] <- NA)
+	  # set hitcall param and hitc to -1 if found in m4id list
+	  e3 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- -1)
+	  e4 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- -1)
+	  list(e1, e2, e3, e4)
 	  
 	}
 	
