@@ -47,6 +47,11 @@
 #'      processing.}
 #'     \item{bidirectional.false}{Limits bidirectional fitting and processes data in positive 
 #'     analysis direction only. Use for gain-of-signal or inverted data.}
+#'     \item{bmad5.onesd16.static}{Replace baseline median absolute deviation
+#'     (bmad) with 5 and one standard deviation (osd) of the normalized response
+#'     for test compound wells (wllt = t) with a concentration index (cndx) of 1
+#'     or 2 with 16. Typically used for binary data where values would otherwise
+#'     be 0; non-zero values are required for tcplfit2 processing.}
 #'   }
 #' 
 #' @note
@@ -76,10 +81,19 @@ mc4_mthds <- function() {
       list(e1)
       
     },
+    
     bidirectional.false = function() {
       
       e1 <- bquote(dat[ ,bidirectional := FALSE])
       list(e1)
+      
+    },
+    
+    bmad5.onesd16.static = function() {
+      
+      e1 <- bquote(dat[ , bmad := 5])
+      e2 <- bquote(dat[ , osd := 16])
+      list(e1, e2)
       
     }
 
