@@ -57,14 +57,14 @@
 #'   \item{bmad4}{Add a cutoff value of 4 multiplied the baseline median absolute deviation (bmad). 
 #'   By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
 #'   \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
-#'   \item{ow_bidirectional_loss}{Overwrite winning model hitcalls to -1 and
-#'   potency metrics to NA for models that were not fit in the negative
-#'   direction. Typically used for assays where only negative responses are
-#'   biologically relevant.}
-#'   \item{ow_bidirectional_gain}{Overwrite winning model hitcalls to -1 and
-#'   potency metrics to NA for models that were not fit in the positive
-#'   direction. Typically used for assays where only positive responses are
-#'   biologically relevant.}
+#'   \item{ow_bidirectional_loss}{Overwrite winning model hitcall (hitc) to -1
+#'   and potency metrics (ac5, ac10, ac20, ac50, ac1sd, acc, ac50_loss) to NA
+#'   for models fit in the positive analysis direction. Typically used for
+#'   endpoints where only negative responses are biologically relevant.}
+#'   \item{ow_bidirectional_gain}{Overwrite winning model hitcall (hitc) to -1
+#'   and potency metrics (ac5, ac10, ac20, ac50, ac1sd, acc, ac50_loss) to NA
+#'   for models fit in the negative analysis direction. Typically used for
+#'   endpoints where only positive responses are biologically relevant.}
 #' }
 
 
