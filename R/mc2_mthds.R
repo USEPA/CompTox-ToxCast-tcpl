@@ -59,6 +59,10 @@
 #' 
 #' \subsection{Aggregation Methods}{
 #' \describe{
+#'  \item{agg.mean.rep.apid}{Aggregate technical test replicates (wllt=t) by taking the plate-wise mean per sample id (spid), assay plate (apid), and concentration index (cndx).}
+#'  \item{agg.median.rep.apid}{Aggregate technical test replicates (wllt=t) by taking the plate-wise median per sample id (spid), assay plate (apid), and concentration index (cndx).}
+#'  \item{agg.percent.rep.spid}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of hits relative to total replicates per sample id (spid) and concentration index (cndx); cval = (sum(rval)/.N)*100.}
+#'  \item{agg.percent.rep.spid.min1}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of hits relative to total replicates per per sample id (spid) and concentration index (cndx), where there is more than one replicate; cval = (sum(rval)/.N)*100, where .N>1.}
 #'  \item{agg.mean.rep.apid}{Aggregate technical replicates by taking the plate-wise mean per 
 #'  sample id (spid), assay plate (apid), and concentration index (cndx).}
 #'  \item{agg.median.rep.apid}{Aggregate technical replicates by taking the plate-wise median per 
@@ -174,7 +178,7 @@ mc2_mthds <- function() {
     
     agg.mean.rep.apid = function() {
       
-      e1 <- bquote(dat[ , cval := mean(cval),
+      e1 <- bquote(dat[wllt=="t", cval := mean(cval),
                         by = list(acid, spid, apid, cndx)])
       list(e1)
       
@@ -182,7 +186,7 @@ mc2_mthds <- function() {
     
     agg.median.rep.apid = function() {
       
-      e1 <- bquote(dat[ , cval := median(cval),
+      e1 <- bquote(dat[wllt=="t", cval := median(cval),
                         by = list(acid, spid, apid, cndx)])
       list(e1)
 
