@@ -313,12 +313,10 @@ mc5_mthds <- function(ae) {
 	
 	ow_bidirectional_loss = function() {
 	  
-	  top <- c("tp", "top")
-	  potency <- c("ac5", "ac10", "ac20", "ac50", "ac1sd", "acc", "ac50_loss")
 	  # get all endpoint sample m4ids where the top param is greater than 0
-	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% top) & hit_val > 0, unique(m4id)])
+	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val > coff, unique(m4id)])
 	  # set potency metrics to NA if found in m4id list
-	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param %in% potency] <- NA)
+	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param %in% c("ac5", "ac10", "ac20", "ac50", "ac1sd", "acc", "ac50_loss")] <- NA)
 	  # set hitcall param and hitc to -1 if found in m4id list
 	  e3 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- -1)
 	  e4 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- -1)
@@ -328,12 +326,10 @@ mc5_mthds <- function(ae) {
 	
 	ow_bidirectional_gain = function() {
 	  
-	  top <- c("tp", "top")
-	  potency <- c("ac5", "ac10", "ac20", "ac50", "ac1sd", "acc", "ac50_loss")
 	  # get all endpoint sample m4ids where the top param is greater than 0
-	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% top) & hit_val < 0, unique(m4id)])
+	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val < coff * -1, unique(m4id)])
 	  # set potency metrics to NA if found in m4id list
-	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param %in% potency] <- NA)
+	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param %in% c("ac5", "ac10", "ac20", "ac50", "ac1sd", "acc", "ac50_loss")] <- NA)
 	  # set hitcall param and hitc to -1 if found in m4id list
 	  e3 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- -1)
 	  e4 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- -1)
