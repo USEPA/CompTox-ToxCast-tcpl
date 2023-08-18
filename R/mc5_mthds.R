@@ -314,19 +314,19 @@ mc5_mthds <- function(ae) {
 	  # get all endpoint sample m4ids where the top param is greater than 0
 	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val > 0, unique(m4id)])
 	  # set hitcall param and hitc to -1 if found in m4id list
-	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val * -1)
-	  e3 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- dat$hitc * -1)
+	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] * -1)
+	  e3 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- dat$hitc[dat$m4id %in% top.gt0.m4ids] * -1)
 	  list(e1, e2, e3)
 	  
 	},
 	
 	ow_bidirectional_gain = function() {
 	  
-	  # get all endpoint sample m4ids where the top param is greater than 0
-	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val < 0, unique(m4id)])
+	  # get all endpoint sample m4ids where the top param is less than 0
+	  e1 <- bquote(top.lt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val < 0, unique(m4id)])
 	  # set hitcall param and hitc to -1 if found in m4id list
-	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val * -1)
-	  e3 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- dat$hitc * -1)
+	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.lt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val[dat$m4id %in% top.lt0.m4ids & dat$hit_param == "hitcall"] * -1)
+	  e3 <- bquote(dat$hitc[dat$m4id %in% top.lt0.m4ids] <- dat$hitc[dat$m4id %in% top.lt0.m4ids] * -1)
 	  list(e1, e2, e3)
 	  
 	}
