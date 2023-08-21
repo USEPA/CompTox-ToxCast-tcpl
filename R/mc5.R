@@ -103,12 +103,6 @@ mc5 <- function(ae, wr = FALSE) {
   # currently can only use one coff
   if (check_tcpl_db_schema()) {
     cutoff <- max(dat$coff)
-    #can remove this once loading of data is working correctly
-    dat <- tcplQuery(paste0("SELECT  
-    `mc4`.`m4id`,    `mc4`.`aeid`,    `mc4`.`spid`,    `mc4`.`bmad`,    `mc4`.`resp_max`,    `mc4`.`resp_min`,    `mc4`.`max_mean`,    `mc4`.`max_mean_conc`,
-    `mc4`.`max_med`,    `mc4`.`max_med_conc`,    `mc4`.`logc_max`,    `mc4`.`logc_min`,    `mc4`.`nconc`,    `mc4`.`npts`,    `mc4`.`nrep`,    `mc4`.`nmed_gtbl`,
-    `mc4`.`tmpi`,	  `mc4_param`.`model`,    `mc4_param`.`model_param`,    `mc4_param`.`model_val`
-    FROM mc4 inner join mc4_param on mc4.m4id = mc4_param.m4id where mc4.aeid = ",ae,";"))
     # if we're using v3 schema we want to tcplfit2
     dat <- tcplHit2(dat, coff = cutoff)
   } else {
