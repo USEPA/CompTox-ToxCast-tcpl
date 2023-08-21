@@ -64,6 +64,7 @@
 #'  \describe{
 #'   \item{fc0.2}{Add a cutoff value of 0.2. Typically for zero centered fold change data.}
 #'   \item{fc0.3}{Add a cutoff value of 0.3. Typically for zero centered fold change data.}
+#'   \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
 #'  }
 #' }
 #'
