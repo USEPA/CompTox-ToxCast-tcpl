@@ -27,31 +27,31 @@
 #' @section Available Methods:
 #' 
 #' More information about the level 2 multiple-concentration processing is 
-#' available in the package vignette, "Pipeline_Overview."
+#' available in the package vignette, "Data_processing."
 #' 
 #' \subsection{Correction Methods}{
 #' \describe{
 #'   \item{log2}{Transform the corrected response value (cval) to log-scale (base 2).}
 #'   \item{log10}{Transform the corrected response value (cval) to log-scale (base 10).}
 #'   \item{rmneg}{Exclude wells with negative corrected response values (cval) and downgrading 
-#'   their well quality (wllq); if cval < 0, wllq = 0.}
+#'   their well quality (wllq); if \eqn{cval<0, wllq=0}{cval<0, wllq=0}.}
 #'   \item{rmzero}{Exclude wells with corrected response values (cval) equal to zero and 
-#'   downgrading their well quality (wllq); if cval = 0, wllq = 0.}
-#'   \item{mult25}{Multiply corrected response value (cval) by 25; 25*cval.}
-#'   \item{mult100}{Multiply corrected response value (cval) by 100; 100*cval.}
+#'   downgrading their well quality (wllq); if  \eqn{cval=0, wllq=0}{cval=0, wllq=0}.}
+#'   \item{mult25}{Multiply corrected response value (cval) by 25; \eqn{25*cval}{25*cval}.}
+#'   \item{mult100}{Multiply corrected response value (cval) by 100; \eqn{100*cval}{100*cval}.}
 #'   \item{negshift}{Shift corrected response values (cval) by subtracting the minimum cval and 
-#'   adding 1, such that the new minimum is 1; cval - min + 1.}
-#'   \item{mult2.5}{Multiply corrected response value (cval) by 2.5; 2.5*cval.}
-#'   \item{mult3}{Multiply corrected response value (cval) by 3; 3*cval.}
-#'   \item{mult6}{Multiply corrected response value (cval) by 6; 6*cval.}
+#'   adding 1, such that the new minimum is 1; \eqn{cval-min+1}{cval-min+1}.}
+#'   \item{mult2.5}{Multiply corrected response value (cval) by 2.5; \eqn{2.5*cval}{2.5*cval}.}
+#'   \item{mult3}{Multiply corrected response value (cval) by 3; \eqn{3*cval}{3*cval}.}
+#'   \item{mult6}{Multiply corrected response value (cval) by 6; \eqn{6*cval}{6*cval}.}
 #'   \item{sub100}{Center data around zero by subtracting the corrected response value (cval) from 
-#'   100; 100 - cval. Typically used if data was pre-normalized around 100 with responses 
+#'   100; \eqn{100-cval}{100-cval}. Typically used if data was pre-normalized around 100 with responses 
 #'   decreasing to 0.}
 #'   \item{zscore.npwlls}{Convert the corrected response value (cval) to an absolute Z-Score based 
-#'   on the neutral and positive control wells (wllts = n and p), by assay plate ID (apid); 
-#'   cval = |(cval - (mean cval for wllt = n and p)) / (sd cval for wllt = n and p)|.}
+#'   on the neutral and positive control wells (wllts = n and p), by assay plate ID (apid); eqn{cval=|(cval-mean(cval~for~wllt~=~n~and~p)/sd(cval~for~wllt~=~n~and~p)|}{cval=
+#'    |(cval-mean(cval for wllt = n and p)/sd(cval for wllt = n and p)|}.}
 #'   \item{sub1}{Center data around zero by subtracting the corrected response value (cval) from 1; 
-#'   1 - cval. Typically used if data was pre-normalized around 1 with responses decreasing to 0.}
+#'    \eqn{1-cval}{1-cval}. Typically used if data was pre-normalized around 1 with responses decreasing to 0.}
 #'   }
 #' }
 #' 
@@ -59,8 +59,8 @@
 #' \describe{
 #'  \item{agg.mean.rep.apid}{Aggregate technical test replicates (wllt=t) by taking the plate-wise mean per sample id (spid), assay plate (apid), and concentration index (cndx).}
 #'  \item{agg.median.rep.apid}{Aggregate technical test replicates (wllt=t) by taking the plate-wise median per sample id (spid), assay plate (apid), and concentration index (cndx).}
-#'  \item{agg.percent.rep.spid}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of rval (raw values) relative to total replicates per sample id (spid) and concentration index (cndx); cval = (sum(rval)/.N)*100.}
-#'  \item{agg.percent.rep.spid.min1}{Use for binary data with variable number of replicates. Aggregate technical replicates as percentage by taking the sum of rval (raw values) relative to total replicates per per sample id (spid) and concentration index (cndx), where there is more than one replicate; cval = (sum(rval)/.N)*100, where .N>1. Rvals are collapsed to one value per cndx.}
+#'  \item{agg.percent.rep.spid}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of rval (raw values) relative to total replicates per sample id (spid) and concentration index (cndx); \eqn{cval = (sum(rval)/.N)*100}{cval = (sum(rval)/.N)*100}.}
+#'  \item{agg.percent.rep.spid.min1}{Use for binary data with variable number of replicates. Aggregate technical replicates as percentage by taking the sum of rval (raw values) relative to total replicates per per sample id (spid) and concentration index (cndx), where there is more than one replicate; \eqn{cval=(sum(rval)/.N)*100,~where~.N>1}{cval = (sum(rval)/.N)*100, where .N>1}.} Rvals are collapsed to one value per cndx.}
 #'   }
 #' }
 #' 
