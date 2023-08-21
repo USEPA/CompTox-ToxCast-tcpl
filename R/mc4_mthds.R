@@ -16,7 +16,7 @@
 #' 
 #' @details
 #' The functions contained in the list returned by \code{mc4_mthds} take 
-#' 'aeids' (a numeric vector of aeid values) and returns a list of expressions 
+#' \code{aeids} (a numeric vector of aeid values) and returns a list of expressions 
 #' to be executed in the \code{mc4} (not exported) function environment. The 
 #' functions are described here for reference purposes, The 
 #' \code{mc4_mthds} function is not exported, nor is it intended for use.
@@ -31,7 +31,7 @@
 #' are applied by aeid.
 #'
 #' More information about the level 4 multiple-concentration processing is 
-#' available in the package vignette, "Pipeline_Overview."
+#' available in the package vignette, "Data_processing."
 #' 
 #'   \describe{
 #'     \item{bmad.aeid.lowconc.twells}{Calculate the baseline median absolute value (bmad) as the 
@@ -42,10 +42,16 @@
 #'     (wllt = n).}
 #'     \item{onesd.aeid.lowconc.twells}{Calculate one standard deviation of the normalized response 
 #'     for test compound wells (wllt = t) with a concentration index (cndx) of 1 or 2; 
-#'     onesd = sqrt(sum((resp - mean resp)^2)/sample size - 1). Used to establish BMR and therefore 
-#'     required for tcplfit2 processing.}
+#'      \eqn{onesd=\sqrt{\sum{(resp-mean(resp))^{2}}/(n-1)}}{onesd = sqrt(sum((resp - mean 
+#'      resp)^2)/sample size - 1)}. Used to establish BMR and therefore required for tcplfit2 
+#'      processing.}
 #'     \item{bidirectional.false}{Limits bidirectional fitting and processes data in positive 
 #'     analysis direction only. Use for gain-of-signal or inverted data.}
+#'     \item{bmad5.onesd16.static}{Replace baseline median absolute deviation
+#'     (bmad) with 5 and one standard deviation (osd) of the normalized response
+#'     for test compound wells (wllt = t) with a concentration index (cndx) of 1
+#'     or 2 with 16. Typically used for binary data where values would otherwise
+#'     be 0; non-zero values are required for tcplfit2 processing.}
 #'   }
 #' 
 #' @note
@@ -75,10 +81,19 @@ mc4_mthds <- function() {
       list(e1)
       
     },
+    
     bidirectional.false = function() {
       
       e1 <- bquote(dat[ ,bidirectional := FALSE])
       list(e1)
+      
+    },
+    
+    bmad5.onesd16.static = function() {
+      
+      e1 <- bquote(dat[ , bmad := 5])
+      e2 <- bquote(dat[ , osd := 16])
+      list(e1, e2)
       
     }
 

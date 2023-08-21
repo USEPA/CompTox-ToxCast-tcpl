@@ -12,28 +12,30 @@
 #' @return A list functions
 #' 
 #' @seealso \code{\link{mc6}}, \code{\link{Method functions}} to query what
-#' methods get applied to each aeid
+#' methods get applied to each aeid.
 #' 
 #' @section Available Methods:
 #' 
 #' More information about the level 6 multiple-concentration processing is 
-#' available in the package vignette, "Pipeline_Overview."
+#' available in the package vignette, "Data_processing."
 #' 
 #' \describe{
 #'   \item{modl.directionality.fail}{Flag series if model directionality is questionable, i.e. if 
 #'   the winning model direction was opposite, more responses (resp) would have exceeded the cutoff 
 #'   (coff). If loss was winning directionality (top < 0), flag if 
-#'   count(resp < -1(coff)) < 2(count(resp > coff)). If gain was winning directionality (top > 0), 
-#'   flag if count(resp > coff) < 2(count(resp < -1*coff)).}
+#'    \eqn{count(resp<-1*coff)<2*count(resp>coff)}{count(resp < -1(coff)) < 2(count(resp > coff))}. 
+#'   If gain was winning directionality (top > 0), flag if 
+#'    \eqn{count(resp>coff)<2*count(resp<-1*coff)}.}
 #'   \item{low.nrep}{Flag series if the average number of replicates per concentration is less than 
-#'   2; nrep < 2.}
-#'   \item{low.nconc}{Flag series if 4 concentrations or less were tested; nconc <= 4.}
+#'   2; \eqn{nrep < 2}{nrep < 2}.}
+#'   \item{low.nconc}{Flag series if 4 concentrations or less were tested; \eqn{nconc<=4}{nconc<=4}.
+#'   }
 #'   \item{bmd.high}{Flag series if modeled benchmark dose (BMD) is greater than AC50 
 #'   (concentration at 50 percent maximal response). This is indicates high variability in baseline 
 #'   response in excess of more than half of the maximal response.}
 #'   \item{singlept.hit.high}{Flag single-point hit that's only at the highest conc tested, where 
 #'   series is an active hit call (hitc >= 0.9) with the median response observed above baseline 
-#'   occurring only at the highest tested concentration tested. }
+#'   occurring only at the highest tested concentration tested.}
 #'   \item{singlept.hit.mid}{Flag single-point hit that's not at the highest conc tested, where 
 #'   series is an active hit call (hitc >= 0.9) with the median response observed above baseline 
 #'   occurring only at one concentration and not the highest concentration tested.}
@@ -43,25 +45,31 @@
 #'   less than the minimum tested concentration, and the loss AC50 is less than the mean tested 
 #'   concentration.}
 #'   \item{noise}{Flag series as noisy if the quality of fit as calculated by the root mean square 
-#'   error (rmse) for the series is greater than the cutoff (coff); rmse > coff.}
+#'   error (rmse) for the series is greater than the cutoff (coff); \eqn{rmse > coff}{rmse > coff}.}
 #'   \item{border}{Flag series if borderline activity is suspected based on modeled top parameter 
-#'   (top) relative to cutoff (coff); |top| <= 1.2(coff) or |top| >= 0.8(coff).}
+#'   (top) relative to cutoff (coff); \eqn{|top|<=1.2*coff~or~|top|>=0.8*coff}{|top| <= 1.2(coff) or
+#'    |top| >= 0.8(coff)}.}
 #'   \item{overfit.hit}{Method not yet updated for tcpl implementation. Flag hit-calls that would 
 #'   get changed after doing the small N correction to the aic values.}
 #'   \item{efficacy.50}{Flag low efficacy hits if series has an active hit call (hitc >= 0.9) and 
 #'   efficacy values (e.g. top and maximum median response) less than 50 percent; intended for 
-#'   biochemical assays. If hitc >= 0.9 and coff >= 5, then flag when top < 50 or max_med < 50. 
-#'   If hitc >= 0.9 and coff < 5, then flag when top < log2(1.5) or max_med < log2(1.5).}
+#'   biochemical assays. If \eqn{hitc>=0.9}{hitc>=0.9} and \eqn{coff>=5}{coff>=5}, then flag when 
+#'    \eqn{top<50}{top<50} or \eqn{maxmed < 50}{ma_med < 50}. If \eqn{hitc>=0.9}{hitc>=0.9} and 
+#'    \eqn{coff<5}{coff<5}, then flag when \eqn{top<\log_{2}{1.5}}{top<log2(1.5)} or 
+#'    \eqn{maxmed<\log_{2}{1.5}}{max_med<log2(1.5)}.}
 #'   \item{ac50.lowconc}{Flag series with an active hit call (hitc >= 0.9) if AC50 (concentration 
-#'   at 50 percent maximal response) is less than the lowest concentration tested;if hitc >= 0.9 
-#'   and ac50 < 10^logc_min, then flag.}
+#'   at 50 percent maximal response) is less than the lowest concentration tested; if 
+#'   \eqn{hitc>=0.9}{hitc>=0.9} and \eqn{ac50<10^{log_{c}{min}}}{ac50<10^logc_min}, then flag.}
 #'   \item{viability.gnls}{Flag series with an active hit call (hitc >= 0.9) if denoted as cell 
-#'   viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl=="gnls" and 
-#'   cell_viability_assay == 1, then flag.}
+#'   viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl = "gnls" and 
+#'   cell_viability_assay = 1, then flag.}
 #'   \item{no.med.gt.3bmad}{Flag series where no median response values are greater than baseline as 
 #'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
-#'   nmed_gtbl is the number of medians greater than 3*bmad.}
+#'   nmed_gtbl is the number of medians greater than 3 * bmad.}
 #' }
+#' 
+#' @note
+#' This function is not exported and is not intended to be used by the user.
 
 mc6_mthds <- function() {
   
