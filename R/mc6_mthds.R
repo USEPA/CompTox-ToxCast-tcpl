@@ -339,7 +339,10 @@ mc6_mthds <- function() {
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := (top > 0 & nmed_gtbl_pos == 0) | (top < 0 & nmed_gtbl_neg == 0)])
+      e2 <- bquote(ft[ , test := (hitc > 0 & top > 0 & nmed_gtbl_pos == 0) | 
+                                 (hitc < 0 & top > 0 & nmed_gtbl_neg == 0) | 
+                                 (hitc > 0 & top < 0 & nmed_gtbl_neg == 0) | 
+                                 (hitc < 0 & top < 0 & nmed_gtbl_pos == 0)])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
