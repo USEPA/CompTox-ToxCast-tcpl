@@ -265,7 +265,7 @@ Later sections in this vignette provide examples for level specific methods assi
 
 ## Data Normalization
 
-Data normalization occurs in both single- and multiple-concentration processing paradigms - levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.**
+Data normalization occurs in both single- and multiple-concentration processing paradigms - levels 1 and 3, respectively. While the two paradigms use different methods, the normalization approach is the same for both single- and multiple-concentration processing. Data normalization does not have to occur within the package, and normalized data can be loaded into the database at level 0. **However, data must be zero-centered.** All data must be zero-centered after the normalization step of the pipeline.  Thus, the data must either be zero-centered before processing occurs (in preprocessing) or the user must pick a methodology from the associated level 1 and 3 methods to zero-center the data before model fitting occurs.
 
 The <font face="CMTT10"> tcpl </font> package supports fold-change and a percent of control approaches to normalization. All data must be zero-centered. Therefore, in general fold-change data is log-transformed.  Log-scale transformations for fold-change data is typically base 2 ($log_2$), but in some circumstances other bases may be more appropriate.
 
@@ -279,7 +279,7 @@ Normalizing to fold-change also requires three methods: <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 2. one to calculate the fold-change, and <br />
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 3. one to log-transform the fold-change values ("resp.fc"). <br /><br />
 
-The ($\mathit{cval}$) is the corrected response value for a test well defined in level 2. Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.
+The ($\mathit{cval}$) is the corrected response value for a test well defined in level 2. Methods defining a baseline value ($\mathit{bval}$) have the "bval" prefix, methods defining the control value ($\mathit{pval}$) have the "pval" prefix, and methods that calculate or modify the final response value have the "resp" prefix. For example, "resp.log2" does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response values are listed in equations 1 and 2, respectively.  Note that the fold-change calculation divides by the baseline value and thus must have some non-zero values associated with the baseline to successfully calculate fold-change.
 
 $$  resp.pc = \frac{cval - bval}{pval - bval}*100  $$
 
