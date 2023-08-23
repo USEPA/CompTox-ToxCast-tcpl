@@ -64,8 +64,14 @@
 #'   viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl = "gnls" and 
 #'   cell_viability_assay = 1, then flag.}
 #'   \item{no.med.gt.3bmad}{Flag series where no median response values are greater than baseline as 
-#'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
-#'   nmed_gtbl is the number of medians greater than 3 * bmad.}
+#'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl_pos and
+#'   nmed_gtbl_neg both = 0, where nmed_gtbl_pos/_neg is the number of medians greater than 3 * 
+#'   bmad/less than -3 * bmad.}
+#'   \item{no.med.single.dir.gt.3bmad}{Flag series where no median response values in the intended
+#'   fit direction are greater than baseline as defined by 3 times the baseline median absolute
+#'   deviation (bmad); Depending on intended direction, either nmed_gtbl_pos or nmed_gtbl_neg are
+#'   = 0, where nmed_gtbl_pos/_neg is the number of medians greater than 3 * bmad/less than -3 
+#'   * bmad.}
 #' }
 #' 
 #' @note
@@ -332,9 +338,9 @@ mc6_mthds <- function() {
       
     },
     
-    no.med.fit.dir.gt.3bmad = function(mthd) {
+    no.med.single.dir.gt.3bmad = function(mthd) {
       
-      flag <- "No median response values in the fitted direction are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      flag <- "No median response values in the intended fit direction are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
