@@ -149,7 +149,7 @@ mc6_mthds <- function() {
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , lstc := max_med_conc == logc_max])
+      e2 <- bquote(ft[ , lstc := max_med_diff_conc == logc_max])
       e3 <- bquote(ft[ , test := (nmed_gtbl_pos == 1 | nmed_gtbl_neg == 1) & hitc >= 0.9 & lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test", "lstc")
@@ -165,7 +165,7 @@ mc6_mthds <- function() {
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , lstc := max_med_conc == logc_max])
+      e2 <- bquote(ft[ , lstc := max_med_diff_conc == logc_max])
       e3 <- bquote(ft[ , test := (nmed_gtbl_pos == 1 | nmed_gtbl_neg == 1) & hitc >= 0.9 & !lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test", "lstc")
@@ -277,9 +277,9 @@ mc6_mthds <- function() {
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
       e2 <- bquote(ft[hitc >= 0.9 & coff >= 5,
-                      test := top < 50 | max_med < 50])
+                      test := abs(top) < 50 | abs(max_med_diff) < 50])
       e3 <- bquote(ft[hitc >= 0.9 & coff < 5,
-                      test := top < log2(1.5) | max_med < log2(1.5)])
+                      test := abs(top) < log2(1.5) | abs(max_med_diff) < log2(1.5)])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e5 <- bquote(ft[ , .(cr) := NULL])
@@ -319,7 +319,7 @@ mc6_mthds <- function() {
     
     no.med.gt.3bmad = function(mthd) {
       
-      flag <- "Flag series where no median response values are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      flag <- "No median response values are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
