@@ -508,7 +508,7 @@ Customization of output is possible by specifying parameters, including `output`
 
 - The `verbose` parameter results in a plot that includes a table containing potency and model performance metrics; `verbose = FALSE` is default and the only option in console outputs.  
 
-- The `multi` parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `verbose` parameter. The default number of plots per page is either 6 plot for page (`verbose = FALSE`) or 4 plots per page (`verbose = TRUE`).
+- The `multi` parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `verbose` parameter. The default number of plots per page is either 6 plots per page (`verbose = FALSE`) or 4 plots per page (`verbose = TRUE`).
 
 - The `by` parameter indicates how files should be divided, typically by $aeid$ or $spid$.
 
