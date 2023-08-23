@@ -330,6 +330,21 @@ mc6_mthds <- function() {
       e4 <- bquote(ft[ , .(cr) := NULL])
       list(e1, e2, e3, e4)
       
+    },
+    
+    no.med.fit.dir.gt.3bmad = function(mthd) {
+      
+      flag <- "No median response values in the fitted direction are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
+                "flag")
+      init <- bquote(list(.(mthd), .(flag), FALSE))
+      e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
+      e2 <- bquote(ft[ , test := (top > 0 & nmed_gtbl_pos == 0) | (top < 0 & nmed_gtbl_neg == 0)])
+      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
+      cr <- c("mc6_mthd_id", "flag", "test")
+      e4 <- bquote(ft[ , .(cr) := NULL])
+      list(e1, e2, e3, e4)
+      
     }
     
   )
