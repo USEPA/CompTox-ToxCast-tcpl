@@ -189,11 +189,13 @@ mc2_mthds <- function() {
     
     agg.percent.rep.spid.min1 = function() {
       
-      e1 <- bquote(dat[.N>1, cval := sum(cval)/.N * 100, 
-                       by = list(acid, spid, cndx)][repi>1, wllq := 0,  by = list(acid, spid, cndx)])
+      e1 <- bquote( dat[.N>1,cval := sum(cval)/.N * 100, 
+                       by = list(acid, spid, cndx)][,repi:=rowid(conc), 
+                            by= .(acid, spid, wllt, srcf, apid)][repi>1, wllq := 0,  
+                                   by = list(acid, spid, cndx)])
+      
     list(e1)
 }
-    
   )
 }
 
