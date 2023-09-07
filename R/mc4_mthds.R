@@ -95,6 +95,12 @@ mc4_mthds <- function() {
       e2 <- bquote(dat[ , osd := 16])
       list(e1, e2)
       
+    },
+    no.unbounded.models = function() {
+      
+      e1 <- bquote(dat[ ,fitmodels := list(c("cnst", "hill","gnls" ,"exp4", "exp5"))])
+      list(e1)
+      
     }
 
   )
