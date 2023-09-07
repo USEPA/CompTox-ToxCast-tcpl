@@ -56,11 +56,46 @@ mc1 <- function(ac, wr = FALSE) {
   ## Set conc to three significant figures
   dat[ , conc := signif(conc, 3)]
   
-  # set concentration index
-  dat[, cndx := frank(conc, ties.method = "dense"), by = .(acid, spid, wllt, srcf, apid)]
+  ## Define replicate id
+  # Order by the following columns
+  setkeyv(dat, c('acid', 'srcf', 'apid', 'coli', 'rowi', 'spid', 'conc')) 
+  # Define rpid column for test compound wells
+  nconc <- dat[wllt == "t" , 
+               list(n = lu(conc)), 
+               by = list(acid, apid, spid)][ , list(nconc = min(n)), by = acid]
+  dat[wllt == "t" & acid %in% nconc[nconc > 1, acid],
+      rpid := paste(acid, spid, wllt, srcf, apid, "rep1", conc, sep = "_")]
+  dat[wllt == "t" & acid %in% nconc[nconc == 1, acid],
+      rpid := paste(acid, spid, wllt, srcf, "rep1", conc, sep = "_")]
+  # Define rpid column for non-test compound wells
+  dat[wllt != "t", 
+      rpid := paste(acid, spid, wllt, srcf, apid, "rep1", conc, sep = "_")] 
+
+  # set repid based on rowid
+  dat[, dat_rpid := rowid(rpid)]
+  dat[, rpid := sub("_rep[0-9]+.*", "",rpid, useBytes = TRUE)]
+  dat[, rpid := paste0(rpid,"_rep",dat_rpid)]
   
-  # set replicate index
-  dat[, repi:=rowid(conc),by= .(acid, spid, wllt, srcf, apid)]
+  ## Define concentration index
+  indexfunc <- function(x) as.integer(rank(unique(x))[match(x, unique(x))])
+  dat[ , cndx := indexfunc(conc), by = list(rpid)]
+  
+  ## Define replicate index
+  # Create temporary table containing the unique replicate ids
+
+  trdt <- unique(dat[wllt %in% c("t", "c") , list(acid, spid, wllt, rpid)])
+  trdt_rpid <- trdt[ , rpid]
+  trdt[ , rpid := NULL]
+  trdt[ , repi := rowidv(trdt)]
+  trdt[ , rpid := trdt_rpid]
+  rm(trdt_rpid)
+  # Map replicate index back to dat
+  setkey(dat, rpid)
+  setkey(trdt, rpid)
+  dat[ , repi := trdt[dat, repi]]
+  
+  ## Remove rpid column
+  dat[, rpid := NULL]
   
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
