@@ -8,8 +8,7 @@ tcplFit2(
   dat,
   fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4",
     "exp5"),
-  bmed = NULL,
-  bidirectional = TRUE
+  bmed = NULL
 )
 }
 \arguments{
@@ -18,8 +17,6 @@ tcplFit2(
 \item{fitmodels}{list of the models that should be fit with the data}
 
 \item{bmed}{baseline value, typically should be 0}
-
-\item{bidirectional}{boolean, default is TRUE (bidirectional fitting)}
 }
 \value{
 Data.table with an additional column fitparams that includes all of the fitting parameters
