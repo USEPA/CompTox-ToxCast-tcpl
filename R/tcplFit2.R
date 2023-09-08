@@ -59,7 +59,7 @@ tcplFit2 <- function(dat,
 #' 
 #'
 #' @return Data.table with key value pairs of hitcalling parameters
-#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull ungroup
 #' @importFrom tidyr pivot_longer
 #' @importFrom tcplfit2 tcplhit2_core
 tcplHit2 <- function(mc4, coff) {
