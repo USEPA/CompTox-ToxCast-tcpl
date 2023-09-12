@@ -167,6 +167,8 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
   #filter out gnls curves
   zdat <- zdat[modl != "gnls",]
+  #filter out null chids
+  zdat <- zdat[!is.na(chid)]
   cat("9: Calculating intermediate summary statistics\n")
   # prior to version 4.0 modl_ga was used as ac50 variable
   # check schema and if using new schema use ac50 instead.
