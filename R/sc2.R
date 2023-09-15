@@ -62,7 +62,7 @@ sc2 <- function(ae, wr = FALSE) {
   dat[ , tmp := median(resp), by = list(spid, wllt, logc)]
   
   ## take absolute value for bidirectional fitting.
-  dat[ , c("tmpi", "max_med","max_tmp") := list(.GRP, max(abs(tmp)), tmp[which.max(abs(tmp))]), by = spid]
+  dat[ , c("tmpi", "max_med","max_tmp") := c(.GRP, max(abs(tmp)), tmp[which.max(abs(tmp))]), by = spid]
   
   ## Initialize coff vector
   coff <- 0
