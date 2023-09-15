@@ -61,6 +61,7 @@
 #' \subsection{Percent of Control Methods}{
 #'  \describe{
 #'   \item{pc0.88}{Add a cutoff value of 0.88. Typically for percent of control data.}
+#'   \item{pc16}{Add a cutoff value of 16. Typically for percent of control data.}
 #'   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
 #'   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
 #'   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
@@ -232,8 +233,14 @@ sc2_mthds <- function() {
       e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*1.5]))
       list(e1)
       
+     },
+    
+    pc16 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 16))
+      list(e1)
+      
     }
-
   )
 }
 
