@@ -214,6 +214,12 @@ test_that("coff,bmr should be negative if winning model has negative top", {
   expect_lt(dat$bmr,0)
 })
 
+test_that("missing values removed silently", {
+  skip("need to load example data with missing values")
+  expect_silent(tcplggplot(dat,verbose = verbose))
+})
+
+
 # test_that("description", {
 #   expect_*(code)
 # })
