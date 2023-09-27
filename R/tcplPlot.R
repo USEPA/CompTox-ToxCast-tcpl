@@ -59,7 +59,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
-    input <- tcplLoadData(lvl = lvl, fld = fld, val = val)
+    input <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
     if (nrow(input) == 0) stop("No data for fld/val provided")
     # default assign multi=TRUE for output="pdf" 
     if (output == "pdf" && is.null(multi)) {
@@ -82,21 +82,32 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       nrow <- ifelse(verbose,2,2)
     }
     if(is.null(ncol)){
-      ncol <- ifelse(verbose,2,3)
-    }
-    m4id <- input$m4id
-
-    # load dat
-    l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
-    agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
-
-
-    if (lvl >= 5L) {
-      l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
-      dat <- l4[l5, on = "m4id"]
+      ncol <- ifelse(!verbose | type == "sc",3,2)
     }
     
-    dat <- tcplPrepOtpt(dat)
+    if (type == "mc") {
+      m4id <- input$m4id
+      
+      # load dat
+      l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
+      agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
+      
+      if (lvl >= 5L) {
+        l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
+        dat <- l4[l5, on = "m4id"]
+      }
+      dat <- tcplPrepOtpt(dat)
+    } else {
+      s2id <- input$s2id
+      
+      # load dat
+      l2 <- tcplLoadData(lvl = 2, fld = "s2id", val = s2id, type = "sc", add.fld = T)
+      agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = s2id, type = "sc")
+      dat <- tcplPrepOtpt(l2)
+      
+    }
+    
+    
     
     # correct concentration unit label for x-axis
     dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
@@ -113,8 +124,14 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     }
     
     # unlog concs
-    conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
-    dat <- dat[conc_resp_table, on = "m4id"]
+    if (type == "mc") {
+      conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+      dat <- dat[conc_resp_table, on = "m4id"]
+    } else {
+      conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+      dat <- dat[conc_resp_table, on = "s2id"]
+    }
+    
     # dat$conc <- list(10^agg$logc)
     # dat$resp <- list(agg$resp)
     # added AND verbose=FALSE to nrow(input)=1 condition to avoid TableGrob error in tcplggplot
@@ -134,13 +151,17 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         split_dat <- split(dat,f = factor(dat %>% pull(all_of(by))))
       }
       for(d in split_dat){
-        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose)
+        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl)
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = ncol*7, height = nrow*5)
+          w <- ifelse(type == "mc", ncol*7, ncol*5)
+          h <- ifelse(type == "mc", nrow*5, nrow*6)
+          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = w, height = h)
         } else {
           names(plot_list) <- d$m4id
+          w <- ifelse(type == "mc", 7, 4)
+          h <- ifelse(type == "mc", 5, 6)
           lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
                                                      plot=arrangeGrob(grobs=plot_list[x]), width = 7, height = 5, dpi=dpi))
         }
@@ -562,6 +583,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' 
 #' @param dat data table with all required conc/resp data
 #' @param lvl integer level of data that should be plotted
+#' level 2 - for 'sc' plotting
 #' level 4 - all fit models
 #' level 5 - all fit models and winning model with hitcall
 #' level 6 - include all flags
@@ -579,7 +601,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   # variable binding
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
-  l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp))
+  l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med)
   l3_range <- l3_dat %>%
     pull(.data$conc) %>%
     range()
@@ -607,48 +629,87 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     ifelse(dat$modl == modeltype, winning_model_string, "Losing Models")
   }
   
-  gg <- ggplot(l3_dat, aes(conc, resp)) +
-    geom_function(aes(color = !!model_test("gnls"), linetype = !!model_test("gnls")), fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x)) +
-    geom_function(aes(color = !!model_test("exp2"), linetype = !!model_test("exp2")), fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a, dat$exp2_b), x = x)) +
-    geom_function(aes(color = !!model_test("exp3"), linetype = !!model_test("exp3")), fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a, dat$exp3_b, dat$exp3_p), x = x)) +
-    geom_function(aes(color = !!model_test("exp4"), linetype = !!model_test("exp4")), fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp, dat$exp4_ga), x = x)) +
-    geom_function(aes(color = !!model_test("exp5"), linetype = !!model_test("exp5")), fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp, dat$exp5_ga, dat$exp5_p), x = x)) +
-    geom_function(aes(color = !!model_test("poly1"), linetype = !!model_test("poly1")), fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) +
-    geom_function(aes(color = !!model_test("poly2"), linetype = !!model_test("poly2")), fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a, dat$poly2_b), x = x)) +
-    geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x)) +
-    geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x)) +
-    geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
-    geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
-    geom_point() +
-    scale_x_continuous(limits = l3_range, trans = "log10") +
-    scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
-    scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
-    xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
-    ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
-    geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
-    labs(
-      title = paste0(
-        stringr::str_trunc(paste0(
-          dat %>% pull(.data$dsstox_substance_id), " ",
-          dat %>% pull(.data$chnm)
-        ), 75), "\n",
-        stringr::str_trunc(paste0(
+
+  if (lvl == 2) {
+    #hline_data <- data.frame(y=c(dat$max_med, dat$coff), type = c(2,2))
+    gg <- ggplot(l3_dat, aes(x = conc)) +
+      geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
+      geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
+      geom_point(aes(y = resp)) +
+      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_linetype_manual("", 
+                            guide = guide_legend(override.aes = list(color = c("blue", "red"))), 
+                            values = c(2, 2)) +
+      xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
+      ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
+      geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
+      labs(
+        title = paste0(
+          stringr::str_trunc(paste0(
+            dat %>% pull(.data$dsstox_substance_id), " ",
+            dat %>% pull(.data$chnm)
+          ), 75), "\n",
+          stringr::str_trunc(paste0(
+            "AEID:", dat %>% pull(.data$aeid), "  ",
+            "AENM:", dat %>% pull(.data$aenm)), 70),"\n",
           "SPID:", dat %>% pull(.data$spid), "  ",
-          "AEID:", dat %>% pull(.data$aeid), "  ",
-          "AENM:", dat %>% pull(.data$aenm)), 70),"\n",
-        "M4ID:", dat %>% pull(.data$m4id), "  ",
-        ifelse(verbose, "", paste0(
-          "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
-        ))
+          "S2ID:", dat %>% pull(.data$s2id), "  ",
+          ifelse(verbose, "", paste0(
+            "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          ))
+        )
+      ) +
+      theme(
+        plot.title = element_text(size = 12),
+        legend.title = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.spacing.x = unit(0, "mm"),
+        legend.spacing.y = unit(0, "mm")
       )
-    ) +
-    theme(
-      plot.title = element_text(size = 12),
-      legend.title = element_blank(),
-      legend.margin = margin(0, 0, 0, 0),
-      legend.spacing.x = unit(0, "mm"),
-      legend.spacing.y = unit(0, "mm")
-    )
+  } else {
+    gg <- ggplot(l3_dat, aes(conc, resp)) +
+      geom_function(aes(color = !!model_test("gnls"), linetype = !!model_test("gnls")), fun = function(x) tcplfit2::gnls(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x)) +
+      geom_function(aes(color = !!model_test("exp2"), linetype = !!model_test("exp2")), fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a, dat$exp2_b), x = x)) +
+      geom_function(aes(color = !!model_test("exp3"), linetype = !!model_test("exp3")), fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a, dat$exp3_b, dat$exp3_p), x = x)) +
+      geom_function(aes(color = !!model_test("exp4"), linetype = !!model_test("exp4")), fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp, dat$exp4_ga), x = x)) +
+      geom_function(aes(color = !!model_test("exp5"), linetype = !!model_test("exp5")), fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp, dat$exp5_ga, dat$exp5_p), x = x)) +
+      geom_function(aes(color = !!model_test("poly1"), linetype = !!model_test("poly1")), fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) +
+      geom_function(aes(color = !!model_test("poly2"), linetype = !!model_test("poly2")), fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a, dat$poly2_b), x = x)) +
+      geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x)) +
+      geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x)) +
+      geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
+      geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
+      geom_point() +
+      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
+      scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
+      xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
+      ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
+      geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
+      labs(
+        title = paste0(
+          stringr::str_trunc(paste0(
+            dat %>% pull(.data$dsstox_substance_id), " ",
+            dat %>% pull(.data$chnm)
+          ), 75), "\n",
+          stringr::str_trunc(paste0(
+            "SPID:", dat %>% pull(.data$spid), "  ",
+            "AEID:", dat %>% pull(.data$aeid), "  ",
+            "AENM:", dat %>% pull(.data$aenm)), 70),"\n",
+          "M4ID:", dat %>% pull(.data$m4id), "  ",
+          ifelse(verbose, "", paste0(
+            "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          ))
+        )
+      ) +
+      theme(
+        plot.title = element_text(size = 12),
+        legend.title = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.spacing.x = unit(0, "mm"),
+        legend.spacing.y = unit(0, "mm")
+      )
+  }
   if (!is.null(dat$bmd) && !is.null(dat$bmr)){ gg = gg + 
     geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD")) + 
     geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD"))
@@ -664,7 +725,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   # general function to round/shorten values for plotting tables
   round_n <- function(x, n=3) {
     if (!is.na(x)) {
-      if (x >= 1000 | x<=0.0005) {
+      if (x >= 1000 | (x<=0.0005 & x != 0)) {
         # if x>=1000, convert value to scientific notation
         formatC(x, format = "e", digits = 1)
       } else { # else, round the value to 3 decimal places
@@ -675,24 +736,37 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
     }
   }
   round_n <- Vectorize(round_n)
-
+  
   combined_p <- data.table::rbindlist(p)
-  pivoted_p <- combined_p %>%
-    tidyr::extract(name, c("model", "param"), "([[:alnum:]]+)_([[:alnum:]]+)") %>%
-    pivot_wider(names_from = "param", values_from = "value")
-  pivoted_p <- pivoted_p %>% mutate_if(is.numeric, ~ round_n(., 3))
-  pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
-  # print(pivoted_p)
-  t <- tableGrob(pivoted_p, rows = NULL)
-  l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
-  l5_details <- l5_details %>% mutate_if(is.numeric, ~ round_n(., 3))
-  l5_t <- tableGrob(l5_details, rows = NULL)
+  pivoted_p <- combined_p
+  t <- NULL
+  if (lvl != 2) {
+    l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
+    l5_details <- l5_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    l5_t <- tableGrob(l5_details, rows = NULL)
+    pivoted_p <- combined_p %>%
+      tidyr::extract(name, c("model", "param"), "([[:alnum:]]+)_([[:alnum:]]+)") %>%
+      pivot_wider(names_from = "param", values_from = "value")
+    pivoted_p <- pivoted_p %>% mutate_if(is.numeric, ~ round_n(., 3))
+    pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
+    t <- tableGrob(pivoted_p, rows = NULL)
+    valigned <- gtable_combine(l5_t, t, along = 2)
+  } else {
+    l5_details <- tibble(Hitcall = dat$hitc)
+    l5_details <- l5_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    l5_t <- tableGrob(l5_details, rows = NULL)
+    valigned <- gtable_combine(l5_t, along = 2)
+  }
 
-
-  valigned <- gtable_combine(l5_t, t, along = 2)
-
-  ifelse(verbose,
-    return(arrangeGrob(gg, valigned, nrow = 1, widths = 2:1)),
-    return(gg)
-  )
+  if (lvl == 2) {
+    ifelse(verbose,
+           return(arrangeGrob(gg, valigned, ncol = 1, heights = c(4,1))),
+           return(gg)
+    )
+  } else {
+    ifelse(verbose,
+           return(arrangeGrob(gg, valigned, nrow = 1, widths = 2:1)),
+           return(gg)
+    )
+  }
 }
