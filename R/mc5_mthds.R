@@ -309,8 +309,6 @@ mc5_mthds <- function(ae) {
       	 list(e1)
 
 	},
-<<<<<<< HEAD
-=======
 	
 	ow_bidirectional_loss = function() {
 	  
@@ -332,8 +330,7 @@ mc5_mthds <- function(ae) {
 	  e3 <- bquote(dat$hitc[dat$m4id %in% top.lt0.m4ids] <- dat$hitc[dat$m4id %in% top.lt0.m4ids] * -1)
 	  list(e1, e2, e3)
 	  
-	}
->>>>>>> 2932884505a13b19dc5cceeea5f05d7ff963da6d
+	},
 	
 	ow_bidirectional_loss = function() {
 	  
