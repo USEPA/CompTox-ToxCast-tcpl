@@ -141,7 +141,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       ifelse(output[1] == "console",
       # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
-        return(tcplPlotlyPlot(dat)),
+        return(tcplPlotlyPlot(dat, lvl)),
         return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
                       plot=tcplggplot(dat,verbose = verbose), width = 7, height = 5, dpi=dpi))
       )
@@ -288,7 +288,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   
   
   #check if winning model = none 
-  if (!dat$modl == "none"){
+  if (!lvl == 2 && !dat$modl == "none"){
   
     #check if winning model has negative top.  If so coff should be negative
     if(!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top)){
@@ -452,8 +452,26 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     )
   )
   
+  if (lvl == 2) {
+    # # add max median annotation
+    fig <- fig %>% add_trace(
+      data = tibble(x = x_range, y = dat$max_med),
+      x = ~x,
+      y = ~y,
+      type = "scatter",
+      mode = "lines",
+      name = "max median",
+      line = list(dash = "dash", width = 1.5, color = NULL),
+      inherit = FALSE,
+      hoverinfo = "text",
+      text = ~ paste(
+        "</br>", paste0("Cut Off (", specify_decimal(dat$max_med,2), ")")
+      )
+    )
+  }
+  
   # currently only support for model types 1 and 0 but need to expand or make this generic
-  if (dat$fitc == 100) {
+  if (!lvl == 2 && dat$fitc == 100) {
     # apply axis and lines to figure
     fig <- fig %>% plotly::layout(xaxis = x, yaxis = y)
     
@@ -474,7 +492,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       )
     )
   } else {
-    if (!dat$modl == "cnst" && !dat$modl == "none") {
+    if (!lvl == 2 && !dat$modl == "cnst" && !dat$modl == "none") {
       dat_lines <- vline(ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric())
       fig <- fig %>% plotly::layout(xaxis = x, yaxis = y, shapes = dat_lines)
     } else {
@@ -483,7 +501,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     
     
     # add ac50 line for appropriate models (hitc=1)
-    if (!dat$modl == "cnst" && !dat$modl == "none") {
+    if (!lvl == 2 && !dat$modl == "cnst" && !dat$modl == "none") {
       fig <- fig %>% add_annotations(
         yref = "paper",
         xref = "x",
@@ -496,7 +514,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       )
     }
     
-    if (!dat$modl == "none"){
+    if (!lvl == 2 && !dat$modl == "none"){
       # add all non-winning models
       fig <- fig %>% add_trace(
         data = m %>% filter(.data$model != dat$modl),
