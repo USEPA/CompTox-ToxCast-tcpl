@@ -24,7 +24,7 @@
 #'  is included with the plot.
 #' @param nrow Integer, number of rows in multiplot. By default 2.
 #' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose.
-#' @param dpi Integer, image print resolution. By default 600. 
+#' @param dpi Integer, image print resolution. By default 600.
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -437,8 +437,9 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   }
   
   # # add cutoff annotation
+  coff <- ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1)
   fig <- fig %>% add_trace(
-    data = tibble(x = x_range, y = dat$coff),
+    data = tibble(x = x_range, y = coff),
     x = ~x,
     y = ~y,
     type = "scatter",
@@ -448,7 +449,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     inherit = FALSE,
     hoverinfo = "text",
     text = ~ paste(
-      "</br>", paste0("Cut Off (", specify_decimal(dat$coff,2), ")")
+      "</br>", paste0("Cut Off (", specify_decimal(coff,2), ")")
     )
   )
   
