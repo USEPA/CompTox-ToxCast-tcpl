@@ -465,7 +465,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       inherit = FALSE,
       hoverinfo = "text",
       text = ~ paste(
-        "</br>", paste0("Cut Off (", specify_decimal(dat$max_med,2), ")")
+        "</br>", paste0("Max Median (", specify_decimal(dat$max_med,2), ")")
       )
     )
   }
