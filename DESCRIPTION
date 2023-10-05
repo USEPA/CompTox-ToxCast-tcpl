@@ -42,8 +42,7 @@ Imports:
     tcplfit2,
     ggplot2,
     gridExtra,
-    stringr,
-    vdiffr
+    stringr
 Suggests:
     roxygen2,
     knitr,
@@ -55,7 +54,8 @@ Suggests:
     viridis,
     kableExtra,
     colorspace,
-    magrittr
+    magrittr,
+    vdiffr
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.2.3
