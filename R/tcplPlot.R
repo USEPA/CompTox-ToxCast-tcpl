@@ -55,7 +55,7 @@
 #' options(conf_store)
 tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600) {
   #variable binding
-  resp <- NULL
+  conc_unit <- bmd <- resp <- NULL
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
