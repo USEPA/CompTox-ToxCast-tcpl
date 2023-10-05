@@ -24,7 +24,9 @@
 #'  is included with the plot.
 #' @param nrow Integer, number of rows in multiplot. By default 2.
 #' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose.
-#' @param dpi Integer, image print resolution. By default 600. 
+#' @param dpi Integer, image print resolution. By default 600.
+#' @param flags Boolean, by default FALSE. If TRUE, level 6 flags are displayed
+#' below annotations on plot
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -53,7 +55,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600) {
+tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE) {
   #variable binding
   resp <- NULL
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
@@ -95,6 +97,19 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       if (lvl >= 5L) {
         l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
         dat <- l4[l5, on = "m4id"]
+      }
+      if (flags == TRUE) {
+        l6 <- tcplLoadData(lvl=6, fld='m4id', val=m4id, type='mc')
+        if (nrow(l6) > 0) {
+          l6 <- l6[ , .( flag = paste(flag, collapse=";\n")), by = m4id]
+          no_flags <- setdiff(m4id, l6$m4id)
+          if (length(no_flags) > 0) {
+            l6 <- rbindlist(list(l6, data.table("m4id" = no_flags, "flag" = "None")))
+          } 
+        } else {
+          l6 <- data.table(m4id, "flag" = "None")
+        }
+        dat <- dat[l6, on = "m4id"]
       }
       dat <- tcplPrepOtpt(dat)
     } else {
@@ -143,7 +158,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat, lvl)),
         return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
-                      plot=tcplggplot(dat,verbose = verbose), width = 7, height = 5, dpi=dpi))
+                      plot=tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags), width = 7, height = 5, dpi=dpi))
       )
     } else {
       split_dat <- list(dat)
@@ -151,7 +166,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
         split_dat <- split(dat,f = factor(dat %>% pull(all_of(by))))
       }
       for(d in split_dat){
-        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl)
+        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags)
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
@@ -437,8 +452,9 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   }
   
   # # add cutoff annotation
+  coff <- ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1)
   fig <- fig %>% add_trace(
-    data = tibble(x = x_range, y = dat$coff),
+    data = tibble(x = x_range, y = coff),
     x = ~x,
     y = ~y,
     type = "scatter",
@@ -448,7 +464,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     inherit = FALSE,
     hoverinfo = "text",
     text = ~ paste(
-      "</br>", paste0("Cut Off (", specify_decimal(dat$coff,2), ")")
+      "</br>", paste0("Cut Off (", specify_decimal(coff,2), ")")
     )
   )
   
@@ -615,7 +631,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @importFrom ggplot2 margin unit element_text geom_segment
 #' @import gridExtra
 #' @import stringr
-tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
+tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE) {
   # variable binding
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
@@ -623,16 +639,6 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   l3_range <- l3_dat %>%
     pull(.data$conc) %>%
     range()
-
-  annotations <- data.frame(
-    xpos = c(l3_range[1]),
-    ypos = c(Inf),
-    annotateText = paste0(
-      ifelse(!is.null(dat$flag), gsub("\\|\\|", "\n", paste0("Flags: ", dat %>% pull(.data$flag))), "")
-    ),
-    hjustvar = c(0),
-    vjustvar = c(1)
-  ) #<- adjust
 
   # check if winning model has negative top.  If so coff,bmr should be negative
   if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
@@ -649,7 +655,6 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
   
 
   if (lvl == 2) {
-    #hline_data <- data.frame(y=c(dat$max_med, dat$coff), type = c(2,2))
     gg <- ggplot(l3_dat, aes(x = conc)) +
       geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
       geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
@@ -660,7 +665,6 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
                             values = c(2, 2)) +
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
       ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
-      geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
       labs(
         title = paste0(
           stringr::str_trunc(paste0(
@@ -703,7 +707,6 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
       scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
       ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
-      geom_text(data = annotations, aes(x = xpos, y = ypos, hjust = hjustvar, vjust = vjustvar, label = annotateText)) +
       labs(
         title = paste0(
           stringr::str_trunc(paste0(
@@ -716,12 +719,16 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE) {
             "AENM:", dat %>% pull(.data$aenm)), 70),"\n",
           "M4ID:", dat %>% pull(.data$m4id), "  ",
           ifelse(verbose, "", paste0(
-            "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+            "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
           ))
-        )
+        ),
+        caption = ifelse(flags, paste0(
+          "\nFlags: ", paste0(trimws(format(dat$flag, nsmall = 3)))
+        ), "")
       ) +
       theme(
         plot.title = element_text(size = 12),
+        plot.caption = element_text(hjust = 0),
         legend.title = element_blank(),
         legend.margin = margin(0, 0, 0, 0),
         legend.spacing.x = unit(0, "mm"),
