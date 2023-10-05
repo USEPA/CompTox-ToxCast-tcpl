@@ -148,6 +148,9 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     }
 
   } else {
+    if(is.null(multi)){
+      multi <- FALSE
+    }
     if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
     if (length(output) > 1) output <- output[1]
 
