@@ -459,3 +459,14 @@
 #'   }
 #' }
 "sc_vignette"
+
+
+#' Short descriptions of fields for different tables are stored in a data dictionary.
+#' @format A data frame with 44 rows and 3 variables:
+#' \describe{
+#'  \item{invitrodb_table}{Table of the data dictionary}
+#'   \item{invitrodb_field}{Field of the data dictionary}
+#'    \item{description}{Description}
+#' }
+#' @source ToxCast database
+"invitrodb_dd"
