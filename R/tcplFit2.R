@@ -51,12 +51,13 @@ tcplFit2 <- function(dat,
 #' 
 #'
 #' @return Data.table with key value pairs of hitcalling parameters
-#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull ungroup
 #' @importFrom tidyr pivot_longer
 #' @importFrom tcplfit2 tcplhit2_core
 tcplHit2 <- function(mc4, coff) {
   
   #variable binding
+  top <- a <- b <- ga <- la <- p <- tp <- logc_min <- logc_max <- fitc <- NULL
   model <- m4id  <-model_param  <-model_val  <-resp  <- NULL
   params  <-conc  <-bmed  <-onesd  <-df  <-aeid  <- NULL
   fit_method  <-hitcall  <-cutoff  <-top_over_cutoff  <-bmd  <-hit_val <- NULL
@@ -103,7 +104,7 @@ tcplHit2 <- function(mc4, coff) {
   res <- res %>%
     rowwise() %>%
     mutate(ac95 = tcplfit2::acy(.95 * top, list(a = a, b = b, ga = ga, la = la, p = p, q = q, tp = tp)[!is.na(list(a = a, b = b, ga = ga, la = la, p = p, q = q, tp = tp))], fit_method)) %>%
-    ungroup()
+    dplyr::ungroup()
   res <- res %>% mutate(coff_upper = 1.2 * cutoff, coff_lower = .8 * cutoff)
   res <- res %>%
     left_join(mc4 %>% select(m4id, logc_min, logc_max) %>% unique(), by = "m4id") %>%

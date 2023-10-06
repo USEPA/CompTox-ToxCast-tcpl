@@ -1,3 +1,9 @@
+tcpl v3.1.0
+==============
+*updated vignettes for tcplfit2 fitting
+*bidirectional fitting by default
+*this is the version used to create invitrodb v4.1
+
 tcpl v3.0.1
 ==============
 *fixes error from ggplot2

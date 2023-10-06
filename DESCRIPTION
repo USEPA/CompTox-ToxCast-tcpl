@@ -1,6 +1,6 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 3.0.1
+Version: 3.1.0
 Authors@R: c(
     person("Richard S", "Judson",role = c("ctb","ths"), email = "Judson.Richard@epa.gov"),
     person("Dayne L", "Filer", role = "aut",email = "dayne.filer@gmail.com"),
@@ -42,8 +42,7 @@ Imports:
     tcplfit2,
     ggplot2,
     gridExtra,
-    stringr,
-    vdiffr
+    stringr
 Suggests:
     roxygen2,
     knitr,
@@ -55,7 +54,8 @@ Suggests:
     viridis,
     kableExtra,
     colorspace,
-    magrittr
+    magrittr,
+    vdiffr
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.2.3
