@@ -5,6 +5,8 @@
 * local Windows 10 install, R 4.2.2
 * R Under development (unstable) (2023-10-04 r85267 ucrt)
 * Rhub Windows Server 2022, R-devel, 64 bit
+* Rhub Fedora Linux, R-devel, clang, gfortran
+* Rhub Ubuntu Linux 20.04.1 LTS, R-release, GCC
 
 ## rhub CMD check results
 - All notes appear to be related to testing (rhub) environment
