@@ -50,7 +50,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE) {
+tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   resp <- NULL
   lvl <- 5
@@ -137,6 +137,17 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       dat <- dat[is.null(dat$bmd), bmd:=NA]
     }
     
+    # set range if yuniform is true
+    if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
+      # calculate true min and max here
+      min <- -100
+      max <- 100
+      yrange = c(min, max)
+    } else if (yuniform == FALSE && !identical(yrange, c(NA,NA))) {
+      yrange = c(NA,NA)
+      warning("'yrange' was set, but 'yuniform' = FALSE. 'yrange' defaulting back to no uniformity. Consider setting 'yuniform' to TRUE.")
+    }
+    
     # unlog concs
     if (type == "mc") {
       conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
@@ -157,7 +168,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat, lvl)),
         return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
-                      plot=tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags), width = 7, height = 5, dpi=dpi))
+                      plot=tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange), width = 7, height = 5, dpi=dpi))
       )
     } else {
       split_dat <- list(dat)
@@ -165,7 +176,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         split_dat <- split(dat,f = factor(dat %>% pull(all_of(by))))
       }
       for(d in split_dat){
-        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags)
+        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
@@ -622,12 +633,12 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @return A ggplot object or grob with accompanied table depending on verbose option
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if
 #' @importFrom dplyr tibble contains everything as_tibble arrange .data
-#' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_color_viridis_d
+#' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_y_continuous scale_color_viridis_d
 #' @importFrom ggplot2 guide_legend scale_linetype_manual xlab ylab geom_text labs theme element_blank
 #' @importFrom ggplot2 margin unit element_text geom_segment
 #' @import gridExtra
 #' @import stringr
-tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE) {
+tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA,NA)) {
   # variable binding
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
@@ -699,6 +710,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE) {
       geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
       geom_point() +
       scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_y_continuous(limits = yrange) +
       scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
       scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
