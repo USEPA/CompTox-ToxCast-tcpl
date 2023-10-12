@@ -6,10 +6,9 @@
  Generic Plotting Function for tcpl}
 \usage{
 tcplPlot(
-  lvl = 5,
+  type = "mc",
   fld = "m4id",
   val = NULL,
-  type = "mc",
   by = NULL,
   output = c("console", "pdf", "png", "jpg", "svg", "tiff"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
@@ -17,18 +16,17 @@ tcplPlot(
   verbose = FALSE,
   nrow = NULL,
   ncol = NULL,
-  dpi = 600
+  dpi = 600,
+  flags = FALSE
 )
 }
 \arguments{
-\item{lvl}{Integer of length 1, the level of data to load.}
+\item{type}{Character of length 1, the data type, "sc" or "mc".}
 
 \item{fld}{Character, the field(s) to query on.}
 
 \item{val}{List, vectors of values for each field to query on. Must be in
 the same order as 'fld'.}
-
-\item{type}{Character of length 1, the data type, "sc" or "mc".}
 
 \item{by}{Parameter to divide files into e.g. "aeid".}
 
@@ -49,6 +47,9 @@ is included with the plot.}
 \item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose.}
 
 \item{dpi}{Integer, image print resolution. By default 600.}
+
+\item{flags}{Boolean, by default FALSE. If TRUE, level 6 flags are displayed
+below annotations on plot}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot
@@ -60,10 +61,6 @@ for single concentration data. Multiple concentration data will be loaded
 into the 'mc' tables, whereas the single concentration will be loaded into
 the 'sc' tables.
 
-Setting 'lvl' to "agg" will return an aggregate table containing the m4id
-with the concentration-response data and m3id to map back to well-level
-information.
-
 Leaving \code{fld} NULL will return all data.
 }
 \examples{
@@ -72,7 +69,7 @@ Leaving \code{fld} NULL will return all data.
 conf_store <- tcplConfList()
 tcplConfExample()
 
-tcplPlot(lvl = 4, fld = "m4id", val = c(18609966)) ## Create a level 4 plot
+tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
 
 ## Reset configuration
 options(conf_store)
