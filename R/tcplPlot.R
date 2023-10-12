@@ -8,7 +8,6 @@
 #' \code{tcplLoadData} queries the tcpl databases and returns a plot
 #' for the given level and data type.
 #'
-#' @param lvl Integer of length 1, the level of data to load.
 #' @param type Character of length 1, the data type, "sc" or "mc".
 #' @param fld Character, the field(s) to query on.
 #' @param val List, vectors of values for each field to query on. Must be in
@@ -34,10 +33,6 @@
 #' into the 'mc' tables, whereas the single concentration will be loaded into
 #' the 'sc' tables.
 #'
-#' Setting 'lvl' to "agg" will return an aggregate table containing the m4id
-#' with the concentration-response data and m3id to map back to well-level
-#' information.
-#'
 #' Leaving \code{fld} NULL will return all data.
 #' @import data.table
 #' @importFrom gridExtra marrangeGrob
@@ -51,13 +46,20 @@
 #' conf_store <- tcplConfList()
 #' tcplConfExample()
 #'
-#' tcplPlot(lvl = 4, fld = "m4id", val = c(18609966)) ## Create a level 4 plot
+#' tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE) {
+tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE) {
   #variable binding
   resp <- NULL
+  lvl <- 5
+  if (type == "sc") {
+    lvl <- 2
+    if (flags == TRUE) {
+      warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
+    }
+  }
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
@@ -93,11 +95,8 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       # load dat
       l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
       agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
-      
-      if (lvl >= 5L) {
-        l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
-        dat <- l4[l5, on = "m4id"]
-      }
+      l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
+      dat <- l4[l5, on = "m4id"]
       if (flags == TRUE) {
         l6 <- tcplLoadData(lvl=6, fld='m4id', val=m4id, type='mc')
         if (nrow(l6) > 0) {
@@ -116,7 +115,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
       s2id <- input$s2id
       
       # load dat
-      l2 <- tcplLoadData(lvl = 2, fld = "s2id", val = s2id, type = "sc", add.fld = T)
+      l2 <- tcplLoadData(lvl = lvl, fld = "s2id", val = s2id, type = "sc", add.fld = T)
       agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = s2id, type = "sc")
       dat <- tcplPrepOtpt(l2)
       
@@ -184,7 +183,6 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     }
 
   } else {
-    if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
     if (length(output) > 1) output <- output[1]
 
     prs <- list(type = "mc", fld = fld, val = val)
@@ -275,9 +273,8 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
 #'
 #' @param dat data table with all required conc/resp data
 #' @param lvl integer level of data that should be plotted
-#' level 4 - all fit models
-#' level 5 - all fit models and winning model with hitcall
-#' level 6 - include all flags
+#' level 2 - for 'sc' plotting
+#' level 5 - for 'mc' plotting, all fit models and winning model with hitcall
 #'
 #' @return A plotly plot
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull
@@ -618,10 +615,9 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @param dat data table with all required conc/resp data
 #' @param lvl integer level of data that should be plotted
 #' level 2 - for 'sc' plotting
-#' level 4 - all fit models
-#' level 5 - all fit models and winning model with hitcall
-#' level 6 - include all flags
+#' level 5 - for 'mc' plotting, all fit models and winning model with hitcall
 #' @param verbose boolean should plotting include table of values next to the plot
+#' @param flags boolean should plotting include level 6 flags in plot caption
 #'
 #' @return A ggplot object or grob with accompanied table depending on verbose option
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if
