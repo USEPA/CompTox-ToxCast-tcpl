@@ -137,17 +137,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       dat <- dat[is.null(dat$bmd), bmd:=NA]
     }
     
-    # set range if yuniform is true
-    if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
-      # calculate true min and max here
-      min <- -100
-      max <- 100
-      yrange = c(min, max)
-    } else if (yuniform == FALSE && !identical(yrange, c(NA,NA))) {
-      yrange = c(NA,NA)
-      warning("'yrange' was set, but 'yuniform' = FALSE. 'yrange' defaulting back to no uniformity. Consider setting 'yuniform' to TRUE.")
-    }
-    
     # unlog concs
     if (type == "mc") {
       conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
@@ -155,6 +144,24 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
     } else {
       conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "s2id"]
+    }
+    
+    # set range if yuniform is true
+    if (yuniform == TRUE) {
+      if (length(yrange) != 2) {
+        stop("'yrange' must be of length 2")
+      }
+      if (identical(yrange, c(NA,NA))) {
+        min <- min(dat$resp_min, dat$coff, dat$coff*-1, unlist(dat$resp))
+        max <- max(dat$resp_max, dat$coff, dat$coff*-1, unlist(dat$resp))
+      } else {
+        min <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
+        max <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+      }
+      yrange = c(min, max)
+    } else if (yuniform == FALSE && !identical(yrange, c(NA,NA))) {
+      yrange = c(NA,NA)
+      warning("'yrange' was set, but 'yuniform' = FALSE. 'yrange' defaulting back to no uniformity. Consider setting 'yuniform' to TRUE.")
     }
     
     # dat$conc <- list(10^agg$logc)
@@ -667,6 +674,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
       geom_point(aes(y = resp)) +
       scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_y_continuous(limits = yrange) +
       scale_linetype_manual("", 
                             guide = guide_legend(override.aes = list(color = c("blue", "red"))), 
                             values = c(2, 2)) +
