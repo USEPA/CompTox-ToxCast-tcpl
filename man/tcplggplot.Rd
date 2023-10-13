@@ -4,7 +4,7 @@
 \alias{tcplggplot}
 \title{tcplggplot}
 \usage{
-tcplggplot(dat, lvl = 5, verbose = FALSE, flags = FALSE)
+tcplggplot(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA, NA))
 }
 \arguments{
 \item{dat}{data table with all required conc/resp data}
@@ -16,6 +16,9 @@ level 5 - for 'mc' plotting, all fit models and winning model with hitcall}
 \item{verbose}{boolean should plotting include table of values next to the plot}
 
 \item{flags}{boolean should plotting include level 6 flags in plot caption}
+
+\item{yrange}{Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
+By default, c(NA,NA).}
 }
 \value{
 A ggplot object or grob with accompanied table depending on verbose option
