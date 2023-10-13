@@ -17,7 +17,9 @@ tcplPlot(
   nrow = NULL,
   ncol = NULL,
   dpi = 600,
-  flags = FALSE
+  flags = FALSE,
+  yuniform = FALSE,
+  yrange = c(NA, NA)
 )
 }
 \arguments{
@@ -50,6 +52,12 @@ is included with the plot.}
 
 \item{flags}{Boolean, by default FALSE. If TRUE, level 6 flags are displayed
 below annotations on plot}
+
+\item{yuniform}{Boolean, by default FALSE. If TRUE, all plots will have uniform
+y axis scaling}
+
+\item{yrange}{Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
+By default, c(NA,NA). 'yuniform' must be set to TRUE to use.}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot

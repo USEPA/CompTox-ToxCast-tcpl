@@ -26,6 +26,10 @@
 #' @param dpi Integer, image print resolution. By default 600.
 #' @param flags Boolean, by default FALSE. If TRUE, level 6 flags are displayed
 #' below annotations on plot
+#' @param yuniform Boolean, by default FALSE. If TRUE, all plots will have uniform
+#' y axis scaling
+#' @param yrange Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
+#' By default, c(NA,NA). 'yuniform' must be set to TRUE to use.
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -636,6 +640,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' level 5 - for 'mc' plotting, all fit models and winning model with hitcall
 #' @param verbose boolean should plotting include table of values next to the plot
 #' @param flags boolean should plotting include level 6 flags in plot caption
+#' @param yrange Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
+#' By default, c(NA,NA).
 #'
 #' @return A ggplot object or grob with accompanied table depending on verbose option
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if
