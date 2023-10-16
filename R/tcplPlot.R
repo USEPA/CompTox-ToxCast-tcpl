@@ -673,6 +673,11 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
     ifelse(dat$modl == modeltype, winning_model_string, "Losing Models")
   }
   
+  flag_count <- 0
+  if (flags && dat$flag != "None") {
+    flag_count <- str_count(dat$flag, "\n") + 1
+  }
+  
 
   if (lvl == 2) {
     gg <- ggplot(l3_dat, aes(x = conc)) +
@@ -745,7 +750,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
           ))
         ),
         caption = ifelse(flags, paste0(
-          "\nFlags: ", paste0(trimws(format(dat$flag, nsmall = 3)))
+          "\nFlags(", flag_count, "): ", paste0(trimws(format(dat$flag, nsmall = 3)))
         ), "")
       ) +
       theme(
