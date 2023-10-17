@@ -755,7 +755,8 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       ) +
       theme(
         plot.title = element_text(size = 12),
-        plot.caption = element_text(hjust = 0),
+        plot.caption = element_text(hjust = 0, margin = margin(-1,0,1,0)),
+        axis.title.x = element_text(margin = margin(3,0,-5,0)),
         legend.title = element_blank(),
         legend.margin = margin(0, 0, 0, 0),
         legend.spacing.x = unit(0, "mm"),
