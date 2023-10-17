@@ -56,6 +56,8 @@
 #' options(conf_store)
 tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
+  conc_unit <- bmd <- resp <- NULL
+  
   resp <- NULL
   lvl <- 5
   if (type == "sc") {
@@ -64,6 +66,8 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
     }
   }
+  
+
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
     # check that input combination is unique
@@ -205,6 +209,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
     }
 
   } else {
+
     if (length(output) > 1) output <- output[1]
 
     prs <- list(type = "mc", fld = fld, val = val)
