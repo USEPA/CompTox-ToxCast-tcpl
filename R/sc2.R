@@ -23,7 +23,7 @@
 sc2 <- function(ae, wr = FALSE) {
   
   ## Variable-binding to pass R CMD Check
-  bmad <- resp <- wllt <- tmp <- spid <- logc <- hitc <- max_med <- NULL
+  max_tmp <- bmad <- resp <- wllt <- tmp <- spid <- logc <- hitc <- max_med <- NULL
   
   owarn <- getOption("warn")
   options(warn = 1)

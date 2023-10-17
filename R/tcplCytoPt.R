@@ -114,7 +114,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   
   ## Variable-binding to pass R CMD Check
   ac50var <- hitc <- code <- chnm <- casn <- used_in_global_mad_calc <- nhit <- modl <- NULL
-  ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
+  top <- ntst <- global_mad <- cyto_pt <- med <- cyto_pt_um <- lower_bnd_um <- burstpct <- NULL
   
   cat("1: Checking if aeid or chid is specified\n")
   if (!is.null(aeid) & !is.vector(aeid)) {
