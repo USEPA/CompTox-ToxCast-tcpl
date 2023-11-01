@@ -163,8 +163,8 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         min <- min(dat$resp_min, dat$coff, dat$coff*-1, unlist(dat$resp))
         max <- max(dat$resp_max, dat$coff, dat$coff*-1, unlist(dat$resp))
       } else {
-        min <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
-        max <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+        min <- min(yrange)
+        max <- max(yrange)
       }
       yrange = c(min, max)
     } else if (yuniform == FALSE && !identical(yrange, c(NA,NA))) {
@@ -671,6 +671,12 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       dat$coff <- dat$coff * -1
       dat$bmr <- dat$bmr * -1
     }
+  }
+  
+  # check if data is outside bounds of yrange. If so, expand yrange bounds
+  if (!identical(yrange, c(NA,NA))) {
+    yrange[1] <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
+    yrange[2] <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
   }
 
   winning_model_string <- paste0("Winning Model\n(", dat$modl, ")")
