@@ -124,6 +124,9 @@ mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
 mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
 mc5[, flag.length := ifelse(!is.na(mc6_flags), count.fields(textConnection(mc6_flags), sep =','), NA)]
 
+mc5.keep <- mc5
+
+
 # filter the dataset, with coarse filters
 mc5[hitc==1 & flag.length < 3, use.me := 1]
 mc5[hitc==1 & is.na(flag.length), use.me := 1]
@@ -137,22 +140,22 @@ mc5[hitc==0, modl_ga := as.numeric(NA)]
 mc5[hitc==1,ac50_uM := ifelse(!is.na(modl_ga), 10^modl_ga, NA)]
 
 mc5.liver <- as.data.table(mc5)
+
+
 mc5.liver[, organ := 'liver']
 
-mc5_liver_chlor <- mc5.liver %>% subset(dsstox_substance_id.x == 'DTXSID4020458')
 
-save(mc5_liver_chlor, file='mc5_liver_chlor.RData')
+mc5.dt <- mc5.liver
+
+setnames(mc5.dt, c('dsstox_substance_id.x'), c('dsstox_substance_id'))
+mc5.dt[, c('dsstox_substance_id.y') := NULL]
 
 
-
-setnames(mc5_liver_chlor, c('dsstox_substance_id.x'), c('dsstox_substance_id'))
-mc5_liver_chlor[, c('dsstox_substance_id.y') := NULL]
-
-# ac50_uM is NA
-mc5.dt.summary <-mc5_liver_chlor[,list(
+mc5.dt.summary <- mc5.dt[,list(
   p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
   p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
-  mean.ac50uM = mean(ac50_uM, na.rm=T))]
+  mean.ac50uM = mean(ac50_uM, na.rm=T)), 
+  by = list(organ, dsstox_substance_id, chnm, casn)]
 
 mc5.dt.summary[, names(mc5.dt.summary) := lapply(.SD, function(x) ifelse(is.nan(x), NA, x))]
 
