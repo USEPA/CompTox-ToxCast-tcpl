@@ -67,6 +67,9 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
     }
   }
   
+  if (length(yrange) != 2) {
+    stop("'yrange' must be of length 2")
+  }
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
@@ -155,16 +158,14 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
     }
     
     # set range
-    if (yuniform == TRUE) {
-      if (length(yrange) != 2) {
-        stop("'yrange' must be of length 2")
-      }
-      if (identical(yrange, c(NA,NA))) {
-        min <- min(dat$resp_min, unlist(dat$resp))
-        max <- max(dat$resp_max, unlist(dat$resp))
-      } else {
-        min <- min(yrange)
-        max <- max(yrange)
+    if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
+      min <- min(dat$resp_min, unlist(dat$resp))
+      max <- max(dat$resp_max, unlist(dat$resp))
+      # any bidirectional models contained in dat
+      if (2 %in% dat$model_type) {
+        cutoffs <- dat[model_type == 2]$coff
+        min <- min(min, cutoffs, cutoffs * -1)
+        max <- max(max, cutoffs, cutoffs * -1)
       }
       yrange = c(min, max)
     }
@@ -663,7 +664,6 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
     range()
   
   # check if model_type is 3 or 4, which means an override method was assigned
-  dat$model_type = 3
   if (dat$model_type == 3) { # gain direction
     # leave coff but bmr should flip if top is negative
     if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
