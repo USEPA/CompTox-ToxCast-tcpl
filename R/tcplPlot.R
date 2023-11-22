@@ -160,8 +160,8 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         stop("'yrange' must be of length 2")
       }
       if (identical(yrange, c(NA,NA))) {
-        min <- min(dat$resp_min, dat$coff, dat$coff*-1, unlist(dat$resp))
-        max <- max(dat$resp_max, dat$coff, dat$coff*-1, unlist(dat$resp))
+        min <- min(dat$resp_min, unlist(dat$resp))
+        max <- max(dat$resp_max, unlist(dat$resp))
       } else {
         min <- min(yrange)
         max <- max(yrange)
@@ -661,19 +661,38 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   l3_range <- l3_dat %>%
     pull(.data$conc) %>%
     range()
-
-  # check if winning model has negative top.  If so coff,bmr should be negative
-  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-    if (dat$top < 0) {
+  
+  # check if model_type is 3 or 4, which means an override method was assigned
+  dat$model_type = 3
+  if (dat$model_type == 3) { # gain direction
+    # leave coff but bmr should flip if top is negative
+    if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      if (dat$top < 0) {
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  } else if (dat$model_type == 4) { # loss direction
+    # coff and bmr(if top < 0) should be negative
+    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
       dat$coff <- dat$coff * -1
-      dat$bmr <- dat$bmr * -1
+      if (dat$top < 0) {
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  } else { # bidirectional
+    # check if winning model has negative top.  If so coff,bmr should be negative
+    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      if (dat$top < 0) {
+        dat$coff <- dat$coff * -1
+        dat$bmr <- dat$bmr * -1
+      }
     }
   }
-  
+
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
-    yrange[1] <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
-    yrange[2] <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+    yrange[1] <- min(dat$resp_min, dat$coff, yrange[1], unlist(dat$resp))
+    yrange[2] <- max(dat$resp_max, dat$coff, yrange[2], unlist(dat$resp))
   }
 
   winning_model_string <- paste0("Winning Model\n(", dat$modl, ")")

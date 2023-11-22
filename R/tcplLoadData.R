@@ -571,7 +571,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         hitc,
         modl,
         fitc,
-        coff
+        coff,
+        model_type
       FROM
         mc4,
         mc5
@@ -611,6 +612,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         modl,
         fitc,
         coff,
+        model_type,
         hit_param,
         hit_val
       FROM
