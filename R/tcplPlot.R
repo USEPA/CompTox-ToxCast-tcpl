@@ -159,7 +159,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
     
     # set range
     if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
-      browser()
       min <- min(dat$resp_min, unlist(dat$resp))
       max <- max(dat$resp_max, unlist(dat$resp))
       # any bidirectional models contained in dat, cutoff both ways
@@ -265,7 +264,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       }
       # plotting if using multiplot function
       hitc.all <- TRUE
-      # browser()
       if (multi) {
         graphics.off()
         pdf(file = file.path(getwd(), paste0(fileprefix, ".", output)), height = 10, width = 6, pointsize = 10)
@@ -293,7 +291,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         }
         # plotting if using multiplot function
         hitc.all <- TRUE
-        # browser()
         if (multi) {
           graphics.off()
           pdf(file = file.path(getwd(), paste0(fileprefix, "_", by, "_", s, ".", output)), height = 10, width = 6, pointsize = 10)
