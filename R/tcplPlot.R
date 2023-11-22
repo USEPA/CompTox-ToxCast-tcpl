@@ -225,7 +225,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
         if (is.null(compare.val)) {
           plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
         } else {
-          plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1),verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
+          plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1), MoreArgs = list(verbose = verbose, lvl = lvl, flags = flags, yrange = yrange))
         }
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
@@ -382,7 +382,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     # l4_dat <- as_tibble(dat[3:length(dat)])
     
     
-    # calculate y values for each function
+    # calculate y values for each function 
     if ("hill" %in% models) y_hill <- tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x_range)
     #tp = ps[1], ga = ps[2], p = ps[3], la = ps[4], q = ps[5]
     if ("gnls" %in% models) y_gnls <- tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x_range)
@@ -884,15 +884,17 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
 #' @importFrom dplyr tibble contains everything as_tibble arrange .data
 #' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_y_continuous scale_color_viridis_d
 #' @importFrom ggplot2 guide_legend scale_linetype_manual xlab ylab geom_text labs theme element_blank
-#' @importFrom ggplot2 margin unit element_text geom_segment
+#' @importFrom ggplot2 margin unit element_text geom_segment scale_color_manual scale_color_hue
 #' @import gridExtra
 #' @import stringr
 tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA,NA)) {
   # variable binding
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
-  l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med)
-  l3_range <- l3_dat %>%
+  l3_dat_main <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med, l3 = "main")
+  l3_dat_compare <- tibble(conc = unlist(compare.dat$conc), resp = unlist(compare.dat$resp), max_med = compare.dat$max_med, l3 = "compare")
+  l3_dat_both <- rbind(l3_dat_main, l3_dat_compare)
+  l3_range <- l3_dat_both %>%
     pull(.data$conc) %>%
     range()
   
@@ -904,6 +906,12 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     }
   }
   
+  # check if data is outside bounds of yrange. If so, expand yrange bounds
+  if (!identical(yrange, c(NA,NA))) {
+    yrange[1] <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
+    yrange[2] <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+  }
+  
   # for compare data, check if winning model has negative top.  If so coff,bmr should be negative
   if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
     if (compare.dat$top < 0) {
@@ -912,14 +920,32 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     }
   }
   
-  winning_model_string <- paste0("Main Model\n(", dat$modl, ")")
-  winning_model_string_compare <- paste0("Compare Model\n(", compare.dat$modl, ")")
-  model_test <- function(modeltype) {
-    dat$modl == modeltype
+  dat$winning_model_string <- paste0("Model A(", dat$modl, ")")
+  compare.dat$winning_model_string <- paste0("Model B(", compare.dat$modl, ")")
+  winning_model_geom_function <- function(data, x) {
+    if (data$modl == "gnls") {
+      tcplfit2::gnls(ps = c(data$gnls_tp, data$gnls_ga, data$gnls_p, data$gnls_la, data$gnls_q), x = x)
+    } else if (data$modl == "exp3") {
+      tcplfit2::exp3(ps = c(data$exp3_a, data$exp3_b, data$exp3_p), x = x)
+    } else if (data$modl == "exp4") {
+      tcplfit2::exp4(ps = c(data$exp4_tp, data$exp4_ga), x = x)
+    } else if (data$modl == "exp5") {
+      tcplfit2::exp5(ps = c(data$exp5_tp, data$exp5_ga, data$exp5_p), x = x)
+    } else if (data$modl == "ploy1") {
+      tcplfit2::poly1(ps = c(data$poly1_a), x = x)
+    } else if (data$modl == "exp2") {
+      tcplfit2::exp2(ps = c(data$exp2_a, data$exp2_b), x = x)
+    } else if (data$modl == "poly2") {
+      tcplfit2::poly2(ps = c(data$poly2_a, data$poly2_b), x = x)
+    } else if (data$modl == "pow") {
+      tcplfit2::pow(ps = c(data$pow_a, data$pow_p), x = x)
+    } else if (data$modl == "hill") {
+      tcplfit2::hillfn(ps = c(data$hill_tp, data$hill_ga, data$hill_p), x = x)
+    }
   }
   
   flag_count <- 0
-  flag_count_compare <-
+  flag_count_compare <- 0
   if (flags && dat$flag != "None") {
     flag_count <- str_count(dat$flag, "\n") + 1
   }
@@ -928,8 +954,21 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
   }
   
   
+  identical_title <- paste0(stringr::str_trunc(paste0(
+    ifelse(dat$dsstox_substance_id == compare.dat$dsstox_substance_id, paste0(dat$dsstox_substance_id, " "), ""),
+    ifelse(dat$chnm == compare.dat$chnm, paste0(dat$chnm, "\n"), "")
+    ), 75),
+    stringr::str_trunc(paste0(
+      ifelse(dat$spid == compare.dat$spid, paste0("SPID:", dat$spid, "  "), ""),
+      ifelse(dat$aeid == compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
+      ifelse(dat$aenm == compare.dat$aenm, paste0("AENM:", dat$aenm), "")), 70))
+  if (identical_title != "" & !endsWith(identical_title, "\n")) {
+    identical_title <- paste0(identical_title, "\n")
+  }
+  
+  
   if (lvl == 2) {
-    gg <- ggplot(l3_dat, aes(x = conc)) +
+    gg <- ggplot(l3_dat_main, aes(x = conc)) +
       geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
       geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
       geom_point(aes(y = resp)) +
@@ -964,43 +1003,54 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
         legend.spacing.y = unit(0, "mm")
       )
   } else {
-    gg <- ggplot(l3_dat, aes(conc, resp)) +
-      geom_function(aes(color = winning_model_string, linetype = winning_model_string, fun = function(x) get(paste0("tcplfit2::", dat$modl))(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x)),
-      geom_function(aes(color = !!model_test("gnls"), linetype = !!model_test("gnls")), fun = function(x) (tcplfit2::gnls(ps = c(dat$gnls_tp, dat$gnls_ga, dat$gnls_p, dat$gnls_la, dat$gnls_q), x = x))) +
-      geom_function(aes(color = !!model_test("exp2"), linetype = !!model_test("exp2")), fun = function(x) tcplfit2::exp2(ps = c(dat$exp2_a, dat$exp2_b), x = x)) +
-      geom_function(aes(color = !!model_test("exp3"), linetype = !!model_test("exp3")), fun = function(x) tcplfit2::exp3(ps = c(dat$exp3_a, dat$exp3_b, dat$exp3_p), x = x)) +
-      geom_function(aes(color = !!model_test("exp4"), linetype = !!model_test("exp4")), fun = function(x) tcplfit2::exp4(ps = c(dat$exp4_tp, dat$exp4_ga), x = x)) +
-      geom_function(aes(color = !!model_test("exp5"), linetype = !!model_test("exp5")), fun = function(x) tcplfit2::exp5(ps = c(dat$exp5_tp, dat$exp5_ga, dat$exp5_p), x = x)) +
-      geom_function(aes(color = !!model_test("poly1"), linetype = !!model_test("poly1")), fun = function(x) tcplfit2::poly1(ps = c(dat$poly1_a), x = x)) +
-      geom_function(aes(color = !!model_test("poly2"), linetype = !!model_test("poly2")), fun = function(x) tcplfit2::poly2(ps = c(dat$poly2_a, dat$poly2_b), x = x)) +
-      geom_function(aes(color = !!model_test("pow"), linetype = !!model_test("pow")), fun = function(x) tcplfit2::pow(ps = c(dat$pow_a, dat$pow_p), x = x)) +
-      geom_function(aes(color = !!model_test("hill"), linetype = !!model_test("hill")), fun = function(x) tcplfit2::hillfn(ps = c(dat$hill_tp, dat$hill_ga, dat$hill_p), x = x)) +
-      geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
-      geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
-      geom_point() +
+    gg <- ggplot(l3_dat_both, aes(conc, resp, color = l3)) +
+      geom_function(aes(linetype = dat$winning_model_string), fun = function(x) winning_model_geom_function(dat, x), color = "blue", alpha = 0.5) +
+      geom_function(aes(linetype = compare.dat$winning_model_string), fun = function(x) winning_model_geom_function(compare.dat, x), color = "red", alpha = 0.5) +
+      geom_hline(aes(yintercept = compare.dat$coff, linetype = "Cutoff B"), color = "red") +
+      geom_hline(aes(yintercept = dat$coff, linetype = "Cutoff A"), color = "blue") +
+      geom_point(alpha = 0.5) +
       scale_x_continuous(limits = l3_range, trans = "log10") +
       scale_y_continuous(limits = yrange) +
-      scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
-      scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
+      scale_linetype_manual("", breaks = c(dat$winning_model_string, compare.dat$winning_model_string, "Cutoff A", "Cutoff B"), 
+                            guide = guide_legend(override.aes = list(color = c("blue", "red", "blue", "red"), linetype = c("solid", "solid", "dashed", "dashed"))), 
+                            values = if (compare.dat$coff == dat$coff) c("solid", "solid", "39", "15393933") else c("solid", "solid", "33", "33"),) + 
+      scale_color_manual(breaks = c(), guide = guide_legend(reverse = TRUE), values=c("red", "blue")) + 
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
       ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
       labs(
         title = paste0(
+          ifelse(identical_title != "", paste0(identical_title, "\n"), ""),
           stringr::str_trunc(paste0(
-            dat$dsstox_substance_id, " ",
-            dat$chnm
-          ), 75), "\n",
+            "A: ",
+            ifelse(dat$dsstox_substance_id != compare.dat$dsstox_substance_id, paste0(dat$dsstox_substance_id, " "), ""),
+            ifelse(dat$chnm != compare.dat$chnm, paste0(dat$chnm, "\n"), "")
+          ), 75), 
           stringr::str_trunc(paste0(
-            "SPID:", dat$spid, "  ",
-            "AEID:", dat$aeid, "  ",
-            "AENM:", dat$aenm), 70),"\n",
+            ifelse(dat$spid != compare.dat$spid, paste0("SPID:", dat$spid, "  "), ""),
+            ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", dat$aenm, "\n"), "")), 70),
           "M4ID:", dat$m4id, "  ",
           ifelse(verbose, "", paste0(
             "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          )),
+          stringr::str_trunc(paste0(
+            "\n\n",
+            "B: ",
+            ifelse(dat$dsstox_substance_id != compare.dat$dsstox_substance_id, paste0(compare.dat$dsstox_substance_id, " "), ""),
+            ifelse(dat$chnm != compare.dat$chnm, paste0(compare.dat$chnm, "\n"), "")
+          ), 75),
+          stringr::str_trunc(paste0(
+            ifelse(dat$spid != compare.dat$spid, paste0("SPID:", compare.dat$spid, "  "), ""),
+            ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", compare.dat$aeid, "  "), ""),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", compare.dat$aenm, "\n"), "")), 70),
+          "M4ID:", compare.dat$m4id, "  ",
+          ifelse(verbose, "", paste0(
+            "\nHITC:", paste0(trimws(format(round(compare.dat$hitc, 3), nsmall = 3)))
           ))
         ),
         caption = ifelse(flags, paste0(
-          "\nFlags(", flag_count, "): ", paste0(trimws(format(dat$flag, nsmall = 3)))
+          "\nFlags:\nA(", flag_count, "): ", paste0(trimws(format(dat$flag, nsmall = 3))), 
+          "\n\nB(", flag_count_compare, "): ", paste0(trimws(format(compare.dat$flag, nsmall = 3)))
         ), "")
       ) +
       theme(
@@ -1013,17 +1063,6 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
         legend.spacing.y = unit(0, "mm")
       )
   }
-  if (!is.null(dat$bmd) && !is.null(dat$bmr)){ gg = gg + 
-    geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD")) + 
-    geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD"))
-  }
-  
-  p <- lapply(dat %>% select(contains("aic")) %>% colnames() %>% stringr::str_extract("[:alnum:]+"), function(x) {
-    dat %>%
-      select(contains(paste0(x, c("_aic", "_rme")))) %>%
-      tidyr::pivot_longer(cols = everything()) %>%
-      as_tibble()
-  })
   
   # general function to round/shorten values for plotting tables
   round_n <- function(x, n=3) {
@@ -1040,25 +1079,22 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
   }
   round_n <- Vectorize(round_n)
   
-  combined_p <- data.table::rbindlist(p)
-  pivoted_p <- combined_p
   t <- NULL
   if (lvl != 2) {
-    l5_details <- tibble(Hitcall = dat$hitc, BMD = dat$bmd, AC50 = dat$ac50)
-    l5_details <- l5_details %>% mutate_if(is.numeric, ~ round_n(., 3))
-    l5_t <- tableGrob(l5_details, rows = NULL)
-    pivoted_p <- combined_p %>%
-      tidyr::extract(name, c("model", "param"), "([[:alnum:]]+)_([[:alnum:]]+)") %>%
-      pivot_wider(names_from = "param", values_from = "value")
-    pivoted_p <- pivoted_p %>% mutate_if(is.numeric, ~ round_n(., 3))
-    pivoted_p <- pivoted_p %>% arrange(as.numeric(aic))
-    t <- tableGrob(pivoted_p, rows = NULL)
-    valigned <- gtable_combine(l5_t, t, along = 2)
+    details <- tibble(Hitcall = c(dat$hitc, compare.dat$hitc), 
+                      BMD = c(dat$bmd, compare.dat$bmd), 
+                      AC50 = c(dat$ac50, compare.dat$ac50))
+    details <- details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    details <- as.data.frame(details)
+    t <- tableGrob(details, rows = c("A", "B"))
   } else {
-    l5_details <- tibble(Hitcall = dat$hitc)
-    l5_details <- l5_details %>% mutate_if(is.numeric, ~ round_n(., 3))
-    l5_t <- tableGrob(l5_details, rows = NULL)
-    valigned <- gtable_combine(l5_t, along = 2)
+    main_details <- tibble(Hitcall = dat$hitc)
+    main_details <- main_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    main_t <- tableGrob(main_details, rows = NULL)
+    compare_details <- tibble(Hitcall = compare.dat$hitc)
+    compare_details <- compare_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    compare_t <- tableGrob(compare_details, rows = NULL)
+    valigned <- gtable_combine(main_t, compare_t, along = 2)
   }
   
   if (lvl == 2) {
@@ -1068,8 +1104,8 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     )
   } else {
     ifelse(verbose,
-           return(arrangeGrob(gg, valigned, nrow = 1, widths = 2:1)),
-           return(gg)
+           return(arrangeGrob(gg, t, nrow = 1, widths = 2:1)),
+           return(arrangeGrob(gg))
     )
   }
 }

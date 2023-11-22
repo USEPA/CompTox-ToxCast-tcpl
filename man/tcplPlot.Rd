@@ -9,6 +9,7 @@ tcplPlot(
   type = "mc",
   fld = "m4id",
   val = NULL,
+  compare.val = NULL,
   by = NULL,
   output = c("console", "pdf", "png", "jpg", "svg", "tiff"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
@@ -29,6 +30,11 @@ tcplPlot(
 
 \item{val}{List, vectors of values for each field to query on. Must be in
 the same order as 'fld'.}
+
+\item{compare.val}{List, vectors of values for each field to query on to 
+compare with val. Must be in the same order as 'fld'. Must have the same
+length as val (1:1 comparison). Must be set to compare plots; otherwise leave
+NULL}
 
 \item{by}{Parameter to divide files into e.g. "aeid".}
 
