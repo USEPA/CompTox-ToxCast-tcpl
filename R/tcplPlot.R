@@ -159,13 +159,26 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
     
     # set range
     if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
+      browser()
       min <- min(dat$resp_min, unlist(dat$resp))
       max <- max(dat$resp_max, unlist(dat$resp))
-      # any bidirectional models contained in dat
+      # any bidirectional models contained in dat, cutoff both ways
       if (2 %in% dat$model_type) {
         cutoffs <- dat[model_type == 2]$coff
         min <- min(min, cutoffs, cutoffs * -1)
         max <- max(max, cutoffs, cutoffs * -1)
+      }
+      # any gain models contained in dat, cutoff only positive
+      if (3 %in% dat$model_type) {
+        cutoffs <- dat[model_type == 3]$coff
+        min <- min(min, cutoffs)
+        max <- max(max, cutoffs)
+      }
+      # any loss models contained in dat, cutoff only negative
+      if (4 %in% dat$model_type) {
+        cutoffs <- dat[model_type == 4]$coff
+        min <- min(min, cutoffs * -1)
+        max <- max(max, cutoffs * -1)
       }
       yrange = c(min, max)
     }
