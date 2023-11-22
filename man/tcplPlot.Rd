@@ -54,10 +54,10 @@ is included with the plot.}
 below annotations on plot}
 
 \item{yuniform}{Boolean, by default FALSE. If TRUE, all plots will have uniform
-y axis scaling}
+y axis scaling, automatically determined.}
 
-\item{yrange}{Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
-By default, c(NA,NA). 'yuniform' must be set to TRUE to use.}
+\item{yrange}{Integer of length 2, for directly setting the y-axis range, 
+c(<min>,<max>). By default, c(NA,NA).}
 }
 \description{
 \code{tcplLoadData} queries the tcpl databases and returns a plot

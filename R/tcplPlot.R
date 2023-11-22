@@ -27,9 +27,9 @@
 #' @param flags Boolean, by default FALSE. If TRUE, level 6 flags are displayed
 #' below annotations on plot
 #' @param yuniform Boolean, by default FALSE. If TRUE, all plots will have uniform
-#' y axis scaling
-#' @param yrange Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
-#' By default, c(NA,NA). 'yuniform' must be set to TRUE to use.
+#' y axis scaling, automatically determined.
+#' @param yrange Integer of length 2, for directly setting the y-axis range, 
+#' c(<min>,<max>). By default, c(NA,NA).
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -154,7 +154,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       dat <- dat[conc_resp_table, on = "s2id"]
     }
     
-    # set range if yuniform is true
+    # set range
     if (yuniform == TRUE) {
       if (length(yrange) != 2) {
         stop("'yrange' must be of length 2")
@@ -167,9 +167,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         max <- max(yrange)
       }
       yrange = c(min, max)
-    } else if (yuniform == FALSE && !identical(yrange, c(NA,NA))) {
-      yrange = c(NA,NA)
-      warning("'yrange' was set, but 'yuniform' = FALSE. 'yrange' defaulting back to no uniformity. Consider setting 'yuniform' to TRUE.")
     }
     
     # dat$conc <- list(10^agg$logc)
