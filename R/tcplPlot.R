@@ -12,6 +12,10 @@
 #' @param fld Character, the field(s) to query on.
 #' @param val List, vectors of values for each field to query on. Must be in
 #' the same order as 'fld'.
+#' @param compare.val List, vectors of values for each field to query on to 
+#' compare with val. Must be in the same order as 'fld'. Must have the same
+#' length as val (1:1 comparison). Must be set to compare plots; otherwise leave
+#' NULL
 #' @param output How should the plot be presented. To view the plot in application,
 #'  use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
 #' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
@@ -54,11 +58,11 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
+tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   conc_unit <- bmd <- resp <- NULL
   
-  resp <- NULL
+  # set lvl based on type
   lvl <- 5
   if (type == "sc") {
     lvl <- 2
@@ -73,9 +77,15 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema()) {
+    # check that val and compare.val are the same length 
+    if (!is.null(compare.val) && length(unlist(val)) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
     if (nrow(input) == 0) stop("No data for fld/val provided")
+    if (!is.null(compare.val)) { # load compare data if provided
+      compare.input <- tcplLoadData(lvl = lvl, fld = fld, val = compare.val, type = type)
+      if (nrow(compare.input) == 0) stop("No compare data for fld/val provided")
+    }
     # default assign multi=TRUE for output="pdf" 
     if (output == "pdf" && is.null(multi)) {
       multi <- TRUE
@@ -100,12 +110,11 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
       ncol <- ifelse(!verbose | type == "sc",3,2)
     }
     
-    if (type == "mc") {
-      m4id <- input$m4id
-      
-      # load dat
+    
+    
+    # load mc dat, used below function for both input and compare input
+    mcLoadDat <- function(m4id = NULL) {
       l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
-      agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = m4id)
       l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
       dat <- l4[l5, on = "m4id"]
       if (flags == TRUE) {
@@ -121,15 +130,38 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         }
         dat <- dat[l6, on = "m4id"]
       }
-      dat <- tcplPrepOtpt(dat)
-    } else {
-      s2id <- input$s2id
-      
-      # load dat
+      tcplPrepOtpt(dat)
+    }
+    
+    # load sc dat, used below function for both input and compare input
+    scLoadDat <- function(s2id = NULL) {
       l2 <- tcplLoadData(lvl = lvl, fld = "s2id", val = s2id, type = "sc", add.fld = T)
-      agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = s2id, type = "sc")
-      dat <- tcplPrepOtpt(l2)
+      tcplPrepOtpt(l2)
+    }
+    
+    if (type == "mc") {
+      # load dat
+      dat <- mcLoadDat(input$m4id)[, compare := FALSE]
+      agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = input$m4id)
+      # load compare dat
+      if (!is.null(compare.val)) {
+        compare.dat <- mcLoadDat(compare.input$m4id)[, compare := TRUE]
+        dat <- rbind(dat, compare.dat, fill = TRUE)
+        compare.agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = compare.input$m4id)
+        agg <- rbind(agg, compare.agg, fill = TRUE)
+      }
       
+    } else { # type == 'sc' 
+      # load dat
+      dat <- scLoadDat(input$s2id)[, compare := TRUE]
+      agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = input$s2id, type = "sc")
+      # load compare dat
+      if (!is.null(compare.val)) {
+        compare.dat <- scLoadDat(compare.input$s2id)[, compare := TRUE]
+        dat <- rbind(dat, compare.dat, fill = TRUE)
+        compare.agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = compare.input$s2id, type = "sc")
+        agg <- rbind(agg, compare.agg, fill = TRUE)
+      }
     }
     
     
@@ -201,7 +233,11 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, by = NULL, output = 
         split_dat <- split(dat,f = factor(dat %>% pull(all_of(by))))
       }
       for(d in split_dat){
-        plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
+        if (is.null(compare.val)) {
+          plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
+        } else {
+          plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1), MoreArgs = list(verbose = verbose, lvl = lvl, flags = flags, yrange = yrange))
+        }
         # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
@@ -355,7 +391,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     # l4_dat <- as_tibble(dat[3:length(dat)])
     
     
-    # calculate y values for each function
+    # calculate y values for each function 
     if ("hill" %in% models) y_hill <- tcplfit2::hillfn(ps = c(dat$hill_tp,dat$hill_ga,dat$hill_p), x = x_range)
     #tp = ps[1], ga = ps[2], p = ps[3], la = ps[4], q = ps[5]
     if ("gnls" %in% models) y_gnls <- tcplfit2::gnls(ps = c(dat$gnls_tp,dat$gnls_ga,dat$gnls_p,dat$gnls_la,dat$gnls_q),x = x_range)
@@ -857,6 +893,252 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
     ifelse(verbose,
            return(arrangeGrob(gg, valigned, nrow = 1, widths = 2:1)),
            return(gg)
+    )
+  }
+}
+
+
+
+#' tcplggplotCompare
+#' 
+#' @param dat data table with all required conc/resp data
+#' @param compare.dat data table with all required conc/resp data for comparison
+#' overlay
+#' @param lvl integer level of data that should be plotted
+#' level 2 - for 'sc' plotting
+#' level 5 - for 'mc' plotting, all fit models and winning model with hitcall
+#' @param verbose boolean should plotting include table of values next to the plot
+#' @param flags boolean should plotting include level 6 flags in plot caption
+#' @param yrange Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
+#' By default, c(NA,NA).
+#'
+#' @return A ggplot object or grob with accompanied table depending on verbose option
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if
+#' @importFrom dplyr tibble contains everything as_tibble arrange .data
+#' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_y_continuous scale_color_viridis_d
+#' @importFrom ggplot2 guide_legend scale_linetype_manual xlab ylab geom_text labs theme element_blank
+#' @importFrom ggplot2 margin unit element_text geom_segment scale_color_manual
+#' @import gridExtra
+#' @import stringr
+tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA,NA)) {
+  # variable binding
+  conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
+  annotateText <- name <- aic <- NULL
+  l3_dat_main <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med, l3 = "main")
+  l3_dat_compare <- tibble(conc = unlist(compare.dat$conc), resp = unlist(compare.dat$resp), max_med = compare.dat$max_med, l3 = "compare")
+  l3_dat_both <- rbind(l3_dat_main, l3_dat_compare)
+  l3_range <- l3_dat_both %>%
+    pull(.data$conc) %>%
+    range()
+  
+  # check if winning model has negative top.  If so coff,bmr should be negative
+  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+    if (dat$top < 0) {
+      dat$coff <- dat$coff * -1
+      dat$bmr <- dat$bmr * -1
+    }
+  }
+  
+  # check if data is outside bounds of yrange. If so, expand yrange bounds
+  if (!identical(yrange, c(NA,NA))) {
+    yrange[1] <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
+    yrange[2] <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+  }
+  
+  # for compare data, check if winning model has negative top.  If so coff,bmr should be negative
+  if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
+    if (compare.dat$top < 0) {
+      compare.dat$coff <- compare.dat$coff * -1
+      compare.dat$bmr <- compare.dat$bmr * -1
+    }
+  }
+  
+  dat$winning_model_string <- paste0("Model A(", dat$modl, ")")
+  compare.dat$winning_model_string <- paste0("Model B(", compare.dat$modl, ")")
+  winning_model_geom_function <- function(data, x) {
+    if (data$modl == "gnls") {
+      tcplfit2::gnls(ps = c(data$gnls_tp, data$gnls_ga, data$gnls_p, data$gnls_la, data$gnls_q), x = x)
+    } else if (data$modl == "exp3") {
+      tcplfit2::exp3(ps = c(data$exp3_a, data$exp3_b, data$exp3_p), x = x)
+    } else if (data$modl == "exp4") {
+      tcplfit2::exp4(ps = c(data$exp4_tp, data$exp4_ga), x = x)
+    } else if (data$modl == "exp5") {
+      tcplfit2::exp5(ps = c(data$exp5_tp, data$exp5_ga, data$exp5_p), x = x)
+    } else if (data$modl == "ploy1") {
+      tcplfit2::poly1(ps = c(data$poly1_a), x = x)
+    } else if (data$modl == "exp2") {
+      tcplfit2::exp2(ps = c(data$exp2_a, data$exp2_b), x = x)
+    } else if (data$modl == "poly2") {
+      tcplfit2::poly2(ps = c(data$poly2_a, data$poly2_b), x = x)
+    } else if (data$modl == "pow") {
+      tcplfit2::pow(ps = c(data$pow_a, data$pow_p), x = x)
+    } else if (data$modl == "hill") {
+      tcplfit2::hillfn(ps = c(data$hill_tp, data$hill_ga, data$hill_p), x = x)
+    }
+  }
+  
+  flag_count <- 0
+  flag_count_compare <- 0
+  if (flags && dat$flag != "None") {
+    flag_count <- str_count(dat$flag, "\n") + 1
+  }
+  if (flags && compare.dat$flag != "None") {
+    flag_count_compare <- str_count(compare.dat$flag, "\n") + 1
+  }
+  
+  
+  identical_title <- paste0(stringr::str_trunc(paste0(
+    ifelse(dat$dsstox_substance_id == compare.dat$dsstox_substance_id, paste0(dat$dsstox_substance_id, " "), ""),
+    ifelse(dat$chnm == compare.dat$chnm, paste0(dat$chnm, "\n"), "")
+    ), 75),
+    stringr::str_trunc(paste0(
+      ifelse(dat$spid == compare.dat$spid, paste0("SPID:", dat$spid, "  "), ""),
+      ifelse(dat$aeid == compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
+      ifelse(dat$aenm == compare.dat$aenm, paste0("AENM:", dat$aenm), "")), 70))
+  if (identical_title != "" & !endsWith(identical_title, "\n")) {
+    identical_title <- paste0(identical_title, "\n")
+  }
+  
+  
+  if (lvl == 2) {
+    gg <- ggplot(l3_dat_main, aes(x = conc)) +
+      geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
+      geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
+      geom_point(aes(y = resp)) +
+      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_y_continuous(limits = yrange) +
+      scale_linetype_manual("", 
+                            guide = guide_legend(override.aes = list(color = c("blue", "red"))), 
+                            values = c(2, 2)) +
+      xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
+      ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
+      labs(
+        title = paste0(
+          stringr::str_trunc(paste0(
+            dat$dsstox_substance_id, " ",
+            dat$chnm
+          ), 75), "\n",
+          stringr::str_trunc(paste0(
+            "AEID:", dat$aeid, "  ",
+            "AENM:", dat$aenm), 70),"\n",
+          "SPID:", dat$spid, "  ",
+          "S2ID:", dat$s2id, "  ",
+          ifelse(verbose, "", paste0(
+            "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          ))
+        )
+      ) +
+      theme(
+        plot.title = element_text(size = 12),
+        legend.title = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.spacing.x = unit(0, "mm"),
+        legend.spacing.y = unit(0, "mm")
+      )
+  } else {
+    gg <- ggplot(l3_dat_both, aes(conc, resp, color = l3)) +
+      geom_function(aes(linetype = dat$winning_model_string), fun = function(x) winning_model_geom_function(dat, x), color = "blue", alpha = 0.5) +
+      geom_function(aes(linetype = compare.dat$winning_model_string), fun = function(x) winning_model_geom_function(compare.dat, x), color = "red", alpha = 0.5) +
+      geom_hline(aes(yintercept = compare.dat$coff, linetype = "Cutoff B"), color = "red") +
+      geom_hline(aes(yintercept = dat$coff, linetype = "Cutoff A"), color = "blue") +
+      geom_point(alpha = 0.5) +
+      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_y_continuous(limits = yrange) +
+      scale_linetype_manual("", breaks = c(dat$winning_model_string, compare.dat$winning_model_string, "Cutoff A", "Cutoff B"), 
+                            guide = guide_legend(override.aes = list(color = c("blue", "red", "blue", "red"), linetype = c("solid", "solid", "dashed", "dashed"))), 
+                            values = if (compare.dat$coff == dat$coff) c("solid", "solid", "39", "15393933") else c("solid", "solid", "33", "33"),) + 
+      scale_color_manual(breaks = c(), guide = guide_legend(reverse = TRUE), values=c("red", "blue")) + 
+      xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
+      ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
+      labs(
+        title = paste0(
+          ifelse(identical_title != "", paste0(identical_title, "\n"), ""),
+          stringr::str_trunc(paste0(
+            "A: ",
+            ifelse(dat$dsstox_substance_id != compare.dat$dsstox_substance_id, paste0(dat$dsstox_substance_id, " "), ""),
+            ifelse(dat$chnm != compare.dat$chnm, paste0(dat$chnm, "\n"), "")
+          ), 75), 
+          stringr::str_trunc(paste0(
+            ifelse(dat$spid != compare.dat$spid, paste0("SPID:", dat$spid, "  "), ""),
+            ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", dat$aenm, "\n"), "")), 70),
+          "M4ID:", dat$m4id, "  ",
+          ifelse(verbose, "", paste0(
+            "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          )),
+          stringr::str_trunc(paste0(
+            "\n\n",
+            "B: ",
+            ifelse(dat$dsstox_substance_id != compare.dat$dsstox_substance_id, paste0(compare.dat$dsstox_substance_id, " "), ""),
+            ifelse(dat$chnm != compare.dat$chnm, paste0(compare.dat$chnm, "\n"), "")
+          ), 75),
+          stringr::str_trunc(paste0(
+            ifelse(dat$spid != compare.dat$spid, paste0("SPID:", compare.dat$spid, "  "), ""),
+            ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", compare.dat$aeid, "  "), ""),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", compare.dat$aenm, "\n"), "")), 70),
+          "M4ID:", compare.dat$m4id, "  ",
+          ifelse(verbose, "", paste0(
+            "\nHITC:", paste0(trimws(format(round(compare.dat$hitc, 3), nsmall = 3)))
+          ))
+        ),
+        caption = ifelse(flags, paste0(
+          "\nFlags:\nA(", flag_count, "): ", paste0(trimws(format(dat$flag, nsmall = 3))), 
+          "\n\nB(", flag_count_compare, "): ", paste0(trimws(format(compare.dat$flag, nsmall = 3)))
+        ), "")
+      ) +
+      theme(
+        plot.title = element_text(size = 12),
+        plot.caption = element_text(hjust = 0, margin = margin(-1,0,1,0)),
+        axis.title.x = element_text(margin = margin(3,0,-5,0)),
+        legend.title = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.spacing.x = unit(0, "mm"),
+        legend.spacing.y = unit(0, "mm")
+      )
+  }
+  
+  # general function to round/shorten values for plotting tables
+  round_n <- function(x, n=3) {
+    if (!is.na(x)) {
+      if (x >= 1000 | (x<=0.0005 & x != 0)) {
+        # if x>=1000, convert value to scientific notation
+        formatC(x, format = "e", digits = 1)
+      } else { # else, round the value to 3 decimal places
+        format(round(x, n), nsmall = 3)
+      }
+    } else {
+      return(NA)
+    }
+  }
+  round_n <- Vectorize(round_n)
+  
+  t <- NULL
+  if (lvl != 2) {
+    details <- tibble(Hitcall = c(dat$hitc, compare.dat$hitc), 
+                      BMD = c(dat$bmd, compare.dat$bmd), 
+                      AC50 = c(dat$ac50, compare.dat$ac50))
+    details <- details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    details <- as.data.frame(details)
+    t <- tableGrob(details, rows = c("A", "B"))
+  } else {
+    main_details <- tibble(Hitcall = dat$hitc)
+    main_details <- main_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    main_t <- tableGrob(main_details, rows = NULL)
+    compare_details <- tibble(Hitcall = compare.dat$hitc)
+    compare_details <- compare_details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    compare_t <- tableGrob(compare_details, rows = NULL)
+    valigned <- gtable_combine(main_t, compare_t, along = 2)
+  }
+  
+  if (lvl == 2) {
+    ifelse(verbose,
+           return(arrangeGrob(gg, valigned, ncol = 1, heights = c(4,1))),
+           return(gg)
+    )
+  } else {
+    ifelse(verbose,
+           return(arrangeGrob(gg, t, nrow = 1, widths = 2:1)),
+           return(arrangeGrob(gg))
     )
   }
 }
