@@ -31,9 +31,9 @@
 #' @param flags Boolean, by default FALSE. If TRUE, level 6 flags are displayed
 #' below annotations on plot
 #' @param yuniform Boolean, by default FALSE. If TRUE, all plots will have uniform
-#' y axis scaling
-#' @param yrange Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
-#' By default, c(NA,NA). 'yuniform' must be set to TRUE to use.
+#' y axis scaling, automatically determined.
+#' @param yrange Integer of length 2, for directly setting the y-axis range, 
+#' c(<min>,<max>). By default, c(NA,NA).
 #'
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -69,6 +69,10 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     if (flags == TRUE) {
       warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
     }
+  }
+  
+  if (length(yrange) != 2) {
+    stop("'yrange' must be of length 2")
   }
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
@@ -185,22 +189,29 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       dat <- dat[conc_resp_table, on = "s2id"]
     }
     
-    # set range if yuniform is true
-    if (yuniform == TRUE) {
-      if (length(yrange) != 2) {
-        stop("'yrange' must be of length 2")
+    # set range
+    if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
+      min <- min(dat$resp_min, unlist(dat$resp))
+      max <- max(dat$resp_max, unlist(dat$resp))
+      # any bidirectional models contained in dat, cutoff both ways
+      if (2 %in% dat$model_type) {
+        cutoffs <- dat[model_type == 2]$coff
+        min <- min(min, cutoffs, cutoffs * -1)
+        max <- max(max, cutoffs, cutoffs * -1)
       }
-      if (identical(yrange, c(NA,NA))) {
-        min <- min(dat$resp_min, dat$coff, dat$coff*-1, unlist(dat$resp))
-        max <- max(dat$resp_max, dat$coff, dat$coff*-1, unlist(dat$resp))
-      } else {
-        min <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
-        max <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+      # any gain models contained in dat, cutoff only positive
+      if (3 %in% dat$model_type) {
+        cutoffs <- dat[model_type == 3]$coff
+        min <- min(min, cutoffs)
+        max <- max(max, cutoffs)
+      }
+      # any loss models contained in dat, cutoff only negative
+      if (4 %in% dat$model_type) {
+        cutoffs <- dat[model_type == 4]$coff
+        min <- min(min, cutoffs * -1)
+        max <- max(max, cutoffs * -1)
       }
       yrange = c(min, max)
-    } else if (yuniform == FALSE && !identical(yrange, c(NA,NA))) {
-      yrange = c(NA,NA)
-      warning("'yrange' was set, but 'yuniform' = FALSE. 'yrange' defaulting back to no uniformity. Consider setting 'yuniform' to TRUE.")
     }
     
     # dat$conc <- list(10^agg$logc)
@@ -289,7 +300,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       }
       # plotting if using multiplot function
       hitc.all <- TRUE
-      # browser()
       if (multi) {
         graphics.off()
         pdf(file = file.path(getwd(), paste0(fileprefix, ".", output)), height = 10, width = 6, pointsize = 10)
@@ -317,7 +327,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
         }
         # plotting if using multiplot function
         hitc.all <- TRUE
-        # browser()
         if (multi) {
           graphics.off()
           pdf(file = file.path(getwd(), paste0(fileprefix, "_", by, "_", s, ".", output)), height = 10, width = 6, pointsize = 10)
@@ -699,13 +708,37 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   l3_range <- l3_dat %>%
     pull(.data$conc) %>%
     range()
-
-  # check if winning model has negative top.  If so coff,bmr should be negative
-  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-    if (dat$top < 0) {
-      dat$coff <- dat$coff * -1
-      dat$bmr <- dat$bmr * -1
+  
+  # check if model_type is 3 or 4, which means an override method was assigned
+  if (dat$model_type == 3) { # gain direction
+    # leave coff but bmr should flip if top is negative
+    if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      if (dat$top < 0) {
+        dat$bmr <- dat$bmr * -1
+      }
     }
+  } else if (dat$model_type == 4) { # loss direction
+    # coff and bmr(if top < 0) should be negative
+    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      dat$coff <- dat$coff * -1
+      if (dat$top < 0) {
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  } else { # bidirectional
+    # check if winning model has negative top.  If so coff,bmr should be negative
+    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      if (dat$top < 0) {
+        dat$coff <- dat$coff * -1
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  }
+
+  # check if data is outside bounds of yrange. If so, expand yrange bounds
+  if (!identical(yrange, c(NA,NA))) {
+    yrange[1] <- min(dat$resp_min, dat$coff, yrange[1], unlist(dat$resp))
+    yrange[2] <- max(dat$resp_max, dat$coff, yrange[2], unlist(dat$resp))
   }
 
   winning_model_string <- paste0("Winning Model\n(", dat$modl, ")")
