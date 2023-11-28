@@ -92,7 +92,7 @@ tcplHit2 <- function(mc4, coff) {
   # browser()
   test <- nested_mc4 %>%
     dplyr::rowwise() %>%
-    mutate(df = list(tcplhit2_core(params = params, conc = unlist(conc), resp = unlist(resp), bmed = bmed, cutoff = coff, onesd = onesd))) %>%
+    mutate(df = list(tcplhit2_core(params = params, conc = unlist(conc), resp = unlist(resp), bmed = bmed, cutoff = coff, onesd = onesd, bmd_low_bnd = .1, bmd_up_bnd = 10))) %>%
     select(-conc, -resp)
   # test <- NULL
   # for(id in nested_mc4$m4id){
