@@ -20,7 +20,7 @@
 mc6 <- function(ae, wr = FALSE) {
   
   ## Variable-binding to pass R CMD Check
-  modl <- aeid <- mthd_id <- m4id <- m5id <- lval <- rval <- J <- mthd <- bmad <- cell_viability_assay <- NULL
+  mthd_id <- m4id <- m5id <- lval <- rval <- J <- mthd <- bmad <- cell_viability_assay <- NULL
   
   #owarn <- getOption("warn")
   #options(warn = 1)

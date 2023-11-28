@@ -13,4 +13,3 @@ cran-comments.md
 ^CRAN-SUBMISSION$
 ^data-raw$
 ^LICENSE\.md$
-^\.github$
