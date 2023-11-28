@@ -317,7 +317,7 @@ mc5_mthds <- function(ae) {
 	  # set hitcall param and hitc to -1 if found in m4id list
 	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] * -1)
 	  e3 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- dat$hitc[dat$m4id %in% top.gt0.m4ids] * -1)
-	  e4 <- bquote(dat$model_type = 4)
+	  e4 <- bquote(dat$model_type <- 4)
 	  list(e1, e2, e3, e4)
 	  
 	},
@@ -329,7 +329,7 @@ mc5_mthds <- function(ae) {
 	  # set hitcall param and hitc to -1 if found in m4id list
 	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.lt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val[dat$m4id %in% top.lt0.m4ids & dat$hit_param == "hitcall"] * -1)
 	  e3 <- bquote(dat$hitc[dat$m4id %in% top.lt0.m4ids] <- dat$hitc[dat$m4id %in% top.lt0.m4ids] * -1)
-	  e4 <- bquote(dat$model_type = 3)
+	  e4 <- bquote(dat$model_type <- 3)
 	  list(e1, e2, e3, e4)
 	  
 	}
