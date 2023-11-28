@@ -153,7 +153,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       
     } else { # type == 'sc' 
       # load dat
-      dat <- scLoadDat(input$s2id)[, compare := TRUE]
+      dat <- scLoadDat(input$s2id)[, compare := FALSE]
       agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = input$s2id, type = "sc")
       # load compare dat
       if (!is.null(compare.val)) {
@@ -193,23 +193,28 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
       min <- min(dat$resp_min, unlist(dat$resp))
       max <- max(dat$resp_max, unlist(dat$resp))
-      # any bidirectional models contained in dat, cutoff both ways
-      if (2 %in% dat$model_type) {
-        cutoffs <- dat[model_type == 2]$coff
-        min <- min(min, cutoffs, cutoffs * -1)
-        max <- max(max, cutoffs, cutoffs * -1)
-      }
-      # any gain models contained in dat, cutoff only positive
-      if (3 %in% dat$model_type) {
-        cutoffs <- dat[model_type == 3]$coff
-        min <- min(min, cutoffs)
-        max <- max(max, cutoffs)
-      }
-      # any loss models contained in dat, cutoff only negative
-      if (4 %in% dat$model_type) {
-        cutoffs <- dat[model_type == 4]$coff
-        min <- min(min, cutoffs * -1)
-        max <- max(max, cutoffs * -1)
+      if (type == "mc") {
+        # any bidirectional models contained in dat, cutoff both ways
+        if (2 %in% dat$model_type) {
+          cutoffs <- dat[model_type == 2]$coff
+          min <- min(min, cutoffs, cutoffs * -1)
+          max <- max(max, cutoffs, cutoffs * -1)
+        }
+        # any gain models contained in dat, cutoff only positive
+        if (3 %in% dat$model_type) {
+          cutoffs <- dat[model_type == 3]$coff
+          min <- min(min, cutoffs)
+          max <- max(max, cutoffs)
+        }
+        # any loss models contained in dat, cutoff only negative
+        if (4 %in% dat$model_type) {
+          cutoffs <- dat[model_type == 4]$coff
+          min <- min(min, cutoffs * -1)
+          max <- max(max, cutoffs * -1)
+        }
+      } else {
+        min <- min(min, dat$coff, dat$coff * -1)
+        max <- max(max, dat$coff, dat$coff * -1)
       }
       yrange = c(min, max)
     }
@@ -931,27 +936,69 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     pull(.data$conc) %>%
     range()
   
-  # check if winning model has negative top.  If so coff,bmr should be negative
-  if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-    if (dat$top < 0) {
+  
+  # main data
+  # check if model_type is 3 or 4, which means an override method was assigned
+  if (lvl == 5 && dat$model_type == 3) { # gain direction
+    # leave coff but bmr should flip if top is negative
+    if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      if (dat$top < 0) {
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  } else if (lvl == 5 && dat$model_type == 4) { # loss direction
+    # coff and bmr(if top < 0) should be negative
+    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
       dat$coff <- dat$coff * -1
-      dat$bmr <- dat$bmr * -1
+      if (dat$top < 0) {
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  } else { # bidirectional
+    # check if winning model has negative top.  If so coff,bmr should be negative
+    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+      if (dat$top < 0) {
+        dat$coff <- dat$coff * -1
+        dat$bmr <- dat$bmr * -1
+      }
+    }
+  }
+  
+  # compare data
+  # check if model_type is 3 or 4, which means an override method was assigned
+  if (lvl == 5 && compare.dat$model_type == 3) { # gain direction
+    # leave coff but bmr should flip if top is negative
+    if (!is.null(compare.dat$top) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
+      if (compare.dat$top < 0) {
+        compare.dat$bmr <- compare.dat$bmr * -1
+      }
+    }
+  } else if (lvl == 5 && compare.dat$model_type == 4) { # loss direction
+    # coff and bmr(if top < 0) should be negative
+    if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
+      compare.dat$coff <- compare.dat$coff * -1
+      if (compare.dat$top < 0) {
+        compare.dat$bmr <- compare.dat$bmr * -1
+      }
+    }
+  } else { # bidirectional
+    # check if winning model has negative top.  If so coff,bmr should be negative
+    if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
+      if (compare.dat$top < 0) {
+        compare.dat$coff <- compare.dat$coff * -1
+        compare.dat$bmr <- compare.dat$bmr * -1
+      }
     }
   }
   
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
-    yrange[1] <- min(dat$resp_min, dat$coff, dat$coff*-1, yrange[1], unlist(dat$resp))
-    yrange[2] <- max(dat$resp_max, dat$coff, dat$coff*-1, yrange[2], unlist(dat$resp))
+    yrange[1] <- min(dat$resp_min, dat$coff, yrange[1], unlist(dat$resp), 
+                     compare.dat$resp_min, compare.dat$coff, unlist(compare.dat$resp))
+    yrange[2] <- max(dat$resp_max, dat$coff, yrange[2], unlist(dat$resp), 
+                     compare.dat$resp_max, compare.dat$coff, unlist(compare.dat$resp))
   }
   
-  # for compare data, check if winning model has negative top.  If so coff,bmr should be negative
-  if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
-    if (compare.dat$top < 0) {
-      compare.dat$coff <- compare.dat$coff * -1
-      compare.dat$bmr <- compare.dat$bmr * -1
-    }
-  }
   
   dat$winning_model_string <- paste0("Model A(", dat$modl, ")")
   compare.dat$winning_model_string <- paste0("Model B(", compare.dat$modl, ")")
@@ -1001,30 +1048,49 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
   
   
   if (lvl == 2) {
-    gg <- ggplot(l3_dat_main, aes(x = conc)) +
-      geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
-      geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
-      geom_point(aes(y = resp)) +
+    gg <- ggplot(l3_dat_both, aes(conc, resp, color = l3)) +
+      geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median A"), color="blue") +
+      geom_hline(aes(yintercept = compare.dat$max_med, linetype = "Max Median B"), color="red") +
+      geom_hline(aes(yintercept = compare.dat$coff, linetype="Cutoff B"), color="red") +
+      geom_hline(aes(yintercept = dat$coff, linetype="Cutoff A"), color="blue") +
+      geom_point() +
       scale_x_continuous(limits = l3_range, trans = "log10") +
       scale_y_continuous(limits = yrange) +
-      scale_linetype_manual("", 
-                            guide = guide_legend(override.aes = list(color = c("blue", "red"))), 
-                            values = c(2, 2)) +
+      scale_linetype_manual("", breaks = c("Max Median A", "Max Median B", "Cutoff A", "Cutoff B"),
+                            guide = guide_legend(override.aes = list(color = c("blue", "red", "blue", "red"), linetype = c("solid", "solid", "dashed", "dashed"))), 
+                            values = if (compare.dat$coff == dat$coff) c("solid", "solid", "39", "15393933") else c("solid", "solid", "33", "33")) +
+      scale_color_manual(breaks = c(), guide = guide_legend(reverse = TRUE), values=c("red", "blue")) + 
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
       ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type))) +
       labs(
         title = paste0(
+          ifelse(identical_title != "", paste0(identical_title, "\n"), ""),
           stringr::str_trunc(paste0(
-            dat$dsstox_substance_id, " ",
-            dat$chnm
-          ), 75), "\n",
+            "A: ",
+            ifelse(dat$dsstox_substance_id != compare.dat$dsstox_substance_id, paste0(dat$dsstox_substance_id, " "), ""),
+            ifelse(dat$chnm != compare.dat$chnm, paste0(dat$chnm, "\n"), "")
+          ), 75), 
           stringr::str_trunc(paste0(
-            "AEID:", dat$aeid, "  ",
-            "AENM:", dat$aenm), 70),"\n",
-          "SPID:", dat$spid, "  ",
+            ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", dat$aenm, "\n"), ""),
+            ifelse(dat$spid != compare.dat$spid, paste0("SPID:", dat$spid, "  "), "")), 70),
           "S2ID:", dat$s2id, "  ",
           ifelse(verbose, "", paste0(
-            "HITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+            "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+          )),
+          stringr::str_trunc(paste0(
+            "\n\n",
+            "B: ",
+            ifelse(dat$dsstox_substance_id != compare.dat$dsstox_substance_id, paste0(compare.dat$dsstox_substance_id, " "), ""),
+            ifelse(dat$chnm != compare.dat$chnm, paste0(compare.dat$chnm, "\n"), "")
+          ), 75),
+          stringr::str_trunc(paste0(
+            ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", compare.dat$aeid, "  "), ""),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", compare.dat$aenm, "\n"), ""),
+            ifelse(dat$spid != compare.dat$spid, paste0("SPID:", compare.dat$spid, "  "), "")), 70),
+          "S2ID:", compare.dat$s2id, "  ",
+          ifelse(verbose, "", paste0(
+            "\nHITC:", paste0(trimws(format(round(compare.dat$hitc, 3), nsmall = 3)))
           ))
         )
       ) +
@@ -1120,25 +1186,17 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     details <- details %>% mutate_if(is.numeric, ~ round_n(., 3))
     details <- as.data.frame(details)
     t <- tableGrob(details, rows = c("A", "B"))
-  } else {
-    main_details <- tibble(Hitcall = dat$hitc)
-    main_details <- main_details %>% mutate_if(is.numeric, ~ round_n(., 3))
-    main_t <- tableGrob(main_details, rows = NULL)
-    compare_details <- tibble(Hitcall = compare.dat$hitc)
-    compare_details <- compare_details %>% mutate_if(is.numeric, ~ round_n(., 3))
-    compare_t <- tableGrob(compare_details, rows = NULL)
-    valigned <- gtable_combine(main_t, compare_t, along = 2)
-  }
-  
-  if (lvl == 2) {
-    ifelse(verbose,
-           return(arrangeGrob(gg, valigned, ncol = 1, heights = c(4,1))),
-           return(gg)
-    )
-  } else {
     ifelse(verbose,
            return(arrangeGrob(gg, t, nrow = 1, widths = 2:1)),
            return(arrangeGrob(gg))
+    )
+  } else {
+    details <- tibble(Hitcall = c(dat$hitc, compare.dat$hitc))
+    details <- details %>% mutate_if(is.numeric, ~ round_n(., 3))
+    t <- tableGrob(details, rows = c("A", "B"))
+    ifelse(verbose,
+           return(arrangeGrob(gg, t, ncol = 1, heights = c(4,1))),
+           return(gg)
     )
   }
 }
