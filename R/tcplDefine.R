@@ -47,18 +47,14 @@
 #' parameters.
 #' 
 #' @import data.table
-#' @importFrom utils data
-#' 
 #' @export
 
 tcplDefine <- function(val = NULL) {
   
   drvr <- getOption("TCPL_DRVR")
-  invitrodb_dd <- NULL
   
   # example driver
   if (drvr == "example"){
-    data("invitrodb_dd", envir=environment())
     
     dd <- invitrodb_dd[]
     
