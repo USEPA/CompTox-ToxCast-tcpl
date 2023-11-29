@@ -4,7 +4,7 @@
 \alias{tcplSubsetChid}
 \title{Subset level 5 data to a single sample per chemical}
 \usage{
-tcplSubsetChid(dat, flag = TRUE, type = "mc", export_ready = FALSE)
+tcplSubsetChid(dat, flag = TRUE, type = "mc", export_ready = TRUE)
 }
 \arguments{
 \item{dat}{data.table, a data.table with level 5 data}
@@ -14,7 +14,7 @@ details for more information}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc"}
 
-\item{export_ready}{Boolean, default FALSE, should only export ready 1 values be included in calculation}
+\item{export_ready}{Boolean, default TRUE, should only export ready 1 values be included in calculation}
 }
 \value{
 A data.table with a single sample for every given chemical-assay

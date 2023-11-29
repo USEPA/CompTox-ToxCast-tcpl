@@ -14,7 +14,7 @@
 #' @param flag Integer, the mc6_mthd_id values to go into the flag count, see
 #' details for more information
 #' @param type Character of length 1, the data type, "sc" or "mc"
-#' @param export_ready Boolean, default FALSE, should only export ready 1 values be included in calculation
+#' @param export_ready Boolean, default TRUE, should only export ready 1 values be included in calculation
 #'
 #' @details
 #' \code{tcplSubsetChid} is intended to work with level 5 data that has
@@ -61,7 +61,7 @@
 #' @import data.table
 #' @export
 
-tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = FALSE) {
+tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = TRUE) {
   ## Variable-binding to pass R CMD Check
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
   chid <- logc <- minc <- NULL

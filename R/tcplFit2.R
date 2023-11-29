@@ -3,45 +3,37 @@
 #' @param dat output from level 3 processing
 #' @param fitmodels list of the models that should be fit with the data
 #' @param bmed baseline value, typically should be 0
+#' @param bidirectional boolean, default is TRUE (bidirectional fitting)
 #'
 #' @return Data.table with an additional column fitparams that includes all of the fitting parameters
 #' @importFrom tcplfit2 tcplfit2_core
 tcplFit2 <- function(dat,
                      fitmodels = c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5"),
-                     bmed = NULL) {
+                     bmed = NULL,
+                     bidirectional = TRUE) {
   #variable binding
   resp  <-bmad  <-aeid  <-osd  <-m3id <- concentration_unlogged  <-response <- NULL
   # do all the regular fitting things that still need to be done
-  res <- dat[, `:=`(c("rmns", "rmds", "nconcs", "med_rmds_pos", "med_rmds_neg"), {
+  res <- dat[, `:=`(c("rmns", "rmds", "nconcs", "med_rmds"), {
     rmns <- mean(resp)
     rmds <- median(resp)
     nconcs <- .N
-    med_rmds_pos <- rmds >= (3 * bmad)
-    med_rmds_neg <- rmds <= (-3 * bmad)
-    .(rmns, rmds, nconcs, med_rmds_pos, med_rmds_neg)
+    med_rmds <- rmds >= (3 * bmad)
+    .(rmns, rmds, nconcs, med_rmds)
   }), keyby = .(aeid, spid, logc)][, .(
-    bmad = min(bmad), osd = min(osd), bmed = ifelse(is.null(bmed), 0, max(bmed)),
-    resp_max = max(resp), resp_min = min(resp),
-    max_mean = max(rmns), max_mean_conc = logc[which.max(rmns)],
+    bmad = min(bmad), resp_max = max(resp), osd = min(osd), bmed = ifelse(is.null(bmed), 0, max(bmed)),
+    resp_min = min(resp), max_mean = max(rmns), max_mean_conc = logc[which.max(rmns)],
     max_med = max(rmds), max_med_conc = logc[which.max(rmds)],
-    min_mean = min(rmns), min_mean_conc = logc[which.min(rmns)],
-    min_med = min(rmds), min_med_conc = logc[which.min(rmds)],
     logc_max = max(logc), logc_min = min(logc), nconc = length(unique(logc)),
-    npts = .N, nrep = median(as.numeric(nconcs)), 
-    nmed_gtbl_pos = sum(med_rmds_pos) / first(nconcs), 
-    nmed_gtbl_neg = sum(med_rmds_neg) / first(nconcs),
+    npts = .N, nrep = median(as.numeric(nconcs)), nmed_gtbl = sum(med_rmds) / first(nconcs),
     concentration_unlogged = list(10^(logc)), response = list(resp), m3ids = list(m3id)
   ),
   keyby = .(aeid, spid)
-  ][, `:=`(c("max_med_diff", "max_med_diff_conc"), {
-    max_med_diff <- ifelse(abs(max_med) > abs(min_med), max_med, min_med)
-    max_med_diff_conc <- ifelse(abs(max_med) > abs(min_med), max_med_conc, min_med_conc)
-    .(max_med_diff, max_med_diff_conc)
-  })][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
+  ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
     `:=`(fitparams = list(tcplfit2::tcplfit2_core(unlist(concentration_unlogged),
       unlist(response),
       cutoff = bmad,
-      bidirectional = TRUE,
+      bidirectional = bidirectional,
       verbose = FALSE, force.fit = TRUE,
       fitmodels = fitmodels
     ))),

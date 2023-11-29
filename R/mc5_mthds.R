@@ -64,7 +64,6 @@
 #'  \describe{
 #'   \item{fc0.2}{Add a cutoff value of 0.2. Typically for zero centered fold change data.}
 #'   \item{fc0.3}{Add a cutoff value of 0.3. Typically for zero centered fold change data.}
-#'   \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
 #'  }
 #' }
 #'
@@ -89,7 +88,6 @@
 #'  \describe{
 #'   \item{pc05}{Add a cutoff value of 5. Typically for percent of control data.}
 #'   \item{pc10}{Add a cutoff value of 10. Typically for percent of control data.}
-#'   \item{pc16}{Add a cutoff value of 16. Typically for percent of control data.}
 #'   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
 #'   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
 #'   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
@@ -106,27 +104,7 @@
 #'   \item{coff_2.32}{Add a cutoff value of 2.32.}
 #'   \item{loec.coff}{Method not yet updated for tcpl implementation. Identify the lowest observed 
 #'   effective concentration (loec) compared to baseline.}
-#'   \item{fc0.2}{Add a cutoff value of 0.2. Typically for zero centered fold change data.}
-#'   \item{fc0.3}{Add a cutoff value of 0.3. Typically for zero centered fold change data.}
-#'   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
-#'   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
-#'   \item{bmad1}{Add a cutoff value of 1 multiplied by baseline median absolute value (bmad). By 
-#'   default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
-#'   \item{bmad2}{Add a cutoff value of 2 multiplied by the baseline median absolute deviation 
-#'   (bmad). By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
-#'   \item{pc10}{Add a cutoff value of 10. Typically for percent of control data.}
-#'   \item{pc05}{Add a cutoff value of 5. Typically for percent of control data.}
-#'   \item{pc95}{Add a cutoff value of 95. Typically for percent of control data.}
-#'   \item{bmad4}{Add a cutoff value of 4 multiplied the baseline median absolute deviation (bmad). 
-#'   By default, bmad is calculated using test compound wells (wllt = t) for the endpoint.}
-#'   \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
-#'   \item{ow_bidirectional_loss}{Multiply winning model hitcall (hitc) by -1
-#'   for models fit in the positive analysis direction. Typically used for
-#'   endpoints where only negative responses are biologically relevant.}
-#'   \item{ow_bidirectional_gain}{Multiply winning model hitcall (hitc) by -1
-#'   for models fit in the negative analysis direction. Typically used for
-#'   endpoints where only positive responses are biologically relevant.}
-#' }
+#'  }
 #' }
 #'
 #' @note
@@ -301,39 +279,8 @@ mc5_mthds <- function(ae) {
 	  e1 <- bquote(coff <- c(coff, 0.5))
 	  list(e1)
 	  
-	}, 
-
-	pc16 = function() {
-
-     	 e1 <- bquote(coff <- c(coff, 16))
-      	 list(e1)
-
-	},
-	
-	ow_bidirectional_loss = function() {
-	  
-	  # get all endpoint sample m4ids where the top param is greater than 0
-	  e1 <- bquote(top.gt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val > 0, unique(m4id)])
-	  # set hitcall param and hitc to -1 if found in m4id list
-	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val[dat$m4id %in% top.gt0.m4ids & dat$hit_param == "hitcall"] * -1)
-	  e3 <- bquote(dat$hitc[dat$m4id %in% top.gt0.m4ids] <- dat$hitc[dat$m4id %in% top.gt0.m4ids] * -1)
-	  e4 <- bquote(dat$model_type <- 4)
-	  list(e1, e2, e3, e4)
-	  
-	},
-	
-	ow_bidirectional_gain = function() {
-	  
-	  # get all endpoint sample m4ids where the top param is less than 0
-	  e1 <- bquote(top.lt0.m4ids <- dat[(hit_param %in% c("tp", "top")) & hit_val < 0, unique(m4id)])
-	  # set hitcall param and hitc to -1 if found in m4id list
-	  e2 <- bquote(dat$hit_val[dat$m4id %in% top.lt0.m4ids & dat$hit_param == "hitcall"] <- dat$hit_val[dat$m4id %in% top.lt0.m4ids & dat$hit_param == "hitcall"] * -1)
-	  e3 <- bquote(dat$hitc[dat$m4id %in% top.lt0.m4ids] <- dat$hitc[dat$m4id %in% top.lt0.m4ids] * -1)
-	  e4 <- bquote(dat$model_type <- 3)
-	  list(e1, e2, e3, e4)
-	  
 	}
-
+	
   )
 }
 

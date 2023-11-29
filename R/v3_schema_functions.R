@@ -12,21 +12,14 @@ write_lvl_4 <- function(dat){
                 "resp_min",
                 "max_mean",
                 "max_mean_conc",
-                "min_mean",
-                "min_mean_conc",
                 "max_med",
                 "max_med_conc",
-                "min_med",
-                "min_med_conc",
-                "max_med_diff",
-                "max_med_diff_conc",
                 "logc_max",
                 "logc_min",
                 "nconc",
                 "npts",
                 "nrep",
-                "nmed_gtbl_pos",
-                "nmed_gtbl_neg",
+                "nmed_gtbl",
                 "tmpi")
   mc4_agg_cols <- c(paste0("m", 0:4, "id"), "aeid")
   
