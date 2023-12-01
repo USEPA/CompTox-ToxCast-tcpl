@@ -26,7 +26,7 @@ tcplFit2 <- function(dat,
     max_med = max(rmds), max_med_conc = logc[which.max(rmds)],
     logc_max = max(logc), logc_min = min(logc), nconc = length(unique(logc)),
     npts = .N, nrep = median(as.numeric(nconcs)), nmed_gtbl = sum(med_rmds) / first(nconcs),
-    concentration_unlogged = list(10^(logc)), response = list(resp), m3ids = list(m3id)
+    concentration_unlogged = list(logc), response = list(resp), m3ids = list(m3id)
   ),
   keyby = .(aeid, spid)
   ][, `:=`(tmpi = seq_len(.N)), keyby = .(aeid)][,
@@ -71,7 +71,7 @@ tcplHit2 <- function(mc4, coff) {
   l3_dat <- l4_agg %>% left_join(tcplLoadData(lvl = 3, fld = "m3id", val = l4_agg$m3id), by = c("aeid", "m3id", "m2id", "m1id", "m0id", "spid", "logc", "resp"))
 
   # unlog and plug into nested
-  nested_mc4 <- nested_mc4 %>% left_join(l3_dat %>% group_by(m4id) %>% summarise(conc = list(10^(logc)), resp = list(resp)), by = "m4id")
+  nested_mc4 <- nested_mc4 %>% left_join(l3_dat %>% group_by(m4id) %>% summarise(conc = list(logc), resp = list(resp)), by = "m4id")
 
   # rejoin the onesd for tcplfit2
   nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "onesd") %>% select(m4id, onesd = model_val), by = "m4id")
