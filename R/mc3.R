@@ -58,8 +58,8 @@ mc3 <- function(ac, wr = FALSE) {
   ## Force all concentrations to 1 significant figure
   dat[ , conc := signif(conc, 1)]
 
-  ## Add column for log10 concentration
-  dat[ , logc := log10(conc)]
+  ## Add column for concentration
+  dat[ , logc := conc]
 
   ## Load aeid mapping information.
   aeid_info <- tcplLoadAeid("acid", ac)[ , list(acid, aeid)]
