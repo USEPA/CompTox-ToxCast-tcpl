@@ -81,6 +81,10 @@ mc5 <- function(ae, wr = FALSE) {
     loec.mthd = TRUE
     ms <- ms[!mthd=='loec.coff']
   }
+  ## Extract methods that need to overwrite hitc and hit_val
+  ms_overwrite <- ms[grepl("ow_",mthd),]
+  ## Extract methods that don't overwrite
+  ms <- ms[!grepl("ow_",mthd),]
   
   
   if (nrow(ms) == 0) {
@@ -101,8 +105,11 @@ mc5 <- function(ae, wr = FALSE) {
     cutoff <- max(dat$coff)
     #can remove this once loading of data is working correctly
     dat <- tcplQuery(paste0("SELECT  
-    `mc4`.`m4id`,    `mc4`.`aeid`,    `mc4`.`spid`,    `mc4`.`bmad`,    `mc4`.`resp_max`,    `mc4`.`resp_min`,    `mc4`.`max_mean`,    `mc4`.`max_mean_conc`,
-    `mc4`.`max_med`,    `mc4`.`max_med_conc`,    `mc4`.`logc_max`,    `mc4`.`logc_min`,    `mc4`.`nconc`,    `mc4`.`npts`,    `mc4`.`nrep`,    `mc4`.`nmed_gtbl`,
+    `mc4`.`m4id`,    `mc4`.`aeid`,    `mc4`.`spid`,    `mc4`.`bmad`,    `mc4`.`resp_max`,    `mc4`.`resp_min`,
+    `mc4`.`max_mean`,    `mc4`.`max_mean_conc`,    `mc4`.`min_mean`,    `mc4`.`min_mean_conc`,
+    `mc4`.`max_med`,    `mc4`.`max_med_conc`,    `mc4`.`min_med`,    `mc4`.`min_med_conc`,    
+    `mc4`.`max_med_diff`,    `mc4`.`max_med_diff_conc`,    `mc4`.`logc_max`,    `mc4`.`logc_min`,    `mc4`.`nconc`,
+    `mc4`.`npts`,    `mc4`.`nrep`,    `mc4`.`nmed_gtbl_pos`,    `mc4`.`nmed_gtbl_neg`,
     `mc4`.`tmpi`,	  `mc4_param`.`model`,    `mc4_param`.`model_param`,    `mc4_param`.`model_val`
     FROM mc4 inner join mc4_param on mc4.m4id = mc4_param.m4id where mc4.aeid = ",ae,";"))
     # if we're using v3 schema we want to tcplfit2
@@ -345,6 +352,15 @@ mc5 <- function(ae, wr = FALSE) {
                "coff", "actp", "model_type", modl_pars) # Added model_type here
   dat <- dat[ , .SD, .SDcols = outcols]
   }
+  
+  
+  # apply overwrite methods
+  if (nrow(ms_overwrite) > 0) {
+    exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
+    fenv <- environment()
+    invisible(rapply(exprs, eval, envir = fenv))
+  }
+  
   
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
