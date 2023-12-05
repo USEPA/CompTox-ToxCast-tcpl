@@ -369,6 +369,15 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   compare.dat <- dat[compare == TRUE]
   dat <- dat[compare == FALSE]
   
+  l3_dat_main <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med, l3 = "response A")
+  l3_dat_compare <- tibble(conc = unlist(compare.dat$conc), resp = unlist(compare.dat$resp), max_med = compare.dat$max_med, l3 = "response B")
+  l3_dat_both <- rbind(l3_dat_main, l3_dat_compare)
+  
+  # extract range from level 3 data for creating plotting all the functions
+  # increase resolution to get smoother curves
+  resolution <- 100
+  x_min_max <- range(l3_dat_both$conc)
+  x_range <- 10^(seq(from = log10(x_min_max[1]), to = log10(x_min_max[2]), length.out = resolution))
   
   #check if winning model = none 
   if (!lvl == 2 && !dat$modl == "none"){
@@ -429,31 +438,12 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       }
     }
     
-    
-    l3_dat_main <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med, l3 = "response A")
-    l3_dat_compare <- tibble(conc = unlist(compare.dat$conc), resp = unlist(compare.dat$resp), max_med = compare.dat$max_med, l3 = "response B")
-    l3_dat_both <- rbind(l3_dat_main, l3_dat_compare)
-    
-    # extract range from level 3 data for creating plotting all the functions
-    # increase resolution to get smoother curves
-    resolution <- 100
-    x_min_max <- range(l3_dat_main$conc)
-    x_range <- 10^(seq(from = log10(x_min_max[1]), to = log10(x_min_max[2]), length.out = resolution))
-    x_min_max_compare <- range(l3_dat_compare$conc)
-    x_range_compare <- 10^(seq(from = log10(x_min_max_compare[1]), to = log10(x_min_max_compare[2]), length.out = resolution))
-    
-    
     #get models from columns that have an ac50 listed
     models <- gsub("_ac50","",colnames(dat)[grepl("_ac50",colnames(dat))])
     ac50s <- tibble(model = models, ac50 = dat %>% select(colnames(dat)[grepl("_ac50",colnames(dat))]) %>% unlist)
-    ac50s_compare <- tibble(model = models, ac50 = compare.dat %>% select(colnames(compare.dat)[grepl("_ac50",colnames(compare.dat))]) %>% unlist)
     #don't need loss direction ac50s
     ac50s <- ac50s %>% filter(!grepl("_loss",model))
-    ac50s_compare <- ac50s_compare %>% filter(!grepl("_loss",model))
     models <- models[!grepl("_loss",models)]
-    # dat$models <- NULL
-    # dat$ac50 <- NULL
-    # l4_dat <- as_tibble(dat[3:length(dat)])
     
     
     # calculate y values for each function 
@@ -475,7 +465,54 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     #a = ps[1], p = ps[2]
     if ("pow" %in% models) y_pow <- tcplfit2::pow(ps = c(dat$pow_a,dat$pow_p), x = x_range)
     
+    if (dat$fitc == 100) {
+      # loec is stored as modl_acc
+      x_loec <- rep(dat$modl_acc, resolution)
+      l3_resp <- l3_dat_main %>%
+        pull(.data$resp) %>%
+        range()
+      y_loec <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
+    }
+    
+    
+    # for model type 0 (default) add constant model
+    y_cnst <- x_range * 0
+    ac50s <- ac50s %>% rbind(c(model = "cnst", ac50 = NA))
+    models <- c(models, "cnst")
+  
+    
+    model_stats <- dat %>%
+      select(ends_with("aic"), ends_with("rme"), ends_with("_top"), ends_with("_p")) %>%
+      tidyr::pivot_longer(everything(),
+                          names_to = c("model", "param"),
+                          names_pattern = "(.*)_(.*)"
+      ) %>%
+      tidyr::pivot_wider(names_from = param, values_from = value)
+    ac50s$ac50 <- as.numeric(ac50s$ac50)
+    
+    
+    # set background opacity
+    op <- .2
+    opacity <- tibble(model = models, opacity = op) %>% mutate(opacity = ifelse(.data$model == dat$modl, 1, opacity))
+    line.fmt <- tibble(model = models, dash = "dash") %>% mutate(dash = ifelse(.data$model == dat$modl, "solid", .data$dash))
+    
+    # build data table for plotly
+    m <- opacity %>%
+      inner_join(line.fmt, by = "model") %>%
+      inner_join(ac50s, by = "model") %>%
+      rowwise() %>%
+      mutate(x = ifelse(dat$fitc == 100,list(x_loec),list(x_range)), y = list(get(paste0("y_", .data$model)))) %>%
+      tidyr::unnest(cols = c(x, y))
+    
+    # if we have model stats we want them included in the hoverover
+    if (!is.null(model_stats)) {
+      m <- m %>% inner_join(model_stats, by = "model")
+    }
+    
     if (nrow(compare.dat) > 0) {
+      ac50s_compare <- tibble(model = models, ac50 = compare.dat %>% select(colnames(compare.dat)[grepl("_ac50",colnames(compare.dat))]) %>% unlist)
+      ac50s_compare <- ac50s_compare %>% filter(!grepl("_loss",model))
+      
       # calculate y values for each function 
       if ("hill" %in% models) y_hill_compare <- tcplfit2::hillfn(ps = c(compare.dat$hill_tp,compare.dat$hill_ga,compare.dat$hill_p), x = x_range)
       #tp = ps[1], ga = ps[2], p = ps[3], la = ps[4], q = ps[5]
@@ -494,82 +531,40 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       if ("poly2" %in% models) y_poly2_compare <- tcplfit2::poly2(ps = c(compare.dat$poly2_a,compare.dat$poly2_b), x = x_range)
       #a = ps[1], p = ps[2]
       if ("pow" %in% models) y_pow_compare <- tcplfit2::pow(ps = c(compare.dat$pow_a,compare.dat$pow_p), x = x_range)
+      
+      if (compare.dat$fitc == 100) {
+        # loec is stored as modl_acc
+        x_loec_compare <- rep(compare.dat$modl_acc, resolution)
+        l3_resp_compare <- l3_dat_compare %>%
+          pull(.data$resp) %>%
+          range()
+        y_loec_compare <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
+      }
+      
+      y_cnst_compare <- x_range * 0
+      ac50s_compare <- ac50s_compare %>% rbind(c(model = "cnst", ac50 = NA))
+      model_stats_compare <- compare.dat %>%
+        select(ends_with("aic"), ends_with("rme"), ends_with("_top"), ends_with("_p")) %>%
+        tidyr::pivot_longer(everything(),
+                            names_to = c("model", "param"),
+                            names_pattern = "(.*)_(.*)"
+        ) %>%
+        tidyr::pivot_wider(names_from = param, values_from = value)
+      ac50s_compare$ac50 <- as.numeric(ac50s_compare$ac50)
+      opacity.compare <- tibble(model = models, opacity = op) %>% mutate(opacity = ifelse(.data$model == compare.dat$modl, 1, opacity))
+      line.fmt.compare <- tibble(model = models, dash = "dash") %>% mutate(dash = ifelse(.data$model == compare.dat$modl, "solid", .data$dash))
+      m_compare <- opacity.compare %>%
+        inner_join(line.fmt.compare, by = "model") %>%
+        inner_join(ac50s_compare, by = "model") %>%
+        rowwise() %>%
+        mutate(x = ifelse(compare.dat$fitc == 100,list(x_loec_compare),list(x_range)), y = list(get(paste0("y_", .data$model, "_compare")))) %>%
+        tidyr::unnest(cols = c(x, y))
+      # if we have model stats we want them included in the hoverover
+      if (!is.null(model_stats_compare)) {
+        m_compare <- m_compare %>% inner_join(model_stats_compare, by = "model")
+      }
     }
     
-    if (dat$fitc == 100) {
-      # loec is stored as modl_acc
-      x_loec <- rep(dat$modl_acc, resolution)
-      l3_resp <- l3_dat_main %>%
-        pull(.data$resp) %>%
-        range()
-      y_loec <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
-    }
-    
-    if (compare.dat$fitc == 100) {
-      # loec is stored as modl_acc
-      x_loec_compare <- rep(compare.dat$modl_acc, resolution)
-      l3_resp_compare <- l3_dat_compare %>%
-        pull(.data$resp) %>%
-        range()
-      y_loec_compare <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
-    }
-    
-    # for model type 0 (default) add constant model
-    y_cnst <- x_range * 0
-    y_cnst_compare <- x_range_compare * 0
-    ac50s <- ac50s %>% rbind(c(model = "cnst", ac50 = NA))
-    ac50s_compare <- ac50s_compare %>% rbind(c(model = "cnst", ac50 = NA))
-    models <- c(models, "cnst")
-  
-    
-    model_stats <- dat %>%
-      select(ends_with("aic"), ends_with("rme"), ends_with("_top"), ends_with("_p")) %>%
-      tidyr::pivot_longer(everything(),
-                          names_to = c("model", "param"),
-                          names_pattern = "(.*)_(.*)"
-      ) %>%
-      tidyr::pivot_wider(names_from = param, values_from = value)
-    ac50s$ac50 <- as.numeric(ac50s$ac50)
-    
-    model_stats_compare <- compare.dat %>%
-      select(ends_with("aic"), ends_with("rme"), ends_with("_top"), ends_with("_p")) %>%
-      tidyr::pivot_longer(everything(),
-                          names_to = c("model", "param"),
-                          names_pattern = "(.*)_(.*)"
-      ) %>%
-      tidyr::pivot_wider(names_from = param, values_from = value)
-    ac50s_compare$ac50 <- as.numeric(ac50s_compare$ac50)
-    
-    # set background opacity
-    op <- .2
-    opacity <- tibble(model = models, opacity = op) %>% mutate(opacity = ifelse(.data$model == dat$modl, 1, opacity))
-    opacity.compare <- tibble(model = models, opacity = op) %>% mutate(opacity = ifelse(.data$model == compare.dat$modl, 1, opacity))
-    line.fmt <- tibble(model = models, dash = "dash") %>% mutate(dash = ifelse(.data$model == dat$modl, "solid", .data$dash))
-    line.fmt.compare <- tibble(model = models, dash = "dash") %>% mutate(dash = ifelse(.data$model == compare.dat$modl, "solid", .data$dash))
-    
-    # build data table for plotly
-    m <- opacity %>%
-      inner_join(line.fmt, by = "model") %>%
-      inner_join(ac50s, by = "model") %>%
-      rowwise() %>%
-      mutate(x = ifelse(dat$fitc == 100,list(x_loec),list(x_range)), y = list(get(paste0("y_", .data$model)))) %>%
-      tidyr::unnest(cols = c(x, y))
-    m_compare <- opacity.compare %>%
-      inner_join(line.fmt.compare, by = "model") %>%
-      inner_join(ac50s_compare, by = "model") %>%
-      rowwise() %>%
-      mutate(x = ifelse(compare.dat$fitc == 100,list(x_loec_compare),list(x_range_compare)), y = list(get(paste0("y_", .data$model, "_compare")))) %>%
-      tidyr::unnest(cols = c(x, y))
-    
-    # if we have model stats we want them included in the hoverover
-    if (!is.null(model_stats)) {
-      m <- m %>% inner_join(model_stats, by = "model")
-    }
-    
-    # if we have model stats we want them included in the hoverover
-    if (!is.null(model_stats_compare)) {
-      m_compare <- m_compare %>% inner_join(model_stats_compare, by = "model")
-    }
   }
   
   # function for truncating decimals
@@ -586,8 +581,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     x = ~conc,
     y = ~resp, 
     color = ~l3,
-    colors = c("red", "blue", "red", "blue"),
-    opacity = 0.5,
+    colors = ifelse(nrow(compare.dat) > 0, "Set1", "red"),
+    opacity = ifelse(nrow(compare.dat) > 0, 0.67, 1),
     type = "scatter",
     mode = "markers",
     hoverinfo = "text",
@@ -648,8 +643,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     type = "scatter",
     mode = "lines",
     name = "cutoff A",
-    opacity = 0.5,
-    line = list(dash = "dash", width = 1.5, color = "red"),
+    opacity = ifelse(nrow(compare.dat) > 0, 0.5, 1),
+    line = list(dash = "dash", width = 1.5, color = ifelse(nrow(compare.dat) > 0, "red", "blue")),
     inherit = FALSE,
     hoverinfo = "text",
     text = ~ paste(
@@ -660,13 +655,13 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   if (nrow(compare.dat) > 0) {
     # cutoff for B
     fig <- fig %>% add_trace(
-      data = tibble(x = x_range_compare, y = compare.dat$coff),
+      data = tibble(x = x_range, y = compare.dat$coff),
       x = ~x,
       y = ~y,
       type = "scatter",
       mode = "lines",
       name = "cutoff B",
-      opacity = 0.5,
+      opacity = ifelse(nrow(compare.dat) > 0, 0.5, 1),
       line = list(dash = "dash", width = 1.5, color = "blue"),
       inherit = FALSE,
       hoverinfo = "text",
@@ -685,8 +680,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       type = "scatter",
       mode = "lines",
       name = "max median A",
-      opacity = 0.5,
-      line = list(dash = "dash", width = 1.5, color = "red"),
+      opacity = ifelse(nrow(compare.dat) > 0, 0.5, 1),
+      line = list(dash = ifelse(nrow(compare.dat) > 0, "solid", "dash"), width = 1.5, color = "red"),
       inherit = FALSE,
       hoverinfo = "text",
       text = ~ paste(
@@ -698,14 +693,14 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   if (lvl == 2 && nrow(compare.dat) > 0) {
     # # add max median annotation
     fig <- fig %>% add_trace(
-      data = tibble(x = x_range_compare, y = compare.dat$max_med),
+      data = tibble(x = x_range, y = compare.dat$max_med),
       x = ~x,
       y = ~y,
       type = "scatter",
       mode = "lines",
       name = "max median B",
-      opacity = 0.5,
-      line = list(dash = "dash", width = 1.5, color = "blue"),
+      opacity = ifelse(nrow(compare.dat) > 0, 0.5, 1),
+      line = list(dash = "solid", width = 1.5, color = "blue"),
       inherit = FALSE,
       hoverinfo = "text",
       text = ~ paste(
@@ -714,8 +709,11 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     )
   }
   
+  compare.fitc <- compare.dat$fitc
+  if (nrow(compare.dat) == 0) compare.fitc = -1
+  
   # currently only support for model types 1 and 0 but need to expand or make this generic
-  if (!lvl == 2 && (dat$fitc == 100 || compare.dat$fitc == 100)) {
+  if (!lvl == 2 && (dat$fitc == 100 || compare.fitc == 100)) {
     # apply axis and lines to figure
     fig <- fig %>% plotly::layout(xaxis = x, yaxis = y)
     if (dat$fitc == 100) {
@@ -756,7 +754,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     }
   } else {
     if (!lvl == 2 && !dat$modl == "cnst" && !dat$modl == "none") {
-      dat_lines <- vline(ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric(), color = "red")
+      dat_lines <- vline(ac50s %>% filter(model == dat$modl) %>% pull(ac50) %>% as.numeric(), color = ifelse(nrow(compare.dat) > 0, "red", "black"))
       dat_lines_compare <- NULL
       if (nrow(compare.dat) > 0) dat_lines_compare <- vline(ac50s_compare %>% filter(model == compare.dat$modl) %>% pull(ac50) %>% as.numeric(), color = "blue")
       fig <- fig %>% plotly::layout(xaxis = x, yaxis = y, shapes = list(dat_lines, dat_lines_compare))
@@ -792,31 +790,6 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       
     }
     
-    # add line for winning model
-    fig <- fig %>% add_trace(
-      data = m %>% filter(.data$model == dat$modl),
-      x = ~x,
-      y = ~y,
-      type = "scatter",
-      mode = "lines",
-      name = paste0("model A(", dat$modl, ")"),
-      split = ~model,
-      opacity = ~opacity,
-      line = list(dash = ~dash, width = 1.5, color = "red"),
-      inherit = FALSE,
-      hoverinfo = "text",
-      text = ~ paste(
-        "</br>", model,
-        "</br> ac50: ", specify_decimal(ac50, 2),
-        "</br> Concentration: ", specify_decimal(x,2),
-        "</br> Response: ", specify_decimal(y, 2),
-        "</br> AIC: ", specify_decimal(aic, 2),
-        "</br> RME: ", specify_decimal(rme, 2),
-        "</br> TOP: ", specify_decimal(top, 2),
-        "</br> SLOPE: ", specify_decimal(p, 2)
-      )
-    )
-    
     if (!lvl == 2 && !dat$modl == "none"){
       if (nrow(compare.dat) == 0) {
         # add all non-winning models
@@ -842,7 +815,55 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
             "</br> SLOPE: ", specify_decimal(p, 2)
           )
         )
+        # add line for winning model
+        fig <- fig %>% add_trace(
+          data = m %>% filter(.data$model == dat$modl),
+          x = ~x,
+          y = ~y,
+          type = "scatter",
+          mode = "lines",
+          name = paste0("model A(", dat$modl, ")"),
+          split = ~model,
+          opacity = ~opacity,
+          line = list(dash = ~dash, width = 1.5, color = "red"),
+          inherit = FALSE,
+          hoverinfo = "text",
+          text = ~ paste(
+            "</br>", model,
+            "</br> ac50: ", specify_decimal(ac50, 2),
+            "</br> Concentration: ", specify_decimal(x,2),
+            "</br> Response: ", specify_decimal(y, 2),
+            "</br> AIC: ", specify_decimal(aic, 2),
+            "</br> RME: ", specify_decimal(rme, 2),
+            "</br> TOP: ", specify_decimal(top, 2),
+            "</br> SLOPE: ", specify_decimal(p, 2)
+          )
+        )
       } else {
+        # add line for winning model
+        fig <- fig %>% add_trace(
+          data = m %>% filter(.data$model == dat$modl),
+          x = ~x,
+          y = ~y,
+          type = "scatter",
+          mode = "lines",
+          name = paste0("model A(", dat$modl, ")"),
+          split = ~model,
+          opacity = ~opacity,
+          line = list(dash = ~dash, width = 1.5, color = "red"),
+          inherit = FALSE,
+          hoverinfo = "text",
+          text = ~ paste(
+            "</br>", model,
+            "</br> ac50: ", specify_decimal(ac50, 2),
+            "</br> Concentration: ", specify_decimal(x,2),
+            "</br> Response: ", specify_decimal(y, 2),
+            "</br> AIC: ", specify_decimal(aic, 2),
+            "</br> RME: ", specify_decimal(rme, 2),
+            "</br> TOP: ", specify_decimal(top, 2),
+            "</br> SLOPE: ", specify_decimal(p, 2)
+          )
+        )
         # add line for winning model for compare data
         fig <- fig %>% add_trace(
           data = m_compare %>% filter(.data$model == compare.dat$modl),
@@ -869,9 +890,6 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
         )
       }
     }
-    
-    # get hitcall
-    hitcall <- dat %>% pull(hitc)
     
     if (nrow(compare.dat) > 0) {
       identical_title <- paste0(stringr::str_trunc(paste0(
@@ -902,7 +920,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
                         ifelse(dat$spid != compare.dat$spid, paste0("SPID:", dat$spid, "  "), ""),
                         ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
                         ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", dat$aenm, "\n"), "")),
-                      "M4ID:", dat$m4id, "  ",
+                      ifelse(lvl != 2, paste0("M4ID:", dat$m4id),paste0("S2ID:", dat$s2id)), "  ",
                       paste0(
                         "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
                       ),
@@ -916,9 +934,9 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
                         ifelse(dat$spid != compare.dat$spid, paste0("SPID:", compare.dat$spid, "  "), ""),
                         ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", compare.dat$aeid, "  "), ""),
                         ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", compare.dat$aenm, "\n"), "")),
-                      "M4ID:", dat$m4id, "  ",
+                      ifelse(lvl != 2, paste0("M4ID:", compare.dat$m4id),paste0("S2ID:", compare.dat$s2id)), "  ",
                       paste0(
-                        "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
+                        "\nHITC:", paste0(trimws(format(round(compare.dat$hitc, 3), nsmall = 3)))
                       ),
                       ifelse(!is.null(compare.dat$flag), gsub("\\|\\|", "<br>", paste0("\nFlags: ", compare.dat %>% pull(.data$flag))), "")
                     ),
@@ -931,7 +949,8 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
                       dat %>% pull(.data$chnm), " (", dat %>% pull(.data$casn), ")", "<br>",
                       dat %>% pull(.data$dsstox_substance_id), "<br>",
                       dat %>% pull(.data$spid), "<br>",
-                      ifelse(!is.null(dat$flag), gsub("\\|\\|", "<br>", paste0("Flags: ", dat %>% pull(.data$flag))), ""),
+                      ifelse(lvl != 2, paste0("M4ID:", dat$m4id),paste0("S2ID:", dat$s2id)), "<br>",
+                      ifelse(!is.null(dat$flag), gsub("\\|\\|", "<br>", paste0("Flags: ", dat %>% pull(.data$flag))), "")
                     )
       ),
       xref = "paper",
