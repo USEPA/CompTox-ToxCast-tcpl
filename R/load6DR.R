@@ -18,7 +18,7 @@
       mc4_agg.m4id,
       mc4_agg.m3id,
       spid,
-      logc,
+      mc3.conc,
       rval,
       resp,
       apid,
