@@ -113,7 +113,7 @@ tcplPlot <- function(lvl = 5, fld = "m4id", val = NULL, type = "mc", by = NULL, 
     }
     
     # unlog concs
-    conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+    conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
     dat <- dat[conc_resp_table, on = "m4id"]
     # dat$conc <- list(10^agg$logc)
     # dat$resp <- list(agg$resp)

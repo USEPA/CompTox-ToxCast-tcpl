@@ -50,6 +50,12 @@ mc4 <- function(ae, wr = FALSE) {
 
   ## Load level 3 data
   dat <- tcplLoadData(lvl = 3L, type = "mc", fld = "aeid", val = ae)
+  
+  ## filter out na concentration data
+  if (nrow(dat[is.na(conc)]>0)){
+    warning("SPID(s): ",unique(dat[is.na(conc)]$spid)," removed from further processing due to null concentration data")
+  }
+  dat <- dat[!is.na(conc)]
 
   ## Check if any level 3 data was loaded
   if (nrow(dat) == 0) {

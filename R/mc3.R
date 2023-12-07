@@ -21,7 +21,7 @@
 mc3 <- function(ac, wr = FALSE) {
 
   ## Variable-binding to pass R CMD Check
-  conc <- logc <- acid <- aeid <- mthd <- ordr <- nassays <- resp <- NULL
+  conc <- acid <- aeid <- mthd <- ordr <- nassays <- resp <- NULL
   pval <- bval <- NULL
   
   owarn <- getOption("warn")
@@ -57,9 +57,6 @@ mc3 <- function(ac, wr = FALSE) {
 
   ## Force all concentrations to 1 significant figure
   dat[ , conc := signif(conc, 1)]
-
-  ## Add column for log10 concentration
-  dat[ , logc := log10(conc)]
 
   ## Load aeid mapping information.
   aeid_info <- tcplLoadAeid("acid", ac)[ , list(acid, aeid)]
@@ -140,7 +137,7 @@ mc3 <- function(ac, wr = FALSE) {
   res <- TRUE
 
   outcols <- c("m0id", "m1id", "m2id", "acid", "aeid",
-               "bval", "pval", "logc", "resp")
+               "bval", "pval", "conc", "resp")
   dat <- dat[ , .SD, .SDcols = outcols]
 
   ## Load into mc3 table -- else return results

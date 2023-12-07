@@ -19,18 +19,18 @@ tcplFit2 <- function(dat,
     med_rmds_pos <- rmds >= (3 * bmad)
     med_rmds_neg <- rmds <= (-3 * bmad)
     .(rmns, rmds, nconcs, med_rmds_pos, med_rmds_neg)
-  }), keyby = .(aeid, spid, logc)][, .(
+  }), keyby = .(aeid, spid, conc)][, .(
     bmad = min(bmad), osd = min(osd), bmed = ifelse(is.null(bmed), 0, max(bmed)),
     resp_max = max(resp), resp_min = min(resp),
-    max_mean = max(rmns), max_mean_conc = logc[which.max(rmns)],
-    max_med = max(rmds), max_med_conc = logc[which.max(rmds)],
-    min_mean = min(rmns), min_mean_conc = logc[which.min(rmns)],
-    min_med = min(rmds), min_med_conc = logc[which.min(rmds)],
-    logc_max = max(logc), logc_min = min(logc), nconc = length(unique(logc)),
+    max_mean = max(rmns), max_mean_conc = conc[which.max(rmns)],
+    max_med = max(rmds), max_med_conc = conc[which.max(rmds)],
+    min_mean = min(rmns), min_mean_conc = conc[which.min(rmns)],
+    min_med = min(rmds), min_med_conc = conc[which.min(rmds)],
+    conc_max = max(conc), conc_min = min(conc), nconc = length(unique(conc)),
     npts = .N, nrep = median(as.numeric(nconcs)), 
     nmed_gtbl_pos = sum(med_rmds_pos) / first(nconcs), 
     nmed_gtbl_neg = sum(med_rmds_neg) / first(nconcs),
-    concentration_unlogged = list(10^(logc)), response = list(resp), m3ids = list(m3id)
+    concentration_unlogged = list(conc), response = list(resp), m3ids = list(m3id)
   ),
   keyby = .(aeid, spid)
   ][, `:=`(c("max_med_diff", "max_med_diff_conc"), {
@@ -65,7 +65,7 @@ tcplFit2 <- function(dat,
 tcplHit2 <- function(mc4, coff) {
   
   #variable binding
-  top <- a <- b <- ga <- la <- p <- tp <- logc_min <- logc_max <- fitc <- NULL
+  top <- a <- b <- ga <- la <- p <- tp <- conc_min <- conc_max <- fitc <- NULL
   model <- m4id  <-model_param  <-model_val  <-resp  <- NULL
   params  <-conc  <-bmed  <-onesd  <-df  <-aeid  <- NULL
   fit_method  <-hitcall  <-cutoff  <-top_over_cutoff  <-bmd  <-hit_val <- NULL
@@ -76,10 +76,10 @@ tcplHit2 <- function(mc4, coff) {
 
   # get lvl 3 conc/resp information
   l4_agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = nested_mc4$m4id)
-  l3_dat <- l4_agg %>% left_join(tcplLoadData(lvl = 3, fld = "m3id", val = l4_agg$m3id), by = c("aeid", "m3id", "m2id", "m1id", "m0id", "spid", "logc", "resp"))
+  l3_dat <- l4_agg %>% left_join(tcplLoadData(lvl = 3, fld = "m3id", val = l4_agg$m3id), by = c("aeid", "m3id", "m2id", "m1id", "m0id", "spid", "conc", "resp"))
 
   # unlog and plug into nested
-  nested_mc4 <- nested_mc4 %>% left_join(l3_dat %>% group_by(m4id) %>% summarise(conc = list(10^(logc)), resp = list(resp)), by = "m4id")
+  nested_mc4 <- nested_mc4 %>% left_join(l3_dat %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)), by = "m4id")
 
   # rejoin the onesd for tcplfit2
   nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "onesd") %>% select(m4id, onesd = model_val), by = "m4id")
@@ -115,14 +115,14 @@ tcplHit2 <- function(mc4, coff) {
     dplyr::ungroup()
   res <- res %>% mutate(coff_upper = 1.2 * cutoff, coff_lower = .8 * cutoff)
   res <- res %>%
-    left_join(mc4 %>% select(m4id, logc_min, logc_max) %>% unique(), by = "m4id") %>%
+    left_join(mc4 %>% select(m4id, conc_min, conc_max) %>% unique(), by = "m4id") %>%
     mutate(fitc = case_when(
-      hitcall >= .9 & abs(top) <= coff_upper & ac50 <= logc_min ~ 36L,
-      hitcall >= .9 & abs(top) <= coff_upper & ac50 > logc_min & ac95 < logc_max ~ 37L,
-      hitcall >= .9 & abs(top) <= coff_upper & ac50 > logc_min & ac95 >= logc_max ~ 38L,
-      hitcall >= .9 & abs(top) > coff_upper & ac50 <= logc_min ~ 40L,
-      hitcall >= .9 & abs(top) > coff_upper & ac50 > logc_min & ac95 < logc_max ~ 41L,
-      hitcall >= .9 & abs(top) > coff_upper & ac50 > logc_min & ac95 >= logc_max ~ 42L,
+      hitcall >= .9 & abs(top) <= coff_upper & ac50 <= conc_min ~ 36L,
+      hitcall >= .9 & abs(top) <= coff_upper & ac50 > conc_min & ac95 < conc_max ~ 37L,
+      hitcall >= .9 & abs(top) <= coff_upper & ac50 > conc_min & ac95 >= conc_max ~ 38L,
+      hitcall >= .9 & abs(top) > coff_upper & ac50 <= conc_min ~ 40L,
+      hitcall >= .9 & abs(top) > coff_upper & ac50 > conc_min & ac95 < conc_max ~ 41L,
+      hitcall >= .9 & abs(top) > coff_upper & ac50 > conc_min & ac95 >= conc_max ~ 42L,
       hitcall < .9 & abs(top) < coff_lower ~ 13L,
       hitcall < .9 & abs(top) >= coff_lower ~ 15L,
       fit_method == "none" ~ 2L,
