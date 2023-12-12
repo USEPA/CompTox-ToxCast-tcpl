@@ -185,7 +185,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "m4id"]
     } else {
-      conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+      conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "s2id"]
     }
     
