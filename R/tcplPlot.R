@@ -182,7 +182,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     
     # unlog concs
     if (type == "mc") {
-      conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
+      conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "m4id"]
     } else {
       conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(10^logc), resp = list(resp)) %>% as.data.table()
@@ -218,10 +218,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       }
       yrange = c(min, max)
     }
-    
-    # dat$conc <- list(10^agg$logc)
-    # dat$resp <- list(agg$resp)
-    # added AND verbose=FALSE to nrow(input)=1 condition to avoid TableGrob error in tcplggplot
+
     if (nrow(input) == 1 && verbose==FALSE) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
