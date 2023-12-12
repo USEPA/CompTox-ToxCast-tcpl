@@ -23,7 +23,7 @@
 sc2 <- function(ae, wr = FALSE) {
   
   ## Variable-binding to pass R CMD Check
-  max_tmp <- bmad <- resp <- wllt <- tmp <- spid <- logc <- hitc <- max_med <- NULL
+  max_tmp <- bmad <- resp <- wllt <- tmp <- spid <- conc <- hitc <- max_med <- NULL
   
   owarn <- getOption("warn")
   options(warn = 1)
@@ -59,7 +59,7 @@ sc2 <- function(ae, wr = FALSE) {
   dat[ , bmad := mad(resp[wllt == "t"])]
   
   ## Collapse by spid
-  dat[ , tmp := median(resp), by = list(spid, wllt, logc)]
+  dat[ , tmp := median(resp), by = list(spid, wllt, conc)]
   
   ## take absolute value for bidirectional fitting.
   dat[ , c("tmpi", "max_med","max_tmp") := list(.GRP, max(abs(tmp)), tmp[which.max(abs(tmp))]), by = c("spid")]
