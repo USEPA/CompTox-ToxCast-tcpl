@@ -89,31 +89,6 @@ tcplPlot <- function(dat = NULL,type = "mc", fld = "m4id", val = NULL, compare.v
       compare.input <- tcplLoadData(lvl = lvl, fld = fld, val = compare.val, type = type)
       if (nrow(compare.input) == 0) stop("No compare data for fld/val provided")
     }
-    # default assign multi=TRUE for output="pdf" 
-    if (output == "pdf" && is.null(multi)) {
-      multi <- TRUE
-    }
-    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
-    if (output !="pdf") {
-      multi <- FALSE
-      if(output =="console"){
-        verbose <- FALSE
-      }
-    }
-    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
-    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
-      nrow = ncol = 1
-    }
-    # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(input) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
-    if(is.null(nrow)){
-      nrow <- ifelse(verbose,2,2)
-    }
-    if(is.null(ncol)){
-      ncol <- ifelse(!verbose | type == "sc",3,2)
-    }
-    
-    
     
     # load mc dat, used below function for both input and compare input
     mcLoadDat <- function(m4id = NULL) {
@@ -180,6 +155,30 @@ tcplPlot <- function(dat = NULL,type = "mc", fld = "m4id", val = NULL, compare.v
       dat <- dat[conc_resp_table, on = "s2id"]
     }
     
+    }
+    
+    # default assign multi=TRUE for output="pdf" 
+    if (output == "pdf" && is.null(multi)) {
+      multi <- TRUE
+    }
+    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
+    if (output !="pdf") {
+      multi <- FALSE
+      if(output =="console"){
+        verbose <- FALSE
+      }
+    }
+    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
+    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
+      nrow = ncol = 1
+    }
+    # error message for output="console" and multi=FALSE to avoid multiple plots in console
+    if(nrow(input) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    if(is.null(nrow)){
+      nrow <- ifelse(verbose,2,2)
+    }
+    if(is.null(ncol)){
+      ncol <- ifelse(!verbose | type == "sc",3,2)
     }
     
     dat <- as.data.table(dat)
