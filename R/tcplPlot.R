@@ -58,7 +58,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
+tcplPlot <- function(dat = NULL,type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   conc_unit <- bmd <- resp <- NULL
   
@@ -74,9 +74,12 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
   if (length(yrange) != 2) {
     stop("'yrange' must be of length 2")
   }
-
+  #set input
+  input <- dat
+  
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
-  if (check_tcpl_db_schema()) {
+  if (check_tcpl_db_schema()|!is.null(dat)) {
+    if(is.null(dat)){
     # check that val and compare.val are the same length 
     if (!is.null(compare.val) && length(unlist(val)) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
     # check that input combination is unique
@@ -164,23 +167,11 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       }
     }
     
-    
-    
-    # correct concentration unit label for x-axis
-    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
-    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
-    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
-    
     # add normalized data type for y axis
     ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
     dat <- dat[ndt, on = "aeid"]
     
-    # check for null bmd in dat table
-    if (verbose){
-      dat <- dat[is.null(dat$bmd), bmd:=NA]
-    }
-    
-    # unlog concs
+    # group concs
     if (type == "mc") {
       conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "m4id"]
@@ -188,6 +179,23 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "s2id"]
     }
+    
+    }
+    
+    dat <- as.data.table(dat)
+    # correct concentration unit label for x-axis
+    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
+    
+    
+    
+    # check for null bmd in dat table
+    if (verbose){
+      dat <- dat[is.null(dat$bmd), bmd:=NA]
+    }
+    
+    
     
     # set range
     if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
@@ -986,6 +994,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @import stringr
 tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA,NA)) {
   # variable binding
+  #browser()
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med)
@@ -1086,7 +1095,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
       geom_point() +
       scale_x_continuous(limits = l3_range, trans = "log10") +
-      scale_y_continuous(limits = yrange) +
+      # scale_y_continuous(limits = yrange) +
       scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
       scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
