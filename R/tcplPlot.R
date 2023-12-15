@@ -994,7 +994,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
 #' @import stringr
 tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA,NA)) {
   # variable binding
-  #browser()
+
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
   annotateText <- name <- aic <- NULL
   l3_dat <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med)
@@ -1043,8 +1043,8 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   if (flags && dat$flag != "None") {
     flag_count <- str_count(dat$flag, "\n") + 1
   }
-  
 
+  
   if (lvl == 2) {
     gg <- ggplot(l3_dat, aes(x = conc)) +
       geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
@@ -1095,7 +1095,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
       geom_point() +
       scale_x_continuous(limits = l3_range, trans = "log10") +
-      # scale_y_continuous(limits = yrange) +
+      scale_y_continuous(limits = yrange) +
       scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
       scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
       xlab(paste0("Concentration ", "(", dat$conc_unit, ")")) +
