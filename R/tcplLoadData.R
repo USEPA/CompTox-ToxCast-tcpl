@@ -214,9 +214,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       dat$flag <- lapply(dat$flag, unlist)
       dat <- unnest_longer(dat, flag) %>% filter(flag != "NULL") %>% as.data.table()
     }
-    
+
     return(dat)
-    
+
   }
   else {
     
@@ -254,11 +254,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       table == "mc6" ~ list(tbls = "mc4,mc6", 
                             joins = "mc6.m4id = mc4.m4id"),
       TRUE ~ list(tbls = NULL, joins = NULL))
-    
+
     if (is.null(tbls_joins$tbls)) stop("Invalid 'lvl' and 'type' combination.")
     
     qformat <- paste0("SELECT * FROM ", tbls_joins$tbls, ifelse(is.null(tbls_joins$joins), "", paste(" WHERE", tbls_joins$joins)))
-    
+
     if (!is.null(fld)) {
       if (is.null(val)) stop("'val' cannot be NULL check that a valid value was provided for the specified field")
       
