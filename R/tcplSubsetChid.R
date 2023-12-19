@@ -64,7 +64,7 @@
 tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = FALSE) {
   ## Variable-binding to pass R CMD Check
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
-  chid <- logc <- minc <- NULL
+  chid <- conc <- minc <- NULL
 
   if (!type %in% c("mc", "sc")) {
     stop("type must be sc (single concentration) or mc (multi-concentration)")
@@ -152,9 +152,9 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = FALSE) 
     setkey(dat, "s2id")
     dat <- dat[dat1]
 
-    setkeyv(dat, c("aeid", "chid", "logc"))
-    dat[, minc := min(logc), by = list(aeid, chid)]
-    dat <- dat[logc == minc]
+    setkeyv(dat, c("aeid", "chid", "conc"))
+    dat[, minc := min(conc), by = list(aeid, chid)]
+    dat <- dat[conc == minc]
     dat <- unique(dat[, c("spid", "chid", "casn", "chnm", "dsstox_substance_id", "code", "aeid", "aenm", "s2id", "bmad", "max_med", "hitc", "coff", "resp_unit")])
     setkeyv(dat, c("aeid", "chid", "max_med"))
 
