@@ -87,7 +87,13 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     stop("'lvl' & 'type' must be of length 1.")
   }
   
-  tbls <- NULL
+  tbls <- joins <- NULL
+  table <- paste0(type, lvl)
+  assignTblsJoins <- function(t = NULL, j = NULL) {
+    tbls = t
+    joins = j
+  }
+  case_when(table == "sc0" ~ assignTblsJoins("sc0"))
   
   drvr <- getOption("TCPL_DRVR")
   if (drvr == "example"){
