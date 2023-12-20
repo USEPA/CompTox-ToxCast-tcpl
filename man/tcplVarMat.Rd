@@ -36,7 +36,11 @@ for different parameters. The standard list of matrices returned includes:
 
 \enumerate{
  \item "ac50" -- The AC50 for the winning model. 
+ \item "ac50_verbose" -- The AC50 for the winning model, with text describing
+ some situations.
  \item "acc" -- The ACC for the winning model.
+ \item "acc_verbose" -- The ACC for the winning model, with text describing
+ some situations.
  \item "mc_hitc" -- The hit-call for the winning model in mc testing.
  \item "sc_hitc" -- The hit-call in sc testing.
 }

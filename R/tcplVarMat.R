@@ -20,7 +20,11 @@
 #' 
 #' \enumerate{
 #'  \item "ac50" -- The AC50 for the winning model. 
+#'  \item "ac50_verbose" -- The AC50 for the winning model, with text describing
+#'  some situations.
 #'  \item "acc" -- The ACC for the winning model.
+#'  \item "acc_verbose" -- The ACC for the winning model, with text describing
+#'  some situations.
 #'  \item "mc_hitc" -- The hit-call for the winning model in mc testing.
 #'  \item "sc_hitc" -- The hit-call in sc testing.
 #' }
@@ -100,7 +104,7 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   
   ac50str = ifelse(check_tcpl_db_schema(),"ac50","modl_ga")
   
-  std.vars <- c(ac50str, "acc", "hitc", "hitc.y")
+  std.vars <- c(ac50str, paste0(ac50str, "_verbose"), "acc", "acc_verbose", "hitc", "hitc.y")
   vars <- c(std.vars, add.vars)
   
   ## Load all possibilities to create matrix dimensions
@@ -143,8 +147,7 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   if (!is.null(dtxsid)) {
     mc5 <- mc5[dsstox_substance_id %in% dtxsid]
     sc2 <- sc2[dsstox_substance_id %in% dtxsid]
-  } 
-    
+  }
   
   # subset to one sample per chemical
   mc5 <- tcplSubsetChid(dat = mc5, flag = flag)    
@@ -154,22 +157,31 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   long_sc2 <- sc2 %>% group_by(dsstox_substance_id,aenm,chnm) %>%
     summarise(hitc = max(hitc)) %>% filter(!is.na(dsstox_substance_id))
   
-  build_matrix <- function(var) {
+  build_matrix <- function(var, verbose = FALSE) {
+    if (grepl("_verbose", var, fixed = TRUE)) {
+      var <- sub("_verbose", "", var)
+      verbose = TRUE
+    }
     long_mc5 <- mc5 %>% group_by(dsstox_substance_id,aenm,chnm) %>% 
       summarise(across(all_of(sub("\\.y", "", var)), mean)) %>% filter(!is.na(dsstox_substance_id))
     long_all <- long_mc5 %>% full_join(long_sc2, by = c("dsstox_substance_id","aenm", "chnm"))
     long_res <- if (substr(var, 1, 2) == "ac") long_all %>% 
       mutate("{var}" := case_when(is.na(get(var)) && hitc == 0 ~ 1e8, 
                                   is.na(get(var)) && hitc == 1 ~ 1e7, 
-                                  TRUE ~ get(var))) else long_all
+                                  TRUE ~ get(var)),
+             "{var}_verbose" := case_when(get(var) == 1e8 ~ "SC neg, No MC", 
+                                          get(var) == 1e7 ~ "SC pos, No MC", 
+                                  get(var) == 1e6 ~ "MC neg",
+                                  TRUE ~ toString(get(var)))) else long_all
     colnames(long_res) = sub("\\.x", "", colnames(long_res))
+    if (verbose) var <- paste0(var, "_verbose")
     long_res[ , c("dsstox_substance_id", "chnm", "aenm", var)] %>% 
       pivot_wider(names_from = aenm, values_from = var) %>% as.data.table()
   }
   
   mat_list <- lapply(vars, build_matrix)
 
-  names(mat_list) = c("ac50", "acc", "mc_hitc", "sc_hitc", add.vars)
+  names(mat_list) = c("ac50", "ac50_verbose", "acc", "acc_verbose", "mc_hitc", "sc_hitc", add.vars)
   
   mat_list
   
