@@ -271,7 +271,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         rowi,
         coli,
         wllt,
-        logc,
+        sc1.conc,
         resp
       FROM
         sc0,
