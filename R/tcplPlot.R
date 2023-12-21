@@ -1290,7 +1290,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
       tcplfit2::exp4(ps = c(data$exp4_tp, data$exp4_ga), x = x)
     } else if (data$modl == "exp5") {
       tcplfit2::exp5(ps = c(data$exp5_tp, data$exp5_ga, data$exp5_p), x = x)
-    } else if (data$modl == "ploy1") {
+    } else if (data$modl == "poly1") {
       tcplfit2::poly1(ps = c(data$poly1_a), x = x)
     } else if (data$modl == "exp2") {
       tcplfit2::exp2(ps = c(data$exp2_a, data$exp2_b), x = x)
