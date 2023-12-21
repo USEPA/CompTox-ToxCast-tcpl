@@ -374,6 +374,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   # increase resolution to get smoother curves
   resolution <- 100
   x_min_max <- range(l3_dat_both$conc)
+  hline_range <- 10^(seq(from = log10(x_min_max[1]/100), to = log10(x_min_max[2]*100), length.out = resolution))
   x_range <- 10^(seq(from = log10(x_min_max[1]), to = log10(x_min_max[2]), length.out = resolution))
   
   #check if winning model = none 
@@ -634,7 +635,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   
   # cutoff for A
   fig <- fig %>% add_trace(
-    data = tibble(x = x_range, y = dat$coff),
+    data = tibble(x = hline_range, y = dat$coff),
     x = ~x,
     y = ~y,
     type = "scatter",
@@ -652,7 +653,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   if (nrow(compare.dat) > 0) {
     # cutoff for B
     fig <- fig %>% add_trace(
-      data = tibble(x = x_range, y = compare.dat$coff),
+      data = tibble(x = hline_range, y = compare.dat$coff),
       x = ~x,
       y = ~y,
       type = "scatter",
@@ -671,7 +672,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   if (lvl == 2) {
     # # add max median annotation
     fig <- fig %>% add_trace(
-      data = tibble(x = x_range, y = dat$max_med),
+      data = tibble(x = hline_range, y = dat$max_med),
       x = ~x,
       y = ~y,
       type = "scatter",
@@ -690,7 +691,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   if (lvl == 2 && nrow(compare.dat) > 0) {
     # # add max median annotation
     fig <- fig %>% add_trace(
-      data = tibble(x = x_range, y = compare.dat$max_med),
+      data = tibble(x = hline_range, y = compare.dat$max_med),
       x = ~x,
       y = ~y,
       type = "scatter",
