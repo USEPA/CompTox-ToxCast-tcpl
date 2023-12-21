@@ -3,7 +3,7 @@
 #' @param dat output of tcplfit2 that has been unnested into a data.table
 write_lvl_4 <- function(dat){
   #variable binding
-  lvl <- aeid <- m4id <- m3ids <- NULL
+  lvl <- aeid <- m4id <- m3ids <- modified_by <- NULL
   
   mc4_cols <- c("aeid",
                 "spid",
@@ -29,6 +29,10 @@ write_lvl_4 <- function(dat){
                 "nmed_gtbl_neg",
                 "tmpi")
   mc4_agg_cols <- c(paste0("m", 0:4, "id"), "aeid")
+  
+  mb <- paste(Sys.info()[c("login", "user", "effective_user")], collapse = ".")
+  dat[, modified_by := mb]
+  mc4_cols <- c(mc4_cols,"modified_by")
   
   tcplAppend(
     dat = copy(dat[, unique(.SD), .SDcols = mc4_cols]),

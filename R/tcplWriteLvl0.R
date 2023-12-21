@@ -104,10 +104,13 @@ tcplWriteLvl0 <- function(dat, type) {
   if (dat[, any(is.na(acid))]) {
     stop("No ACID supplied for some samples.  Ensure all samples have an ACID then rerun.")
   }
+  
+  #set all na b or n wells to conc = 0
+  dat[is.na(conc) & (wllt %in% c('b', 'n')), conc:=0]
 
-  ## Check for 0 concentration values
-  if (dat[,any(conc == 0)]) {
-    stop("Cannot process a concentration value of 0. Confirm source document lists 0 as concentration value and rerun with dummy value of .01")
+  ## Check for null concentration values
+  if (dat[,any(is.na(conc))]) {
+    stop("Cannot process a NULL concentration value. Update missing concentration value then rerun.")
   }
   
   ## Check wllt has been set for all samples

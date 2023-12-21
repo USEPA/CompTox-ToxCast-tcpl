@@ -23,7 +23,7 @@
 sc1 <- function(ac, wr = FALSE) {
   
   ## Variable binding to pass R CMD Check
-  wllq <- conc <- logc <- acid <- aeid <- mthd <- ordr <- nassays <- NULL
+  wllq <- conc <- conc <- acid <- aeid <- mthd <- ordr <- nassays <- NULL
   mthd <- aeid <- pval <- bval <- resp <- NULL
   
   owarn <- getOption("warn")
@@ -62,8 +62,6 @@ sc1 <- function(ac, wr = FALSE) {
   ## Force all concentrations to 1 significant figure
   dat[ , conc := signif(conc, 1)]
   
-  ## Add column for log10 concentration
-  dat[ , logc := log10(conc)]
   
   ## Load aeid mapping information.
   aeid_info <- tcplLoadAeid("acid", ac)[ , list(acid, aeid)]
@@ -142,7 +140,7 @@ sc1 <- function(ac, wr = FALSE) {
       
   res <- TRUE
   
-  outcols <- c("s0id", "acid", "aeid", "logc", "bval", "pval", "resp")
+  outcols <- c("s0id", "acid", "aeid", "conc", "bval", "pval", "resp")
   dat <- dat[ , .SD, .SDcols = outcols]
   
   ## Load into sc1 table -- else return results
