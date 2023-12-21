@@ -994,14 +994,14 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
     range()
   
   # check if model_type is 3 or 4, which means an override method was assigned
-  if (dat$model_type == 3) { # gain direction
+  if (lvl == 5 && dat$model_type == 3) { # gain direction
     # leave coff but bmr should flip if top is negative
     if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
       if (dat$top < 0) {
         dat$bmr <- dat$bmr * -1
       }
     }
-  } else if (dat$model_type == 4) { # loss direction
+  } else if (lvl == 5 && dat$model_type == 4) { # loss direction
     # coff and bmr(if top < 0) should be negative
     if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
       dat$coff <- dat$coff * -1
