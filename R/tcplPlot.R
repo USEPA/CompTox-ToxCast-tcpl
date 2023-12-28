@@ -219,6 +219,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       yrange = c(min, max)
     }
 
+    
     if (nrow(input) == 1 && verbose==FALSE) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
@@ -240,7 +241,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
         } else {
           plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1), MoreArgs = list(verbose = verbose, lvl = lvl, flags = flags, yrange = yrange))
         }
-        # m1 <- do.call("marrangeGrob", c(plot_list, ncol=2))
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
           w <- ifelse(type == "mc", ncol*7, ncol*5)
@@ -374,8 +374,19 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   # increase resolution to get smoother curves
   resolution <- 100
   x_min_max <- range(l3_dat_both$conc)
-  hline_range <- 10^(seq(from = log10(x_min_max[1]/100), to = log10(x_min_max[2]*100), length.out = resolution))
-  x_range <- 10^(seq(from = log10(x_min_max[1]), to = log10(x_min_max[2]), length.out = resolution))
+  #if the overall minimum conc is greater than 0 (test wells)
+  if (x_min_max[1] > 0) {
+    hline_range <- 10^(seq(from = log10(x_min_max[1]/100), to = log10(x_min_max[2]*100), length.out = resolution))
+    x_range <- 10^(seq(from = log10(x_min_max[1]), to = log10(x_min_max[2]), length.out = resolution))
+    use_log <- TRUE
+  } else if (x_min_max[2] <= 0) { #if the overall max conc is less than 0 (all concs are likely 0) -- create bounds
+    x_range <- hline_range <- seq(from = -10, to = 10, length.out = resolution)
+    use_log <- FALSE
+  } else { #if the minimum conc is 0 but max is greater than 0 -- can't use log scale
+    hline_range <- seq(from = x_min_max[1]/100, to = x_min_max[2]*100, length.out = resolution)
+    x_range <- seq(from = x_min_max[1], to = x_min_max[2], length.out = resolution)
+    use_log <- FALSE
+  }
   
   #check if winning model = none 
   if (!lvl == 2 && !dat$modl == "none"){
@@ -600,7 +611,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   x <- list(
     title = paste0("Concentration ","(",dat$conc_unit,")"),
     # set zeroline to false so there is no vertical line at x = 0
-    type = "log",
+    type = ifelse(use_log, "log", "linear"),
     zeroline = FALSE,
     dtick=1
   )
@@ -1042,7 +1053,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
       geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
       geom_point(aes(y = resp)) +
-      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_x_continuous(limits = l3_range, trans = ifelse(0 %in% l3_dat$conc,"identity","log10")) +
       scale_y_continuous(limits = yrange) +
       scale_linetype_manual("", 
                             guide = guide_legend(override.aes = list(color = c("blue", "red"))), 
@@ -1086,7 +1097,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50")) +
       geom_hline(aes(yintercept = dat$coff, color = "Cutoff", linetype = "Cutoff")) +
       geom_point() +
-      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_x_continuous(limits = l3_range, trans = ifelse(0 %in% l3_dat$conc,"identity","log10")) +
       scale_y_continuous(limits = yrange) +
       scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) +
       scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1)) +
