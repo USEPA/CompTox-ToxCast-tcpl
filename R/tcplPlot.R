@@ -110,8 +110,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       ncol <- ifelse(!verbose | type == "sc",3,2)
     }
     
-    
-    
     # load mc dat, used below function for both input and compare input
     mcLoadDat <- function(m4id = NULL) {
       l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
@@ -142,10 +140,16 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     if (type == "mc") {
       # load dat
       dat <- mcLoadDat(input$m4id)[, compare := FALSE]
+      # set order to given order
+      dat <- dat[order(match(get(fld), val))]
+      dat$order <- 1:nrow(dat)
       agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = input$m4id)
       # load compare dat
       if (!is.null(compare.val)) {
         compare.dat <- mcLoadDat(compare.input$m4id)[, compare := TRUE]
+        # set order to given order
+        compare.dat <- compare.dat[order(match(get(fld), compare.val))]
+        compare.dat$order <- 1:nrow(compare.dat)
         dat <- rbind(dat, compare.dat, fill = TRUE)
         compare.agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = compare.input$m4id)
         agg <- rbind(agg, compare.agg, fill = TRUE)
@@ -163,8 +167,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
         agg <- rbind(agg, compare.agg, fill = TRUE)
       }
     }
-    
-    
     
     # correct concentration unit label for x-axis
     dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
@@ -188,6 +190,9 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "s2id"]
     }
+    
+    # preserve user-given order
+    setorder(dat, order)
     
     # set range
     if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
