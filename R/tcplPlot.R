@@ -1345,7 +1345,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
       geom_hline(aes(yintercept = compare.dat$coff, linetype="Cutoff B"), color="red") +
       geom_hline(aes(yintercept = dat$coff, linetype="Cutoff A"), color="blue") +
       geom_point() +
-      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_x_continuous(limits = l3_range, trans = ifelse(0 %in% l3_dat_both$conc,"identity","log10")) +
       scale_y_continuous(limits = yrange) +
       scale_linetype_manual("", breaks = c("Max Median A", "Max Median B", "Cutoff A", "Cutoff B"),
                             guide = guide_legend(override.aes = list(color = c("blue", "red", "blue", "red"), linetype = c("solid", "solid", "dashed", "dashed"))), 
@@ -1399,7 +1399,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
       geom_hline(aes(yintercept = compare.dat$coff, linetype = "Cutoff B"), color = "red") +
       geom_hline(aes(yintercept = dat$coff, linetype = "Cutoff A"), color = "blue") +
       geom_point(alpha = 0.5) +
-      scale_x_continuous(limits = l3_range, trans = "log10") +
+      scale_x_continuous(limits = l3_range, trans = ifelse(0 %in% l3_dat_both$conc,"identity","log10")) +
       scale_y_continuous(limits = yrange) +
       scale_linetype_manual("", breaks = c(dat$winning_model_string, compare.dat$winning_model_string, "Cutoff A", "Cutoff B"), 
                             guide = guide_legend(override.aes = list(color = c("blue", "red", "blue", "red"), linetype = c("solid", "solid", "dashed", "dashed"))), 
