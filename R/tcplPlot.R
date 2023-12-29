@@ -191,8 +191,22 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       dat <- dat[conc_resp_table, on = "s2id"]
     }
     
-    # preserve user-given order
-    setorder(dat, order)
+    # join with given val/compare.val if lengths don't match
+    if (nrow(compare.input) > 0 && nrow(dat) != length(val) + length(compare.val)) {
+      compare.dat <- dat[compare == TRUE]
+      dat <- dat[compare == FALSE]
+      val_dt <- as.data.table(val)
+      colnames(val_dt) <- "m4id"
+      compare.val_dt <- as.data.table(compare.val)
+      colnames(compare.val_dt) <- "m4id"
+      dat <- val_dt %>% inner_join(dat, by = "m4id")
+      compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = "m4id")
+      dat <- rbind(dat, compare.dat, fill = TRUE)
+    } else {
+      # preserve user-given order
+      setorder(dat, order)
+    }
+    
     
     # set range
     if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
@@ -225,7 +239,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     }
 
     
-    if (nrow(input) == 1 && verbose==FALSE) {
+    if (nrow(dat) == 1 && verbose==FALSE) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
@@ -1232,6 +1246,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     pull(.data$conc) %>%
     range()
   
+  if (dat$conc_unit != compare.dat$conc_unit || dat$normalized_data_type != compare.dat$normalized_data_type) stop("Units do not match.")
   
   # main data
   # check if model_type is 3 or 4, which means an override method was assigned
