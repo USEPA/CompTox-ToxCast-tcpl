@@ -141,14 +141,14 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       # load dat
       dat <- mcLoadDat(input$m4id)[, compare := FALSE]
       # set order to given order
-      dat <- dat[order(match(get(fld), val))]
+      dat <- dat[order(match(get(fld[1]), val))]
       dat$order <- 1:nrow(dat)
       agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = input$m4id)
       # load compare dat
       if (!is.null(compare.val)) {
         compare.dat <- mcLoadDat(compare.input$m4id)[, compare := TRUE]
         # set order to given order
-        compare.dat <- compare.dat[order(match(get(fld), compare.val))]
+        compare.dat <- compare.dat[order(match(get(fld[1]), compare.val))]
         compare.dat$order <- 1:nrow(compare.dat)
         dat <- rbind(dat, compare.dat, fill = TRUE)
         compare.agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = compare.input$m4id)
@@ -192,7 +192,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     }
     
     # join with given val/compare.val if lengths don't match
-    if (nrow(compare.input) > 0 && nrow(dat) != length(val) + length(compare.val)) {
+    if (!is.null(compare.val) && nrow(dat) != length(val) + length(compare.val)) {
       compare.dat <- dat[compare == TRUE]
       dat <- dat[compare == FALSE]
       val_dt <- as.data.table(val)
