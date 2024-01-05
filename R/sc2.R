@@ -78,8 +78,11 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Extract methods that need to overwrite bmad
   ms_overwrite <- ms[grepl("ow_",mthd),]
+  ## Extract methods that need to overwrite hitc
+  ms_hitc <- ms[grepl("hitc_",mthd),]
   ## ignore any other methods
   ms <- ms[!grepl("ow_",mthd),]
+  ms <- ms[!grepl("hitc_",mthd),]
   
   ## Apply bmad overwrite methods first if needed
   if (nrow(ms_overwrite) > 0) {
@@ -98,6 +101,13 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Determine hit-call
   dat[ , hitc := as.integer(max_med >= coff)]
+  
+  ## Apply bmad overwrite methods first if needed
+  if (nrow(ms_hitc) > 0) {
+    exprs <- lapply(mthd_funcs[ms_hitc$mthd], do.call, args = list())
+    fenv <- environment()
+    invisible(rapply(exprs, eval, envir = fenv))
+  }
 
   ## set max med back to the tmp value so we conserve directionality.
   dat[ , max_med := max_tmp]

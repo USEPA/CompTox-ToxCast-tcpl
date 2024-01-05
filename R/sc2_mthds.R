@@ -194,9 +194,30 @@ sc2_mthds <- function() {
       
     },
     
-    ow_bidirectional_false = function() {
+    ow_bidirectional_loss = function() {
+      
+      e1 <- bquote(dat[ , c("max_med","max_tmp") := list(abs(min(tmp)), tmp[which.min(tmp)]), by = spid])
+      list(e1)
+      
+    },
+    
+    ow_bidirectional_gain = function() {
       
       e1 <- bquote(dat[ , c("max_med","max_tmp") := list(max(tmp), tmp[which.max(tmp)]), by = spid])
+      list(e1)
+      
+    },
+    
+    hitc_bidirectional_loss = function() {
+      
+      e1 <- bquote(dat$hitc[dat$max_med > 0] <- dat$hitc[dat$max_med > 0] * -1)
+      list(e1)
+      
+    },
+    
+    hitc_bidirectional_gain = function() {
+      
+      e1 <- bquote(dat$hitc[dat$max_med < 0] <- dat$hitc[dat$max_med < 0] * -1)
       list(e1)
       
     },
