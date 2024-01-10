@@ -339,7 +339,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         sc2_agg.s2id,
         sc2_agg.s1id,
         sc2_agg.s0id,
-        logc,
+        conc,
         resp
       FROM
         sc1,
@@ -427,8 +427,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         min_med_conc,
         max_med_diff,
         max_med_diff_conc,
-        logc_max,
-        logc_min,
+        conc_max,
+        conc_min,
         nconc,
         npts,
         nrep,
@@ -561,8 +561,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         min_med_conc,
         max_med_diff,
         max_med_diff_conc,
-        logc_max,
-        logc_min,
+        conc_max,
+        conc_min,
         nconc,
         npts,
         nrep,
@@ -571,7 +571,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         hitc,
         modl,
         fitc,
-        coff
+        coff,
+        model_type
       FROM
         mc4,
         mc5
@@ -611,6 +612,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         modl,
         fitc,
         coff,
+        model_type,
         hit_param,
         hit_val
       FROM
