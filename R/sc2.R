@@ -84,11 +84,12 @@ sc2 <- function(ae, wr = FALSE) {
   ms <- ms[!grepl("ow_",mthd),]
   ms <- ms[!grepl("hitc_",mthd),]
   
-  ## Apply bmad overwrite methods first if needed
+  
+  ## Apply bmad/max_med overwrite methods first if needed
   if (nrow(ms_overwrite) > 0) {
-  exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
-  fenv <- environment()
-  invisible(rapply(exprs, eval, envir = fenv))
+    exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
+    fenv <- environment()
+    invisible(rapply(exprs, eval, envir = fenv))
   }
   
   ## Apply cutoff methods
@@ -102,15 +103,16 @@ sc2 <- function(ae, wr = FALSE) {
   ## Determine hit-call
   dat[ , hitc := as.integer(max_med >= coff)]
   
-  ## Apply bmad overwrite methods first if needed
+  ## set max med back to the tmp value so we conserve directionality.
+  dat[ , max_med := max_tmp]
+  
+  ## Apply hitc overwrite methods if needed
   if (nrow(ms_hitc) > 0) {
     exprs <- lapply(mthd_funcs[ms_hitc$mthd], do.call, args = list())
     fenv <- environment()
     invisible(rapply(exprs, eval, envir = fenv))
   }
 
-  ## set max med back to the tmp value so we conserve directionality.
-  dat[ , max_med := max_tmp]
 
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
