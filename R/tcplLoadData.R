@@ -177,6 +177,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
   
   if (drvr != "example"){
     
+    # add.fld is not possible if invitrodb version less than 4
+    if (!check_tcpl_db_schema()) add.fld <- FALSE
+    
     table <- paste0(type, lvl)
     tbls_joins <- case_when(
       table == "sc0" ~ list(tbls = "sc0", 
