@@ -78,12 +78,8 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Extract methods that need to overwrite bmad
   ms_overwrite <- ms[grepl("ow_",mthd),]
-  ## Extract methods that need to overwrite hitc
-  ms_hitc <- ms[grepl("hitc_",mthd),]
   ## ignore any other methods
   ms <- ms[!grepl("ow_",mthd),]
-  ms <- ms[!grepl("hitc_",mthd),]
-  
   
   ## Apply bmad/max_med overwrite methods first if needed
   if (nrow(ms_overwrite) > 0) {
@@ -106,13 +102,15 @@ sc2 <- function(ae, wr = FALSE) {
   ## set max med back to the tmp value so we conserve directionality.
   dat[ , max_med := max_tmp]
   
-  ## Apply hitc overwrite methods if needed
-  if (nrow(ms_hitc) > 0) {
-    exprs <- lapply(mthd_funcs[ms_hitc$mthd], do.call, args = list())
-    fenv <- environment()
-    invisible(rapply(exprs, eval, envir = fenv))
+  ## overwrite hitc for gain direction endpoints
+  if ("ow_bidirectional_gain" %in% ms_overwrite$mthd) {
+    dat <- dat[max_med < 0, hitc := hitc*-1]
   }
-
+  
+  ## overwrite hitc for loss direction endpoints
+  if ("ow_bidirectional_loss" %in% ms_overwrite$mthd) {
+    dat <- dat[max_med > 0, hitc := hitc*-1]
+  }
 
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))
