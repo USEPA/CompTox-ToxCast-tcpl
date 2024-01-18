@@ -64,21 +64,16 @@ mc4_mthds <- function() {
     bmad.aeid.lowconc.twells = function() {
       
       e1 <- bquote(dat[ , bmad := mad(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
-      list(e1)
+      e2 <- bquote(dat[ , osd := sd(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
+      list(e1, e2)
       
     },
     
     bmad.aeid.lowconc.nwells = function() {
       
       e1 <- bquote(dat[ , bmad := mad(resp[wllt == "n"], na.rm = TRUE)])
-      list(e1)
-      
-    },
-    
-    onesd.aeid.lowconc.twells = function() {
-      
-      e1 <- bquote(dat[ , osd := sd(resp[cndx %in% 1:2 & wllt == "t"], na.rm = TRUE)])
-      list(e1)
+      e2 <- bquote(dat[ , osd := sd(resp[wllt == "n"], na.rm = TRUE)])
+      list(e1, e2)
       
     },
     
