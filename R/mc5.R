@@ -99,6 +99,7 @@ mc5 <- function(ae, wr = FALSE) {
   ## Determine final cutoff
   dat[ , coff := max(coff)]
   
+  browser()
   ## Check to see if we are using the v3 schema
   # currently can only use one coff
   if (check_tcpl_db_schema()) {
