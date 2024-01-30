@@ -61,6 +61,7 @@ tcplFit2 <- function(dat,
 #' @return Data.table with key value pairs of hitcalling parameters
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull ungroup
 #' @importFrom tidyr pivot_longer
+#' @importFrom tidyr separate_wider_delim
 #' @importFrom tcplfit2 tcplhit2_core
 tcplHit2 <- function(mc4, coff) {
   
@@ -69,7 +70,10 @@ tcplHit2 <- function(mc4, coff) {
   model <- m4id  <-model_param  <-model_val  <-resp  <- NULL
   params  <-conc  <-bmed  <-onesd  <-df  <-aeid  <- NULL
   fit_method  <-hitcall  <-cutoff  <-top_over_cutoff  <-bmd  <-hit_val <- NULL
-  nested_mc4 <- mc4 %>%
+
+  long_mc4 <- mc4 |> tidyr::pivot_longer(cols = matches("cnst|hill|gnls|poly1|poly2|pow|exp2|exp3|exp4|exp5|all"), names_to = "model", values_to = "model_val") |> tidyr::separate_wider_delim(col = "model",delim = "_", names = c("model","model_param"), too_many = "merge")
+  
+  nested_mc4 <- long_mc4 %>%
     filter(model != "all") %>%
     group_by(m4id) %>%
     summarise(params = list(tcplFit2_nest(data.table(model = model, model_param = model_param, model_val = model_val))))
@@ -82,10 +86,10 @@ tcplHit2 <- function(mc4, coff) {
   nested_mc4 <- nested_mc4 %>% left_join(l3_dat %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)), by = "m4id")
 
   # rejoin the onesd for tcplfit2
-  nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "onesd") %>% select(m4id, onesd = model_val), by = "m4id")
+  nested_mc4 <- nested_mc4 %>% inner_join(long_mc4 %>% filter(model_param == "onesd") %>% select(m4id, onesd = model_val), by = "m4id")
 
   # rejoin for bmed
-  nested_mc4 <- nested_mc4 %>% inner_join(mc4 %>% filter(model_param == "bmed") %>% select(m4id, bmed = model_val), by = "m4id")
+  nested_mc4 <- nested_mc4 %>% inner_join(long_mc4 %>% filter(model_param == "bmed") %>% select(m4id, bmed = model_val), by = "m4id")
 
   # add the cutoff
   # nested_mc4$cutoff <- coff
@@ -115,7 +119,7 @@ tcplHit2 <- function(mc4, coff) {
     dplyr::ungroup()
   res <- res %>% mutate(coff_upper = 1.2 * cutoff, coff_lower = .8 * cutoff)
   res <- res %>%
-    left_join(mc4 %>% select(m4id, conc_min, conc_max) %>% unique(), by = "m4id") %>%
+    left_join(long_mc4 %>% select(m4id, conc_min, conc_max) %>% unique(), by = "m4id") %>%
     mutate(fitc = case_when(
       hitcall >= .9 & abs(top) <= coff_upper & ac50 <= conc_min ~ 36L,
       hitcall >= .9 & abs(top) <= coff_upper & ac50 > conc_min & ac95 < conc_max ~ 37L,
@@ -132,13 +136,13 @@ tcplHit2 <- function(mc4, coff) {
   
   # mc5 table
   mc5 <- res %>%
-    left_join(mc4 %>% select(m4id, aeid) %>% unique(), by = "m4id") %>%
+    left_join(long_mc4 %>% select(m4id, aeid) %>% unique(), by = "m4id") %>%
     select(m4id, aeid, modl = fit_method, hitc = hitcall,fitc, coff = cutoff) %>%
     mutate(model_type = 2)
 
   # mc5 param table
   mc5_param <- res %>%
-    left_join(mc4 %>% select(m4id, aeid) %>% unique(), by = "m4id") %>%
+    left_join(long_mc4 %>% select(m4id, aeid) %>% unique(), by = "m4id") %>%
     select(m4id, aeid, top_over_cutoff:bmd)
   mc5_param <- mc5_param %>%
     tidyr::pivot_longer(cols = top_over_cutoff:bmd, names_to = "hit_param", values_to = "hit_val") %>%
