@@ -339,7 +339,7 @@ mc5_mthds <- function(ae) {
 	osd_coff_bmr = function() {
 	  
 	  # set the osd param so that bmr == coff
-	  e1 <- bquote(dat[ , osd := coff/1.349 ])
+	  e1 <- bquote(dat[ , all_onesd := coff/1.349 ])
 	  list(e1)
 	  
 	}

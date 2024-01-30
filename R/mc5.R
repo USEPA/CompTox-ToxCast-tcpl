@@ -107,12 +107,12 @@ mc5 <- function(ae, wr = FALSE) {
   ## Determine final cutoff
   dat[ , coff := max(coff)]
   
-  browser()
+
   ## Check to see if we are using the v3 schema
   # currently can only use one coff
   if (check_tcpl_db_schema()) {
     cutoff <- max(dat$coff)
-    
+
     # before hitcalling overwrite osd value
     if(overwrite_osd){
       exprs <- lapply(mthd_funcs[ms_osd_coff_bmr$mthd], do.call, args = list())
