@@ -35,6 +35,8 @@ mc5 <- function(ae, wr = FALSE) {
   gnls_la <- modl_lw <- gnls_lw <- gnls_rmse <- gnls_prob <- actp <- NULL
   modl_ac10 <- model_type <- NULL 
   
+  overwrite_osd <- FALSE
+  
   owarn <- getOption("warn")
   options(warn = 1)
   on.exit(options(warn = owarn))
