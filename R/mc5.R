@@ -81,6 +81,14 @@ mc5 <- function(ae, wr = FALSE) {
     loec.mthd = TRUE
     ms <- ms[!mthd=='loec.coff']
   }
+  
+  #special case where osd needs to be overwritten
+  if ('osd_coff_bmr' %in% ms$mthd) {
+    overwrite_osd <- TRUE
+    ms_osd_coff_bmr = ms[mthd=='osd_coff_bmr']
+    ms <- ms[!mthd=='loec.coff']
+  }
+
   ## Extract methods that need to overwrite hitc and hit_val
   ms_overwrite <- ms[grepl("ow_",mthd),]
   ## Extract methods that don't overwrite
@@ -104,6 +112,14 @@ mc5 <- function(ae, wr = FALSE) {
   # currently can only use one coff
   if (check_tcpl_db_schema()) {
     cutoff <- max(dat$coff)
+    
+    # before hitcalling overwrite osd value
+    if(overwrite_osd){
+      exprs <- lapply(mthd_funcs[ms_osd_coff_bmr$mthd], do.call, args = list())
+      fenv <- environment()
+      invisible(rapply(exprs, eval, envir = fenv))
+    }
+    
     # if we're using v3 schema we want to tcplfit2
     dat <- tcplHit2(dat, coff = cutoff)
   } else {
