@@ -86,7 +86,7 @@ mc5 <- function(ae, wr = FALSE) {
   if ('osd_coff_bmr' %in% ms$mthd) {
     overwrite_osd <- TRUE
     ms_osd_coff_bmr = ms[mthd=='osd_coff_bmr']
-    ms <- ms[!mthd=='loec.coff']
+    ms <- ms[!mthd=='osd_coff_bmr']
   }
 
   ## Extract methods that need to overwrite hitc and hit_val
