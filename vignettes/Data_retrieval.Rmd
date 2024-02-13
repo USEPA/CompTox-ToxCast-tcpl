@@ -681,10 +681,7 @@ toxref_chnm_liver_lel<-toxref_chnm_liver %>%
 First, query the invitrodb database for all assay annotations, and filter results to consider only "liver" tissue-based endpoints.
 
 ```{r txct-annotations-liver-subset, warning=FALSE, eval=FALSE}
-toxcast_annotations_subset <- tcplQuery("SELECT * FROM assay
-                        INNER JOIN assay_component ON assay.aid = assay_component.aid
-                        INNER JOIN assay_component_endpoint ON assay_component.acid=assay_component_endpoint.acid 
-                        where assay.tissue='liver';")
+toxcast_annotations_subset <- tcplLoadAeid(fld = "tissue", val = "liver", add.fld = "tissue")
 ```
 
 For this subset of endpoints of targeted interest, pull assay results (mc5-mc6) for the chemical "Pentachlorophenol"
