@@ -52,6 +52,8 @@ library(tcplfit2)
 # Data Formatting Packages #
 library(dplyr)
 library(magrittr)
+library(data.table)
+library(DT)
 # Plotting Packages #
 library(ggplot2)
 library(RColorBrewer)
@@ -649,3 +651,146 @@ tcplPlot(lvl = 5, # data level
          output = "pdf", # output as pdf
          fileprefix = "output/upitt") # prefix of the filename
 ```
+
+## Evaluate ToxCast AEDs for a single chemical and target
+
+This section will explore how one can compare in vivo Points of Departure (PODs) from the Toxicity Reference Database (ToxRefDB, https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses (AEDs) from ToxCast in vitro bioactivity data (invitrodb, https://www.epa.gov/comptox-tools/exploring-toxcast-data). The process can be adapted for any given chemical and target depending on available data in either database.
+
+The following example will consider "Pentachlorophenol" and "liver toxicity"
+
+### Consider *in vivo* toxicity benchmarks as POD-Traditional
+
+First, export ToxRefDB batch download results for any chemical from the CompTox Chemicals Dashboard (https://comptox.epa.gov/dashboard/batch-search) or Hazard APIs (https://api-ccte.epa.gov/docs/) 
+
+After loading all chemical-specific data for "Pentachlorophenol", filter results to only include "liver"-related effects
+```{r txrf-data-liver-subset, eval=FALSE}
+toxref_chnm_liver <- toxref_batch_download_chnm %>% 
+  filter(endpoint_target == 'liver') 
+```
+
+Next identify the observed lowest effect (based on statistically significant i.e. treatment related=1) and lowest observed adverse (i.e. critical) effect levels at minimum dose_adjusted (mg/kg/day) value
+
+```{r txrf-lel-determination, eval=FALSE}
+toxref_chnm_liver_lel<-toxref_chnm_liver %>% 
+  summarise(lel=min(dose_adjusted[treatment_related==1]), 
+            loael=min(dose_adjusted[critical_effect==1]))
+```
+
+### Consider ToxCast *in vitro* bioactivity data as POD-NAM
+
+First, query the invitrodb database for all assay annotations, and filter results to consider only "liver" tissue-based endpoints.
+
+```{r txct-annotations-liver-subset, warning=FALSE, eval=FALSE}
+toxcast_annotations_subset <- tcplQuery("SELECT * FROM assay
+                        INNER JOIN assay_component ON assay.aid = assay_component.aid
+                        INNER JOIN assay_component_endpoint ON assay_component.acid=assay_component_endpoint.acid 
+                        where assay.tissue='liver';")
+```
+
+For this subset of endpoints of targeted interest, pull assay results (mc5-mc6) for the chemical "Pentachlorophenol"
+```{r txct-data-pull, warning=FALSE, message=FALSE, eval=FALSE}
+# Load the chemical data from the database
+chnm <- 'Pentachlorophenol'
+chem <- tcplLoadChem(field = 'chnm',val = chnm)
+                     
+# Load mc5 data from the database for the specified chemical
+mc5 <- tcplLoadData(lvl = 5, # data level 
+                        fld = 'spid', # field to query on
+                        val = chem[,spid], # value for each field (fld)
+                        type = 'mc') # data type - MC
+
+#Join with level 6 flag information
+mc6 <- tcplPrepOtpt(tcplLoadData(lvl=6, fld='m4id', val=mc5$m4id, type='mc'))
+setDT(mc6)
+mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
+mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
+mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
+mc5[, flag.length := ifelse(!is.na(mc6_flags), count.fields(textConnection(mc6_flags), sep =','), NA)]
+
+# filter the potency and activity using coarse filters related to hitc, flags, fitc
+mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
+mc5[hitc>=0.9 & is.na(flag.length), use.me := 1]
+mc5[hitc>=0.9 & flag.length >= 3, use.me := 0]
+mc5[fitc %in% c(36,45), use.me := 0]
+mc5[hitc<0.9, use.me := 0]
+mc5[use.me==0, ac50 := as.numeric(NA)]
+mc5[use.me==0, hitc := 0]
+mc5[hitc==0, ac50 := as.numeric(NA)]
+mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
+
+#Filter to only liver endpoints
+toxcast_mc5_liver <- mc5[aeid %in% toxcast_annotations_subset$aeid,]
+```
+
+Summarize ToxCast AC50 values as 5%, 50%, and mean.
+
+```{r httk-prep, eval=FALSE}
+# Calculating summary statistics for ac50 values for httk processing to calculate AED
+toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
+  p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
+  p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
+  mean.ac50uM = mean(ac50_uM, na.rm=T))]
+
+```
+
+Use the High-Throughput Toxicokinetics httk R package (https://cran.r-project.org/web/packages/httk/index.html) to generate administered equivalent doses (AEDs) for Toxcast summary AC50 values. Some considerations: 
+
+- Species options include ‘Rat’, ‘Rabbit’, ’Dog’, ’Mouse’ or default ‘Human'
+- Which quantile from Monte Carlo steady-state simulation (for Css)? The scaling factor is the inverse of the steady state plasma concentration (Css) predicted for a 1 mg/kg/day exposure dose rate. This simulates variability and propagates uncertainty to calculate an upper 95th percentile Css,95 for individuals who get higher plasma concentrations from the same exposure, i.e. 95th concentration quantile produces the 5th dose quantile (most sensitive measure).;
+- Restrictive clearance indicates that chemical bound to protein is relatively unavailable for hepatic metabolism or renal excretion (whereas non-restrictive clearance assumes that chemical bound to protein rapidly disassociates from that protein for metabolism and excretion). 
+
+```{r httk-aed, warning=FALSE, message=FALSE, eval=FALSE}
+# Generate AEDs
+toxcast_aed_liver_summary <- toxcast_mc5_liver_summary %>% 
+        summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
+                                             dtxsid = 'DTXSID7021106', 
+                                             which.quantile=c(0.95),
+                                             species='Human',
+                                             restrictive.clearance=T, 
+                                             output.units='mgpkgpday',
+                                             model='3compartmentss'),
+        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
+                                              dtxsid = 'DTXSID7021106', 
+                                              which.quantile=c(0.95),
+                                              species='Human',
+                                              restrictive.clearance=T, 
+                                              output.units='mgpkgpday',
+                                              model='3compartmentss'),
+        aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
+                                               dtxsid = 'DTXSID7021106', 
+                                               which.quantile=c(0.95),
+                                               species='Human',
+                                               restrictive.clearance=T, 
+                                               output.units='mgpkgpday',
+                                               model='3compartmentss'))
+  
+```
+
+### Compare POD-Traditional with POD-NAM
+
+POD-Traditional (LEL and LOAEL) and POD-NAM (ToxCast-derived AEDs for 5%, 50%, and mean AC50 values) can be compared having been converted to mg/kg/day units. 
+``` {r compare, echo=FALSE}
+#create comparison table
+POD <- c("ToxRefDB LEL", 
+            "ToxRefDB LOAEL",
+            "ToxCast AED at 5th percentile AC50", 
+            "ToxCast AED at 50th percentile/median AC50", 
+            "ToxCast AED at mean AC50")
+Value <- c("1.5",
+          "1.5", 
+          "2.273744",
+          "7.666872", 
+          "16.09772")
+
+Table <- data.frame(POD, Value)
+
+datatable(Table,
+          filter='top',
+          options=list(pageLength = 15,searching=FALSE, autoWidth=FALSE,  scrollX=TRUE, initComplete = JS(
+            "function(settings, json) {",
+            "$('body').css({'font-family': 'Calibri'});",
+            "}"
+          )))
+```
+
+For this "Pentachlorophenol liver toxicity" example, POD-Traditional is more protective than the most sensitive POD-NAM.
