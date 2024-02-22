@@ -158,10 +158,16 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     } else { # type == 'sc' 
       # load dat
       dat <- scLoadDat(input$s2id)[, compare := FALSE]
+      # set order to given order
+      dat <- dat[order(match(get(fld[1]), val))]
+      dat$order <- 1:nrow(dat)
       agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = input$s2id, type = "sc")
       # load compare dat
       if (!is.null(compare.val)) {
         compare.dat <- scLoadDat(compare.input$s2id)[, compare := TRUE]
+        # set order to given order
+        compare.dat <- compare.dat[order(match(get(fld[1]), compare.val))]
+        compare.dat$order <- 1:nrow(compare.dat)
         dat <- rbind(dat, compare.dat, fill = TRUE)
         compare.agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = compare.input$s2id, type = "sc")
         agg <- rbind(agg, compare.agg, fill = TRUE)
