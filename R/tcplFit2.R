@@ -206,7 +206,8 @@ tcplFit2_nest <- function(dat) {
 
   out1 <- c(
     mget(modelnames),
-    list(modelnames = modelnames)
+    list(modelnames = modelnames),
+    errfun = "dt4"
   )
 }
 
