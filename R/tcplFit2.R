@@ -174,7 +174,8 @@ tcplFit2_unnest <- function(output) {
     test <- rbind(test, data.frame(model = m, model_param = names(lst), model_val = unlist(lst), stringsAsFactors = FALSE, row.names = NULL))
   }
   # include error function and return
-  rbind(test, list(model = "errfun", model_param = output$errfun, model_val = NA))
+  errfun <- if (is.null(output$errfun)) "dt4" else output$errfun
+  rbind(test, list(model = "errfun", model_param = errfun, model_val = NA))
 }
 
 
