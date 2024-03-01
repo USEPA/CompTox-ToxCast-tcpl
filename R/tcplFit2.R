@@ -71,7 +71,7 @@ tcplHit2 <- function(mc4, coff) {
   params  <-conc  <-bmed  <-onesd  <-df  <-aeid  <- NULL
   fit_method  <-hitcall  <-cutoff  <-top_over_cutoff  <-bmd  <-hit_val <- NULL
 
-  long_mc4 <- mc4 |> tidyr::pivot_longer(cols = matches("cnst|hill|gnls|poly1|poly2|pow|exp2|exp3|exp4|exp5|all"), names_to = "model", values_to = "model_val") |> tidyr::separate_wider_delim(col = "model",delim = "_", names = c("model","model_param"), too_many = "merge")
+  long_mc4 <- mc4 |> tidyr::pivot_longer(cols = matches("cnst|hill|gnls|poly1|poly2|pow|exp2|exp3|exp4|exp5|all|errfun"), names_to = "model", values_to = "model_val") |> tidyr::separate_wider_delim(col = "model",delim = "_", names = c("model","model_param"), too_many = "merge")
   
   nested_mc4 <- long_mc4 %>%
     filter(model != "all") %>%
@@ -173,7 +173,8 @@ tcplFit2_unnest <- function(output) {
     lst <- lapply(res[[m]], function(x){ if(length(x) < 1) { x <- NA }; x })
     test <- rbind(test, data.frame(model = m, model_param = names(lst), model_val = unlist(lst), stringsAsFactors = FALSE, row.names = NULL))
   }
-  test
+  # include error function and return
+  rbind(test, list(model = "errfun", model_param = output$errfun, model_val = NA))
 }
 
 
@@ -183,6 +184,10 @@ tcplFit2_unnest <- function(output) {
 #'
 #' @return a list of fitting parameters that can be consumed by tcplfit2
 tcplFit2_nest <- function(dat) {
+  # get errfun and filter it out
+  errfun <- filter(dat, model == "errfun")$model_param
+  dat <- filter(dat, model != "errfun")
+  
   # renest
   modelnames <- unique(dat$model)
   for (m in modelnames) {
@@ -207,7 +212,7 @@ tcplFit2_nest <- function(dat) {
   out1 <- c(
     mget(modelnames),
     list(modelnames = modelnames),
-    errfun = "dt4"
+    errfun = errfun
   )
 }
 
