@@ -1,5 +1,5 @@
 ---
-title: tcpl v3.0 <br />Data Retrieval<br />
+title: Data Retrieval with tcpl
 author: "Center for Computational Toxicology and Exposure, US EPA"
 output:
   prettydoc::html_pretty:
@@ -7,7 +7,7 @@ output:
     toc: yes
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{tcpl v3.0 Data Retrieval}
+  %\VignetteIndexEntry{Data Retrieval}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
@@ -658,7 +658,7 @@ This section will explore how one can compare in vivo Points of Departure (PODs)
 
 The following example will consider "Pentachlorophenol" and "liver toxicity"
 
-### Consider *in vivo* toxicity benchmarks as POD-Traditional
+### Consider ToxRefDB *in vivo* toxicity benchmarks as POD-Traditional
 
 First, export ToxRefDB batch download results for any chemical from the CompTox Chemicals Dashboard (https://comptox.epa.gov/dashboard/batch-search) or Hazard APIs (https://api-ccte.epa.gov/docs/) 
 
@@ -668,7 +668,7 @@ toxref_chnm_liver <- toxref_batch_download_chnm %>%
   filter(endpoint_target == 'liver') 
 ```
 
-Next identify the observed lowest effect (based on statistically significant i.e. treatment related=1) and lowest observed adverse (i.e. critical) effect levels at minimum dose_adjusted (mg/kg/day) value
+Next identify the observed lowest effect (significantly different from control in source document i.e. treatment related=1) and lowest observed adverse (deemed adverse by study reviewer in source document i.e. critical_effect=1) effect levels at minimum dose_adjusted (mg/kg/day) value.
 
 ```{r txrf-lel-determination, eval=FALSE}
 toxref_chnm_liver_lel<-toxref_chnm_liver %>% 
@@ -678,7 +678,7 @@ toxref_chnm_liver_lel<-toxref_chnm_liver %>%
 
 ### Consider ToxCast *in vitro* bioactivity data as POD-NAM
 
-First, query the invitrodb database for all assay annotations, and filter results to consider only "liver" tissue-based endpoints.
+First, query the invitrodb database for all assay annotations, and filter results to consider only "liver"  derived tissue-based endpoints.
 
 ```{r txct-annotations-liver-subset, warning=FALSE, eval=FALSE}
 toxcast_annotations_subset <- tcplLoadAeid(fld = "tissue", val = "liver", add.fld = "tissue")
@@ -702,7 +702,8 @@ setDT(mc6)
 mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
 mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
 mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
-mc5[, flag.length := ifelse(!is.na(mc6_flags), count.fields(textConnection(mc6_flags), sep =','), NA)]
+mc5[, flag.length := ifelse(!is.na(mc6_flags), 
+                     count.fields(textConnection(mc6_flags), sep =','), NA)]
 
 # filter the potency and activity using coarse filters related to hitc, flags, fitc
 mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
@@ -719,7 +720,7 @@ mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
 toxcast_mc5_liver <- mc5[aeid %in% toxcast_annotations_subset$aeid,]
 ```
 
-Summarize ToxCast AC50 values as 5%, 50%, and mean.
+Obtain a summary of the ToxCast AC50 values with the 5th and 50th percentiles, as well as the mean.
 
 ```{r httk-prep, eval=FALSE}
 # Calculating summary statistics for ac50 values for httk processing to calculate AED
@@ -727,14 +728,13 @@ toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
   p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
   p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
   mean.ac50uM = mean(ac50_uM, na.rm=T))]
-
 ```
 
-Use the High-Throughput Toxicokinetics httk R package (https://cran.r-project.org/web/packages/httk/index.html) to generate administered equivalent doses (AEDs) for Toxcast summary AC50 values. Some considerations: 
+Use the High-throughput Toxicokinetics R package [httk](https://cran.r-project.org/web/packages/httk/index.html) to generate administered equivalent doses (AEDs) for ToxCast summary AC50 values. Modeling assumptions when estimating the AEDs with httk: 
 
 - Species options include ‘Rat’, ‘Rabbit’, ’Dog’, ’Mouse’ or default ‘Human'
 - Which quantile from Monte Carlo steady-state simulation (for Css)? The scaling factor is the inverse of the steady state plasma concentration (Css) predicted for a 1 mg/kg/day exposure dose rate. This simulates variability and propagates uncertainty to calculate an upper 95th percentile Css,95 for individuals who get higher plasma concentrations from the same exposure, i.e. 95th concentration quantile produces the 5th dose quantile (most sensitive measure).;
-- Restrictive clearance indicates that chemical bound to protein is relatively unavailable for hepatic metabolism or renal excretion (whereas non-restrictive clearance assumes that chemical bound to protein rapidly disassociates from that protein for metabolism and excretion). 
+- Restrictive clearance indicates the chemical is protein-bound such that it is relatively unavailable for hepatic metabolism or renal excretion; whereas, non-restrictive clearance assumes the chemical rapidly disassociates from the protein for metabolism and excretion 
 
 ```{r httk-aed, warning=FALSE, message=FALSE, eval=FALSE}
 # Generate AEDs
@@ -765,7 +765,7 @@ toxcast_aed_liver_summary <- toxcast_mc5_liver_summary %>%
 
 ### Compare POD-Traditional with POD-NAM
 
-POD-Traditional (LEL and LOAEL) and POD-NAM (ToxCast-derived AEDs for 5%, 50%, and mean AC50 values) can be compared having been converted to mg/kg/day units. 
+POD-Traditional (ToxRefDB LEL and LOAEL) and POD-NAM (ToxCast-derived AEDs for 5%, 50%, and mean AC50 values) can be compared once converted to to mg/kg/day units. 
 ``` {r compare, echo=FALSE}
 #create comparison table
 POD <- c("ToxRefDB LEL", 
