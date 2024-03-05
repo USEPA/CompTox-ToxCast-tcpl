@@ -29,8 +29,8 @@ $(document).ready(function() {
 </script>
 
 ```{css, echo=FALSE}
-.scroll-100 {
-  max-height: 100px;
+.scroll-300 {
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -42,6 +42,16 @@ $(document).ready(function() {
   border-radius: 10px;
 }
 ```
+
+# Introduction
+
+This vignette describes how the user can retrieve data from the ToxCast database, known as invitrodb, using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+
+::: {.noticebox data-latex=""}
+
+**NOTE:** Users must be connected to the ToxCast database (invitrodb), or a replicate of the database, to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in the tcpl package for more details.
+
+:::
 
 # R Packages
 
@@ -63,19 +73,6 @@ library(viridis)
 library(htmlTable)
 library(kableExtra)
 ```
-
-
-# Introduction
-
-This vignette describes how the user can retrieve data from the ToxCast database, known as invitrodb, using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
-
-::: {.noticebox data-latex=""}
-
-**NOTE:**
-
-Users must be connected to the ToxCast database (invitrodb), or a replicate of the database, to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in this package for more details.
-
-:::
 
 ## Overview of Key Functions
 
@@ -166,7 +163,7 @@ The <font face="CMTT10">tcplLoadChem</font> function returns chemical informatio
 
 The <font face="CMTT10">tcplMthdList</font> function returns methods available for processing at a specified level (i.e. step in the <font face="CMTT10">tcpl</font> pipeline). The user defined function in the following code chunk utilizes the <font face="CMTT10">tcplMthdList</font> function to retrieve and output all available methods for both the SC and MC data levels.
 
-```{r mthd_list, eval = FALSE}
+```{r mthd_list, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to list all available methods function (SC & MC).
 method_list <- function() {
   # Single Concentration
@@ -281,7 +278,7 @@ head(mc0) %>%
 
 The goal of this section is to provide example quantitative metrics, such as z-prime and coefficient of variance, to evaluate assay performance relative to controls.
 
-```{r mc0_aq, eval = FALSE}
+```{r mc0_aq, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to review assay quality metrics using indexed Level 0 data.
 aq <- function(ac){
   # obtain level 1 multiple concentration data for specified acids
@@ -383,7 +380,7 @@ sc2 <- tcplPrepOtpt(
 
 ## Load SC Methods
 
-```{r sc2_mthd, eval = FALSE}
+```{r sc2_mthd, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to load methods for single concentration data processing
 # steps for given aeids.
 sc_methods <- function(aeids) {
@@ -434,7 +431,7 @@ mc5 <- tcplPrepOtpt(
 
 # For tcpl v3.0.0 and future releases, to output mc5_param information with
 # the default mc5 results then 'add.fld' must be set to TRUE.
-# (NOTE: Default for add.fld is FALSE, unless otherwise specified.)
+# (NOTE: Default for add.fld is TRUE, unless otherwise specified.)
 mc5 <- tcplPrepOtpt(
   tcplLoadData(lvl=5, # data level
                fld="aeid", # fields to query on
@@ -447,7 +444,7 @@ mc5 <- tcplPrepOtpt(
 
 ## Load MC Methods
 
-```{r mc5_methods, eval = FALSE}
+```{r mc5_methods, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to load methods for MC data processing
 # for select aeids.
 mc_methods <- function(aeids) {
@@ -685,7 +682,7 @@ toxcast_annotations_subset <- tcplLoadAeid(fld = "tissue", val = "liver", add.fl
 ```
 
 For this subset of endpoints of targeted interest, pull assay results (mc5-mc6) for the chemical "Pentachlorophenol"
-```{r txct-data-pull, warning=FALSE, message=FALSE, eval=FALSE}
+```{r txct-data-pull, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Load the chemical data from the database
 chnm <- 'Pentachlorophenol'
 chem <- tcplLoadChem(field = 'chnm',val = chnm)
@@ -739,27 +736,18 @@ Use the High-throughput Toxicokinetics R package [httk](https://cran.r-project.o
 ```{r httk-aed, warning=FALSE, message=FALSE, eval=FALSE}
 # Generate AEDs
 toxcast_aed_liver_summary <- toxcast_mc5_liver_summary %>% 
-        summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
-                                             dtxsid = 'DTXSID7021106', 
-                                             which.quantile=c(0.95),
-                                             species='Human',
-                                             restrictive.clearance=T, 
-                                             output.units='mgpkgpday',
-                                             model='3compartmentss'),
+      summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
+                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
         aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
-                                              dtxsid = 'DTXSID7021106', 
-                                              which.quantile=c(0.95),
-                                              species='Human',
-                                              restrictive.clearance=T, 
-                                              output.units='mgpkgpday',
-                                              model='3compartmentss'),
+                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
         aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
-                                               dtxsid = 'DTXSID7021106', 
-                                               which.quantile=c(0.95),
-                                               species='Human',
-                                               restrictive.clearance=T, 
-                                               output.units='mgpkgpday',
-                                               model='3compartmentss'))
+                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'))
   
 ```
 
@@ -790,4 +778,4 @@ datatable(Table,
           )))
 ```
 
-For this "Pentachlorophenol liver toxicity" example, POD-Traditional is more protective than the most sensitive POD-NAM.
+For the "Pentachlorophenol liver toxicity" example provided here, the POD estimated from ToxRefDB (POD-Traditional) is more protective compared to the lowest summary estimate from ToxCast (POD-NAM)
