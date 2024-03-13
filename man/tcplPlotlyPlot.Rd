@@ -10,9 +10,8 @@ tcplPlotlyPlot(dat, lvl = 5)
 \item{dat}{data table with all required conc/resp data}
 
 \item{lvl}{integer level of data that should be plotted
-level 4 - all fit models
-level 5 - all fit models and winning model with hitcall
-level 6 - include all flags}
+level 2 - for 'sc' plotting
+level 5 - for 'mc' plotting, all fit models and winning model with hitcall}
 }
 \value{
 A plotly plot

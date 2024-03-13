@@ -81,11 +81,11 @@ sc2 <- function(ae, wr = FALSE) {
   ## ignore any other methods
   ms <- ms[!grepl("ow_",mthd),]
   
-  ## Apply bmad overwrite methods first if needed
+  ## Apply bmad/max_med overwrite methods first if needed
   if (nrow(ms_overwrite) > 0) {
-  exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
-  fenv <- environment()
-  invisible(rapply(exprs, eval, envir = fenv))
+    exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
+    fenv <- environment()
+    invisible(rapply(exprs, eval, envir = fenv))
   }
   
   ## Apply cutoff methods
@@ -98,9 +98,19 @@ sc2 <- function(ae, wr = FALSE) {
   
   ## Determine hit-call
   dat[ , hitc := as.integer(max_med >= coff)]
-
+  
   ## set max med back to the tmp value so we conserve directionality.
   dat[ , max_med := max_tmp]
+  
+  ## overwrite hitc for gain direction endpoints
+  if ("ow_bidirectional_gain" %in% ms_overwrite$mthd) {
+    dat <- dat[max_med < 0, hitc := hitc*-1]
+  }
+  
+  ## overwrite hitc for loss direction endpoints
+  if ("ow_bidirectional_loss" %in% ms_overwrite$mthd) {
+    dat <- dat[max_med > 0, hitc := hitc*-1]
+  }
 
   ttime <- round(difftime(Sys.time(), stime, units = "sec"), 2)
   ttime <- paste(unclass(ttime), units(ttime))

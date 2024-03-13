@@ -105,7 +105,7 @@ mc6_mthds <- function() {
     
     low.nrep = function(mthd) { 
       
-      flag <- "Average number of replicates per conc is less than 2"
+      flag <- "Average number of replicates per conc < 2"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -120,7 +120,7 @@ mc6_mthds <- function() {
     
     low.nconc = function(mthd) { 
       
-      flag <- "Number of concentrations tested is less than 4"
+      flag <- "Number of concentrations tested < 4"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -277,7 +277,7 @@ mc6_mthds <- function() {
     
     efficacy.50 = function(mthd) {
       
-      flag <- "Less than 50% efficacy"
+      flag <- "Efficacy < 50%"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -295,7 +295,7 @@ mc6_mthds <- function() {
     
     ac50.lowconc = function(mthd) {
       
-      flag <- "AC50 less than lowest concentration tested"
+      flag <- "AC50 < lowest concentration tested"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -325,7 +325,7 @@ mc6_mthds <- function() {
     
     no.med.gt.3bmad = function(mthd) {
       
-      flag <- "No median response values are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      flag <- "No median responses > 3*bmad"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -340,7 +340,7 @@ mc6_mthds <- function() {
     
     no.med.single.dir.gt.3bmad = function(mthd) {
       
-      flag <- "No median response values in the intended fit direction are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      flag <- "No median responses > 3*bmad in intended signal direction"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
