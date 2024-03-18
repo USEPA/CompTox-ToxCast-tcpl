@@ -74,8 +74,9 @@
 #' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
 #'
 #' @import data.table
-#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_wider unnest_longer
 #' @importFrom utils data
+#' @importFrom rlang exec sym
 #' @export
 
 tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE) {
@@ -174,8 +175,48 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     else stop("Invalid 'lvl' and 'type' combination.")
   }
-  
-  if (drvr != "example"){
+  else if (drvr == "API") {
+    
+    # check type and lvl
+    if (type != "mc") stop("Only type = 'mc' is supported using API data as source.")
+    # if lvl is outside of 3-6 while not agg either
+    if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) are supported using API data as source.")
+    
+    # check fld
+    if (is.null(fld)) stop("'fld' cannot be NULL")
+    fld <- if(tolower(fld) == "m4id") tolower(fld) else toupper(fld)
+    if (!(fld %in% c("AEID", "SPID", "m4id", "DTXSID"))) stop("'fld' must be one of 'AEID', 'SPID', 'm4id', or 'DTXSID'")
+    
+    # get data from API using ccdR
+    dat <- exec(get_bioactivity_details, !!sym(fld) := val, Server := paste0(getOption("TCPL_HOST"), "/data"))
+    
+    # adjust column names
+    colnames(dat) <- gsub("([a-z])([A-Z])", "\\1_\\L\\2", colnames(dat), perl = TRUE)
+    dat$dsstox_substance_id <- dat$dtxsid
+    
+    # unlist logc to conc
+    dat <- dat |> rowwise() |> mutate(conc = list(10^unlist(logc)))
+    
+    if (lvl == 3) {
+      dat$resp <- lapply(dat$resp, unlist)
+      dat <- unnest_longer(dat, c(conc, resp))
+    }
+    
+    # return data
+    if (add.fld) return(dat) # return all fields from API if add.fld == TRUE
+    else {
+      # load default columns returned regular connection to DB
+      data("load_data_columns", envir = environment())
+      # combine type and lvl into string, like "mc5"
+      table <- paste0(type, lvl)
+      # pull regular columns for given table
+      cols <- unlist(load_data_columns[table])
+      # subset columns
+      return(dat[, intersect(cols, colnames(dat))])
+    }
+    
+  }
+  else {
     
     # add.fld is not possible if invitrodb version less than 4
     if (!check_tcpl_db_schema()) add.fld <- FALSE
