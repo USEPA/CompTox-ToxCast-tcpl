@@ -25,6 +25,14 @@
 #' Setting 'lvl' to "agg" will return an aggregate table containing the m4id
 #' with the concentration-response data and m3id to map back to well-level
 #' information.
+#' 
+#' If \code{tcplConf()} was set with "API" as the driver, then \code{tcplLoadData} 
+#' will return data from the CCTE Bioactivity API. API data is available for
+#' \code{type = 'mc'} and lvl = c(3,4,5,6) and 'agg'. Only fields relating to the
+#' requested level are returned, but not all fields that usually return from
+#' invitrodb are available from the API. To have all fields available from the
+#' API return, regardless of what lvl is set to, set \code{add.fld} to 
+#' \code{TRUE}.
 #'
 #' Leaving \code{fld} NULL will return all data.
 #'
@@ -180,7 +188,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     # check type and lvl
     if (type != "mc") stop("Only type = 'mc' is supported using API data as source.")
     # if lvl is outside of 3-6 while not agg either
-    if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) are supported using API data as source.")
+    if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) and 'agg' are supported using API data as source.")
     
     # check fld
     if (is.null(fld)) stop("'fld' cannot be NULL")
@@ -199,7 +207,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     if (lvl == 3) {
       dat$resp <- lapply(dat$resp, unlist)
-      dat <- unnest_longer(dat, c(conc, resp))
+      dat$logc <- lapply(dat$logc, unlist)
+      dat <- unnest_longer(dat, c(conc, logc, resp))
     }
     
     # return data

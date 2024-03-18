@@ -13,14 +13,14 @@ library(here)
 #  - NOTE: To replicate one will need to save their own 'db_cred.R', including
 #          the 'userid', 'userpwd', 'host', and DB collection via 'ivtdb'.
 source(file = here::here("data-raw/db_cred.R"),verbose = FALSE)
-# connect to the DB
+# connect to the DB, update 
 tcplConf(user = userid,
          pass = userpwd,
          host = host,
-         db = ivtdb,
+         db = "prod_internal_invitrodb_v4_1",
          drvr = "MySQL")
 #---------------------------#
-# obtain all data dictionary descriptions for the following tables
+# obtain all data tables for each level and pull out the column names
 mc0 <- tcplLoadData(lvl = 0, fld = "acid", val = 2850, type = "mc", add.fld = FALSE)
 mc1 <- tcplLoadData(lvl = 1, fld = "acid", val = 2850, type = "mc", add.fld = FALSE)
 mc2 <- tcplLoadData(lvl = 2, fld = "acid", val = 2850, type = "mc", add.fld = FALSE)

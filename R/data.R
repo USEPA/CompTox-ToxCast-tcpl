@@ -470,3 +470,24 @@
 #' }
 #' @source ToxCast database
 "invitrodb_dd"
+
+
+#' Lists of column names returned from tcplLoadData invitrodb v4.1 (same as CCTE
+#' Bioactivity API version).
+#' @format A list with 12 items:
+#' \describe{
+#'   \item{mc0}{Column names returned requesting mc lvl 0 data}
+#'   \item{mc1}{Column names returned requesting mc lvl 1 data}
+#'   \item{mc2}{Column names returned requesting mc lvl 2 data}
+#'   \item{mc3}{Column names returned requesting mc lvl 3 data}
+#'   \item{mc4}{Column names returned requesting mc lvl 4 data}
+#'   \item{mc5}{Column names returned requesting mc lvl 5 data}
+#'   \item{mc6}{Column names returned requesting mc lvl 6 data}
+#'   \item{mcagg}{Column names returned requesting mc lvl "agg" data}
+#'   \item{sc0}{Column names returned requesting sc lvl 0 data}
+#'   \item{sc1}{Column names returned requesting sc lvl 1 data}
+#'   \item{sc2}{Column names returned requesting sc lvl 2 data}
+#'   \item{scagg}{Column names returned requesting sc lvl "agg" data}
+#' }
+#' @source ToxCast database
+"load_data_columns"
