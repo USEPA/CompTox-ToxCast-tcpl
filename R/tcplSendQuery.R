@@ -77,6 +77,9 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
   }
   
   if (drvr == 'MySQL') {
+    if("RMySQL" %in% loadedNamespaces()){
+      unloadNamespace("RMySQL")
+    }
     dbcon <- do.call(dbConnect, db_pars)
     temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
     if (!is(temp, "try-error")) dbClearResult(temp)

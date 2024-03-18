@@ -46,6 +46,10 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
     names(additional_pars) <- tolower(gsub("TCPL_","",names(additional_pars)))
     db_pars <- append(db_pars,additional_pars)
     
+    if("RMySQL" %in% loadedNamespaces()){
+      unloadNamespace("RMySQL")
+    }
+    
     dbcon <- do.call(dbConnect, db_pars)
 
     
