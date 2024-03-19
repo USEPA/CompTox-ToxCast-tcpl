@@ -32,7 +32,8 @@
 #' requested level are returned, but not all fields that usually return from
 #' invitrodb are available from the API. To have all fields available from the
 #' API return, regardless of what lvl is set to, set \code{add.fld} to 
-#' \code{TRUE}.
+#' \code{TRUE}. API query-able fields include "aeid", "spid", "m4id", and 
+#' "dtxsid".
 #'
 #' Leaving \code{fld} NULL will return all data.
 #'
@@ -196,7 +197,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     if (!(fld %in% c("AEID", "SPID", "m4id", "DTXSID"))) stop("'fld' must be one of 'AEID', 'SPID', 'm4id', or 'DTXSID'")
     
     # get data from API using ccdR
-    dat <- exec(get_bioactivity_details, !!sym(fld) := val, Server := paste0(getOption("TCPL_HOST"), "/data"))
+    dat <- exec(get_bioactivity_details_batch, !!sym(fld) := val, Server := paste0(getOption("TCPL_HOST"), "/data"))
+    dat <- do.call(rbind, dat)
     
     # adjust column names
     colnames(dat) <- gsub("([a-z])([A-Z])", "\\1_\\L\\2", colnames(dat), perl = TRUE)

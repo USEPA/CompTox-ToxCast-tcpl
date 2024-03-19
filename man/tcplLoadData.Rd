@@ -42,7 +42,8 @@ will return data from the CCTE Bioactivity API. API data is available for
 requested level are returned, but not all fields that usually return from
 invitrodb are available from the API. To have all fields available from the
 API return, regardless of what lvl is set to, set \code{add.fld} to 
-\code{TRUE}.
+\code{TRUE}. API query-able fields include "aeid", "spid", "m4id", and 
+"dtxsid".
 
 Leaving \code{fld} NULL will return all data.
 
