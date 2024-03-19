@@ -191,21 +191,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     # if lvl is outside of 3-6 while not agg either
     if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) and 'agg' are supported using API data as source.")
     
-    # check fld
-    if (is.null(fld)) stop("'fld' cannot be NULL")
-    fld <- if(tolower(fld) == "m4id") tolower(fld) else toupper(fld)
-    if (!(fld %in% c("AEID", "SPID", "m4id", "DTXSID"))) stop("'fld' must be one of 'AEID', 'SPID', 'm4id', or 'DTXSID'")
-    
-    # get data from API using ccdR
-    dat <- exec(get_bioactivity_details_batch, !!sym(fld) := val, Server := paste0(getOption("TCPL_HOST"), "/data"))
-    dat <- do.call(rbind, dat)
-    
-    # adjust column names
-    colnames(dat) <- gsub("([a-z])([A-Z])", "\\1_\\L\\2", colnames(dat), perl = TRUE)
-    dat$dsstox_substance_id <- dat$dtxsid
-    
-    # unlist logc to conc
-    dat <- dat |> rowwise() |> mutate(conc = list(10^unlist(logc)))
+    # query the API 
+    dat <- tcplQueryAPI(fld = fld, val = val)
     
     if (lvl == 3) {
       dat$resp <- lapply(dat$resp, unlist)
