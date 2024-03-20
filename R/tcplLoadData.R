@@ -191,8 +191,18 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     # if lvl is outside of 3-6 while not agg either
     if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) and 'agg' are supported using API data as source.")
     
+    cols <- NULL
+    if (!add.fld) {
+      # load default columns returned regular connection to DB
+      data("load_data_columns", envir = environment())
+      # combine type and lvl into string, like "mc5"
+      table <- paste0(type, lvl)
+      # pull regular columns for given table
+      cols <- unlist(load_data_columns[table])
+    }
+    
     # query the API 
-    dat <- tcplQueryAPI(fld = fld, val = val)
+    dat <- tcplQueryAPI(fld = fld, val = val, return_flds = cols)
     
     if (lvl == 3) {
       dat$resp <- lapply(dat$resp, unlist)
@@ -200,18 +210,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       dat <- unnest_longer(dat, c(conc, logc, resp))
     }
     
-    # return data
-    if (add.fld) return(dat) # return all fields from API if add.fld == TRUE
-    else {
-      # load default columns returned regular connection to DB
-      data("load_data_columns", envir = environment())
-      # combine type and lvl into string, like "mc5"
-      table <- paste0(type, lvl)
-      # pull regular columns for given table
-      cols <- unlist(load_data_columns[table])
-      # subset columns
-      return(dat[, intersect(cols, colnames(dat))])
-    }
+    return(dat)
     
   }
   else {
