@@ -189,6 +189,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     }
     
     # unlog concs
+    if (!("conc" %in% colnames(agg))) agg <- mutate(agg, conc = 10^logc)
     if (type == "mc") {
       conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "m4id"]
