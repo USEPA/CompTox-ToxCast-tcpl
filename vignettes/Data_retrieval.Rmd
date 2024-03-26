@@ -98,7 +98,7 @@ aeids <- tcplLoadAeid(fld="asid", # field to query on
 
 ### Data
 
-The <font face="CMTT10">tcplQuery</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided in our example.
+The <font face="CMTT10">tcplQuery</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided in our example. Please see the introductory vignette in the tcpl package for more information on database structure to help construct these queries.
 
 ```{r tcplquery, eval = FALSE}
 # Load sample table using a MySQL query.
@@ -135,24 +135,27 @@ Assay source, assay, assay component, and assay endpoint are registered via tcpl
 
 i. Identification information
 ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations,
-iii. Target information such as the target of technological measurement and the
-biologically intended target, and
+iii. Target information, such as the target of technological measurement,
+biological intended target, and biological process, and
 iv. Analysis information about how the data were processed and analyzed.
 
 ```{r annotation_query_ex, eval = FALSE}
-#load libraries and connections
-library(RMySQL)
-con <- dbConnect(drv = RMySQL::MySQL(), user="user", pass="pass", db="InvitroDB", host="host")
-#query database using RMySQL:
-#use source table to identify which ids are needed in subsequent queries.
+# Use source table to identify which ids are needed in subsequent queries.
 tcplLoadAsid()
 source <- tcplLoadAeid(fld="asid", val=1, add.fld = c("aid", "anm", "acid", "acnm"))
-#select annotation and subset by ids or name
-assay <- dbGetQuery(con, "SELECT * FROM invitrodb.assay where aid=1;")
-component <- dbGetQuery(con, "SELECT * FROM invitrodb.assay_component;")
+
+# Select annotation and subset by ids or name, ex.
+assay <- tcplQuery("SELECT * FROM invitrodb.assay where aid=1;")
+component <- tcplQuery("SELECT * FROM invitrodb.assay_component;")
 component <- subset(component, acid %in% source$acid)
-endpoint <- dbGetQuery(con, "SELECT * FROM invitrodb.assay_component_endpoint;")
+endpoint <- tcplQuery("SELECT * FROM invitrodb.assay_component_endpoint;")
 endpoint <- endpoint[grepl("ATG", endpoint$assay_component_endpoint_name),]
+
+# Or select all annotations by joining multiple tables
+annotations <- tcplQuery("SELECT * FROM invitrodb.assay
+                  INNER JOIN invitrodb.assay_source on assay.asid=assay_source.asid
+                  INNER JOIN invitrodb.assay_component on  assay_component.aid=assay.aid
+                  INNER JOIN invitrodb.assay_component_endpoint on assay_component_endpoint.acid=assay_component.acid;")
 ```
 
 ### Chemical Information
