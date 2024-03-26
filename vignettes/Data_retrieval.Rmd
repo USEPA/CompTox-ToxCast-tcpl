@@ -767,11 +767,13 @@ Value <- c("1.5",
           "7.666872", 
           "16.09772")
 
-Table <- data.frame(POD, Value)
+Table <- t(data.frame(POD, Value))
+setnames(Table, as.character(Table[1,]))
+Table <- Table[-1,]
 
 datatable(Table,
           filter='top',
-          options=list(pageLength = 15,searching=FALSE, autoWidth=FALSE,  scrollX=TRUE, initComplete = JS(
+          options=list(pageLength = 15,searching=FALSE, autoWidth=FALSE, colnames = NULL, scrollX=TRUE, initComplete = JS(
             "function(settings, json) {",
             "$('body').css({'font-family': 'Calibri'});",
             "}"
@@ -779,3 +781,110 @@ datatable(Table,
 ```
 
 For the "Pentachlorophenol liver toxicity" example provided here, the POD estimated from ToxRefDB (POD-Traditional) is more protective compared to the lowest summary estimate from ToxCast (POD-NAM)
+
+## Apply ToxCast to examine EcoTox hazard for a single chemical
+
+ToxCast data are predominantly based on mammalian models, but still may have value in ecological risk assessments. This section will explore how one may review ToxCast derived values in combination with curated values from [Ecotoxicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/) as well as cross-species applicability through [Sequence Alignment to Predict Across Species Susceptibility (SeqAPASS)](https://seqapass.epa.gov/seqapass/) tool. The process can be adapted for any given chemical and target depending on available data in either database.
+
+### Consider POD-NAM and POD-Traditional
+Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/invitrodb/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD-NAM and POD-Traditional, respectively.
+
+```{r txct-data-pull2, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
+# identify the lel and loaels from toxref chemical subset
+toxref_chnm_POD<-toxref_chnm_EE2 %>% 
+  summarise(lel=min(dose_adjusted[treatment_related==1]), 
+            loael=min(dose_adjusted[critical_effect==1]))
+
+# Load the chemical data from the database
+chem <- tcplLoadChem(field = 'dsstox_substance_id',val = "DTXSID5020576")
+
+# Load mc5 data from the database for the specified chemical
+mc5 <- tcplLoadData(lvl = 5, # data level 
+                        fld = 'spid', # field to query on
+                        val = chem[,spid], # value for each field (fld)
+                        type = 'mc') # data type - MC
+
+#Join with level 6 flag information
+mc6 <- tcplPrepOtpt(tcplLoadData(lvl=6, fld='m4id', val=mc5$m4id, type='mc'))
+setDT(mc6)
+mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
+mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
+mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
+mc5[, flag.length := ifelse(!is.na(mc6_flags), 
+                     count.fields(textConnection(mc6_flags), sep =','), NA)]
+
+# filter the potency and activity using coarse filters related to hitc, flags, fitc
+mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
+mc5[hitc>=0.9 & is.na(flag.length), use.me := 1]
+mc5[hitc>=0.9 & flag.length >= 3, use.me := 0]
+mc5[fitc %in% c(36,45), use.me := 0]
+mc5[hitc<0.9, use.me := 0]
+mc5[use.me==0, ac50 := as.numeric(NA)]
+mc5[use.me==0, hitc := 0]
+mc5[hitc==0, ac50 := as.numeric(NA)]
+mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
+
+# Calculating summary statistics for ac50 values for httk processing to calculate AED
+toxcast_mc5_EE2_summary <- mc5[,list(
+  p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
+  p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
+  mean.ac50uM = mean(ac50_uM, na.rm=T))]
+
+# Generate AEDs
+toxcast_aed_EE2_summary <- toxcast_mc5_EE2_summary %>% 
+      summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
+        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
+        aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'), 
+        aed.minac50.aeid807.hu.css.50 = calc_mc_oral_equiv(conc=0.0002448276, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'))
+```
+
+``` {r compare2, echo=FALSE}
+#create comparison table
+POD <- c("ToxRefDB LEL", 
+            "ToxRefDB LOAEL",
+            "ToxCast AED at 5th percentile AC50", 
+            "ToxCast AED at 50th percentile/median AC50", 
+            "ToxCast AED at mean AC50")
+Value <- c("0.00012",
+          "0.00021", 
+          "2.26e-07",
+          "0.00661", 
+          "0.01994")
+
+Table <- as.data.table(t(data.frame(POD, Value)))
+setnames(Table, as.character(Table[1,]))
+Table <- Table[-1,]
+
+datatable(Table,
+          options=list(pageLength = 15,searching=FALSE, autoWidth=FALSE, scrollX=TRUE,
+                       initComplete = JS(
+            "function(settings, json) {",
+            "$('body').css({'font-family': 'Calibri'});",
+            "}"
+          )))
+```
+
+<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets</i></font>](img/ccd_seqapass_filter.png)</center>
+
+### Consider SeqAPASS
+The [SeqAPASS](https://seqapass.epa.gov/seqapass/) tool has been developed to predict across species relative intrinsic susceptibility to chemicals with known molecular targets (e.g., pharmaceuticals, pesticides) as well as evaluate conservation of molecular targets from high-throughput screening assays (i.e., U.S. Environmental Protection Agency ToxCast Program) and molecular initiating events (MIEs) and early key events in the adverse outcome pathway (AOP) framework, as a means to extrapolate such knowledge across species. After copying the NCBI protein Accession numbers for ToxCast endpoints of interest, visit the SeqAPASS web interface to understand potential for cross-species comparison. Note that new users will need to request a free log-in to access this resource and should review the SeqAPASS User Guide for example workflows.
+
+### Consider EcoTox
+The ECOTOX widget in SeqAPASS gives the user the option to create a species and chemical filter that will link out to ECOTOX. The widget allows for rapid access of curated empirical toxicity data from the ECOTOXicology (ECOTOX) Knowledgebase that can be compared to sequence-based predictions of chemical susceptibility from SeqAPASS results.
+
+All curated endpoint data may not be relevant for comparison and weight of relevance of these species-specific endpoints may also depend on SeqAPASS percent similarity. Additionally, ECOTOX records often cannot be easily converted into mg/kg/day internal dose values for comparison, especially for the non-dietary exposures such as the aqueous exposures with no chemical concentration measurements in the organisms across different species and life stages. These are considerations that can be further explored by reviewing the curated information and source documents from the [ECOTOXicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/).
+
+### Compare
+An example of cross species extrapolation is described in Vliet et al, 2023. Overall, this study demonstrates a framework for utilizing bioinformatics and existing data to build weight of evidence for cross-species extrapolation and provides a technical basis for extrapolating hAR-based data to prioritize hazard in nonmammalian vertebrate species.
