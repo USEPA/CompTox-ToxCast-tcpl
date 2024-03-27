@@ -10,12 +10,14 @@
 #' @inheritParams tcplConf
 #' 
 #' @details
-#' Currently, the tcpl package only supports the "MySQL" and "tcplLite" database
-#' drivers.
+#' Currently, the tcpl package supports the "MySQL", "tcplLite", and "API"
+#' database drivers.
 #' 
 #' \code{tcplQuery} returns a data.table object with the query results.
 #' \code{tcplSendQuery} sends a query, but does not fetch any results, and 
 #' returns 'TRUE' or the error message given by the database. 
+#' \code{tcplQueryAPI} returns a data.table object with the query results when
+#' connected using "API" as driver.
 #' 
 #' @examples
 #' 
