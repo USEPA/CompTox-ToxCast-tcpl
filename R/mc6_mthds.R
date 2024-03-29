@@ -150,13 +150,16 @@ mc6_mthds <- function() {
     
     singlept.hit.high = function(mthd) {
       
-      flag <- "Only highest conc above baseline, active"
+      flag <- "Active with only highest conc above baseline"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
       e2 <- bquote(ft[ , lstc := max_med_diff_conc == conc_max])
-      e3 <- bquote(ft[ , test := (nmed_gtbl_pos == 1 | nmed_gtbl_neg == 1) & hitc >= 0.9 & lstc])
+      e3 <- bquote(ft[ , test := ((nmed_gtbl_pos == 1 & model_type == 2 & top >= 0) |
+                                  (nmed_gtbl_neg == 1 & model_type == 2 & top <= 0) | 
+                                  (nmed_gtbl_pos == 1 & model_type == 3) | 
+                                  (nmed_gtbl_neg == 1 & model_type == 4)) & hitc >= 0.9 & lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test", "lstc")
       e5 <- bquote(ft[ , .(cr) := NULL])
@@ -166,13 +169,16 @@ mc6_mthds <- function() {
     
     singlept.hit.mid = function(mthd) {
       
-      flag <- "Only one conc above baseline, active"
+      flag <- "Active with one conc (not highest) above baseline"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
       e2 <- bquote(ft[ , lstc := max_med_diff_conc == conc_max])
-      e3 <- bquote(ft[ , test := (nmed_gtbl_pos == 1 | nmed_gtbl_neg == 1) & hitc >= 0.9 & !lstc])
+      e3 <- bquote(ft[ , test := ((nmed_gtbl_pos == 1 & model_type == 2 & top >= 0) |
+                                  (nmed_gtbl_neg == 1 & model_type == 2 & top <= 0) | 
+                                  (nmed_gtbl_pos == 1 & model_type == 3) | 
+                                  (nmed_gtbl_neg == 1 & model_type == 4)) & hitc >= 0.9 & !lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test", "lstc")
       e5 <- bquote(ft[ , .(cr) := NULL])
@@ -182,12 +188,15 @@ mc6_mthds <- function() {
     
     multipoint.neg = function(mthd) {
       
-      flag <- "Multiple points above baseline, inactive"
+      flag <- "Inactive with multiple concs above baseline"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := (nmed_gtbl_pos > 1 | nmed_gtbl_neg > 1) & hitc < 0.9 & hitc >= 0])
+      e2 <- bquote(ft[ , test := ((nmed_gtbl_pos > 1 & model_type == 2 & top >= 0) |
+                                  (nmed_gtbl_neg > 1 & model_type == 2 & top <= 0) | 
+                                  (nmed_gtbl_pos > 1 & model_type == 3) | 
+                                  (nmed_gtbl_neg > 1 & model_type == 4)) & hitc < 0.9 & hitc >= 0])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
@@ -330,25 +339,10 @@ mc6_mthds <- function() {
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := nmed_gtbl_pos == 0 & nmed_gtbl_neg == 0])
-      e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
-      cr <- c("mc6_mthd_id", "flag", "test")
-      e4 <- bquote(ft[ , .(cr) := NULL])
-      list(e1, e2, e3, e4)
-      
-    },
-    
-    no.med.single.dir.gt.3bmad = function(mthd) {
-      
-      flag <- "No median responses > 3*bmad in intended signal direction"
-      out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
-                "flag")
-      init <- bquote(list(.(mthd), .(flag), FALSE))
-      e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := (hitc > 0 & top > 0 & nmed_gtbl_pos == 0) | 
-                                 (hitc < 0 & top > 0 & nmed_gtbl_neg == 0) | 
-                                 (hitc > 0 & top < 0 & nmed_gtbl_neg == 0) | 
-                                 (hitc < 0 & top < 0 & nmed_gtbl_pos == 0)])
+      e2 <- bquote(ft[ , test := (model_type == 2 & top > 0 & nmed_gtbl_pos == 0) | 
+                                 (model_type == 2 & top < 0 & nmed_gtbl_neg == 0) | 
+                                 (model_type == 3 & nmed_gtbl_pos == 0) | 
+                                 (model_type == 4 & nmed_gtbl_neg == 0)])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
