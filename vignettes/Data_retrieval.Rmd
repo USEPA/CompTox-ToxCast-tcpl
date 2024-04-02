@@ -1,5 +1,5 @@
 ---
-title: tcpl v3.0 <br />Data Retrieval<br />
+title: Data Retrieval with tcpl
 author: "Center for Computational Toxicology and Exposure, US EPA"
 output:
   prettydoc::html_pretty:
@@ -7,7 +7,7 @@ output:
     toc: yes
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{tcpl v3.0 Data Retrieval}
+  %\VignetteIndexEntry{Data Retrieval}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
@@ -29,8 +29,8 @@ $(document).ready(function() {
 </script>
 
 ```{css, echo=FALSE}
-.scroll-100 {
-  max-height: 100px;
+.scroll-300 {
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -43,6 +43,16 @@ $(document).ready(function() {
 }
 ```
 
+# Introduction
+
+This vignette describes how the user can retrieve data from the ToxCast database, known as invitrodb, using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+
+::: {.noticebox data-latex=""}
+
+**NOTE:** Users must be connected to the ToxCast database (invitrodb), or a replicate of the database, to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in the tcpl package for more details.
+
+:::
+
 # R Packages
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -52,6 +62,8 @@ library(tcplfit2)
 # Data Formatting Packages #
 library(dplyr)
 library(magrittr)
+library(data.table)
+library(DT)
 # Plotting Packages #
 library(ggplot2)
 library(RColorBrewer)
@@ -61,19 +73,6 @@ library(viridis)
 library(htmlTable)
 library(kableExtra)
 ```
-
-
-# Introduction
-
-This vignette describes how the user can retrieve data from the ToxCast database, known as invitrodb, using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database containing all the publicly available ToxCast data is available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
-
-::: {.noticebox data-latex=""}
-
-**NOTE:**
-
-Users must be connected to the ToxCast database (invitrodb), or a replicate of the database, to utilize many of these functions and execute the examples in this vignette.  Please see the introductory vignette in this package for more details.
-
-:::
 
 ## Overview of Key Functions
 
@@ -99,7 +98,7 @@ aeids <- tcplLoadAeid(fld="asid", # field to query on
 
 ### Data
 
-The <font face="CMTT10">tcplQuery</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided in our example.
+The <font face="CMTT10">tcplQuery</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided in our example. Please see the introductory vignette in the tcpl package for more information on database structure to help construct these queries.
 
 ```{r tcplquery, eval = FALSE}
 # Load sample table using a MySQL query.
@@ -136,24 +135,27 @@ Assay source, assay, assay component, and assay endpoint are registered via tcpl
 
 i. Identification information
 ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations,
-iii. Target information such as the target of technological measurement and the
-biologically intended target, and
+iii. Target information, such as the target of technological measurement,
+biological intended target, and biological process, and
 iv. Analysis information about how the data were processed and analyzed.
 
 ```{r annotation_query_ex, eval = FALSE}
-#load libraries and connections
-library(RMySQL)
-con <- dbConnect(drv = RMySQL::MySQL(), user="user", pass="pass", db="InvitroDB", host="host")
-#query database using RMySQL:
-#use source table to identify which ids are needed in subsequent queries.
+# Use source table to identify which ids are needed in subsequent queries.
 tcplLoadAsid()
 source <- tcplLoadAeid(fld="asid", val=1, add.fld = c("aid", "anm", "acid", "acnm"))
-#select annotation and subset by ids or name
-assay <- dbGetQuery(con, "SELECT * FROM invitrodb.assay where aid=1;")
-component <- dbGetQuery(con, "SELECT * FROM invitrodb.assay_component;")
+
+# Select annotation and subset by ids or name, ex.
+assay <- tcplQuery("SELECT * FROM invitrodb.assay where aid=1;")
+component <- tcplQuery("SELECT * FROM invitrodb.assay_component;")
 component <- subset(component, acid %in% source$acid)
-endpoint <- dbGetQuery(con, "SELECT * FROM invitrodb.assay_component_endpoint;")
+endpoint <- tcplQuery("SELECT * FROM invitrodb.assay_component_endpoint;")
 endpoint <- endpoint[grepl("ATG", endpoint$assay_component_endpoint_name),]
+
+# Or select all annotations by joining multiple tables
+annotations <- tcplQuery("SELECT * FROM invitrodb.assay
+                  INNER JOIN invitrodb.assay_source on assay.asid=assay_source.asid
+                  INNER JOIN invitrodb.assay_component on  assay_component.aid=assay.aid
+                  INNER JOIN invitrodb.assay_component_endpoint on assay_component_endpoint.acid=assay_component.acid;")
 ```
 
 ### Chemical Information
@@ -164,7 +166,7 @@ The <font face="CMTT10">tcplLoadChem</font> function returns chemical informatio
 
 The <font face="CMTT10">tcplMthdList</font> function returns methods available for processing at a specified level (i.e. step in the <font face="CMTT10">tcpl</font> pipeline). The user defined function in the following code chunk utilizes the <font face="CMTT10">tcplMthdList</font> function to retrieve and output all available methods for both the SC and MC data levels.
 
-```{r mthd_list, eval = FALSE}
+```{r mthd_list, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to list all available methods function (SC & MC).
 method_list <- function() {
   # Single Concentration
@@ -279,7 +281,7 @@ head(mc0) %>%
 
 The goal of this section is to provide example quantitative metrics, such as z-prime and coefficient of variance, to evaluate assay performance relative to controls.
 
-```{r mc0_aq, eval = FALSE}
+```{r mc0_aq, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to review assay quality metrics using indexed Level 0 data.
 aq <- function(ac){
   # obtain level 1 multiple concentration data for specified acids
@@ -381,7 +383,7 @@ sc2 <- tcplPrepOtpt(
 
 ## Load SC Methods
 
-```{r sc2_mthd, eval = FALSE}
+```{r sc2_mthd, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to load methods for single concentration data processing
 # steps for given aeids.
 sc_methods <- function(aeids) {
@@ -432,7 +434,7 @@ mc5 <- tcplPrepOtpt(
 
 # For tcpl v3.0.0 and future releases, to output mc5_param information with
 # the default mc5 results then 'add.fld' must be set to TRUE.
-# (NOTE: Default for add.fld is FALSE, unless otherwise specified.)
+# (NOTE: Default for add.fld is TRUE, unless otherwise specified.)
 mc5 <- tcplPrepOtpt(
   tcplLoadData(lvl=5, # data level
                fld="aeid", # fields to query on
@@ -445,7 +447,7 @@ mc5 <- tcplPrepOtpt(
 
 ## Load MC Methods
 
-```{r mc5_methods, eval = FALSE}
+```{r mc5_methods, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
 # Create a function to load methods for MC data processing
 # for select aeids.
 mc_methods <- function(aeids) {
@@ -649,3 +651,244 @@ tcplPlot(lvl = 5, # data level
          output = "pdf", # output as pdf
          fileprefix = "output/upitt") # prefix of the filename
 ```
+
+## Evaluate ToxCast AEDs for a single chemical and target
+
+This section will explore how one can compare in vivo Points of Departure (PODs) from the Toxicity Reference Database (ToxRefDB, https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses (AEDs) from ToxCast in vitro bioactivity data (invitrodb, https://www.epa.gov/comptox-tools/exploring-toxcast-data). The process can be adapted for any given chemical and target depending on available data in either database.
+
+The following example will consider "Pentachlorophenol" and "liver toxicity"
+
+### Consider ToxRefDB *in vivo* toxicity benchmarks as POD-Traditional
+
+First, export ToxRefDB batch download results for any chemical from the CompTox Chemicals Dashboard (https://comptox.epa.gov/dashboard/batch-search) or Hazard APIs (https://api-ccte.epa.gov/docs/) 
+
+After loading all chemical-specific data for "Pentachlorophenol", filter results to only include "liver"-related effects
+```{r txrf-data-liver-subset, eval=FALSE}
+toxref_chnm_liver <- toxref_batch_download_chnm %>% 
+  filter(endpoint_target == 'liver') 
+```
+
+Next identify the observed lowest effect (significantly different from control in source document i.e. treatment related=1) and lowest observed adverse (deemed adverse by study reviewer in source document i.e. critical_effect=1) effect levels at minimum dose_adjusted (mg/kg/day) value.
+
+```{r txrf-lel-determination, eval=FALSE}
+toxref_chnm_liver_lel<-toxref_chnm_liver %>% 
+  summarise(lel=min(dose_adjusted[treatment_related==1]), 
+            loael=min(dose_adjusted[critical_effect==1]))
+```
+
+### Consider ToxCast *in vitro* bioactivity data as POD-NAM
+
+First, query the invitrodb database for all assay annotations, and filter results to consider only "liver"  derived tissue-based endpoints.
+
+```{r txct-annotations-liver-subset, warning=FALSE, eval=FALSE}
+toxcast_annotations_subset <- tcplLoadAeid(fld = "tissue", val = "liver", add.fld = "tissue")
+```
+
+For this subset of endpoints of targeted interest, pull assay results (mc5-mc6) for the chemical "Pentachlorophenol"
+```{r txct-data-pull, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
+# Load the chemical data from the database
+chnm <- 'Pentachlorophenol'
+chem <- tcplLoadChem(field = 'chnm',val = chnm)
+                     
+# Load mc5 data from the database for the specified chemical
+mc5 <- tcplLoadData(lvl = 5, # data level 
+                        fld = 'spid', # field to query on
+                        val = chem[,spid], # value for each field (fld)
+                        type = 'mc') # data type - MC
+
+#Join with level 6 flag information
+mc6 <- tcplPrepOtpt(tcplLoadData(lvl=6, fld='m4id', val=mc5$m4id, type='mc'))
+setDT(mc6)
+mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
+mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
+mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
+mc5[, flag.length := ifelse(!is.na(mc6_flags), 
+                     count.fields(textConnection(mc6_flags), sep =','), NA)]
+
+# filter the potency and activity using coarse filters related to hitc, flags, fitc
+mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
+mc5[hitc>=0.9 & is.na(flag.length), use.me := 1]
+mc5[hitc>=0.9 & flag.length >= 3, use.me := 0]
+mc5[fitc %in% c(36,45), use.me := 0]
+mc5[hitc<0.9, use.me := 0]
+mc5[use.me==0, ac50 := as.numeric(NA)]
+mc5[use.me==0, hitc := 0]
+mc5[hitc==0, ac50 := as.numeric(NA)]
+mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
+
+#Filter to only liver endpoints
+toxcast_mc5_liver <- mc5[aeid %in% toxcast_annotations_subset$aeid,]
+```
+
+Obtain a summary of the ToxCast AC50 values with the 5th and 50th percentiles, as well as the mean.
+
+```{r httk-prep, eval=FALSE}
+# Calculating summary statistics for ac50 values for httk processing to calculate AED
+toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
+  p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
+  p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
+  mean.ac50uM = mean(ac50_uM, na.rm=T))]
+```
+
+Use the High-throughput Toxicokinetics R package [httk](https://cran.r-project.org/web/packages/httk/index.html) to generate administered equivalent doses (AEDs) for ToxCast summary AC50 values. Modeling assumptions when estimating the AEDs with httk: 
+
+- Species options include ‘Rat’, ‘Rabbit’, ’Dog’, ’Mouse’ or default ‘Human'
+- Which quantile from Monte Carlo steady-state simulation (for Css)? The scaling factor is the inverse of the steady state plasma concentration (Css) predicted for a 1 mg/kg/day exposure dose rate. This simulates variability and propagates uncertainty to calculate an upper 95th percentile Css,95 for individuals who get higher plasma concentrations from the same exposure, i.e. 95th concentration quantile produces the 5th dose quantile (most sensitive measure).;
+- Restrictive clearance indicates the chemical is protein-bound such that it is relatively unavailable for hepatic metabolism or renal excretion; whereas, non-restrictive clearance assumes the chemical rapidly disassociates from the protein for metabolism and excretion 
+
+```{r httk-aed, warning=FALSE, message=FALSE, eval=FALSE}
+# Generate AEDs
+toxcast_aed_liver_summary <- toxcast_mc5_liver_summary %>% 
+      summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
+                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
+        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
+                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
+        aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
+                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'))
+  
+```
+
+### Compare POD-Traditional with POD-NAM
+
+POD-Traditional (ToxRefDB LEL and LOAEL) and POD-NAM (ToxCast-derived AEDs for 5%, 50%, and mean AC50 values) can be compared once converted to to mg/kg/day units. 
+``` {r compare, echo=FALSE}
+#create comparison table
+POD <- c("ToxRefDB LEL", 
+            "ToxRefDB LOAEL",
+            "ToxCast AED at 5th percentile AC50", 
+            "ToxCast AED at 50th percentile/median AC50", 
+            "ToxCast AED at mean AC50")
+Value <- c("1.5",
+          "1.5", 
+          "2.273744",
+          "7.666872", 
+          "16.09772")
+
+Table <- as.data.table(t(data.frame(POD, Value)))
+setnames(Table, as.character(Table[1,]))
+Table <- Table[-1,]
+
+datatable(Table,
+          filter='top',
+          options=list(pageLength = 15,searching=FALSE, autoWidth=FALSE, colnames = NULL, scrollX=TRUE, initComplete = JS(
+            "function(settings, json) {",
+            "$('body').css({'font-family': 'Calibri'});",
+            "}"
+          )))
+```
+
+For the "Pentachlorophenol liver toxicity" example provided here, the POD estimated from ToxRefDB (POD-Traditional) is more protective compared to the lowest summary estimate from ToxCast (POD-NAM)
+
+## Apply ToxCast to examine EcoTox hazard for a single chemical
+
+ToxCast data are predominantly based on mammalian models, but still may have value in ecological risk assessments. This section will explore how one may review ToxCast derived values in combination with curated values from [Ecotoxicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/) as well as cross-species applicability through [Sequence Alignment to Predict Across Species Susceptibility (SeqAPASS)](https://seqapass.epa.gov/seqapass/) tool. The process can be adapted for any given chemical and target depending on available data in either database.
+
+### Consider POD-NAM and POD-Traditional
+Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/invitrodb/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD-NAM and POD-Traditional, respectively.
+
+```{r txct-data-pull2, fig.align='center',class.source="scroll-300",message=FALSE, eval=FALSE}
+# identify the lel and loaels from toxref chemical subset
+toxref_chnm_POD<-toxref_chnm_EE2 %>% 
+  summarise(lel=min(dose_adjusted[treatment_related==1]), 
+            loael=min(dose_adjusted[critical_effect==1]))
+
+# Load the chemical data from the database
+chem <- tcplLoadChem(field = 'dsstox_substance_id',val = "DTXSID5020576")
+
+# Load mc5 data from the database for the specified chemical
+mc5 <- tcplLoadData(lvl = 5, # data level 
+                        fld = 'spid', # field to query on
+                        val = chem[,spid], # value for each field (fld)
+                        type = 'mc') # data type - MC
+
+#Join with level 6 flag information
+mc6 <- tcplPrepOtpt(tcplLoadData(lvl=6, fld='m4id', val=mc5$m4id, type='mc'))
+setDT(mc6)
+mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
+mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
+mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
+mc5[, flag.length := ifelse(!is.na(mc6_flags), 
+                     count.fields(textConnection(mc6_flags), sep =','), NA)]
+
+# filter the potency and activity using coarse filters related to hitc, flags, fitc
+mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
+mc5[hitc>=0.9 & is.na(flag.length), use.me := 1]
+mc5[hitc>=0.9 & flag.length >= 3, use.me := 0]
+mc5[fitc %in% c(36,45), use.me := 0]
+mc5[hitc<0.9, use.me := 0]
+mc5[use.me==0, ac50 := as.numeric(NA)]
+mc5[use.me==0, hitc := 0]
+mc5[hitc==0, ac50 := as.numeric(NA)]
+mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
+
+# Calculating summary statistics for ac50 values for httk processing to calculate AED
+toxcast_mc5_EE2_summary <- mc5[,list(
+  p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
+  p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
+  mean.ac50uM = mean(ac50_uM, na.rm=T))]
+
+# Generate AEDs
+toxcast_aed_EE2_summary <- toxcast_mc5_EE2_summary %>% 
+      summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
+        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'),
+        aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'), 
+        aed.minac50.aeid807.hu.css.50 = calc_mc_oral_equiv(conc=0.0002448276, 
+                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
+                  species='Human', restrictive.clearance=T, 
+                  output.units='mgpkgpday', model='3compartmentss'))
+```
+
+``` {r compare2, echo=FALSE}
+#create comparison table
+POD <- c("ToxRefDB LEL", 
+            "ToxRefDB LOAEL",
+            "ToxCast AED at 5th percentile AC50", 
+            "ToxCast AED at 50th percentile/median AC50", 
+            "ToxCast AED at mean AC50")
+Value <- c("0.00012",
+          "0.00021", 
+          "2.26e-07",
+          "0.00661", 
+          "0.01994")
+
+Table <- as.data.table(t(data.frame(POD, Value)))
+setnames(Table, as.character(Table[1,]))
+Table <- Table[-1,]
+
+datatable(Table,
+          options=list(pageLength = 15,searching=FALSE, autoWidth=FALSE, scrollX=TRUE,
+                       initComplete = JS(
+            "function(settings, json) {",
+            "$('body').css({'font-family': 'Calibri'});",
+            "}"
+          )))
+```
+These summary POD-NAM values are calculated using all ToxCast endpoints. Additional inspection of individual endpoints and annotations may be warranted. Utilize the SeqAPASS column to filter to endpoints annotated with SeqAPASS protein targets, i.e. enter “NP_” into SeqAPASS search box.
+
+<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets</i></font>](img/ccd_seqapass_filter.png)</center>
+
+### Consider SeqAPASS
+The [SeqAPASS](https://seqapass.epa.gov/seqapass/) tool has been developed to predict a species relative intrinsic susceptibility to chemicals with known molecular targets (e.g., pharmaceuticals, pesticides) as well as evaluate conservation of molecular targets in high-throughput screening assays (i.e., ToxCast), molecular initiating events (MIEs), and early key events in the adverse outcome pathway (AOP) framework as a means to extrapolate such knowledge across species. After copying the NCBI protein Accession numbers for ToxCast endpoints of interest, visit the SeqAPASS web interface to understand potential for cross-species comparison. Note that new users will need to request a free log-in to access this resource and should review the [SeqAPASS User Guide](https://www.epa.gov/comptox-tools/seqapass-user-guide) for example workflows.
+
+### Consider EcoTox
+The ECOTOX widget in SeqAPASS gives the user the option to create a species and chemical filter that will link out to ECOTOX. The widget allows for rapid access of curated empirical toxicity data from the ECOTOXicology (ECOTOX) Knowledgebase that can be compared to sequence-based predictions of chemical susceptibility from SeqAPASS results.
+
+All curated endpoint data may not be relevant for comparison and weight of relevance of these species-specific endpoints may also depend on SeqAPASS percent similarity. Additionally, ECOTOX records often cannot always be easily converted into mg/kg/day internal dose values for comparison. This is especially true for the non-dietary exposures, such as the aqueous exposures, where there are no chemical concentration measurements in the organisms across different species and life stages observed. These are considerations that can be further explored by reviewing the curated information and source documents from the [ECOTOXicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/).
+
+### Compare
+An example of cross species extrapolation is described in [Vliet et al, 2023](https://academic.oup.com/toxsci/article/193/2/131/7127920#). Overall, this study demonstrates a framework for utilizing bioinformatics and existing data to build weight of evidence for cross-species extrapolation and provides a technical basis for extrapolating data to prioritize hazard in non-mammalian vertebrate species.
