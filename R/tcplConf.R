@@ -3,6 +3,7 @@
 #-------------------------------------------------------------------------------
 
 #' @rdname config_funcs
+#' @importFrom ccdR register_ccdr
 #' @export
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 

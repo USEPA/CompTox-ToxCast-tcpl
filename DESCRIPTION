@@ -42,7 +42,9 @@ Imports:
     tcplfit2,
     ggplot2,
     gridExtra,
-    stringr
+    stringr,
+    rlang,
+    ccdR
 Suggests:
     roxygen2,
     knitr,

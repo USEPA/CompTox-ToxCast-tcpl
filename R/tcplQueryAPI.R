@@ -5,6 +5,7 @@
 #' @rdname query_funcs
 #' 
 #' @import data.table
+#' @importFrom ccdR get_bioactivity_details_batch get_all_assays
 #' @export
 
 
@@ -22,16 +23,16 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
       stop("'fld' must be one of 'AEID', 'SPID', 'm4id', or 'DTXSID'")
     
     # get data from API using ccdR
-    dat <- suppressMessages(exec(get_bioactivity_details_batch, !!sym(fld) := val, Server := paste0(getOption("TCPL_HOST"), "/data")))
+    dat <- suppressMessages(exec(get_bioactivity_details_batch, !!sym(fld) := val, Server := getOption("TCPL_HOST")))
     
     # remove missing elements
     lb <- length(dat) # store length before
-    na_names <- names(dat[is.na(dat)])
-    dat <- dat[!is.na(dat)]
+    na_names <- names(dat[sapply(dat, nrow) == 0])
+    dat <- dat[sapply(dat, nrow) > 0]
     if (lb != length(dat)) warning(paste0("Data not found for the following 'fld' and 'val' combos: \n", paste0(fld, ": ", na_names, collapse = "\n")))
     
-    dat <- do.call(rbind, dat)
-    if (is.null(dat)) return(data.table())
+    dat <- rbindlist(dat)
+    if (nrow(dat) == 0) return(dat)
     
     dat$dsstox_substance_id <- dat$dtxsid
     
