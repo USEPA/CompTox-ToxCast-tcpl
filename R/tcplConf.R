@@ -3,6 +3,7 @@
 #-------------------------------------------------------------------------------
 
 #' @rdname config_funcs
+#' @importFrom ccdR register_ccdr
 #' @export
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 
@@ -46,9 +47,9 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   
   if (!is.null(drvr)) {
     
-    if (!drvr %in% c( "MySQL", "tcplLite", "example")) {
+    if (!drvr %in% c( "MySQL", "tcplLite", "example", "API")) {
       stop(drvr, " is not a supported database driver. Must be ",
-           "'MySQL', 'tcplLite', or 'example'.")
+           "'MySQL', 'tcplLite', 'API' or 'example'.")
     }
     
     if (drvr == "example"){
@@ -70,6 +71,15 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
       tcplLiteInit()
       options("TCPL_DRVR" = "tcplLite")
     } 
+    
+    if (drvr == "API") {
+      options("TCPL_DRVR" = "API")
+      if (is.null(pass)) stop("'API' driver requires an API-key, supply it to 
+                              the 'pass' parameter. To request a key, send an
+                              email to ccte_api@epa.gov.")
+      if (is.null(host)) options("TCPL_HOST" = "https://api-ccte.epa.gov/bioactivity")
+      register_ccdr(key = pass)
+    }
     
   }
   

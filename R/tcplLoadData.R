@@ -25,6 +25,15 @@
 #' Setting 'lvl' to "agg" will return an aggregate table containing the m4id
 #' with the concentration-response data and m3id to map back to well-level
 #' information.
+#' 
+#' If \code{tcplConf()} was set with "API" as the driver, then \code{tcplLoadData} 
+#' will return data from the CCTE Bioactivity API. API data is available for
+#' \code{type = 'mc'} and lvl = c(3,4,5,6) and 'agg'. Only fields relating to the
+#' requested level are returned, but not all fields that usually return from
+#' invitrodb are available from the API. To have all fields available from the
+#' API return, regardless of what lvl is set to, set \code{add.fld} to 
+#' \code{TRUE}. API query-able fields include "aeid", "spid", "m4id", and 
+#' "dtxsid".
 #'
 #' Leaving \code{fld} NULL will return all data.
 #'
@@ -74,8 +83,9 @@
 #' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
 #'
 #' @import data.table
-#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_wider unnest_longer
 #' @importFrom utils data
+#' @importFrom rlang exec sym
 #' @export
 
 tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE) {
@@ -174,8 +184,41 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     else stop("Invalid 'lvl' and 'type' combination.")
   }
-  
-  if (drvr != "example"){
+  else if (drvr == "API") {
+    
+    # check type and lvl
+    if (type != "mc") stop("Only type = 'mc' is supported using API data as source.")
+    # if lvl is outside of 3-6 while not agg either
+    if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) and 'agg' are supported using API data as source.")
+    
+    cols <- NULL
+    if (!add.fld) {
+      # load default columns returned regular connection to DB
+      data("load_data_columns", envir = environment())
+      # combine type and lvl into string, like "mc5"
+      table <- paste0(type, lvl)
+      # pull regular columns for given table
+      cols <- unlist(load_data_columns[table])
+    }
+    
+    # query the API 
+    dat <- tcplQueryAPI(fld = fld, val = val, return_flds = cols)
+    
+    if (lvl == 3) {
+      dat$resp <- lapply(dat$resp, unlist)
+      dat$logc <- lapply(dat$logc, unlist)
+      dat <- unnest_longer(dat, c(conc, logc, resp)) %>% as.data.table()
+    }
+    
+    if (lvl == 6) {
+      dat$flag <- lapply(dat$flag, unlist)
+      dat <- unnest_longer(dat, flag) %>% filter(flag != "NULL") %>% as.data.table()
+    }
+    
+    return(dat)
+    
+  }
+  else {
     
     # add.fld is not possible if invitrodb version less than 4
     if (!check_tcpl_db_schema()) add.fld <- FALSE
