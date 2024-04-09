@@ -80,6 +80,9 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
   chid <- chnm <- spid <- aenm <- aeid <- m4id <- fitc <- fval <- NULL
   flgo <- mc6_mthd_id <- J <- NULL
   
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
+  
   if (!is.null(flg) & !"m5id" %in% names(dat)) {
     stop("Must supply level 5 data with a non-null 'flg' input.")
   }
