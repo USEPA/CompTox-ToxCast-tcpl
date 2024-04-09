@@ -150,7 +150,7 @@ mc6_mthds <- function() {
     
     singlept.hit.high = function(mthd) {
       
-      flag <- "Active with only highest conc above baseline"
+      flag <- "Active with only highest conc above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -169,7 +169,7 @@ mc6_mthds <- function() {
     
     singlept.hit.mid = function(mthd) {
       
-      flag <- "Active with one conc (not highest) above baseline"
+      flag <- "Active with one conc (not highest) above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -188,7 +188,7 @@ mc6_mthds <- function() {
     
     multipoint.neg = function(mthd) {
       
-      flag <- "Inactive with multiple concs above baseline"
+      flag <- "Inactive with multiple concs above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -334,7 +334,7 @@ mc6_mthds <- function() {
     
     no.med.gt.3bmad = function(mthd) {
       
-      flag <- "No median responses > 3*bmad"
+      flag <- "No median responses above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
