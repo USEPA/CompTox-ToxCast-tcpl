@@ -52,6 +52,9 @@ tcplMakeAeidPlts <- function(aeid, compare=F, lvl = 4L, fname = NULL, odir = get
   ## Variable-binding to pass R CMD Check
   spid <- m4id <- NULL
   
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
+  
   on.exit(graphics.off())
   
   if (length(aeid) > 2) stop("'aeid' must be of length 1 or 2.")

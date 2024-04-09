@@ -26,6 +26,8 @@
 #' @importFrom grDevices graphics.off pdf
 #' @export 
 tcplMakeChidMultiPlts <- function (chid, lvl = 4L, fname = NULL, odir = getwd(), clib = NULL, hitc.all = TRUE) {
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
   spid <- m4id <- NULL
   on.exit(graphics.off())
   if (length(chid) > 1) 

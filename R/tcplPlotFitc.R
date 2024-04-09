@@ -36,6 +36,9 @@ tcplPlotFitc <- function(fitc = NULL, main = NULL, fitc_sub = NULL) {
   r <- g <- N <- edge <- plt <- leaf <- parent_fitc <- xloc <- yloc <- NULL
   name <- J <- NULL
   
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
+  
   if (!is.null(fitc)) {
     
     vals <- data.table(fitc = fitc)[ , .N, by = fitc]

@@ -46,6 +46,9 @@
 
 tcplPlotM4ID <- function(m4id, lvl = 4L) {
   
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
+  
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   
   prs <- list(type = "mc", fld = "m4id", val = m4id)

@@ -59,6 +59,9 @@ tcplPlotPlate <- function(dat, apid, id = NULL, quant = c(0.001, 0.999)) {
   wllq <- aid <- wllt <- cndx <- nwll <- rown <- rowi <- coln <- NULL
   coli <- anm <- NULL
   
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
+  
   if (length(apid) != 1) stop("'apid' must be of length 1.")
   ap <- apid
   
