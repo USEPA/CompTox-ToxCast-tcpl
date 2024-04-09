@@ -152,9 +152,10 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = FALSE) 
     setkey(dat, "s2id")
     dat <- dat[dat1]
 
-    setkeyv(dat, c("aeid", "chid", "logc"))
-    dat[, minc := min(logc), by = list(aeid, chid)]
-    dat <- dat[logc == minc]
+    concvar <- if ("conc" %in% colnames(dat)) "conc" else "logc"
+    setkeyv(dat, c("aeid", "chid", concvar))
+    dat[, minc := min(get(concvar)), by = list(aeid, chid)]
+    dat <- dat[get(concvar) == minc]
     dat <- unique(dat[, c("spid", "chid", "casn", "chnm", "dsstox_substance_id", "code", "aeid", "aenm", "s2id", "bmad", "max_med", "hitc", "coff", "resp_unit")])
     setkeyv(dat, c("aeid", "chid", "max_med"))
 
