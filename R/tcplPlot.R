@@ -1056,6 +1056,9 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       }
     }
   }
+  
+  # check if ac50 is null and assign NA if it is 
+  dat$ac50 <- ifelse(is.null(dat$ac50), NA, dat$ac50)
 
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
@@ -1339,6 +1342,8 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
       tcplfit2::pow(ps = c(data$pow_a, data$pow_p), x = x)
     } else if (data$modl == "hill") {
       tcplfit2::hillfn(ps = c(data$hill_tp, data$hill_ga, data$hill_p), x = x)
+    } else {
+      x*NA
     }
   }
   
