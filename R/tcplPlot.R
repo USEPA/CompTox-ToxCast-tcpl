@@ -246,7 +246,7 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     }
 
     
-    if (nrow(dat) == 1 && verbose==FALSE) {
+    if (nrow(input) == 1 && verbose==FALSE) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
