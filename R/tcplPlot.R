@@ -1059,6 +1059,38 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   
   # check if ac50 is null and assign NA if it is 
   dat$ac50 <- ifelse(is.null(dat$ac50), NA, dat$ac50)
+  
+  # check if dtxsid is NA, pull wllt in from lvl 3
+  if (is.na(dat$dsstox_substance_id) | is.na(dat$chnm)) {
+    wllt <- unique(tcplLoadData(lvl = 0, fld = list("spid","acid"), 
+                                list(dat$spid, tcplLoadAcid(fld = "aeid", val = dat$aeid)$acid))$wllt)
+    if (length(wllt) == 1) {
+      if (wllt == 'c' | wllt == 'p') {
+        dat$dsstox_substance_id <- "Gain-of-signal control"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'm' | wllt == 'o') {
+        dat$dsstox_substance_id <- "Loss-of-signal control"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'n') {
+        dat$dsstox_substance_id <- "Neutral/negative control"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'b') {
+        dat$dsstox_substance_id <- "Blank"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'v') {
+        dat$dsstox_substance_id <- "Viability control"
+        dat$chnm <- ""
+      }
+    } 
+    else {
+      warning(paste0("wllt for SPID: ", dat$spid, " is missing or length > 1. 
+                     Leaving dsstox_substance_id and chnm as NA."))
+    }
+  }
 
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
@@ -1312,6 +1344,8 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     }
   }
   
+  
+  
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
     yrange[1] <- min(dat$resp_min, dat$coff, yrange[1], unlist(dat$resp), 
@@ -1320,6 +1354,42 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
                      compare.dat$resp_max, compare.dat$coff, unlist(compare.dat$resp))
   }
   
+  check_wllt <- function(data) {
+    # check if dtxsid is NA, pull wllt in from lvl 3
+    if (is.na(data$dsstox_substance_id) | is.na(data$chnm)) {
+      wllt <- unique(tcplLoadData(lvl = 0, fld = list("spid","acid"), 
+                                  list(data$spid, tcplLoadAcid(fld = "aeid", val = data$aeid)$acid))$wllt)
+      if (length(wllt) == 1) {
+        if (wllt == 'c' | wllt == 'p') {
+          data$dsstox_substance_id <- "Gain-of-signal control"
+          data$chnm <- ""
+        }
+        else if (wllt == 'm' | wllt == 'o') {
+          data$dsstox_substance_id <- "Loss-of-signal control"
+          data$chnm <- ""
+        }
+        else if (wllt == 'n') {
+          data$dsstox_substance_id <- "Neutral/negative control"
+          data$chnm <- ""
+        }
+        else if (wllt == 'b') {
+          data$dsstox_substance_id <- "Blank"
+          data$chnm <- ""
+        }
+        else if (wllt == 'v') {
+          data$dsstox_substance_id <- "Viability control"
+          data$chnm <- ""
+        }
+      } 
+      else {
+        warning(paste0("wllt for SPID: ", data$spid, " is missing or length > 1. 
+                     Leaving dsstox_substance_id and chnm as NA."))
+      }
+    }
+    return(data)
+  }
+  dat <- check_wllt(dat)
+  compare.dat <- check_wllt(compare.dat)
   
   dat$winning_model_string <- paste0("Model A(", dat$modl, ")")
   compare.dat$winning_model_string <- paste0("Model B(", compare.dat$modl, ")")
