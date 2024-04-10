@@ -1085,6 +1085,10 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
         dat$dsstox_substance_id <- "Viability control"
         dat$chnm <- ""
       }
+      else {
+        data$dsstox_substance_id <- paste0("Well type: ", wllt)
+        data$chnm <- ""
+      }
     } 
     else {
       warning(paste0("wllt for SPID: ", dat$spid, " is missing or length > 1. 
@@ -1378,6 +1382,10 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
         }
         else if (wllt == 'v') {
           data$dsstox_substance_id <- "Viability control"
+          data$chnm <- ""
+        }
+        else {
+          data$dsstox_substance_id <- paste0("Well type: ", wllt)
           data$chnm <- ""
         }
       } 
