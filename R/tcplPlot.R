@@ -246,14 +246,14 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     }
 
     
-    if (nrow(dat[compare == FALSE]) == 1 && verbose==FALSE) {
+    if (nrow(dat[compare == FALSE]) == 1) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
       # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat, lvl)),
-        return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
+        return(ggsave(filename=paste0(fileprefix,"_",paste0(dat$m4id, collapse = "_"),".",output),
                       plot= if(is.null(compare.val)) tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange) else tcplggplotCompare(dat[compare == FALSE],dat[compare == TRUE],verbose = verbose, lvl = lvl, flags = flags, yrange = yrange), width = 7, height = 5, dpi=dpi))
       )
     } else {
