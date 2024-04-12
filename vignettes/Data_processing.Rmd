@@ -893,12 +893,12 @@ After the summary values are obtained for each concentration-response series, al
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 available models.
 Model <- c(
-  "Constant", "Linear", "Quadratic","Power", "Hill", "Gain-Loss",
+  "Constant", "Linear", "Quadratic","Quadratic","Power", "Hill", "Gain-Loss",
   "Exponential 2", "Exponential 3","Exponential 4", "Exponential 5"
 )
 # Second column - model abbreviations used in invitrodb & tcplfit2.
 Abbreviation <- c(
-  "cnst", "poly1", "poly2","pow", "hill", "gnls",
+  "cnst", "poly1", "poly2-monotonic only","poly2-biphasic","pow", "hill", "gnls",
   "exp2", "exp3", "exp4", "exp5"
 )
 # Third column - model equations.
@@ -906,6 +906,7 @@ Equations <- c(
   "$f(x) = 0$", # constant
   "$f(x) = ax$", # linear
   "$f(x) = a(\\frac{x}{b}+(\\frac{x}{b})^{2})$", # quadratic
+  "$f(x) = b1*x + b2*x^{2}$", # biphasic poly2
   "$f(x) = ax^p$", # power
   "$f(x) = \\frac{tp}{1 + (\\frac{ga}{x})^{p}}$", # hill
   "$f(x) = \\frac{tp}{(1 + (\\frac{ga}{x})^{p} )(1 + (\\frac{x}{la})^{q} )}$", # gain-loss
@@ -919,6 +920,7 @@ OutputParameters <- c(
   "", # constant
   "a (y-scale)", # linear,
   "a (y-scale), b (x-scale)", # quadratic
+  "b1 (linear coefficient), b2 (quadratic coefficient)", # biphasic poly2
   "a (y-scale), p (power)", # power
   "tp (top), ga (gain AC50), p (gain-power)", # hill
   "tp (top), ga (gain AC50), p (gain power), la (loss AC50), q (loss power)", # gain-loss
@@ -932,6 +934,7 @@ Details <- c(
   "Parameters always equals 'er'.", # constant
   "", # linear 
   "", # quadratic
+  "", # biphasic poly2
   "", # power
   "Concentrations are converted internally to log10 units and optimized with f(x) = tp/(1 + 10^(p*(gax))), then ga and ga_sd are converted back to regular units before returning.", # hill
   "Concentrations are converted internally to log10 units and optimized with f(x) = tp/[(1 + 10^(p*(gax)))(1 + 10^(q*(x-la)))], then ga, la, ga_sd, and la_sd are converted back to regular units before returning." , # gain-loss
@@ -955,7 +958,7 @@ htmlTable(output,
 
 ```
 
-Each of these models assumes the background response is zero and the absolute response (or initial response) is increasing.  Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplFit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
+Most of these models assumes the background response is zero and the absolute response (or initial response) is increasing. In other words, most of these models are able to fit a monotonic curve for either direction. Polynomial 2 model is an exception because it has two parameterizations. By default, the biphasic parameterization will be used. Biphasic Polynomial 2 is able to fit curve to responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). In applications in which biphasic responses are not reasonable, polynomial 2 can be fitted using the monotonic only parameterization. Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplFit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 additional fit parameters.
@@ -986,7 +989,7 @@ htmlTable(output,
 )
 ```
 
-All models assume the error follows a Student's t-distribution with four degrees of freedom. Heavier (i.e. wider) tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than the more commonly used normal distribution. Robust model fitting removes the need to eliminate potential outliers prior to fitting. Maximum likelihood estimation is utilized in the model fitting algorithm to estimate model parameters for all available models in <font face="CMTT10"> tcplFit2 </font>.
+Maximum likelihood estimation is utilized in the model fitting algorithm to estimate model parameters for all available models in <font face="CMTT10"> tcplFit2 </font>. Even though <font face="CMTT10"> tcplFit2 </font> allows maximum likelihood estimation assuming the error follows a Student's t-distribution or a normal distribution, <font face="CMTT10"> tcpl </font> assumes for all models the error follows a t-distribution with four degrees of freedom. Heavier (i.e. wider) tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than the more commonly used normal distribution. Robust model fitting removes the need to eliminate potential outliers prior to fitting. 
 
 Let $t(z,\nu)$ be the Student's t-distribution with $\nu$ degrees of freedom,
 $y_{i}$ be the observed response at the $i^{th}$ observation, and $\mu_{i}$ be
@@ -1017,7 +1020,8 @@ fits <- data.frame(
   # parametric model fits from `tcplfit2`
   constant = tcplfit2::cnst(ps = c(er = 0.1),ex_conc),
   poly1 = tcplfit2::poly1(ps = c(a = 3.5,er = 0.1),x = ex_conc),
-  poly2 = tcplfit2::poly2(ps = c(a = 0.13,b = 2,er = 0.1),x = ex_conc),
+  poly2.mono.only = tcplfit2::poly2(ps = c(a = 0.13,b = 2,er = 0.1),x = ex_conc),
+  poly2.biphasic = tcplfit2::poly2bmds(ps = c(b1 = 14, b2 = -0.1,er = 0.1),x = ex_conc),
   power = tcplfit2::pow(ps = c(a = 1.23,p = 1.45,er = 0.1),x = ex_conc),
   hill = tcplfit2::hillfn(ps = c(tp = 750,ga = 5,p = 1.76,er = 0.1),
                           x = ex_conc),
@@ -1034,14 +1038,14 @@ fits <- data.frame(
 ) %>% 
   reshape2::melt(data = .,measure.vars = c(
     "constant",
-    "poly1","poly2","power",
+    "poly1","poly2.mono.only","poly2.biphasic","power",
     "hill","gnls","exp2","exp3","exp4","exp5"
   ))
 
 ## Updated Colors ##
 fit_cols <-
   # choose 10 distinct colors
-  viridis::magma(n = 10,direction = 1) %>% 
+  viridis::magma(n = 11,direction = 1) %>% 
   # darken the original colors to make them more visible
   colorspace::darken(.,amount = 0.2)
 
@@ -1269,8 +1273,7 @@ tcplMthdAssign(
 
 As described previously, since the continuous hit call is the product of three proportional weights, and the resulting value is between 0 and 1.  The higher the hitcall (i.e. close to 1) the more plausible the concentration-response series indicates true biological activity in the measured response (i.e. 'active' hit).
 
-For each concentration series several point-of-departure (POD) estimates are calculated for the winning model.  The major estimates include: (1) the activity concentration at the specified benchmark response (BMR) ($\mathit{bmd}$), (2) the activity concentration at $50\%$ of the maximal response ($\mathit{ac50}$), (3) the activity concentration at the efficacy cutoff ($\mathit{acc}$), (4) the activity concentration at $10\%$ of the maximal response, and (5) the concentration at $5\%$ of the maximal response.  Though there are several other potency estimates calculated as part of the level 5 pipeline these five are the major POD estimates. The POD estimates mentioned in here are summarized in Figure 4.
-
+For each concentration series several point-of-departure (POD) estimates are calculated for the winning model.  The major estimates include: (1) the activity concentration at the specified benchmark response (BMR) ($\mathit{bmd}$), (2) the activity concentration at $50\%$ of the maximal response ($\mathit{ac50}$), (3) the activity concentration at the efficacy cutoff ($\mathit{acc}$), (4) the activity concentration at $10\%$ of the maximal response, and (5) the concentration at $5\%$ of the maximal response.  Though there are several other potency estimates calculated as part of the level 5 pipeline these five are the major POD estimates. The POD estimates mentioned in here are summarized in Figure 4. It is to note that the winning model can return a $\mathit{bmd}$ estimate that fails far out of the test concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $\mathit{bmd}$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the the highest test concentration}$, respectively. If the calculated $\mathit{bmd}$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the $\mathit{bmd}$ estimate instead.
 
 ```{r echo=FALSE, eval=FALSE}
 # With the level 5 methods assigned, the data are ready for level 5 processing:
