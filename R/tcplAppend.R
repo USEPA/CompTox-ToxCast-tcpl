@@ -48,6 +48,7 @@ tcplAppend <- function(dat, tbl, db, lvl=NULL) {
     
     if("RMySQL" %in% loadedNamespaces()){
       unloadNamespace("RMySQL")
+      warning("'RMySQL' package is not supported with tcpl and has been detached.")
     }
     
     dbcon <- do.call(dbConnect, db_pars)

@@ -79,6 +79,7 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
   if (drvr == 'MySQL') {
     if("RMySQL" %in% loadedNamespaces()){
       unloadNamespace("RMySQL")
+      warning("'RMySQL' package is not supported with tcpl and has been detached.")
     }
     dbcon <- do.call(dbConnect, db_pars)
     temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
