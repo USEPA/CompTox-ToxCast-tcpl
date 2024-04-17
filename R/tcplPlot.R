@@ -58,7 +58,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
+tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   conc_unit <- bmd <- resp <- NULL
   
@@ -76,39 +76,16 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
   }
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
-  if (check_tcpl_db_schema()) {
+  if (check_tcpl_db_schema() | !is.null(dat)) {
+    input <- dat # set input to dat and if null load data from connection.
+    dat$order <- 1:nrow(dat) # set dat order (used for comparison plots)
+    dat[,compare := FALSE] # initiate compare parameter
+    if(is.null(input)){
     # check that val and compare.val are the same length 
     if (!is.null(compare.val) && length(unlist(val)) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
     # check that input combination is unique
     input <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
     if (nrow(input) == 0) stop("No data for fld/val provided")
-    if (!is.null(compare.val)) { # load compare data if provided
-      compare.input <- tcplLoadData(lvl = lvl, fld = fld, val = compare.val, type = type)
-      if (nrow(compare.input) == 0) stop("No compare data for fld/val provided")
-    }
-    # default assign multi=TRUE for output="pdf" 
-    if (output == "pdf" && is.null(multi)) {
-      multi <- TRUE
-    }
-    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
-    if (output !="pdf") {
-      multi <- FALSE
-      if(output =="console"){
-        verbose <- FALSE
-      }
-    }
-    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
-    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
-      nrow = ncol = 1
-    }
-    # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(input) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
-    if(is.null(nrow)){
-      nrow <- ifelse(verbose,2,2)
-    }
-    if(is.null(ncol)){
-      ncol <- ifelse(!verbose | type == "sc",3,2)
-    }
     
     # load mc dat, used below function for both input and compare input
     mcLoadDat <- function(m4id = NULL) {
@@ -174,20 +151,6 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       }
     }
     
-    # correct concentration unit label for x-axis
-    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
-    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
-    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
-    
-    # add normalized data type for y axis
-    ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
-    dat <- dat[ndt, on = "aeid"]
-    
-    # check for null bmd in dat table
-    if (verbose){
-      dat <- dat[is.null(dat$bmd), bmd:=NA]
-    }
-    
     # unlog concs
     if (!("conc" %in% colnames(agg))) agg <- mutate(agg, conc = 10^logc)
     if (type == "mc") {
@@ -197,6 +160,52 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
       conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
       dat <- dat[conc_resp_table, on = "s2id"]
     }
+    
+    # add normalized data type for y axis
+    ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
+    dat <- dat[ndt, on = "aeid"]
+    
+    }
+    
+    if (!is.null(compare.val)) { # load compare data if provided
+      compare.input <- tcplLoadData(lvl = lvl, fld = fld, val = compare.val, type = type)
+      if (nrow(compare.input) == 0) stop("No compare data for fld/val provided")
+    }
+    # default assign multi=TRUE for output="pdf" 
+    if (output == "pdf" && is.null(multi)) {
+      multi <- TRUE
+    }
+    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
+    if (output !="pdf") {
+      multi <- FALSE
+      if(output =="console"){
+        verbose <- FALSE
+      }
+    }
+    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
+    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
+      nrow = ncol = 1
+    }
+    # error message for output="console" and multi=FALSE to avoid multiple plots in console
+    if(nrow(input) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    if(is.null(nrow)){
+      nrow <- ifelse(verbose,2,2)
+    }
+    if(is.null(ncol)){
+      ncol <- ifelse(!verbose | type == "sc",3,2)
+    }
+    
+    # correct concentration unit label for x-axis
+    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
+    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
+    
+    # check for null bmd in dat table
+    if (verbose){
+      dat <- dat[is.null(dat$bmd), bmd:=NA]
+    }
+    
+
     
     # join with given val/compare.val if lengths don't match
     if (!is.null(compare.val) && nrow(dat) != length(val) + length(compare.val)) {
