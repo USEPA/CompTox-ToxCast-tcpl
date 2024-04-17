@@ -57,7 +57,8 @@ Suggests:
     kableExtra,
     colorspace,
     magrittr,
-    vdiffr
+    vdiffr,
+    httptest
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.3.1

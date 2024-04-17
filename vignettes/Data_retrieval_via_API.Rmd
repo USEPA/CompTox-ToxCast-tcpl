@@ -1,0 +1,283 @@
+---
+title: Data Retrieval with tcpl via API
+author: "Center for Computational Toxicology and Exposure, US EPA"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    toc: yes
+    toc_depth: 4
+vignette: >
+  %\VignetteIndexEntry{Data Retrieval via API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+<!-- This CSS script ensures autonumbering of equations-->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
+</script>
+
+
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
+  });
+
+});
+</script>
+
+```{css, echo=FALSE}
+.scroll-300 {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.noticebox {
+  padding: 1em;
+  background: lightgray;
+  color: blue;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+```
+
+```{r setup, include = FALSE}
+devtools::load_all()
+library(httptest)
+start_vignette("api")
+```
+
+# Introduction
+
+This vignette describes how the user can retrieve ToxCast data (invitrodb v4.1) from the CCTE Bioactivity API, using <font face="CMTT10">tcpl</font>. The API documentation can be found at <https://api-ccte.epa.gov/docs/bioactivity.html>. <font face="CMTT10">tcpl</font> interfaces to the CCTE API through the R package <font face="CMTT10">ccdR</font> (<https://cran.r-project.org/web/packages/ccdR>), which wraps the API endpoints and provides helpful functions for storing meta-information related to your connection.
+
+::: {.noticebox data-latex=""}
+
+**NOTE:** Users must have a personal API key for full functionality of many of these functions and executing the examples in this vignette. To obtain an API key, send an email request to <ccte_api@epa.gov>.
+
+:::
+
+## Setup API Connection
+
+After loading <font face="CMTT10">tcpl</font>, use the function <font face="CMTT10">tcplConf</font> to set options for connecting to the API. Where a regular database connection requires 5 different options to be filled, using an API connection requires just two: <font face="CMTT10"> $TCPL_PASS </font> and <font face="CMTT10"> $TCPL_DRVR </font>. These two can be set using <font face="CMTT10">tcplConf</font> like the following:
+
+```{r setup-api}
+tcplConf(pass = "<api-key-from-ccte_api@epa.gov>",
+         drvr = "API")
+```
+
+## Overview of Key Functions
+
+To support different data retrieval needs within <font face="CMTT10">tcpl</font>, there are a number of functions which query the API and return information to the local R session.
+
+## Overview of Data Nomenclature
+
+Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC.' 'MC' is used for assay data with multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing single concentration data from level 2 processing, then we will use the abbreviation 'SC2.'
+
+### Assay Elements
+
+The <font face="CMTT10">tcplLoadAsid</font>, <font face="CMTT10">tcplLoadAid</font>, <font face="CMTT10">tcplLoadAcid</font>, and <font face="CMTT10">tcplLoadAeid</font> functions load relevant assay ids and names for the respective assay elements based on the user specified parameters. 
+
+```{r tcplLoad, eval = FALSE}
+# List all assay source IDs
+tcplLoadAsid() 
+# Create table of all assay endpoint ids (aeids) per assay source
+aeids <- tcplLoadAeid(fld="asid", # field to query on
+                      val=14, # value for each field
+                              # values should match their corresponding 'fld'
+                      add.fld = c("aid", "anm", "acid", "acnm")) # additional fields to return
+```
+
+### Data
+
+<font face="CMTT10">tcplQueryAPI</font> is a general querying function which is flexible enough to handle most kinds of queries users may have for the API. Unlike <font face="CMTT10">tcplQuery</font>, <font face="CMTT10">tcplQueryAPI</font> does not use accept a MySQL query but instead has a few arguments which can be set to mimic a request to the various API endpoints. <font face="CMTT10">tcplQueryAPI</font> is used mostly as a helper function to other <font face="CMTT10">tcplLoad</font> functions, but is available to users for more specific and/or personalized requests.
+
+```{r tcplQueryAPI, eval = FALSE}
+# Request and load all assays+annotations for specified asid
+data <- tcplQueryAPI(resource = "data", # resource to query from API, either 'data' or 'assay'
+                     fld = "aeid", val = 891, # field and val to query on
+                     return_fld = c("spid", "chnm", "hitcall")) # specify the return fields, leave NULL for all fields
+```
+
+The <font face="CMTT10">tcplLoadData</font> function can be used to load data from the CCTE API into the R session. To add useful chemical and assay annotation information, mapped to the retrieved data, remove <font face="CMTT10">add.fld = FALSE</font> or conversely set <font face="CMTT10">add.fld = TRUE</font>. When connected to the API as the data source, only MC (multiple concentration) screening data is available. In addition, only levels 3, 4, 5, 6, and 'agg' are available. The output will look as similar as possible to regular <font face="CMTT10">tcplLoadData</font> output, though some less common columns may be missing and the column order may differ.
+
+```{r tcplLoadData, eval=FALSE}
+# Load multi concentration data from level 4
+mc4_dat <- tcplLoadData(
+    lvl = 4, # data level
+    fld = 'aeid', # field to query on
+    val = 891, # value for each field
+             # values should match their corresponding 'fld'
+    type = 'mc', # data type, default, not necessary
+    add.fld = FALSE # FALSE will only show fields/columns which are usually
+                    # returned for this level, default TRUE will return all available
+  )
+# Print the first 6 rows of 'mc2_fmtd'
+head(mc4_dat)
+```
+
+When loading data, the user must indicate the applicable fields and ids which are query-able via the CCTE API. These such fields include and are limited to "AEID", "m4id", "SPID", and "DTXSID". Any other fields will result in error. While supplying multiple ids (val) are valid, multiple fields are not, so combinations of fields are not compatible with <font face="CMTT10">tcplLoadData</font> when connected to the API. If some or no data is found, <font face="CMTT10">tcplLoadData</font> will return whatever it finds, and list in output which val(s) were not found. Examples of loading data are detailed in later sections.
+
+### Assay Annotations
+
+Assay source, assay, assay component, and assay endpoint are registered via tcpl scripting into a collection of tables, which in the CCTE APIs are joined into one. The annotations capture four types of information:
+
+i. Identification information
+ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations,
+iii. Target information, such as the target of technological measurement,
+biological intended target, and biological process, and
+iv. Analysis information about how the data were processed and analyzed.
+
+```{r annotation_query_ex, eval = FALSE}
+# load all assays and their annotations
+assays <- tcplQueryAPI(resource = "assay")
+```
+
+# Retrieving Processed Multi-Concentration (MC) Data and Annotations
+
+The goal of MC processing is to estimate the hitcall, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. API data is stored for levels 3 through 6, users can inspect the activity hitcalls, model parameters, concentration-response plots, and the applied methods for the multiple concentration data. 
+
+## Load Data
+
+Load filtered data on a sample by endpoint level. Set add.fld = FALSE to limit fields to those which are defaults for each level when loading from invitrodb directly. Leaving add.fld = TRUE (default) will return all of the API's fields, which contain fields from levels 3 through 6.
+
+### By aeid
+```{r data_by_aeid}
+# Load Level 5 MC data for an aeid
+mc5 <- tcplLoadData(lvl=5,    # data level
+               fld="aeid",    # fields to query on
+               val=704,       # values should match their corresponding 'fld'
+               type = "mc",   # data type, default, not needed
+               add.fld=FALSE) # return additional parameters from mc5_param 
+
+head(mc5)
+```
+### By spid
+```{r data_by_spid}
+# Load Level 5 MC data for an aeid
+mc5 <- tcplLoadData(lvl=5,         # data level
+               fld="spid",         # fields to query on
+               val="TP0000904H05", # values should match their corresponding 'fld'
+               type = "mc",        # data type, default, not needed
+               add.fld=FALSE)      # return additional parameters from mc5_param 
+
+head(mc5)
+```
+### By m4id
+```{r data_by_m4id}
+# Load Level 5 MC data for an aeid
+mc5 <- tcplLoadData(lvl=5,    # data level
+               fld="m4id",    # fields to query on
+               val=1842443,   # values should match their corresponding 'fld'
+               type = "mc",   # data type, default, not needed
+               add.fld=FALSE) # return additional parameters from mc5_param 
+
+head(mc5)
+```
+### By DTXSID
+```{r data_by_dtxsid}
+# Load Level 5 MC data for an aeid
+mc5 <- tcplLoadData(lvl=5,           # data level
+               fld="dtxsid",         # fields to query on
+               val="DTXSID30944145", # values should match their corresponding 'fld'
+               type = "mc",          # data type, default, not needed
+               add.fld=FALSE)        # return additional parameters from mc5_param 
+
+head(mc5)
+```
+### By level
+
+In addition to level 5 data, levels 3, 4, 6, and 'agg' are available to pull from the API.
+```{r data_levels}
+mc3 <- tcplLoadData(lvl=3,    # data level
+               fld="m4id",    # fields to query on
+               val=1842443,   # values should match their corresponding 'fld'
+               type = "mc",   # data type, default, not needed
+               add.fld=FALSE) # restrict to just level 3 parameters  
+
+head(mc3)
+
+mc4 <- tcplLoadData(lvl=4,    # data level
+               fld="m4id",    # fields to query on
+               val=1842443,   # values should match their corresponding 'fld'
+               type = "mc",   # data type, default, not needed
+               add.fld=FALSE) # restrict to just level 4 parameters 
+
+head(mc5)
+
+mc6 <- tcplLoadData(lvl=6,    # data level
+               fld="m4id",    # fields to query on
+               val=1842443,   # values should match their corresponding 'fld'
+               type = "mc",   # data type, default, not needed
+               add.fld=FALSE) # restrict to just level 6 parameters 
+
+head(mc6)
+
+agg <- tcplLoadData(lvl="agg", # data level
+               fld="m4id",     # fields to query on
+               val=1842443,    # values should match their corresponding 'fld'
+               type = "mc",    # data type, default, not needed
+               add.fld=FALSE)  # restrict to just agg level parameters 
+
+head(agg)
+
+all_fields <- tcplLoadData(lvl=5,    # data level
+               fld="m4id",    # fields to query on
+               val=1842443,   # values should match their corresponding 'fld'
+               type = "mc",   # data type, default, not needed
+               add.fld=TRUE)  # include all fields 
+
+head(all_fields)
+```
+
+
+## Load Assay Annotations
+
+Load and filter mapped annotation data on an assay component endpoint level (aeid).
+
+### Load aeid
+
+To load aeid and aenm as well any other mapped annotations by request, use <font face="CMTT10">tcplLoadAeid</font>. Any available field in the API annotations table can be subset using this function.
+
+```{r load_aeid}
+# load aeid and aenm for given acid
+aeid <- tcplLoadAeid(fld = "acid", val = 400)
+head(aeid)
+# subset all aeids by using multiple fields -- val must be same length in list form!
+aeids <- tcplLoadAeid(fld = c("intended_target_type", "detection_technology_type"), val = list("protein", "Colorimetric"))
+head(aeids)
+```
+
+### Load acid (in development-tbd)
+### Load aid (in development-tbd)
+### Load asid (in development-tbd)
+### Load unit (in development-tbd)
+### Load concentration unit (in development-tbd)
+
+# Plotting (in development-tbd)
+
+<font face="CMTT10">tcplPlot</font> is tcpl’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via customizable parameters. As a standalone plotting utility built with the R library <font face="CMTT10">plotly</font> to display the additional curve-fitting models, <font face="CMTT10">tcplPlot</font> implements the R library <font face="CMTT10">plumber</font> to provide representational state transfer-application programming interface (<font face="CMTT10">REST API</font>) functionality. The <font face="CMTT10">tcplPlot</font> function requires the selection of a level (`lvl`), field (`fld`), and value (`val`) to load the necessary data and display the associated plots. Level 4, `lvl = 4`, plots the concentration-response series fit by all models. Level 5, `lvl = 5`, extends Level 4 plotting by highlighting the winning model with activity hit call presented. Level 6 multi-concentration plotting, including lists of flags, are not currently supported by <font face="CMTT10">tcplPlot</font>. Moreover, only multi-concentration plotting is currently supported.
+
+Customization of output is possible by specifying parameters, including `output`, `verbose`, `multi`, `by`, `fileprefix`, `nrow`, `ncol`, and `dpi`.  
+
+- The `output` parameter indicates how the plots will be presented. In addition to outputs viewable with the R console, <font face="CMTT10">tcplPlot</font> supports a variety of publication-quality file type options, including raster graphics (PNG, JPG, and TIFF) to retain color quality when printing to photograph and vector graphics (SVG and PDF) to retain image resolution when scaled to large formats.
+
+- The `verbose` parameter results in a plot that includes a table containing potency and model performance metrics; `verbose = FALSE` is default and the only option in console outputs.  When `verbose = TRUE` the model aic values are listed in descending order and generally the winning model will be listed first.
+
+- The `multi` parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `verbose` parameter. The default number of plots per page is either 6 plots per page (`verbose = FALSE`) or 4 plots per page (`verbose = TRUE`).
+
+- The `by` parameter indicates how files should be divided, typically by $aeid$ or $spid$.
+
+- The `fileprefix` parameter allows the user to set a custom filename prefix. The standard filename is tcplPlot_sysDate().output (example: tcplPlot_2023_08_02.jpg) or, if `by` parameter is set, tcplPlot_sysDate()_by.output (example: tcplPlot_2023_08_02_aeid_80.pdf). When a `fileprefix` is assigned the default _tcplPlot_ prefix is replaced with the new filename. (example: myplot_2023_08_02_aeid_80.pdf or myplot_2023_08_02.jpg).
+
+- The `nrow` parameter specifies the number of rows for the multiple plots per page; this is 2 by default. The `ncol` parameter specifies the number of columns for the multiple plots per page; this is 3 by default. If `verbose = FALSE`, `ncol` is 2. `nrow` and `ncol` can customize the number of plots included per page. Both `nrow` and `ncol` must be greater than 0. While there is no hard coded upper limit to the number of rows and columns, the underlying technology has a dimension limitation of `nrow = 9` and `ncol = 7`.
+
+- The `dpi` parameter specifies image print resolution for image file output types (PNG, JPG, TIFF, SVG); this is 600 by default. 
+
+The following examples demonstrate <font face="CMTT10">tcplPlot</font> functionality through available the variety of customization options: 
+
+```{r, include=FALSE}
+end_vignette()
+```
