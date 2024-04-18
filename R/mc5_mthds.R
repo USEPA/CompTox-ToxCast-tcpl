@@ -114,6 +114,7 @@
 #'   \item{ow_bidirectional_gain}{Multiply winning model hitcall (hitc) by -1 for models fit in the 
 #'   negative analysis direction. Typically used for endpoints where only positive responses are 
 #'   biologically relevant.}
+#'   \item{osd_coff_bmr}{Overwrite the osd value so that bmr equals cutoff.}
 #'  }
 #' }
 #'
@@ -349,7 +350,7 @@ mc5_mthds <- function(ae) {
       e1 <- bquote(coff <- c(coff, 40))
       list(e1)
 
-    },
+    }
 
   )
 }
