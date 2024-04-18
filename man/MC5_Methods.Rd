@@ -68,7 +68,9 @@ vignette, "Data_processing."
 \subsection{Fold Change Methods}{
  \describe{
   \item{fc0.2}{Add a cutoff value of 0.2. Typically for zero centered fold change data.}
+  \item{fc0.25}{Add a cutoff value of 0.25. Typically for zero centered fold change data.}
   \item{fc0.3}{Add a cutoff value of 0.3. Typically for zero centered fold change data.}
+  \item{fc0.5}{Add a cutoff value of 0.5. Typically for zero centered fold change data.}
  }
 }
 
@@ -93,9 +95,11 @@ Log Base 2
  \describe{
   \item{pc05}{Add a cutoff value of 5. Typically for percent of control data.}
   \item{pc10}{Add a cutoff value of 10. Typically for percent of control data.}
+  \item{pc16}{Add a cutoff value of 16. Typically for percent of control data.}
   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
+  \item{pc40}{Add a cutoff value of 40. Typically for percent of control data.}
   \item{pc50}{Add a cutoff value of 50. Typically for percent of control data.}
   \item{pc70}{Add a cutoff value of 70. Typically for percent of control data.}
   \item{pc95}{Add a cutoff value of 95. Typically for percent of control data.}
@@ -109,6 +113,13 @@ Log Base 2
   \item{coff_2.32}{Add a cutoff value of 2.32.}
   \item{loec.coff}{Method not yet updated for tcpl implementation. Identify the lowest observed 
   effective concentration (loec) compared to baseline.}
+  \item{ow_bidirectional_loss}{Multiply winning model hitcall (hitc) by -1 for models fit in the 
+  positive analysis direction. Typically used for endpoints where only negative responses are 
+  biologically relevant.}
+  \item{ow_bidirectional_gain}{Multiply winning model hitcall (hitc) by -1 for models fit in the 
+  negative analysis direction. Typically used for endpoints where only positive responses are 
+  biologically relevant.}
+  \item{osd_coff_bmr}{Overwrite the osd value so that bmr equals cutoff.}
  }
 }
 }
