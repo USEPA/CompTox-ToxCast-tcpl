@@ -11,22 +11,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
-<!-- This CSS script ensures autonumbering of equations-->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
-</script>
-
-
-<script>
-$(document).ready(function() {
-  $items = $('div#TOC li');
-  $items.each(function(idx) {
-    num_ul = $(this).parentsUntil('#TOC').length;
-    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
-  });
-
-});
-</script>
 
 ```{css, echo=FALSE}
 .scroll-300 {
@@ -45,6 +29,11 @@ $(document).ready(function() {
 
 ```{r setup, include = FALSE}
 devtools::load_all()
+library(DT)
+# helper function for printing
+printFormattedTable <- function(res_dt, widen = c()) {
+  datatable(res_dt, style = 'bootstrap', class = 'table-bordered table-condensed', rownames = FALSE, options = list(scrollX = TRUE, autoWidth = TRUE, dom = 't', columnDefs = list(list(width = '1000px', targets = widen))))
+}
 library(httptest)
 start_vignette("api")
 ```
@@ -151,8 +140,10 @@ mc5 <- tcplLoadData(lvl=5,    # data level
                val=704,       # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
                add.fld=FALSE) # return additional parameters from mc5_param 
+```
 
-head(mc5)
+```{r, echo = FALSE}
+printFormattedTable(mc5)
 ```
 ### By spid
 ```{r data_by_spid}
@@ -162,8 +153,10 @@ mc5 <- tcplLoadData(lvl=5,         # data level
                val="TP0000904H05", # values should match their corresponding 'fld'
                type = "mc",        # data type, default, not needed
                add.fld=FALSE)      # return additional parameters from mc5_param 
+```
 
-head(mc5)
+```{r, echo = FALSE}
+printFormattedTable(mc5)
 ```
 ### By m4id
 ```{r data_by_m4id}
@@ -173,8 +166,10 @@ mc5 <- tcplLoadData(lvl=5,    # data level
                val=1842443,   # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
                add.fld=FALSE) # return additional parameters from mc5_param 
+```
 
-head(mc5)
+```{r, echo = FALSE}
+printFormattedTable(mc5)
 ```
 ### By DTXSID
 ```{r data_by_dtxsid}
@@ -184,54 +179,84 @@ mc5 <- tcplLoadData(lvl=5,           # data level
                val="DTXSID30944145", # values should match their corresponding 'fld'
                type = "mc",          # data type, default, not needed
                add.fld=FALSE)        # return additional parameters from mc5_param 
+```
 
-head(mc5)
+```{r, echo = FALSE}
+printFormattedTable(mc5)
 ```
 ### By level
 
 In addition to level 5 data, levels 3, 4, 6, and 'agg' are available to pull from the API.
-```{r data_levels}
+
+#### mc3
+
+```{r data_level_3}
 mc3 <- tcplLoadData(lvl=3,    # data level
                fld="m4id",    # fields to query on
                val=1842443,   # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
                add.fld=FALSE) # restrict to just level 3 parameters  
+```
 
-head(mc3)
+```{r, echo = FALSE}
+printFormattedTable(mc3)
+```
 
+#### mc4
+
+```{r data_level_4}
 mc4 <- tcplLoadData(lvl=4,    # data level
                fld="m4id",    # fields to query on
                val=1842443,   # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
                add.fld=FALSE) # restrict to just level 4 parameters 
+```
 
-head(mc5)
+```{r, echo = FALSE}
+printFormattedTable(mc4)
+```
 
+#### mc6
+
+```{r data_level_6}
 mc6 <- tcplLoadData(lvl=6,    # data level
                fld="m4id",    # fields to query on
                val=1842443,   # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
                add.fld=FALSE) # restrict to just level 6 parameters 
+```
 
-head(mc6)
+```{r, echo = FALSE}
+printFormattedTable(mc6, 17)
+```
 
+#### agg
+
+```{r data_level_agg}
 agg <- tcplLoadData(lvl="agg", # data level
                fld="m4id",     # fields to query on
                val=1842443,    # values should match their corresponding 'fld'
                type = "mc",    # data type, default, not needed
                add.fld=FALSE)  # restrict to just agg level parameters 
+```
 
-head(agg)
+```{r, echo = FALSE}
+printFormattedTable(agg)
+```
 
-all_fields <- tcplLoadData(lvl=5,    # data level
+### add.fld = TRUE
+
+```{r data_level_5_all}
+all_fields <- tcplLoadData(lvl=3,    # data level
                fld="m4id",    # fields to query on
                val=1842443,   # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
                add.fld=TRUE)  # include all fields 
-
-head(all_fields)
 ```
 
+```{r, echo = FALSE}
+printFormattedTable(all_fields, 175)
+```
 
 ## Load Assay Annotations
 
@@ -244,10 +269,35 @@ To load aeid and aenm as well any other mapped annotations by request, use <font
 ```{r load_aeid}
 # load aeid and aenm for given acid
 aeid <- tcplLoadAeid(fld = "acid", val = 400)
-head(aeid)
+```
+
+```{r, echo = FALSE}
+printFormattedTable(aeid)
+```
+
+Subset with as many 'fld's as you want! tcplLoadAeid joins the criteria with multiple 'fld' and 'val' as an "AND" rather than "OR", meaning the subset contains rows where all are TRUE. Make sure that 'val' has the same length that 'fld' does. Use a list for 'val' if you want to combine fields of different types (i.e. numeric and string), or of different element lengths (<font face="CMTT10">list("protein", c("Colorimetric", "Fluorescence"))</font>).
+
+```{r load_aeid_plus}
 # subset all aeids by using multiple fields -- val must be same length in list form!
-aeids <- tcplLoadAeid(fld = c("intended_target_type", "detection_technology_type"), val = list("protein", "Colorimetric"))
-head(aeids)
+aeids <- tcplLoadAeid(fld = c("intended_target_type", "detection_technology_type"), 
+                      val = list("protein", c("Colorimetric", "Fluorescence"))) # list length == 2!
+```
+
+```{r, echo = FALSE}
+printFormattedTable(aeids)
+```
+
+Add any available fields to the output as desired. If all fields are desired consider using <font face="CMTT10">tcplQueryAPI(resource = "assay")</font>.
+
+```{r load_aeid_all}
+# subset all aeids by using multiple fields -- val must be same length in list form!
+aeids <- tcplLoadAeid(fld = c("intended_target_type", "detection_technology_type"), 
+                      val = list("protein", c("Colorimetric", "Fluorescence")),
+                      add.fld = c("acid", "assay_component_desc", "signal_direction", "organism")) 
+```
+
+```{r, echo = FALSE}
+printFormattedTable(aeids, 5)
 ```
 
 ### Load acid (in development-tbd)
