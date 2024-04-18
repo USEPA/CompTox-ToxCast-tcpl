@@ -246,14 +246,14 @@ tcplPlot <- function(type = "mc", fld = "m4id", val = NULL, compare.val = NULL, 
     }
 
     
-    if (nrow(dat) == 1 && verbose==FALSE) {
+    if (nrow(dat[compare == FALSE]) == 1) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
       # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat, lvl)),
-        return(ggsave(filename=paste0(fileprefix,"_",dat$m4id,".",output),
+        return(ggsave(filename=paste0(fileprefix,"_",paste0(dat$m4id, collapse = "_"),".",output),
                       plot= if(is.null(compare.val)) tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange) else tcplggplotCompare(dat[compare == FALSE],dat[compare == TRUE],verbose = verbose, lvl = lvl, flags = flags, yrange = yrange), width = 7, height = 5, dpi=dpi))
       )
     } else {
@@ -1056,6 +1056,45 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       }
     }
   }
+  
+  # check if ac50 is null and assign NA if it is 
+  dat$ac50 <- ifelse(is.null(dat$ac50), NA, dat$ac50)
+  
+  # check if dtxsid is NA, pull wllt in from lvl 3
+  if (is.na(dat$dsstox_substance_id) | is.na(dat$chnm)) {
+    wllt <- unique(tcplLoadData(lvl = 0, fld = list("spid","acid"), 
+                                list(dat$spid, tcplLoadAcid(fld = "aeid", val = dat$aeid)$acid))$wllt)
+    if (length(wllt) == 1) {
+      if (wllt == 'c' | wllt == 'p') {
+        dat$dsstox_substance_id <- "Gain-of-signal control"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'm' | wllt == 'o') {
+        dat$dsstox_substance_id <- "Loss-of-signal control"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'n') {
+        dat$dsstox_substance_id <- "Neutral/negative control"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'b') {
+        dat$dsstox_substance_id <- "Blank"
+        dat$chnm <- ""
+      }
+      else if (wllt == 'v') {
+        dat$dsstox_substance_id <- "Viability control"
+        dat$chnm <- ""
+      }
+      else {
+        data$dsstox_substance_id <- paste0("Well type: ", wllt)
+        data$chnm <- ""
+      }
+    } 
+    else {
+      warning(paste0("wllt for SPID: ", dat$spid, " is missing or length > 1. 
+                     Leaving dsstox_substance_id and chnm as NA."))
+    }
+  }
 
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
@@ -1309,6 +1348,8 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     }
   }
   
+  
+  
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
     yrange[1] <- min(dat$resp_min, dat$coff, yrange[1], unlist(dat$resp), 
@@ -1317,6 +1358,46 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
                      compare.dat$resp_max, compare.dat$coff, unlist(compare.dat$resp))
   }
   
+  check_wllt <- function(data) {
+    # check if dtxsid is NA, pull wllt in from lvl 3
+    if (is.na(data$dsstox_substance_id) | is.na(data$chnm)) {
+      wllt <- unique(tcplLoadData(lvl = 0, fld = list("spid","acid"), 
+                                  list(data$spid, tcplLoadAcid(fld = "aeid", val = data$aeid)$acid))$wllt)
+      if (length(wllt) == 1) {
+        if (wllt == 'c' | wllt == 'p') {
+          data$dsstox_substance_id <- "Gain-of-signal control"
+          data$chnm <- ""
+        }
+        else if (wllt == 'm' | wllt == 'o') {
+          data$dsstox_substance_id <- "Loss-of-signal control"
+          data$chnm <- ""
+        }
+        else if (wllt == 'n') {
+          data$dsstox_substance_id <- "Neutral/negative control"
+          data$chnm <- ""
+        }
+        else if (wllt == 'b') {
+          data$dsstox_substance_id <- "Blank"
+          data$chnm <- ""
+        }
+        else if (wllt == 'v') {
+          data$dsstox_substance_id <- "Viability control"
+          data$chnm <- ""
+        }
+        else {
+          data$dsstox_substance_id <- paste0("Well type: ", wllt)
+          data$chnm <- ""
+        }
+      } 
+      else {
+        warning(paste0("wllt for SPID: ", data$spid, " is missing or length > 1. 
+                     Leaving dsstox_substance_id and chnm as NA."))
+      }
+    }
+    return(data)
+  }
+  dat <- check_wllt(dat)
+  compare.dat <- check_wllt(compare.dat)
   
   dat$winning_model_string <- paste0("Model A(", dat$modl, ")")
   compare.dat$winning_model_string <- paste0("Model B(", compare.dat$modl, ")")
@@ -1339,6 +1420,8 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
       tcplfit2::pow(ps = c(data$pow_a, data$pow_p), x = x)
     } else if (data$modl == "hill") {
       tcplfit2::hillfn(ps = c(data$hill_tp, data$hill_ga, data$hill_p), x = x)
+    } else {
+      x*NA
     }
   }
   
