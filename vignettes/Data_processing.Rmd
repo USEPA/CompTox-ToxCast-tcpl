@@ -581,7 +581,7 @@ For the complete list of level 2 transformation methods currently available, see
 
 ### Level 3
 
-Level 3 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$); log-scale concentration field ($\mathit{logc}$); and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 3 processing is to normalize the corrected values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section. A primary distinction between level 2 and level 3 processing is that level 2 processes assay components and level 3 processes assay endpoints.  The user must assign level 3 processing to assay endpoint identifiers.
+Level 3 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($\mathit{resp}$); and optionally, the baseline value ($\mathit{bval}$) and positive control value ($\mathit{pval}$) fields. The purpose of level 3 processing is to normalize the corrected values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the Data Normalization section. A primary distinction between level 2 and level 3 processing is that level 2 processes assay components and level 3 processes assay endpoints.  The user must assign level 3 processing to assay endpoint identifiers.
 
 #### Methods Assignment
 
@@ -723,6 +723,8 @@ Plot the concentration-response series for one of the example spid's in the <fon
 
 ```{r fig.align='center',class.source="scroll-100",message=FALSE,fig.dim=c(8,10)}
 ## Obtain Data ##
+# level 3 does not store logc anymore, create it for plotting purposes
+mc3[, logc := log10(conc)]
 # Obtain the level 4 example data.
 mc4 <- mc_vignette[["mc4"]]
 # Obtain the minimum response observed and the 'logc' group - 'resp_min'.
@@ -840,11 +842,11 @@ G <- mc3 %>%
   ggplot(data = .,aes(logc,resp))+
   geom_point(pch = 1,size = 2)+
   geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
-             aes(xintercept = logc_min,
+             aes(xintercept = log10(conc_min),
                  col = 'minimum concentration'),
              lty = "dashed")+
   geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
-             aes(xintercept = logc_max,
+             aes(xintercept = log10(conc_max),
                  col = 'maximum concentration'),
              lty = "dashed")+
   scale_color_manual(values = c('red','blue'),
@@ -1011,7 +1013,7 @@ The following set of plots provides a set of simulated concentration-response cu
 ```{r class.source="scroll-100",fig.align='center'}
 ## Example Data ##
 # example fit concentration series
-ex_conc <- seq(10^(min(mc3[,logc])),10^(max(mc3[,logc])),length.out = 100)
+ex_conc <- seq(0.03, 100,length.out = 100)
 
 ## Obtain the Continuous Fit of Level 4 Model Estimates ##
 fits <- data.frame(
@@ -1146,8 +1148,8 @@ In Figure 3 we display the smoothed model fit results from level 4 with respect 
 ```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100"}
 ## Create a Sequence of Concentration Values within Observed Range ##
 X <- seq(
- 10^(mc4[which(mc4[,spid] == "01504209"),logc_min]),
- 10^(mc4[which(mc4[,spid] == "01504209"),logc_max]),
+ mc4[which(mc4[,spid] == "01504209"),conc_min],
+ mc4[which(mc4[,spid] == "01504209"),conc_max],
  length.out = 100
 )
 ## Obtain the Continuous Fit of Level 4 Model Estimates ##
@@ -1347,7 +1349,7 @@ basePlot <- mc3_ss %>%
   geom_point(aes(x = logc,y = resp),pch = 1,size = 2)+
   # Cutoff Band
   geom_rect(data = mc5_ss,
-            aes(xmin = logc_min,xmax = logc_max,ymin = -coff,ymax = coff),
+            aes(xmin = log10(conc_min),xmax = log10(conc_max),ymin = -coff,ymax = coff),
             alpha = 0.15,fill = "skyblue")+
   # Best Model Fit
   geom_line(data = dplyr::filter(estDR,variable == mc5_ss[,modl]),
