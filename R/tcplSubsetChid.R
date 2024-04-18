@@ -64,7 +64,7 @@
 tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = FALSE) {
   ## Variable-binding to pass R CMD Check
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
-  chid <- logc <- minc <- NULL
+  chid <- conc <- minc <- NULL
 
   if (!type %in% c("mc", "sc")) {
     stop("type must be sc (single concentration) or mc (multi-concentration)")
