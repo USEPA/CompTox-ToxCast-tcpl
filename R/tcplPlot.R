@@ -60,7 +60,7 @@
 #' options(conf_store)
 tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
-  conc_unit <- bmd <- resp <- NULL
+  conc_unit <- bmd <- resp <- compare.dat <- NULL
   
   # set lvl based on type
   lvl <- 5
@@ -70,147 +70,31 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
     }
   }
-  
-  if (length(yrange) != 2) {
-    stop("'yrange' must be of length 2")
-  }
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema() | !is.null(dat)) {
-    input <- dat # set input to dat and if null load data from connection.
-    dat$order <- 1:nrow(dat) # set dat order (used for comparison plots)
-    dat[,compare := FALSE] # initiate compare parameter
-    if(is.null(input)){
-    # check that val and compare.val are the same length 
-    if (!is.null(compare.val) && length(unlist(val)) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
-    # check that input combination is unique
-    input <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
-    if (nrow(input) == 0) stop("No data for fld/val provided")
-    
-    # load mc dat, used below function for both input and compare input
-    mcLoadDat <- function(m4id = NULL) {
-      l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
-      l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = m4id, add.fld = T)
-      dat <- l4[l5, on = "m4id"]
-      if (flags == TRUE) {
-        l6 <- tcplLoadData(lvl=6, fld='m4id', val=m4id, type='mc')
-        if (nrow(l6) > 0) {
-          l6 <- l6[ , .( flag = paste(flag, collapse=";\n")), by = m4id]
-          no_flags <- setdiff(m4id, l6$m4id)
-          if (length(no_flags) > 0) {
-            l6 <- rbindlist(list(l6, data.table("m4id" = no_flags, "flag" = "None")))
-          } 
-        } else {
-          l6 <- data.table(m4id, "flag" = "None")
-        }
-        dat <- dat[l6, on = "m4id"]
-      }
-      tcplPrepOtpt(dat)
+    # check if user supplied data.  If not, load from db connection
+    if(is.null(dat)){
+      dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = val, type = type,flags = flags, compare = FALSE) #code defined in tcplPlotUtils.R
     }
-    
-    # load sc dat, used below function for both input and compare input
-    scLoadDat <- function(s2id = NULL) {
-      l2 <- tcplLoadData(lvl = lvl, fld = "s2id", val = s2id, type = "sc", add.fld = T)
-      tcplPrepOtpt(l2)
-    }
-    
-    if (type == "mc") {
-      # load dat
-      dat <- mcLoadDat(input$m4id)[, compare := FALSE]
-      # set order to given order
-      dat <- dat[order(match(get(fld[1]), val))]
-      dat$order <- 1:nrow(dat)
-      agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = input$m4id)
-      # load compare dat
-      if (!is.null(compare.val)) {
-        compare.dat <- mcLoadDat(compare.input$m4id)[, compare := TRUE]
-        # set order to given order
-        compare.dat <- compare.dat[order(match(get(fld[1]), compare.val))]
-        compare.dat$order <- 1:nrow(compare.dat)
-        dat <- rbind(dat, compare.dat, fill = TRUE)
-        compare.agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = compare.input$m4id)
-        agg <- rbind(agg, compare.agg, fill = TRUE)
-      }
+    if(!is.null(compare.val)){
+      # check that val and compare.val are the same length 
+      if (!is.null(compare.val) && length(unlist(val)) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
       
-    } else { # type == 'sc' 
-      # load dat
-      dat <- scLoadDat(input$s2id)[, compare := FALSE]
-      # set order to given order
-      dat <- dat[order(match(get(fld[1]), val))]
-      dat$order <- 1:nrow(dat)
-      agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = input$s2id, type = "sc")
-      # load compare dat
-      if (!is.null(compare.val)) {
-        compare.dat <- scLoadDat(compare.input$s2id)[, compare := TRUE]
-        # set order to given order
-        compare.dat <- compare.dat[order(match(get(fld[1]), compare.val))]
-        compare.dat$order <- 1:nrow(compare.dat)
-        dat <- rbind(dat, compare.dat, fill = TRUE)
-        compare.agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = compare.input$s2id, type = "sc")
-        agg <- rbind(agg, compare.agg, fill = TRUE)
-      }
+      compare.dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = compare.val, type = type,flags = flags, compare = TRUE) #code defined in tcplPlotUtils.R
+      if (nrow(compare.dat) == 0) stop("No compare data for fld/val provided")
     }
     
-    # unlog concs
-    if (!("conc" %in% colnames(agg))) agg <- mutate(agg, conc = 10^logc)
-    if (type == "mc") {
-      conc_resp_table <- agg %>% group_by(m4id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
-      dat <- dat[conc_resp_table, on = "m4id"]
-    } else {
-      conc_resp_table <- agg %>% group_by(s2id) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
-      dat <- dat[conc_resp_table, on = "s2id"]
-    }
-    
-    # add normalized data type for y axis
-    ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
-    dat <- dat[ndt, on = "aeid"]
-    
-    }
-    
-    if (!is.null(compare.val)) { # load compare data if provided
-      compare.input <- tcplLoadData(lvl = lvl, fld = fld, val = compare.val, type = type)
-      if (nrow(compare.input) == 0) stop("No compare data for fld/val provided")
-    }
-    # default assign multi=TRUE for output="pdf" 
-    if (output == "pdf" && is.null(multi)) {
-      multi <- TRUE
-    }
-    # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
-    if (output !="pdf") {
-      multi <- FALSE
-      if(output =="console"){
-        verbose <- FALSE
-      }
-    }
-    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
-    if(nrow(input) > 1 && output == "pdf" && multi == FALSE) {
-      nrow = ncol = 1
-    }
-    # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(input) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
-    if(is.null(nrow)){
-      nrow <- ifelse(verbose,2,2)
-    }
-    if(is.null(ncol)){
-      ncol <- ifelse(!verbose | type == "sc",3,2)
-    }
-    
-    # correct concentration unit label for x-axis
-    dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
-    dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
-    dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
     
     # check for null bmd in dat table
     if (verbose){
       dat <- dat[is.null(dat$bmd), bmd:=NA]
     }
     
-
     
+  
     # join with given val/compare.val if lengths don't match
-    if (!is.null(compare.val) && nrow(dat) != length(val) + length(compare.val)) {
-      compare.dat <- dat[compare == TRUE]
-      dat <- dat[compare == FALSE]
+    if (!is.null(compare.val) && nrow(dat) + nrow(compare.dat) != length(val) + length(compare.val)) {
       val_dt <- as.data.table(val)
       colnames(val_dt) <- "m4id"
       compare.val_dt <- as.data.table(compare.val)
@@ -223,39 +107,32 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       setorder(dat, order)
     }
     
+    # set yrange from tcplPlotUtils.R
+    yrange <- tcplPlotSetYRange(dat,yuniform,yrange)
     
-    # set range
-    if (yuniform == TRUE && identical(yrange, c(NA,NA))) {
-      min <- min(dat$resp_min, unlist(dat$resp))
-      max <- max(dat$resp_max, unlist(dat$resp))
-      if (type == "mc") {
-        # any bidirectional models contained in dat, cutoff both ways
-        if (2 %in% dat$model_type) {
-          cutoffs <- dat[model_type == 2]$coff
-          min <- min(min, cutoffs, cutoffs * -1)
-          max <- max(max, cutoffs, cutoffs * -1)
-        }
-        # any gain models contained in dat, cutoff only positive
-        if (3 %in% dat$model_type) {
-          cutoffs <- dat[model_type == 3]$coff
-          min <- min(min, cutoffs)
-          max <- max(max, cutoffs)
-        }
-        # any loss models contained in dat, cutoff only negative
-        if (4 %in% dat$model_type) {
-          cutoffs <- dat[model_type == 4]$coff
-          min <- min(min, cutoffs * -1)
-          max <- max(max, cutoffs * -1)
-        }
-      } else {
-        min <- min(min, dat$coff, dat$coff * -1)
-        max <- max(max, dat$coff, dat$coff * -1)
-      }
-      yrange = c(min, max)
+    # if you have compare data, join it back to main datatable
+    if(!is.null(compare.dat)){
+    dat <- rbind(dat,compare.dat, fill = TRUE)
     }
-
     
-    if (nrow(dat[compare == FALSE]) == 1) {
+    
+    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
+    if(nrow(dat) > 1 && output == "pdf" && multi == FALSE) {
+      nrow = ncol = 1
+    }
+    # error message for output="console" and multi=FALSE to avoid multiple plots in console
+    if(nrow(dat) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    if(is.null(nrow)){
+      nrow <- ifelse(verbose,2,2)
+    }
+    if(is.null(ncol)){
+      ncol <- ifelse(!verbose | type == "sc",3,2)
+    }
+    
+    
+    
+    
+    if (nrow(dat) == 1) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
@@ -292,87 +169,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     }
 
   } else {
-
-    if (length(output) > 1) output <- output[1]
-
-    prs <- list(type = "mc", fld = fld, val = val)
-
-    if (lvl == 4L) dat <- do.call(tcplLoadData, args = c(lvl = 4L, prs))
-    if (lvl >= 5L) dat <- do.call(tcplLoadData, args = c(lvl = 5L, prs))
-    if (lvl >= 6L) {
-      flg <- do.call(tcplLoadData, args = c(lvl = 6L, prs))
-    } else {
-      flg <- NULL
-    }
-    if (lvl == 7L) {
-      boot <- do.call(tcplLoadData, args = c(lvl = 7L, prs))
-    } else {
-      boot <- NULL
-    }
-
-    if (nrow(dat) == 0) stop("No data for fld/val provided")
-
-    agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
-
-    if (nrow(dat) == 1 & output == "console") {
-      tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
-    }
-    if (nrow(dat) > 1 & output == "console") stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
-
-
-    if (is.null(by)) {
-      if (output == "pdf" & !multi) {
-        graphics.off()
-        pdf(
-          file = file.path(
-            getwd(),
-            paste0(fileprefix, ".", output)
-          ),
-          height = 6,
-          width = 10,
-          pointsize = 10
-        )
-        tcplPlotFits(dat = dat, agg = agg, flg = flg, boot = boot)
-        graphics.off()
-      }
-      # plotting if using multiplot function
-      hitc.all <- TRUE
-      if (multi) {
-        graphics.off()
-        pdf(file = file.path(getwd(), paste0(fileprefix, ".", output)), height = 10, width = 6, pointsize = 10)
-        par(mfrow = c(3, 2))
-        tcplMultiplot(dat = dat, agg = agg, flg = flg, boot = boot, hitc.all = hitc.all)
-        graphics.off()
-      }
-    } else {
-      if (!by %in% names(dat)) stop("grouping variable unavailable.")
-      subset <- unlist(unique(dat[, by, with = FALSE]))
-      for (s in subset) {
-        if (output == "pdf" & !multi) {
-          graphics.off()
-          pdf(
-            file = file.path(
-              getwd(),
-              paste0(fileprefix, "_", by, "_", s, ".", output)
-            ),
-            height = 6,
-            width = 10,
-            pointsize = 10
-          )
-          tcplPlotFits(dat = dat[get(by) == s], agg = agg, flg = flg, boot = boot)
-          graphics.off()
-        }
-        # plotting if using multiplot function
-        hitc.all <- TRUE
-        if (multi) {
-          graphics.off()
-          pdf(file = file.path(getwd(), paste0(fileprefix, "_", by, "_", s, ".", output)), height = 10, width = 6, pointsize = 10)
-          par(mfrow = c(3, 2))
-          tcplMultiplot(dat = dat[get(by) == s], agg = agg, flg = flg, boot = boot, hitc.all = hitc.all)
-          graphics.off()
-        }
-      }
-    }
+    tcplLegacyPlot()
   }
 }
 
