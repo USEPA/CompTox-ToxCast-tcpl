@@ -84,12 +84,11 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     # join with given val/compare.val if lengths don't match
     if (!is.null(compare.val) && nrow(dat) + nrow(compare.dat) != length(val) + length(compare.val)) {
       val_dt <- as.data.table(val)
-      join_condition <- c("m4id","s2id")[c("m4id","s2id") %in% colnames(dat)]
-      colnames(val_dt) <- join_condition
+      colnames(val_dt) <- fld
       compare.val_dt <- as.data.table(compare.val)
-      colnames(compare.val_dt) <- join_condition
-      dat <- val_dt %>% inner_join(dat, by = join_condition)
-      compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = join_condition)
+      colnames(compare.val_dt) <- fld
+      dat <- val_dt %>% inner_join(dat, by = fld)
+      compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = fld)
     } 
     
     # if you have compare data, join it back to main datatable
