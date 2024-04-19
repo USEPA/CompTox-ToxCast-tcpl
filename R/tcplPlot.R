@@ -77,9 +77,6 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       dat <- dat[,compare := FALSE]
     }
     if(!is.null(compare.val)){
-      # check that val and compare.val are the same length 
-      if (!is.null(compare.val) && nrow(dat) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
-      
       compare.dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = compare.val, type = type,flags = flags, compare = TRUE) #code defined in tcplPlotUtils.R
       if (nrow(compare.dat) == 0) stop("No compare data for fld/val provided")
     }
@@ -93,16 +90,17 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       colnames(compare.val_dt) <- join_condition
       dat <- val_dt %>% inner_join(dat, by = join_condition)
       compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = join_condition)
-      dat <- rbind(dat, compare.dat, fill = TRUE)
-    } else {
-      # if you have compare data, join it back to main datatable
-      if(!is.null(compare.dat)){
-        dat <- rbind(dat,compare.dat, fill = TRUE)
-      }
-      
-      # preserve user-given order
-      setorder(dat, order)
+    } 
+    
+    # if you have compare data, join it back to main datatable
+    if(!is.null(compare.dat)){
+      # check that val and compare.val are the same length 
+      if (nrow(dat) != nrow(compare.dat)) stop("'compare.val' must be of equal length to 'val'")
+      dat <- rbind(dat,compare.dat, fill = TRUE)
     }
+    
+    # preserve user-given order
+    setorder(dat, order)
     
     # set yrange from tcplPlotUtils.R
     yrange <- tcplPlotSetYRange(dat,yuniform,yrange,type)
@@ -111,7 +109,6 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     if (verbose){
       dat <- dat[is.null(dat$bmd), bmd:=NA]
     }
-    
     
     # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
     if(nrow(dat) > 1 && output == "pdf" && multi == FALSE) {
