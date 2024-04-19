@@ -93,7 +93,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     
     # if you have compare data, join it back to main datatable
     if(!is.null(compare.dat)){
-      # check that val and compare.val are the same length 
+      # check that dat and compare.dat are the same length 
       if (nrow(dat) != nrow(compare.dat)) stop("'compare.val' must be of equal length to 'val'")
       dat <- rbind(dat,compare.dat, fill = TRUE)
     }

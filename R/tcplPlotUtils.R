@@ -59,7 +59,7 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
 
   # set order to given order
-  dat <- dat[order(match(get(fld[1]), val))]
+  dat <- dat[order(match(get(fld[1]), val[[1]]))]
   dat$order <- 1:nrow(dat)
   
   dat
