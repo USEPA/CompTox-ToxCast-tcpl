@@ -128,7 +128,7 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
       }
     }
     
-    list(type = type,flags = flags,output = output,multi = multi,verbose = verbose)
+    list(lvl = lvl,type = type,flags = flags,output = output,multi = multi,verbose = verbose)
 
   }
   
