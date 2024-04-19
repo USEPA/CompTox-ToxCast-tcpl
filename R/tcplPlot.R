@@ -72,6 +72,9 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     # check if user supplied data.  If not, load from db connection
     if(is.null(dat)){
       dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = val, type = type,flags = flags, compare = FALSE) #code defined in tcplPlotUtils.R
+    } else {
+      # if user supplies dat we still need to add compare indicator
+      dat <- dat[,compare := FALSE]
     }
     if(!is.null(compare.val)){
       # check that val and compare.val are the same length 
