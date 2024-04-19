@@ -78,7 +78,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     }
     if(!is.null(compare.val)){
       # check that val and compare.val are the same length 
-      if (!is.null(compare.val) && length(unlist(val)) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
+      if (!is.null(compare.val) && nrow(dat) != length(unlist(compare.val))) stop("'compare.val' must be of equal length to 'val'")
       
       compare.dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = compare.val, type = type,flags = flags, compare = TRUE) #code defined in tcplPlotUtils.R
       if (nrow(compare.dat) == 0) stop("No compare data for fld/val provided")
