@@ -131,7 +131,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     
     
     
-    if (nrow(dat) == 1) {
+    if (nrow(dat[compare == FALSE]) == 1) {
       # plot single graph
       # this needs to be fixed to be more succinct about users selected option
       ifelse(output[1] == "console",
