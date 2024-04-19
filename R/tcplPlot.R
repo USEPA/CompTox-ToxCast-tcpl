@@ -84,37 +84,33 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       if (nrow(compare.dat) == 0) stop("No compare data for fld/val provided")
     }
     
-    
-    # check for null bmd in dat table
-    if (verbose){
-      dat <- dat[is.null(dat$bmd), bmd:=NA]
-    }
-    
-    
-  
     # join with given val/compare.val if lengths don't match
     if (!is.null(compare.val) && nrow(dat) + nrow(compare.dat) != length(val) + length(compare.val)) {
       val_dt <- as.data.table(val)
-      colnames(val_dt) <- "m4id"
+      join_condition <- c("m4id","s2id")[c("m4id","s2id") %in% colnames(dat)]
+      colnames(val_dt) <- join_condition
       compare.val_dt <- as.data.table(compare.val)
-      colnames(compare.val_dt) <- "m4id"
-      dat <- val_dt %>% inner_join(dat, by = "m4id")
-      compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = "m4id")
+      colnames(compare.val_dt) <- join_condition
+      dat <- val_dt %>% inner_join(dat, by = join_condition)
+      compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = join_condition)
       dat <- rbind(dat, compare.dat, fill = TRUE)
     } else {
-      # preserve user-given order
-      setorder(dat, order)
-      
       # if you have compare data, join it back to main datatable
       if(!is.null(compare.dat)){
         dat <- rbind(dat,compare.dat, fill = TRUE)
       }
+      
+      # preserve user-given order
+      setorder(dat, order)
     }
     
     # set yrange from tcplPlotUtils.R
     yrange <- tcplPlotSetYRange(dat,yuniform,yrange,type)
     
-    
+    # check for null bmd in dat table
+    if (verbose){
+      dat <- dat[is.null(dat$bmd), bmd:=NA]
+    }
     
     
     # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
