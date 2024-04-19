@@ -104,15 +104,17 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     } else {
       # preserve user-given order
       setorder(dat, order)
+      
+      # if you have compare data, join it back to main datatable
+      if(!is.null(compare.dat)){
+        dat <- rbind(dat,compare.dat, fill = TRUE)
+      }
     }
     
     # set yrange from tcplPlotUtils.R
     yrange <- tcplPlotSetYRange(dat,yuniform,yrange,type)
     
-    # if you have compare data, join it back to main datatable
-    if(!is.null(compare.dat)){
-    dat <- rbind(dat,compare.dat, fill = TRUE)
-    }
+    
     
     
     # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
