@@ -35,10 +35,6 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
     dat <- scLoadDat(input$s2id)[, compare := compare]
   }
   
-  # order dataframe and add index
-  dat <- dat[order(match(get(fld[1]), val))]
-  dat$order <- 1:nrow(dat)
-  
   # add normalized data type for y axis
   ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
   dat <- dat[ndt, on = "aeid"]
@@ -61,7 +57,10 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
-  
+
+  # set order to given order
+  dat <- dat[order(match(get(fld[1]), val))]
+  dat$order <- 1:nrow(dat)
   
   dat
 }
