@@ -62,14 +62,10 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
   #variable binding
   conc_unit <- bmd <- resp <- compare.dat <- NULL
   
-  # set lvl based on type
-  lvl <- 5
-  if (type == "sc") {
-    lvl <- 2
-    if (flags == TRUE) {
-      warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
-    }
-  }
+  # Validate vars based on some assumed properties
+  validated_vars <- tcplPlotValidate(type = type,flags = flags,output = output,multi = multi,verbose = verbose)
+  # take list of validated vars and add them to the function's environment
+  list2env(validated_vars, envir = environment())
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
   if (check_tcpl_db_schema() | !is.null(dat)) {

@@ -105,7 +105,16 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange){
 }
   
   
-  tcplPlotValidate <- function(dat){
+  tcplPlotValidate <- function(type,flags,output,multi,verbose){
+    
+    # set lvl based on type
+    lvl <- 5
+    if (type == "sc") {
+      lvl <- 2
+      if (flags == TRUE) {
+        warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
+      }
+    }
     
     # default assign multi=TRUE for output="pdf" 
     if (output == "pdf" && is.null(multi)) {
@@ -118,8 +127,9 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange){
         verbose <- FALSE
       }
     }
-
     
+    list(type = type,flags = flags,output = output,multi = multi,verbose = verbose)
+
   }
   
   
