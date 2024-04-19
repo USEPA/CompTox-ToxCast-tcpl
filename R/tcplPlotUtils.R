@@ -65,7 +65,7 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   dat
 }
 
-tcplPlotSetYRange <- function(dat,yuniform,yrange){
+tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
   #validate yrange
   if (length(yrange) != 2) {
     stop("'yrange' must be of length 2")

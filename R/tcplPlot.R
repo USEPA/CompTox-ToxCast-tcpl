@@ -107,7 +107,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     }
     
     # set yrange from tcplPlotUtils.R
-    yrange <- tcplPlotSetYRange(dat,yuniform,yrange)
+    yrange <- tcplPlotSetYRange(dat,yuniform,yrange,type)
     
     # if you have compare data, join it back to main datatable
     if(!is.null(compare.dat)){
