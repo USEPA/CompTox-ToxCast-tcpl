@@ -31,7 +31,7 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
     dat <- dat[sapply(dat, nrow) > 0]
     if (lb != length(dat)) warning(paste0("Data not found for the following 'fld' and 'val' combos: \n", paste0(fld, ": ", na_names, collapse = "\n")))
     
-    dat <- rbindlist(dat, use.names=TRUE)
+    dat <- rbindlist(dat, use.names = TRUE, fill = TRUE)
     if (nrow(dat) == 0) return(dat)
     
     dat$dsstox_substance_id <- dat$dtxsid
