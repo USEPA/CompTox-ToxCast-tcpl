@@ -58,9 +58,14 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
                   "' not available. Try using from the following: \n", 
                   paste0(colnames(dat), collapse = "\n")))
     
+    # create index vector to length of field
     fld_indices <- if (length(fld) == 1 | length(fld) == length(val)) 1:length(fld) 
     else stop("'fld' and 'val' must be the same size if length(fld) > 1")
     
+    # put val into a list or move items into first element
+    if (length(fld) == 1) val <- list(unlist(val))
+    
+    # for each field filter by same indexed val
     for (i in fld_indices) {
       dat <- dat[dat[[fld[i]]] %in% val[[i]],]
     }
