@@ -37,7 +37,7 @@ blineShift <- function(resp, conc, wndw) {
 
   low <- 1:max(ceiling(nconc/4), 2)
   rsub <- resp[which(conc %in% uconc[low])]
-  csub <- conc[which(conc %in% uconc[low])]
+  csub <- log10(conc[which(conc %in% uconc[low])])
   low_med <- median(rsub)
   m <- lm(rsub ~ csub)$coefficients["csub"]
   if (is.na(m)) m <- 0
