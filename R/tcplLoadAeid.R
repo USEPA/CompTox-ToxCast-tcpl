@@ -11,7 +11,8 @@ tcplLoadAeid <- function(fld = NULL, val = NULL, add.fld = NULL) {
   if (getOption("TCPL_DRVR") == "API") {
     dat <- tcplQueryAPI(resource = "assay", fld = fld, val = val, return_flds = c("aeid", "assay_component_endpoint_name", add.fld))
     setnames(dat, "assay_component_endpoint_name", "aenm")
-    return(dat)
+    setorder(dat, "aeid")
+    return(unique(dat, by = c(fld, "aeid", "aenm")))
   }
   
   tbl = c("assay_component_endpoint", "assay", "assay_component")
