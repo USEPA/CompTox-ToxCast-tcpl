@@ -1,3 +1,14 @@
+#' tcplPlotLoadData for loading and joining all data required for plotting
+#'
+#' @param lvl 
+#' @param fld 
+#' @param val 
+#' @param type 
+#' @param flags 
+#' @param compare 
+#'
+#' @export
+#'
 tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   
   # check that input combination is unique
@@ -65,6 +76,13 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   dat
 }
 
+#' tcplPlotSetYRange for setting y range values
+#'
+#' @param dat 
+#' @param yuniform 
+#' @param yrange 
+#' @param type 
+#'
 tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
   #validate yrange
   if (length(yrange) != 2) {
@@ -105,7 +123,15 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
 }
   
   
-  tcplPlotValidate <- function(type,flags,output,multi,verbose){
+#' tcplPlotValidate for validating user provided parameters
+#'
+#' @param type 
+#' @param flags 
+#' @param output 
+#' @param multi 
+#' @param verbose 
+#'
+tcplPlotValidate <- function(type,flags,output,multi,verbose){
     
     # set lvl based on type
     lvl <- 5
@@ -133,7 +159,13 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
   }
   
   
-  tcplLegacyPlot <- function(){
+#' Legacy plotting util
+#'
+#' @return
+#' @export
+#'
+#' @examples
+tcplLegacyPlot <- function(){
     if (length(output) > 1) output <- output[1]
     
     prs <- list(type = "mc", fld = fld, val = val)
