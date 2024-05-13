@@ -68,7 +68,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
   list2env(validated_vars, envir = environment())
 
   # check_tcpl_db_schema is a user-defined function found in v3_schema_functions.R file
-  if (check_tcpl_db_schema() | !is.null(dat)) {
+  if (check_tcpl_db_schema() | !is.null(dat) | getOption("TCPL_DRVR") == "API") {
     # check if user supplied data.  If not, load from db connection
     if(is.null(dat)){
       dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = val, type = type,flags = flags, compare = FALSE) #code defined in tcplPlotUtils.R
@@ -114,7 +114,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       nrow = ncol = 1
     }
     # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(dat) > 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(input))
+    if(nrow(dat[compare == FALSE]) != 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
     }
