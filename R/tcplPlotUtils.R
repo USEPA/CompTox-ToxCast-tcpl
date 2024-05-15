@@ -4,6 +4,9 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   dat <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)[, compare := compare]
   if (nrow(dat) == 0) stop("No data for fld/val provided")
   
+  # set order to given order
+  dat <- dat[order(match(get(fld[1]), val[[1]]))]
+  dat$order <- 1:nrow(dat)
 
   mcLoadDat <- function(m4id = NULL,flags) {
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
@@ -56,10 +59,6 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
-
-  # set order to given order
-  dat <- dat[order(match(get(fld[1]), val[[1]]))]
-  dat$order <- 1:nrow(dat)
   
   dat
 }
