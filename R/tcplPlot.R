@@ -861,7 +861,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   
   # check if dtxsid is NA, pull wllt in from lvl 3
   if (is.na(dat$dsstox_substance_id) | is.na(dat$chnm)) {
-    wllt <- unique(tcplLoadData(lvl = 0, fld = list("spid","acid"), 
+    wllt <- unique(tcplLoadData(type = ifelse(lvl == 2, "sc", "mc"), lvl = 0, fld = list("spid","acid"), 
                                 list(dat$spid, tcplLoadAcid(fld = "aeid", val = dat$aeid)$acid))$wllt)
     if (length(wllt) == 1) {
       if (wllt == 'c' | wllt == 'p') {
@@ -885,8 +885,8 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
         dat$chnm <- ""
       }
       else {
-        data$dsstox_substance_id <- paste0("Well type: ", wllt)
-        data$chnm <- ""
+        dat$dsstox_substance_id <- paste0("Well type: ", wllt)
+        dat$chnm <- ""
       }
     } 
     else {
@@ -1160,7 +1160,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
   check_wllt <- function(data) {
     # check if dtxsid is NA, pull wllt in from lvl 3
     if (is.na(data$dsstox_substance_id) | is.na(data$chnm)) {
-      wllt <- unique(tcplLoadData(lvl = 0, fld = list("spid","acid"), 
+      wllt <- unique(tcplLoadData(type = ifelse(lvl == 2, "sc", "mc"), lvl = 0, fld = list("spid","acid"), 
                                   list(data$spid, tcplLoadAcid(fld = "aeid", val = data$aeid)$acid))$wllt)
       if (length(wllt) == 1) {
         if (wllt == 'c' | wllt == 'p') {
