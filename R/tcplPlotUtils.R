@@ -44,16 +44,20 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
     conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
     dat <- dat[conc_resp_table, on = join_condition]
     
+    dat <- tcplPrepOtpt(dat)
+    
   } else {
     # fix flags from API for plotting
-    dat <- dat %>% rowwise() %>% mutate(flag = paste(flag, collapse = ';\n')) %>% ungroup() %>% as.data.table()
+    if (is.null(dat$flag)) {
+      flag <- NA
+    }
+    dat <- dat %>% rowwise() %>% mutate(flag = ifelse(is.na(flag) || flag == "NULL", "None", paste(flag, collapse = ';\n'))) %>% ungroup() %>% as.data.table()
+    dat$conc_unit <- dat$tested_conc_unit
   }
   
   # add normalized data type for y axis
   ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
   dat <- dat[ndt, on = "aeid"]
-  
-  dat <- tcplPrepOtpt(dat)
   
   # correct concentration unit label for x-axis
   dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
