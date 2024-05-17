@@ -132,7 +132,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
       # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
         return(tcplPlotlyPlot(dat, lvl)),
-        return(ggsave(filename=paste0(fileprefix,"_",paste0(dat$m4id, collapse = "_"),".",output),
+        return(ggsave(filename=paste0(fileprefix,"_",paste0(ifelse(type=="mc",dat$m4id,dat$s2id), collapse = "_"),".",output),
                       plot= if(is.null(compare.val)) tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange) else tcplggplotCompare(dat[compare == FALSE],dat[compare == TRUE],verbose = verbose, lvl = lvl, flags = flags, yrange = yrange), width = 7, height = 5, dpi=dpi))
       )
     } else {
@@ -399,6 +399,22 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       }
     }
     
+  } else if (lvl == 2) { #single conc
+    # main data
+    if (!is.null(dat$coff) && dat$max_med < 0) {
+      dat$coff <- dat$coff * -1
+    }
+    if (!is.null(dat$coff) && !is.null(dat$hitc) && dat$hitc < 0) {
+      dat$coff <- dat$coff * -1
+    }
+    
+    # compare data
+    if (!is.null(compare.dat$coff) && compare.dat$max_med < 0) {
+      compare.dat$coff <- compare.dat$coff * -1
+    }
+    if (!is.null(compare.dat$coff) && !is.null(compare.dat$hitc) && compare.dat$hitc < 0) {
+      compare.dat$coff <- compare.dat$coff * -1
+    }
   }
   
   # function for truncating decimals
@@ -500,7 +516,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
       inherit = FALSE,
       hoverinfo = "text",
       text = ~ paste(
-        "</br>", paste0("Cut Off B (", specify_decimal(dat$coff,2), ")")
+        "</br>", paste0("Cut Off B (", specify_decimal(compare.dat$coff,2), ")")
       )
     )
   }
@@ -831,30 +847,40 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
     range()
   
   # check if model_type is 3 or 4, which means an override method was assigned
-  if (lvl == 5 && dat$model_type == 3) { # gain direction
-    # leave coff but bmr should flip if top is negative
-    if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
-      if (dat$top < 0) {
-        dat$bmr <- dat$bmr * -1
+  if (lvl == 5) {
+    if (dat$model_type == 3) { # gain direction
+      # leave coff but bmr should flip if top is negative
+      if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
+        if (dat$top < 0) {
+          dat$bmr <- dat$bmr * -1
+        }
       }
-    }
-  } else if (lvl == 5 && dat$model_type == 4) { # loss direction
-    # coff and bmr(if top < 0) should be negative
-    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-      dat$coff <- dat$coff * -1
-      if (dat$top < 0) {
-        dat$bmr <- dat$bmr * -1
-      }
-    }
-  } else { # bidirectional
-    # check if winning model has negative top.  If so coff,bmr should be negative
-    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-      if (dat$top < 0) {
+    } else if (dat$model_type == 4) { # loss direction
+      # coff and bmr(if top < 0) should be negative
+      if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
         dat$coff <- dat$coff * -1
-        dat$bmr <- dat$bmr * -1
+        if (dat$top < 0) {
+          dat$bmr <- dat$bmr * -1
+        }
       }
+    } else { # bidirectional
+      # check if winning model has negative top.  If so coff,bmr should be negative
+      if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+        if (dat$top < 0) {
+          dat$coff <- dat$coff * -1
+          dat$bmr <- dat$bmr * -1
+        }
+      }
+    }
+  } else { #single conc
+    if (!is.null(dat$coff) && dat$max_med < 0) {
+      dat$coff <- dat$coff * -1
+    }
+    if (!is.null(dat$coff) && !is.null(dat$hitc) && dat$hitc < 0) {
+      dat$coff <- dat$coff * -1
     }
   }
+  
   
   # check if ac50 is null and assign NA if it is 
   dat$ac50 <- ifelse(is.null(dat$ac50), NA, dat$ac50)
@@ -884,14 +910,15 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
         dat$dsstox_substance_id <- "Viability control"
         dat$chnm <- ""
       }
-      else {
-        dat$dsstox_substance_id <- paste0("Well type: ", wllt)
-        dat$chnm <- ""
-      }
     } 
     else {
-      warning(paste0("wllt for SPID: ", dat$spid, " is missing or length > 1. 
+      if (length(wllt) > 1) {
+        dat$dsstox_substance_id <- paste0("Well type: ", paste(wllt, collapse = ", "))
+        dat$chnm <- ""
+      } else {
+        warning(paste0("wllt for SPID: ", dat$spid, " is missing. 
                      Leaving dsstox_substance_id and chnm as NA."))
+      }
     }
   }
 
@@ -915,7 +942,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   if (lvl == 2) {
     gg <- ggplot(l3_dat, aes(x = conc)) +
       geom_hline(aes(yintercept = dat$max_med, linetype = "Max Median"), color="red") +
-      geom_hline(aes(yintercept = ifelse(dat$max_med >= 0, dat$coff, dat$coff * -1), linetype="Cutoff"), color="blue") +
+      geom_hline(aes(yintercept = dat$coff, linetype="Cutoff"), color="blue") +
       geom_point(aes(y = resp)) +
       scale_x_continuous(limits = l3_range, trans = ifelse(0 %in% l3_dat$conc,"identity","log10")) +
       scale_y_continuous(limits = yrange) +
@@ -1093,61 +1120,76 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
   
   if (dat$conc_unit != compare.dat$conc_unit || dat$normalized_data_type != compare.dat$normalized_data_type) stop("Units do not match.")
   
-  # main data
   # check if model_type is 3 or 4, which means an override method was assigned
-  if (lvl == 5 && dat$model_type == 3) { # gain direction
-    # leave coff but bmr should flip if top is negative
-    if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
-      if (dat$top < 0) {
-        dat$bmr <- dat$bmr * -1
+  if (lvl == 5) {
+    # main data
+    if (dat$model_type == 3) { # gain direction
+      # leave coff but bmr should flip if top is negative
+      if (!is.null(dat$top) && !is.na(dat$top) && !is.null(dat$bmr)) {
+        if (dat$top < 0) {
+          dat$bmr <- dat$bmr * -1
+        }
       }
-    }
-  } else if (lvl == 5 && dat$model_type == 4) { # loss direction
-    # coff and bmr(if top < 0) should be negative
-    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-      dat$coff <- dat$coff * -1
-      if (dat$top < 0) {
-        dat$bmr <- dat$bmr * -1
-      }
-    }
-  } else { # bidirectional
-    # check if winning model has negative top.  If so coff,bmr should be negative
-    if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
-      if (dat$top < 0) {
+    } else if (dat$model_type == 4) { # loss direction
+      # coff and bmr(if top < 0) should be negative
+      if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
         dat$coff <- dat$coff * -1
-        dat$bmr <- dat$bmr * -1
+        if (dat$top < 0) {
+          dat$bmr <- dat$bmr * -1
+        }
+      }
+    } else { # bidirectional
+      # check if winning model has negative top.  If so coff,bmr should be negative
+      if (!is.null(dat$top) && !is.null(dat$coff) && !is.na(dat$top) && !is.null(dat$bmr)) {
+        if (dat$top < 0) {
+          dat$coff <- dat$coff * -1
+          dat$bmr <- dat$bmr * -1
+        }
       }
     }
-  }
-  
-  # compare data
-  # check if model_type is 3 or 4, which means an override method was assigned
-  if (lvl == 5 && compare.dat$model_type == 3) { # gain direction
-    # leave coff but bmr should flip if top is negative
-    if (!is.null(compare.dat$top) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
-      if (compare.dat$top < 0) {
-        compare.dat$bmr <- compare.dat$bmr * -1
+    
+    # compare data
+    if (compare.dat$model_type == 3) { # gain direction
+      # leave coff but bmr should flip if top is negative
+      if (!is.null(compare.dat$top) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
+        if (compare.dat$top < 0) {
+          compare.dat$bmr <- compare.dat$bmr * -1
+        }
       }
-    }
-  } else if (lvl == 5 && compare.dat$model_type == 4) { # loss direction
-    # coff and bmr(if top < 0) should be negative
-    if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
-      compare.dat$coff <- compare.dat$coff * -1
-      if (compare.dat$top < 0) {
-        compare.dat$bmr <- compare.dat$bmr * -1
-      }
-    }
-  } else { # bidirectional
-    # check if winning model has negative top.  If so coff,bmr should be negative
-    if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
-      if (compare.dat$top < 0) {
+    } else if (compare.dat$model_type == 4) { # loss direction
+      # coff and bmr(if top < 0) should be negative
+      if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
         compare.dat$coff <- compare.dat$coff * -1
-        compare.dat$bmr <- compare.dat$bmr * -1
+        if (compare.dat$top < 0) {
+          compare.dat$bmr <- compare.dat$bmr * -1
+        }
+      }
+    } else { # bidirectional
+      # check if winning model has negative top.  If so coff,bmr should be negative
+      if (!is.null(compare.dat$top) && !is.null(compare.dat$coff) && !is.na(compare.dat$top) && !is.null(compare.dat$bmr)) {
+        if (compare.dat$top < 0) {
+          compare.dat$coff <- compare.dat$coff * -1
+          compare.dat$bmr <- compare.dat$bmr * -1
+        }
       }
     }
+  } else { #single conc
+    # main data
+    if (!is.null(dat$coff) && dat$max_med < 0) {
+      dat$coff <- dat$coff * -1
+    }
+    if (!is.null(dat$coff) && !is.null(dat$hitc) && dat$hitc < 0) {
+      dat$coff <- dat$coff * -1
+    }
+    
+    # compare data
+    if (!is.null(compare.dat$coff) && compare.dat$max_med < 0) {
+      compare.dat$coff <- compare.dat$coff * -1
+    }
+    if (!is.null(compare.dat$coff) && !is.null(compare.dat$hitc) && compare.dat$hitc < 0) {
+      compare.dat$coff <- compare.dat$coff * -1
+    }
   }
-  
-  
   
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!identical(yrange, c(NA,NA))) {
@@ -1183,14 +1225,15 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
           data$dsstox_substance_id <- "Viability control"
           data$chnm <- ""
         }
-        else {
-          data$dsstox_substance_id <- paste0("Well type: ", wllt)
-          data$chnm <- ""
-        }
       } 
       else {
-        warning(paste0("wllt for SPID: ", data$spid, " is missing or length > 1. 
+        if (length(wllt) > 1) {
+          data$dsstox_substance_id <- paste0("Well type: ", paste(wllt, collapse = ", "))
+          data$chnm <- ""
+        } else {
+          warning(paste0("wllt for SPID: ", data$spid, " is missing. 
                      Leaving dsstox_substance_id and chnm as NA."))
+        }
       }
     }
     return(data)
