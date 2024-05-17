@@ -886,7 +886,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
   dat$ac50 <- ifelse(is.null(dat$ac50), NA, dat$ac50)
   
   # check if dtxsid is NA, pull wllt in from lvl 3
-  if (is.na(dat$dsstox_substance_id) | is.na(dat$chnm)) {
+  if (getOption("TCPL_DRVR") != "API" && (is.na(dat$dsstox_substance_id) | is.na(dat$chnm))) {
     wllt <- unique(tcplLoadData(type = ifelse(lvl == 2, "sc", "mc"), lvl = 0, fld = list("spid","acid"), 
                                 list(dat$spid, tcplLoadAcid(fld = "aeid", val = dat$aeid)$acid))$wllt)
     if (length(wllt) == 1) {
@@ -908,6 +908,10 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
       }
       else if (wllt == 'v') {
         dat$dsstox_substance_id <- "Viability control"
+        dat$chnm <- ""
+      }
+      else {
+        dat$dsstox_substance_id <- paste0("Well type: ", wllt)
         dat$chnm <- ""
       }
     } 
@@ -1225,6 +1229,10 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
           data$dsstox_substance_id <- "Viability control"
           data$chnm <- ""
         }
+        else {
+          data$dsstox_substance_id <- paste0("Well type: ", wllt)
+          data$chnm <- ""
+        }
       } 
       else {
         if (length(wllt) > 1) {
@@ -1238,8 +1246,10 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     }
     return(data)
   }
-  dat <- check_wllt(dat)
-  compare.dat <- check_wllt(compare.dat)
+  if (getOption("TCPL_DRVR") != "API") {
+    dat <- check_wllt(dat)
+    compare.dat <- check_wllt(compare.dat)
+  }
   
   dat$winning_model_string <- paste0("Model A(", dat$modl, ")")
   compare.dat$winning_model_string <- paste0("Model B(", compare.dat$modl, ")")
