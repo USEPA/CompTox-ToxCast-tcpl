@@ -50,7 +50,7 @@ This vignette describes how the user can retrieve ToxCast data (invitrodb v4.1) 
 
 ## Setup API Connection
 
-After loading <font face="CMTT10">tcpl</font>, use the function <font face="CMTT10">tcplConf</font> to set options for connecting to the API. Where a regular database connection requires 5 different options to be filled, using an API connection requires just two: <font face="CMTT10"> $TCPL_PASS </font> and <font face="CMTT10"> $TCPL_DRVR </font>. These two can be set using <font face="CMTT10">tcplConf</font> like the following:
+After loading <font face="CMTT10">tcpl</font>, use the function <font face="CMTT10">tcplConf</font> to set options for connecting to the API. While a regular database connection requires 5 different options to be filled, using an API connection requires just two: <font face="CMTT10"> $TCPL_PASS </font> and <font face="CMTT10"> $TCPL_DRVR </font>. These two can be set using <font face="CMTT10">tcplConf</font> like the following:
 
 ```{r setup-api}
 tcplConf(pass = "<api-key-from-ccte_api@epa.gov>",
@@ -103,11 +103,9 @@ mc4_dat <- tcplLoadData(
     add.fld = FALSE # FALSE will only show fields/columns which are usually
                     # returned for this level, default TRUE will return all available
   )
-# Print the first 6 rows of 'mc2_fmtd'
-head(mc4_dat)
 ```
 
-When loading data, the user must indicate the applicable fields and ids which are query-able via the CCTE API. These such fields include and are limited to "AEID", "m4id", "SPID", and "DTXSID". Any other fields will result in error. While supplying multiple ids (val) are valid, multiple fields are not, so combinations of fields are not compatible with <font face="CMTT10">tcplLoadData</font> when connected to the API. If some or no data is found, <font face="CMTT10">tcplLoadData</font> will return whatever it finds, and list in output which val(s) were not found. Examples of loading data are detailed in later sections.
+When loading data, the user must indicate the applicable fields and ids which are query-able via the CCTE API. These such fields include and are limited to "AEID", "m4id", "SPID", and "DTXSID". Any other fields will result in error. While supplying multiple ids (through `val`) are valid, multiple fields are not, so combinations of fields are not compatible with <font face="CMTT10">tcplLoadData</font> when connected to the API. If some or no data is found, <font face="CMTT10">tcplLoadData</font> will return whatever it finds, and list in output which val(s) were not found. Examples of loading data are detailed in later sections.
 
 ### Assay Annotations
 
@@ -139,7 +137,7 @@ mc5 <- tcplLoadData(lvl=5,    # data level
                fld="aeid",    # fields to query on
                val=704,       # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
-               add.fld=FALSE) # return additional parameters from mc5_param 
+               add.fld=FALSE) # restrict to just level 5 parameters 
 ```
 
 ```{r, echo = FALSE}
@@ -152,7 +150,7 @@ mc5 <- tcplLoadData(lvl=5,         # data level
                fld="spid",         # fields to query on
                val="TP0000904H05", # values should match their corresponding 'fld'
                type = "mc",        # data type, default, not needed
-               add.fld=FALSE)      # return additional parameters from mc5_param 
+               add.fld=FALSE)      # restrict to just level 5 parameters
 ```
 
 ```{r, echo = FALSE}
@@ -165,7 +163,7 @@ mc5 <- tcplLoadData(lvl=5,    # data level
                fld="m4id",    # fields to query on
                val=1842443,   # values should match their corresponding 'fld'
                type = "mc",   # data type, default, not needed
-               add.fld=FALSE) # return additional parameters from mc5_param 
+               add.fld=FALSE) # restrict to just level 5 parameters
 ```
 
 ```{r, echo = FALSE}
@@ -178,7 +176,7 @@ mc5 <- tcplLoadData(lvl=5,           # data level
                fld="dtxsid",         # fields to query on
                val="DTXSID30944145", # values should match their corresponding 'fld'
                type = "mc",          # data type, default, not needed
-               add.fld=FALSE)        # return additional parameters from mc5_param 
+               add.fld=FALSE)        # restrict to just level 5 parameters
 ```
 
 ```{r, echo = FALSE}
@@ -275,7 +273,7 @@ aeid <- tcplLoadAeid(fld = "acid", val = 400)
 printFormattedTable(aeid)
 ```
 
-Subset with as many 'fld's as you want! tcplLoadAeid joins the criteria with multiple 'fld' and 'val' as an "AND" rather than "OR", meaning the subset contains rows where all are TRUE. Make sure that 'val' has the same length that 'fld' does. Use a list for 'val' if you want to combine fields of different types (i.e. numeric and string), or of different element lengths (<font face="CMTT10">list("protein", c("Colorimetric", "Fluorescence"))</font>).
+Subset with as many `fld`s as desired. tcplLoadAeid joins the criteria with multiple `fld` and `val` as an "AND" rather than "OR", meaning the subset returns rows where all are TRUE. Make sure that `val` has the same length that `fld` does. Use a list for `val` if you want to combine fields of different types (i.e. numeric and string), or of different element lengths (<font face="CMTT10">list("protein", c("Colorimetric", "Fluorescence"))</font>).
 
 ```{r load_aeid_plus}
 # subset all aeids by using multiple fields -- val must be same length in list form!
@@ -300,33 +298,189 @@ aeids <- tcplLoadAeid(fld = c("intended_target_type", "detection_technology_type
 printFormattedTable(aeids, 5)
 ```
 
-### Load acid (in development-tbd)
-### Load aid (in development-tbd)
-### Load asid (in development-tbd)
-### Load unit (in development-tbd)
-### Load concentration unit (in development-tbd)
+### Load acid
 
-# Plotting (in development-tbd)
+Use <font face="CMTT10">tcplLoadAcid</font> to load acid and acnm, as well as any other mapped fields.
 
-<font face="CMTT10">tcplPlot</font> is tcpl’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via customizable parameters. As a standalone plotting utility built with the R library <font face="CMTT10">plotly</font> to display the additional curve-fitting models, <font face="CMTT10">tcplPlot</font> implements the R library <font face="CMTT10">plumber</font> to provide representational state transfer-application programming interface (<font face="CMTT10">REST API</font>) functionality. The <font face="CMTT10">tcplPlot</font> function requires the selection of a level (`lvl`), field (`fld`), and value (`val`) to load the necessary data and display the associated plots. Level 4, `lvl = 4`, plots the concentration-response series fit by all models. Level 5, `lvl = 5`, extends Level 4 plotting by highlighting the winning model with activity hit call presented. Level 6 multi-concentration plotting, including lists of flags, are not currently supported by <font face="CMTT10">tcplPlot</font>. Moreover, only multi-concentration plotting is currently supported.
+```{r load_acid}
+# load acid and acnm for given aeid
+acid <- tcplLoadAcid(fld = "aeid", val = c(663,891))
+```
 
-Customization of output is possible by specifying parameters, including `output`, `verbose`, `multi`, `by`, `fileprefix`, `nrow`, `ncol`, and `dpi`.  
+```{r, echo = FALSE}
+printFormattedTable(acid)
+```
 
-- The `output` parameter indicates how the plots will be presented. In addition to outputs viewable with the R console, <font face="CMTT10">tcplPlot</font> supports a variety of publication-quality file type options, including raster graphics (PNG, JPG, and TIFF) to retain color quality when printing to photograph and vector graphics (SVG and PDF) to retain image resolution when scaled to large formats.
+Like <font face="CMTT10">tcplLoadAeid</font>, <font face="CMTT10">tcplLoadAcid</font> can subset with as many `fld`s as desired and can add any available additional fields.
 
-- The `verbose` parameter results in a plot that includes a table containing potency and model performance metrics; `verbose = FALSE` is default and the only option in console outputs.  When `verbose = TRUE` the model aic values are listed in descending order and generally the winning model will be listed first.
+```{r load_acid_all}
+# subset all acids by using multiple fields -- val must be same length in list form!
+acids <- tcplLoadAcid(fld = c("organism", "tissue"), 
+                      val = list("rat", "liver"),
+                      add.fld = c("aeid", "aid", "asid", "signal_direction")) 
+```
 
-- The `multi` parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `verbose` parameter. The default number of plots per page is either 6 plots per page (`verbose = FALSE`) or 4 plots per page (`verbose = TRUE`).
+```{r, echo = FALSE}
+printFormattedTable(acids)
+```
 
-- The `by` parameter indicates how files should be divided, typically by $aeid$ or $spid$.
+### Load aid
 
-- The `fileprefix` parameter allows the user to set a custom filename prefix. The standard filename is tcplPlot_sysDate().output (example: tcplPlot_2023_08_02.jpg) or, if `by` parameter is set, tcplPlot_sysDate()_by.output (example: tcplPlot_2023_08_02_aeid_80.pdf). When a `fileprefix` is assigned the default _tcplPlot_ prefix is replaced with the new filename. (example: myplot_2023_08_02_aeid_80.pdf or myplot_2023_08_02.jpg).
+Use <font face="CMTT10">tcplLoadAid</font> to load aid and anm, as well as any other mapped fields.
 
-- The `nrow` parameter specifies the number of rows for the multiple plots per page; this is 2 by default. The `ncol` parameter specifies the number of columns for the multiple plots per page; this is 3 by default. If `verbose = FALSE`, `ncol` is 2. `nrow` and `ncol` can customize the number of plots included per page. Both `nrow` and `ncol` must be greater than 0. While there is no hard coded upper limit to the number of rows and columns, the underlying technology has a dimension limitation of `nrow = 9` and `ncol = 7`.
+```{r load_aid}
+# load aid and anm for given aeid
+aid <- tcplLoadAid(fld = "aeid", val = 663)
+```
 
-- The `dpi` parameter specifies image print resolution for image file output types (PNG, JPG, TIFF, SVG); this is 600 by default. 
+```{r, echo = FALSE}
+printFormattedTable(aid)
+```
 
-The following examples demonstrate <font face="CMTT10">tcplPlot</font> functionality through available the variety of customization options: 
+Like <font face="CMTT10">tcplLoadAeid</font> and <font face="CMTT10">tcplLoadAcid</font>, <font face="CMTT10">tcplLoadAid</font> can subset with as many `fld`s as desired and can add any available additional fields.
+
+```{r load_aid_all}
+# subset all aids by using multiple fields -- val must be same length in list form!
+aids <- tcplLoadAid(fld = c("organism", "tissue"), 
+                      val = list("rat", "liver"),
+                      add.fld = c("aeid", "acid", "asid", "signal_direction")) 
+```
+
+```{r, echo = FALSE}
+printFormattedTable(aids)
+```
+
+### Load asid
+
+Use <font face="CMTT10">tcplLoadAsid</font> to load asid and asnm, as well as any other mapped fields.
+
+```{r load_asid}
+# load asid and asnm for given aeid
+asid <- tcplLoadAsid(fld = "aeid", val = 663)
+```
+
+```{r, echo = FALSE}
+printFormattedTable(asid)
+```
+
+Like the other <font face="CMTT10">tcplLoad</font> functions, <font face="CMTT10">tcplLoadAsid</font> can subset with as many `fld`s as desired and can add any available additional fields.
+
+```{r load_asid_all}
+# subset all asids by using multiple fields -- val must be same length in list form!
+asids <- tcplLoadAsid(fld = c("organism", "tissue"), 
+                      val = list("rat", "liver"),
+                      add.fld = c("aeid", "acid", "asid", "signal_direction")) 
+```
+
+```{r, echo = FALSE}
+printFormattedTable(asids)
+```
+
+### Load unit
+
+To load the normalized data type, or response unit, use <font face="CMTT10">tcplLoadUnit</font>. Notice how <font face="CMTT10">tcplLoadUnit</font> does not use `fld` and `val`, but uses `aeid` as input.
+
+```{r load_unit}
+# load resp_unit for given aeid
+unit <- tcplLoadUnit(aeid = c(663, 891))
+```
+
+```{r, echo = FALSE}
+printFormattedTable(unit)
+```
+
+### Load concentration unit
+
+Use <font face="CMTT10">tcplLoadConcUnit</font> to load the concentration unit for a specific `spid` or multiple `spid`s.
+
+```{r load_conc_unit}
+# load conc_unit for given spid
+conc_unit <- tcplLoadConcUnit(spid = "TP0000904H05")
+```
+
+```{r, echo = FALSE}
+printFormattedTable(conc_unit)
+```
+
+# Plotting
+
+<font face="CMTT10">tcplPlot</font> is tcpl’s single flexible plotting function, allowing for interactive and consistent visualization of concentration-response curves via customizable parameters. For more details on implementation, parameters and specific customization instructions, refer to the main Data Retrieval vignette. This section will instead focus on the limitations of using the CCTE API as a data source for <font face="CMTT10">tcplPlot</font>.
+
+Like when loading data, the user must indicate the applicable fields and ids which are query-able via the CCTE API. These such fields include and are limited to "AEID", "m4id", "SPID", and "DTXSID". Any other fields will result in error. While supplying multiple ids (through `val`) are valid, multiple fields are not, so combinations of fields are not compatible with <font face="CMTT10">tcplPlot</font> when connected to the API. For example, if `fld = "spid"`, no aeid can be specified, meaning every matching spid will be plotted. If `fld = "aeid"`, every sample within the given endpoint(s) will be plotted. If `fld = "m4id"`, only one plot will output for every each m4id input. Therefore, if looking for a specific aeid/spid combo, one should determine the corresponding m4id, like below.
+
+```{r plot_aeid_spid, eval = FALSE}
+# load all matching spids and then subset using the aeid desired to find m4id
+mc5 <- tcplLoadData(lvl = 5, 
+                    fld = "spid",
+                    val = "TP0000904H05",
+                    type = "mc", 
+                    add.fld = FALSE) # 8 rows of data
+m4id <- mc5[aeid == 714]$m4id # subset to 1 aeid extract m4id
+
+# default parameters used here: fld = "m4id", type = "mc" (type can never be "sc" when connected to API)
+tcplPlot(val = m4id, output = "jpg", verbose = TRUE, flags = TRUE)
+```
+
+<center>![<font style="font-size:15px"><i>API-sourced plot with parameters: output = "jpg", verbose = TRUE, and flags = TRUE for m4id 1847540</i></font>](img/API_plot_1847540.jpg)</center>
+
+Use the "compare" feature to supply more m4ids to `compare.val` and compare them one to one with the m4ids in `val`. `val` and `compare.val` must be the same length!
+
+```{r plot_m4id_compare, eval = FALSE}
+# using the data pulled in the previous code chunk 'mc5'
+m4id <- mc5$m4id # create m4id vector length == 8
+
+# default parameters used here: fld = "m4id", type = "mc" (type can never be "sc" when connected to API)
+tcplPlot(val = m4id[1:4], 
+         compare.val = m4id[5:8], 
+         output = "pdf", 
+         verbose = TRUE, 
+         multi = TRUE, 
+         flags = TRUE, 
+         yuniform = TRUE,
+         fileprefix = "API_plot_compare")
+```
+
+<center>![<font style="font-size:15px"><i>API-sourced plot with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for m4ids 1833668, 1834094, 1836233, and 1836494, compared with m4ids 1839401, 1842443, 1847540, and 1850045</i></font>](img/API_plot_compare.png)</center>
+
+Supply `fld = "aeid"` to plot every curve available in the API for the given endpoint(s).
+
+```{r plot_aeid, eval = FALSE}
+# plot all curves across endpoint(s)
+tcplPlot(fld = 'aeid', 
+         val = 704, 
+         output = "pdf", 
+         verbose = TRUE, 
+         multi = TRUE, 
+         yrange = c(-100,100),
+         fileprefix = "API_plot_704")
+```
+
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, and yrange = c(-100,100) for aeid 704</i></font>](img/API_plot_704.png)</center>
+
+## Standalone Format Plot with API
+
+Suppose you have a database where you process dose-response data and wish to make comparison to how it was previously processed in invitrodb v4.1. The API connection supports <font face="CMTT10">tcplPlot</font>'s standalone plotting feature! Using the utility function <font face="CMTT10">tcplPlotLoadData</font> while connected to the API, you can pass along that data to <font face="CMTT10">tcplPlot</font>'s `dat` parameter and use `compare.val` for the database data.
+
+```{r plot_standalone, eval = FALSE}
+# while connected to the CCTE API using tcplConf
+api_data <- tcplPlotLoadData(lvl = 5, fld = "aeid", val = 704, type = "mc", flags = TRUE)
+
+# fill with database connection information
+tcplConf(user="", pass="", db="", drvr="", host="")
+
+# add 
+tcplPlot(dat = api_data,
+         fld = 'aeid', 
+         val = 704, 
+         compare.val = 704,
+         output = "pdf", 
+         verbose = TRUE, 
+         multi = TRUE, 
+         flags = TRUE,
+         fileprefix = "API_plot_704")
+```
+
+<center>![<font style="font-size:15px"><i>Plots with parameters: dat = api_data from tcplPlotLoadData(), output = "pdf", verbose = TRUE, multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/API_plot_standalone.png)</center>
 
 ```{r, include=FALSE}
 end_vignette()
