@@ -6,6 +6,9 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   
   # set order to given order
   dat <- dat[order(match(get(fld[1]), val[[1]]))]
+  if (getOption("TCPL_DRVR") == "API" && tolower(fld) == "aeid") {
+    dat <- dat %>% arrange(m4id)
+  }
   dat$order <- 1:nrow(dat)
 
   mcLoadDat <- function(m4id = NULL,flags) {
