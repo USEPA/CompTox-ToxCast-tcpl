@@ -51,10 +51,12 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
     
   } else {
     # fix flags from API for plotting
-    if (is.null(dat$flag)) {
-      flag <- NA
+    if (flags == TRUE) {
+      if (is.null(dat$flag)) {
+        flag <- NA
+      }
+      dat <- dat %>% rowwise() %>% mutate(flag = ifelse(is.na(flag[1]) || flag[1] == "NULL" || is.null(flag[1]), "None", paste(flag, collapse = ';\n'))) %>% ungroup() %>% as.data.table()
     }
-    dat <- dat %>% rowwise() %>% mutate(flag = ifelse(is.na(flag[1]) || flag[1] == "NULL" || is.null(flag[1]), "None", paste(flag, collapse = ';\n'))) %>% ungroup() %>% as.data.table()
     dat$conc_unit <- dat$tested_conc_unit
   }
   
