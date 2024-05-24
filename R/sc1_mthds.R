@@ -132,6 +132,14 @@ sc1_mthds <- function() {
       list(e1)
       
     },
+    bval.nwlls.med = function(aeids) {
+
+      e1 <- bquote(dat[J(.(aeids)),
+                       bval := median(rval[wllt == "n"], na.rm = TRUE),
+                       by = list(aeid)])
+      list(e1)
+
+    },
     
     pval.apid.pwlls.med = function(aeids) {
       
