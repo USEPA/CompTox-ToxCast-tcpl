@@ -57,13 +57,19 @@ tcplConf(pass = "<api-key-from-ccte_api@epa.gov>",
          drvr = "API")
 ```
 
+::: {.noticebox data-latex=""}
+
+**NOTE:** When <font face="CMTT10">tcpl</font> is loaded, the default configuration sets the options to <font face="CMTT10">tcpl</font>'s application API key to support new users testing out the package. Its use not recommended for regular users; instead, it is highly recommended to obtain a personal API key. For this, send an email request to <ccte_api@epa.gov>.
+
+:::
+
 ## Overview of Key Functions
 
 To support different data retrieval needs within <font face="CMTT10">tcpl</font>, there are a number of functions which query the API and return information to the local R session.
 
 ## Overview of Data Nomenclature
 
-Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC.' 'MC' is used for assay data with multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing single concentration data from level 2 processing, then we will use the abbreviation 'SC2.'
+Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC' (there is no API data available for SC). 'MC' is used for assay data with multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing multiple concentration data from level 3 processing, then we will use the abbreviation 'MC3.'
 
 ### Assay Elements
 
@@ -90,7 +96,7 @@ data <- tcplQueryAPI(resource = "data", # resource to query from API, either 'da
                      return_fld = c("spid", "chnm", "hitcall")) # specify the return fields, leave NULL for all fields
 ```
 
-The <font face="CMTT10">tcplLoadData</font> function can be used to load data from the CCTE API into the R session. To add useful chemical and assay annotation information, mapped to the retrieved data, remove <font face="CMTT10">add.fld = FALSE</font> or conversely set <font face="CMTT10">add.fld = TRUE</font>. When connected to the API as the data source, only MC (multiple concentration) screening data is available. In addition, only levels 3, 4, 5, 6, and 'agg' are available. The output will look as similar as possible to regular <font face="CMTT10">tcplLoadData</font> output, though some less common columns may be missing and the column order may differ.
+The <font face="CMTT10">tcplLoadData</font> function can be used to load data from the CCTE API into the R session. To add useful chemical and assay annotation information, mapped to the retrieved data, remove <font face="CMTT10">add.fld = FALSE</font> or conversely set <font face="CMTT10">add.fld = TRUE</font>. When connected to the API as the data source, **only MC (multiple concentration) screening data is available**. In addition, **only levels 3, 4, 5, 6, and 'agg' are available**. The output will look as similar as possible to regular <font face="CMTT10">tcplLoadData</font> output, though some less common columns may not be available and the column order may differ.
 
 ```{r tcplLoadData, eval=FALSE}
 # Load multi concentration data from level 4
@@ -124,7 +130,7 @@ assays <- tcplQueryAPI(resource = "assay")
 
 # Retrieving Processed Multi-Concentration (MC) Data and Annotations
 
-The goal of MC processing is to estimate the hitcall, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. API data is stored for levels 3 through 6, users can inspect the activity hitcalls, model parameters, concentration-response plots, and the applied methods for the multiple concentration data. 
+The goal of MC processing is to estimate the hitcall, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. API data is stored for levels 3 through 6, users can inspect the activity hitcalls, model parameters, concentration-response plots, and the applied methods for the multiple concentration data.
 
 ## Load Data
 
@@ -389,6 +395,8 @@ unit <- tcplLoadUnit(aeid = c(663, 891))
 printFormattedTable(unit)
 ```
 
+## Load sample/chemical information
+
 ### Load concentration unit
 
 Use <font face="CMTT10">tcplLoadConcUnit</font> to load the concentration unit for a specific `spid` or multiple `spid`s.
@@ -400,6 +408,19 @@ conc_unit <- tcplLoadConcUnit(spid = "TP0000904H05")
 
 ```{r, echo = FALSE}
 printFormattedTable(conc_unit)
+```
+
+### Load chemical info
+
+Use <font face="CMTT10">tcplLoadChem</font> to load the chemical information for a specific `spid` or multiple `spid`s. Notice tcplLoadChem uses `field` instead of `fld`.
+
+```{r load_chem}
+# load chem_info for given spid
+chem_info <- tcplLoadChem(field = "spid", val = "TP0000904H05")
+```
+
+```{r, echo = FALSE}
+printFormattedTable(chem_info)
 ```
 
 # Plotting
