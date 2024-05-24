@@ -37,7 +37,8 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
     dat$dsstox_substance_id <- dat$dtxsid
     
     # unlist logc to conc
-    dat <- dat |> rowwise() |> mutate(conc = list(10^unlist(logc))) |> tidyr::unnest(cols = c("resp", "logc")) %>% as.data.table()
+    dat <- dat %>% rowwise() %>% mutate(conc = list(10^unlist(logc))) %>% as.data.table()
+    if(tolower(fld) != "m4id") dat <- dat %>% tidyr::unnest(cols = c("resp", "logc", "flag", "mc6MthdId")) %>% as.data.table()
     
   } else if (resource == "assay") {
     
