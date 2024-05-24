@@ -6,6 +6,7 @@
 #' 
 #' @import data.table
 #' @importFrom ccdR get_bioactivity_details_batch get_all_assays
+#' @importFrom tidyr unnest
 #' @export
 
 
@@ -38,7 +39,7 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
     
     # unlist logc to conc
     dat <- dat %>% rowwise() %>% mutate(conc = list(10^unlist(logc))) %>% as.data.table()
-    if(tolower(fld) != "m4id") dat <- dat %>% tidyr::unnest(cols = c("resp", "logc", "flag", "mc6MthdId")) %>% as.data.table()
+    if(tolower(fld) != "m4id") dat <- dat %>% unnest(cols = c("resp", "logc", "flag", "mc6MthdId")) %>% as.data.table()
     
   } else if (resource == "assay") {
     
