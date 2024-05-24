@@ -440,13 +440,13 @@ tcplPlot(val = m4id[1:4],
          fileprefix = "API_plot_compare")
 ```
 
-<center>![<font style="font-size:15px"><i>API-sourced plot with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for m4ids 1833668, 1834094, 1836233, and 1836494, compared with m4ids 1839401, 1842443, 1847540, and 1850045</i></font>](img/API_plot_compare.png)</center>
+<center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for m4ids 1833668, 1834094, 1836233, and 1836494, compared with m4ids 1839401, 1842443, 1847540, and 1850045</i></font>](img/API_plot_compare.png)</center>
 
 Supply `fld = "aeid"` to plot every curve available in the API for the given endpoint(s).
 
 ```{r plot_aeid, eval = FALSE}
 # plot all curves across endpoint(s)
-tcplPlot(fld = 'aeid', 
+tcplPlot(fld = "aeid", 
          val = 704, 
          output = "pdf", 
          verbose = TRUE, 
@@ -455,7 +455,7 @@ tcplPlot(fld = 'aeid',
          fileprefix = "API_plot_704")
 ```
 
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, and yrange = c(-100,100) for aeid 704</i></font>](img/API_plot_704.png)</center>
+<center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, and yrange = c(-100,100) for aeid 704</i></font>](img/API_plot_704.png)</center>
 
 ## Standalone Format Plot with API
 
@@ -470,17 +470,17 @@ tcplConf(user="", pass="", db="", drvr="", host="")
 
 # add 
 tcplPlot(dat = api_data,
-         fld = 'aeid', 
+         fld = "aeid", 
          val = 704, 
          compare.val = 704,
          output = "pdf", 
          verbose = TRUE, 
          multi = TRUE, 
          flags = TRUE,
-         fileprefix = "API_plot_704")
+         fileprefix = "API_plot_standalone")
 ```
 
-<center>![<font style="font-size:15px"><i>Plots with parameters: dat = api_data from tcplPlotLoadData(), output = "pdf", verbose = TRUE, multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/API_plot_standalone.png)</center>
+<center>![<font style="font-size:15px"><i>API-sourced plots with parameters: dat = api_data from tcplPlotLoadData(), output = "pdf", verbose = TRUE, multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/API_plot_standalone.png)</center>
 
 ```{r, include=FALSE}
 end_vignette()
