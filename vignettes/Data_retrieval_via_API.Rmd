@@ -87,7 +87,7 @@ aeids <- tcplLoadAeid(fld="asid", # field to query on
 
 ### Data
 
-<font face="CMTT10">tcplQueryAPI</font> is a general querying function which is flexible enough to handle most kinds of queries users may have for the API. Unlike <font face="CMTT10">tcplQuery</font>, <font face="CMTT10">tcplQueryAPI</font> does not use accept a MySQL query but instead has a few arguments which can be set to mimic a request to the various API endpoints. <font face="CMTT10">tcplQueryAPI</font> is used mostly as a helper function to other <font face="CMTT10">tcplLoad</font> functions, but is available to users for more specific and/or personalized requests.
+<font face="CMTT10">tcplQueryAPI</font> is a general querying function which is flexible enough to handle most kinds of queries users may have for the API. Unlike <font face="CMTT10">tcplQuery</font>, <font face="CMTT10">tcplQueryAPI</font> does not accept a MySQL query but instead has a few arguments which can be set to mimic a request to the various API endpoints. <font face="CMTT10">tcplQueryAPI</font> is used mostly as a helper function to other <font face="CMTT10">tcplLoad</font> functions, but is available to users for more specific and/or personalized requests.
 
 ```{r tcplQueryAPI, eval = FALSE}
 # Request and load all assays+annotations for specified asid
@@ -118,10 +118,9 @@ When loading data, the user must indicate the applicable fields and ids which ar
 Assay source, assay, assay component, and assay endpoint are registered via tcpl scripting into a collection of tables, which in the CCTE APIs are joined into one. The annotations capture four types of information:
 
 i. Identification information
-ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations,
-iii. Target information, such as the target of technological measurement,
-biological intended target, and biological process, and
-iv. Analysis information about how the data were processed and analyzed.
+ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations
+iii. Target information, such as the target of technological measurement, biological intended target, and biological process
+iv. Analysis information about how the data were processed and analyzed
 
 ```{r annotation_query_ex, eval = FALSE}
 # load all assays and their annotations
@@ -427,7 +426,7 @@ printFormattedTable(chem_info)
 
 <font face="CMTT10">tcplPlot</font> is tcpl’s single flexible plotting function, allowing for interactive and consistent visualization of concentration-response curves via customizable parameters. For more details on implementation, parameters and specific customization instructions, refer to the main Data Retrieval vignette. This section will instead focus on the limitations of using the CCTE API as a data source for <font face="CMTT10">tcplPlot</font>.
 
-Like when loading data, the user must indicate the applicable fields and ids which are query-able via the CCTE API. These such fields include and are limited to "AEID", "m4id", "SPID", and "DTXSID". Any other fields will result in error. While supplying multiple ids (through `val`) are valid, multiple fields are not, so combinations of fields are not compatible with <font face="CMTT10">tcplPlot</font> when connected to the API. For example, if `fld = "spid"`, no aeid can be specified, meaning every matching spid will be plotted. If `fld = "aeid"`, every sample within the given endpoint(s) will be plotted. If `fld = "m4id"`, only one plot will output for every each m4id input. Therefore, if looking for a specific aeid/spid combo, one should determine the corresponding m4id, like below.
+Similar to tcplLoadData, the user must indicate the applicable fields and ids which are query-able via the CCTE API. These such fields include and are limited to "AEID", "m4id", "SPID", and "DTXSID". Any other fields will result in error. While supplying multiple ids (through `val`) are valid, multiple fields are not, so combinations of fields are not compatible with <font face="CMTT10">tcplPlot</font> when connected to the API. For example, if `fld = "spid"`, no aeid can be specified, meaning every matching spid will be plotted. If `fld = "aeid"`, every sample within the given endpoint(s) will be plotted. If `fld = "m4id"`, only one plot will output for every each m4id input. Therefore, if looking for a specific aeid/spid combo, one should determine the corresponding m4id, like below.
 
 ```{r plot_aeid_spid, eval = FALSE}
 # load all matching spids and then subset using the aeid desired to find m4id
@@ -480,7 +479,7 @@ tcplPlot(fld = "aeid",
 
 ## Standalone Format Plot with API
 
-Suppose you have a database where you process dose-response data and wish to make comparison to how it was previously processed in invitrodb v4.1. The API connection supports <font face="CMTT10">tcplPlot</font>'s standalone plotting feature! Using the utility function <font face="CMTT10">tcplPlotLoadData</font> while connected to the API, you can pass along that data to <font face="CMTT10">tcplPlot</font>'s `dat` parameter and use `compare.val` for the database data.
+Suppose you have a database where you process dose-response data and wish to compare with how it was previously processed in invitrodb v4.1. The API connection supports <font face="CMTT10">tcplPlot</font>'s standalone plotting feature! Using the utility function <font face="CMTT10">tcplPlotLoadData</font> while connected to the API, you can pass along that data to <font face="CMTT10">tcplPlot</font>'s `dat` parameter and use `compare.val` for the database data.
 
 ```{r plot_standalone, eval = FALSE}
 # while connected to the CCTE API using tcplConf
