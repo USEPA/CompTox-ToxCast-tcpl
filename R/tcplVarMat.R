@@ -68,14 +68,18 @@
 #' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 #' \dontrun{
 #' ## Demonstrate the returned values.
-#' tcplVarMat()
+#' varmat <- tcplVarMat()
 #' 
 #' ## Other changes can be made
 #' aeids <- c(80)
 #' dtxsid <- c("DTXSID80379721", "DTXSID10379991", "DTXSID7021106", 
 #' "DTXSID1026081", "DTXSID9032589")
-#' tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
-#' tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
+#' varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
+#' varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
+#' 
+#' ## To save output to file
+#' library(writexl)
+#' write_xlsx(varmat, path = "varmat_output.xlsx")
 #' }
 #' ## Reset configuration
 #' options(conf_store)
