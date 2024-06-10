@@ -31,15 +31,16 @@
 #' 
 #' \code{tcplVarMat} produces matrices of combined sc-mc output. For the ac50
 #' and acc matrices specifically, values are inserted in place to show complete
-#' views of what was tested and what the results were. ac50 and acc values are
-#' set to:
-#' - 1e6 when the chemical is tested but negative in mc
-#' - 1e7 when the chemical is not tested in mc but was screened in sc with a
+#' views of what was tested and what the results were. ac50 and acc values are:
+#' \itemize{
+#'  \item set to 1e6 when the chemical is tested but negative in mc
+#'  \item set to 1e7 when the chemical is not tested in mc but was screened in sc with a
 #' positive hitcall for the same aeid
-#' - 1e7 when the chemical is not tested in mc but was screened in sc with a
+#'  \item set to 1e8 when the chemical is not tested in mc but was screened in sc with a
 #' negative hitcall for the same aeid
-#' - not changed when chemical is tested in MC and positive, or not tested in
+#'  \item not changed when chemical is tested in MC and positive, or not tested in
 #' either mc or sc
+#' } 
 #' 
 #' sc and mc data both are currently required to be included for these 
 #' calculations.
@@ -49,11 +50,9 @@
 #' 
 #' When more than one sample is included for a chemical/assay pair, 
 #' \code{tcplVarMat} aggregates multiple samples to a chemical level call 
-#' utilizing \code{\link{tcplSubsetChid}}. 
-#' 
-#' The tcplVarMat function calls both \code{tcplSubsetChid}. The input
+#' utilizing \code{\link{tcplSubsetChid}}. The input
 #' for the \code{tcplVarMat} 'flag' parameter is passed to the 
-#' \code{tcplSubsetChid} call used to parse down the data to create the 
+#' \code{tcplSubsetChid} call and used to parse down the data to create the 
 #' matrices.
 #' 
 #' @return A list of chemical by assay matrices (data.tables) where the 
