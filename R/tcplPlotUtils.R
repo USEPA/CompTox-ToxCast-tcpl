@@ -1,13 +1,19 @@
 tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
   
   # check that input combination is unique
-  input <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
-  if (nrow(input) == 0) stop("No data for fld/val provided")
+  dat <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)[, compare := compare]
+  if (nrow(dat) == 0) stop("No data for fld/val provided")
   
+  # set order to given order
+  dat <- dat[order(match(get(fld[1]), if(is.list(val)) val[[1]] else val))]
+  if (getOption("TCPL_DRVR") == "API" && tolower(fld) == "aeid") {
+    dat <- dat %>% arrange(m4id)
+  }
+  dat$order <- 1:nrow(dat)
 
   mcLoadDat <- function(m4id = NULL,flags) {
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
-    dat <- l4[input, on = "m4id"]
+    dat <- l4[dat, on = "m4id"]
     if (flags == TRUE) {
       l6 <- tcplLoadData(lvl=6, fld='m4id', val=m4id, type='mc')
       if (nrow(l6) > 0) {
@@ -21,46 +27,47 @@ tcplPlotLoadData <- function(lvl,fld, val, type,flags, compare = FALSE){
       }
       dat <- dat[l6, on = "m4id"]
     }
-    tcplPrepOtpt(dat)
-  }
-  
-  scLoadDat <- function(s2id = NULL) {
-    tcplPrepOtpt(input)
+    dat
   }
   
   # load dat
-  if (type == "mc") {
-    dat <- mcLoadDat(input$m4id,flags = flags)[, compare := compare]
-  } else { # type == 'sc' 
-    dat <- scLoadDat(input$s2id)[, compare := compare]
+  if (getOption("TCPL_DRVR") != "API") {
+    if (type == "mc") {
+      dat <- mcLoadDat(dat$m4id,flags = flags)
+      agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = dat$m4id)
+    } else { # type == 'sc'
+      agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = dat$s2id, type = "sc")
+    }
+    
+    # unlog concs
+    if (!("conc" %in% colnames(agg))) agg <- mutate(agg, conc = 10^logc)
+    
+    #determine if we're single conc or multiconc based on dat
+    join_condition <- c("m4id","s2id")[c("m4id","s2id") %in% colnames(dat)]
+    conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
+    dat <- dat[conc_resp_table, on = join_condition]
+    
+    dat <- tcplPrepOtpt(dat)
+    
+  } else {
+    # fix flags from API for plotting
+    if (flags == TRUE) {
+      if (is.null(dat$flag)) {
+        flag <- NA
+      }
+      dat <- dat %>% rowwise() %>% mutate(flag = ifelse(is.na(flag[1]) || flag[1] == "NULL" || is.null(flag[1]), "None", paste(flag, collapse = ';\n'))) %>% ungroup() %>% as.data.table()
+    }
+    dat$conc_unit <- dat$tested_conc_unit
   }
   
   # add normalized data type for y axis
   ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
   dat <- dat[ndt, on = "aeid"]
   
-  if("m4id" %in% colnames(dat)){
-    agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = dat$m4id)
-  }
-  if("s2id" %in% colnames(dat)){
-    agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = dat$s2id, type = "sc")
-  }
-  # unlog concs
-  if (!("conc" %in% colnames(agg))) agg <- mutate(agg, conc = 10^logc)
-  
-  #determine if we're single conc or multiconc based on dat
-  join_condition <- c("m4id","s2id")[c("m4id","s2id") %in% colnames(dat)]
-  conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
-  dat <- dat[conc_resp_table, on = join_condition]
-  
   # correct concentration unit label for x-axis
   dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
-
-  # set order to given order
-  dat <- dat[order(match(get(fld[1]), val[[1]]))]
-  dat$order <- 1:nrow(dat)
   
   dat
 }

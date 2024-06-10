@@ -6,6 +6,7 @@
  Generic Plotting Function for tcpl}
 \usage{
 tcplPlot(
+  dat = NULL,
   type = "mc",
   fld = "m4id",
   val = NULL,
