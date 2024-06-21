@@ -35,26 +35,32 @@ The \code{tcplVarMat} function is used to create chemical by assay matrices
 for different parameters. The standard list of matrices returned includes:
 
 \enumerate{
- \item "ac50" -- The AC50 for the winning model. 
+ \item "ac50" -- The active concentration at 50% maximal response (ac50) for 
+ the winning model.
  \item "ac50_verbose" -- The AC50 for the winning model, with text describing
  some situations.
- \item "acc" -- The ACC for the winning model.
+ \item "acc" -- The active concentration at user-defined cutoff for the 
+ winning model.
  \item "acc_verbose" -- The ACC for the winning model, with text describing
  some situations.
- \item "mc_hitc" -- The hit-call for the winning model in mc testing.
- \item "sc_hitc" -- The hit-call in sc testing.
+ \item "mc_hitc" -- The hit-call for the winning model in 
+ multiple-concentration (mc) screening.
+ \item "sc_hitc" -- The hit-call in single concentration (sc) screening.
 }
 
 \code{tcplVarMat} produces matrices of combined sc-mc output. For the ac50
 and acc matrices specifically, values are inserted in place to show complete
 views of what was tested and what the results were. ac50 and acc values are:
 \itemize{
- \item set to 1e6 when the chemical is tested but negative in mc
- \item set to 1e7 when the chemical is not tested in mc but was screened in sc with a
-positive hitcall for the same aeid
- \item set to 1e8 when the chemical is not tested in mc but was screened in sc with a
-negative hitcall for the same aeid
- \item not changed when chemical is tested in MC and positive, or not tested in
+ \item set to 1e6 when the chemical is tested but negative in mc. In _verbose 
+ matrices, these are indicated as "MC neg".
+ \item set to 1e7 when the chemical is not tested in mc but was screened in 
+ sc with a positive hitcall for the same aeid. In _verbose matrices, these 
+ are indicated as "SC pos, No MC".
+ \item set to 1e8 when the chemical is not tested in mc but was screened in 
+ sc with a negative hitcall for the same aeid. In _verbose matrices, these 
+ are indicated as "SC neg, No MC"
+ \item not changed when chemical is tested in mc and positive, or not tested in
 either mc or sc
 } 
 
@@ -72,11 +78,6 @@ for the \code{tcplVarMat} 'flag' parameter is passed to the
 matrices.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 \dontrun{
 ## Demonstrate the returned values.
 varmat <- tcplVarMat()
@@ -92,8 +93,6 @@ varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
 library(writexl)
 write_xlsx(varmat, path = "varmat_output.xlsx")
 }
-## Reset configuration
-options(conf_store)
 
 }
 \seealso{
