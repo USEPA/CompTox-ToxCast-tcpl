@@ -289,6 +289,9 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = tbls))
     
+    # remove duplicate columns as a result of joins
+    dat <- dat[, which(duplicated(names(dat))) := NULL]
+    # remove unnecessary columns from output
     dat <- dat %>% select(-contains(c("created_date", "modified_date", "modified_by", "actp", "tmpi", "bval", "pval", "..")))
     
     # pivot table so 1 id per return and only return added fields
