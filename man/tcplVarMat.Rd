@@ -65,7 +65,8 @@ either mc or sc
 } 
 
 sc and mc data both are currently required to be included for these 
-calculations.
+calculations. As a result, the "API" driver is not currently supported since
+it does not return sc data.
 
 To add additional matrices, the 'add.vars' parameter can be used to specify
 the fields from the mc4 or mc5 tables to create matrices for.
