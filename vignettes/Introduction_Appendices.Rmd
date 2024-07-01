@@ -200,14 +200,14 @@ htmlTable(output,
 
 <!-- Table 4-->
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("s2id ", "aeid", "spid", "bmad", "max_med", "hitc", "coff", "tmpi")
+Field <- c("s2id ", "aeid", "spid", "bmad", "max_med", "coff", "hitc", "tmpi")
 Description <- c("Level 2 ID",
                  "Assay component endpoint ID",
                  "Sample ID",
                  "Baseline median absolute deviation",
                  "Maximum median response value",
-                 "Hit-/activity-call: 1 if active, 0 if inactive&dagger;",
                  "Efficacy cutoff value",
+                 "Hit-/activity-call: 1 if active, 0 if inactive&dagger;",
                  "Ignore, temporary index used for uploading purposes"
                  )
 
@@ -350,7 +350,7 @@ htmlTable(output,
 <!-- Table 10-->
 ```{r warning = FALSE, echo = FALSE}
 
-Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "max_med", "max_med_conc", "conc_max", "conc_min", "nconc", "npts", "nrep", "nmed_gtbl", "tmpi")
+Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "min_mean", "min_mean_conc", "max_med", "max_med_conc", "min_med", "min_med_conc", "max_med_diff", "max_med_diff_conc", "conc_max", "conc_min", "nconc", "npts", "nrep", "nmed_gtbl_pos", "nmed_gtbl_neg", "tmpi")
 
 
 Description <- c("Level 4 ID",
@@ -361,14 +361,21 @@ Description <- c("Level 4 ID",
                  "Minimum response value",
                  "Maximum mean response value",
                  "Concentration at *max_mean*",
+                 "Minimum mean response value",
+                 "Concentration at *min_mean*",
                  "Maximum median response value",
                  "Concentration at *max_med*",
+                 "Minimum median response value",
+                 "Concentration at *min_med*",
+                 "Maximum median difference response value (greater distance to 0 of *max_med* and *min_med*)",
+                 "Concentration at *max_med_diff*",
                  "Maximum concentration tested",
                  "Minimum concentration tested",
                  "Number of concentrations tested ",
                  "Number of points in the concentration series",
                  "Number of replicates in the concentration series",
-                 "Number of median values greater than *3bmad*",
+                 "Number of median values greater than *3bmad* in the positive direction",
+                 "Number of median values greater than *3bmad* in the negative direction",
                  "Ignore, temporary index used for uploading purposes"
                  )
 
