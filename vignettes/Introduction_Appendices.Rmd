@@ -150,12 +150,12 @@ htmlTable(output,
 
 <!-- Table 2-->
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("s1id ", "s0id", "acid", "aeid", "logc", "bval", "pval", "resp")
+Field <- c("s1id ", "s0id", "acid", "aeid", "conc", "bval", "pval", "resp")
 Description <- c("Level 1 ID",
                  "Level 0 ID",
                  "Assay component ID",
                  "Assay component endpoint ID",
-                 "Log base 10 concentration",
+                 "Concentration is micromolar",
                  "Baseline value",
                  "Positive control value",
                  "Normalized response value"
@@ -298,7 +298,7 @@ htmlTable(output,
 ```
 <!-- Table 8-->
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("m3id", "aeid", "m0id", "acid", "m1id", "m2id", "bval", "pval", "logc", "resp")
+Field <- c("m3id", "aeid", "m0id", "acid", "m1id", "m2id", "bval", "pval", "conc", "resp")
 Description <- c("Level 3 ID",
                  "Assay endpoint ID",
                  "Level 0 ID",
@@ -307,7 +307,7 @@ Description <- c("Level 3 ID",
                  "Level 2 ID",
                  "Baseline value",
                  "Positive control value",
-                 "Log base 10 concentration",
+                 "Concentration is micromolar",
                  "Normalized response value"
                  )
 
@@ -350,8 +350,7 @@ htmlTable(output,
 <!-- Table 10-->
 ```{r warning = FALSE, echo = FALSE}
 
-Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "max_med", "max_med_conc", "logc_max", "logc_min", 
-           "nconc", "npts", "nrep", "nmed_gtbl", "tmpi")
+Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "max_med", "max_med_conc", "conc_max", "conc_min", "nconc", "npts", "nrep", "nmed_gtbl", "tmpi")
 
 
 Description <- c("Level 4 ID",
@@ -361,11 +360,11 @@ Description <- c("Level 4 ID",
                  "Maximum response value",
                  "Minimum response value",
                  "Maximum mean response value",
-                 "Log concentration at *max_mean*",
+                 "Concentration at *max_mean*",
                  "Maximum median response value",
-                 "Log concentration at *max_med*",
-                 "Maximum log concentration tested",
-                 "Minimum log concentration tested",
+                 "Concentration at *max_med*",
+                 "Maximum concentration tested",
+                 "Minimum concentration tested",
                  "Number of concentrations tested ",
                  "Number of points in the concentration series",
                  "Number of replicates in the concentration series",
