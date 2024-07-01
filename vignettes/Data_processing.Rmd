@@ -7,7 +7,7 @@ output:
     toc: yes
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{tcpl v3.0 Data Processing}
+  %\VignetteIndexEntry{3. Data Processing with current version (v3+)}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---

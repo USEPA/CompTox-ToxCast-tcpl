@@ -7,7 +7,7 @@ output:
     toc: yes
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{Data Retrieval via API}
+  %\VignetteIndexEntry{5. Data Retrieval via APIs}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---

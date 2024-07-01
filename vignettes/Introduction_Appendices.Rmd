@@ -7,7 +7,7 @@ output:
     toc: yes
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{The ToxCast(TM) Analysis Pipeline(tcpl) An R Package for Processing and Modeling Chemical Screening Data (Version 3.0)}
+  %\VignetteIndexEntry{1. Introduction to tcpl and invitrodb}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
