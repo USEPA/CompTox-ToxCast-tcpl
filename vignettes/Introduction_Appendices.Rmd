@@ -57,37 +57,33 @@ Prior to the pipeline processing provided in this package, all the data must go 
 
 In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette and others, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. <font face="CMTT10"> tcplLite </font> is no longer supported by <font face="CMTT10"> tcpl</font> because <font face="CMTT10"> tcplFit2</font> can be used to curve-fit data and make hitcalls independent of invitrodb, available at <https://cran.r-project.org/package=tcplfit2>. <font face="CMTT10"> tcplLite </font> relied on flat files structured like invitrodb to produce curve-fitting and summary information like hitcalls and AC50 values. Functionally <font face="CMTT10"> tcplFit2 </font> replaces <font face="CMTT10"> tcplLite </font> because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the invitrodb schema. For the ToxCast program it is still important to use invitrodb when curve-fitting as invitrodb serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using <font face="CMTT10"> tcpl</font>, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
-# Package Settings
+# Connection Configuration 
 
+First, it is highly recommended for users to utilize the <font face="CMTT10"> data.table </font> package. The <font face="CMTT10"> tcpl </font> package utilizes the <font face="CMTT10"> data.table </font> package for all data frame-like objects. 
 
-First, it is highly recommended for users to utilize the <font face="CMTT10"> data.table </font> package. The <font face="CMTT10"> tcpl </font> package utilizes the <font face="CMTT10"> data.table </font> package for all data frame-like objects. <font face="CMTT10"> tcpl </font> is dependent on the following two packages: <font face="CMTT10"> tcplFit2 </font> and <font face="CMTT10"> plotly </font>. The user must install and load them prior to loading the <font face="CMTT10"> tcpl </font> package. 
 ```{r eval=TRUE, message=FALSE}
-library(data.table)
-library(plotly)
-library(tcplfit2)
+library(data.table) # recommended for interacting with tcpl data frame-like objects
 library(tcpl)
-## Store the path for the tcpl directory for loading data
-pkg_dir <- system.file(package = "tcpl")
-
 ```
+
 Every time the package is loaded in a new R session, a message similar to the following will print showing the default package settings:
 
 ```{r eval = FALSE}
-tcpl (v1.3) loaded with the following settings:
-  TCPL_DB:    C:/Users/user/R-3.4.4/library/tcpl/csv
+tcpl (v3.1.0) loaded with the following settings:
+  TCPL_DB:    NA
   TCPL_USER:  NA
-  TCPL_HOST:  NA
-  TCPL_DRVR:  NA
-Default settings stored in TCPL.conf. See ?tcplConf for more information.
+  TCPL_HOST:  https://api-ccte.epa.gov/bioactivity
+  TCPL_DRVR:  API
+Default settings stored in tcpl config file. See ?tcplConf for more information.
 ```
 
 The package consists of five settings: 
 
-1. <font face="CMTT10"> $TCPL_DB </font> points to the <font face="CMTT10"> tcpl </font> database (either the path to the CSV directory, as in the given example above, or the name of the MySQL database),
-2. <font face="CMTT10"> $TCPL_USER </font> stores the username for accessing the database,
-3. <font face="CMTT10"> $TCPL_PASS </font> stores the password for accessing the database,
-4. <font face="CMTT10"> $TCPL_HOST </font> points to the MySQL server host, and 
-5. <font face="CMTT10"> $TCPL_DRVR </font> indicates which database driver is used ("MySQL"). <font face="CMTT10"> tcplLite </font> is no longer supported and it is recommended to use <font face="CMTT10"> tcplFit2 </font> package for stand-alone applications.
+1. <font face="CMTT10"> $TCPL_DB </font> points to the <font face="CMTT10"> tcpl </font> database (if using "MySQL" drvr),
+2. <font face="CMTT10"> $TCPL_USER </font> stores the username for accessing the database (if using "MySQL" drvr),
+3. <font face="CMTT10"> $TCPL_PASS </font> stores the password for accessing the database (if using "MySQL" drvr) or API key (if connecting to CTX APIs),
+4. <font face="CMTT10"> $TCPL_HOST </font> points to the MySQL server host (if using "MySQL" drvr) or API url (if connecting to CTX APIs), and 
+5. <font face="CMTT10"> $TCPL_DRVR </font> indicates which database driver is used ("MySQL", "API"). <font face="CMTT10"> tcplLite </font> is no longer supported and it is recommended to use the <font face="CMTT10"> tcplFit2 </font> package for stand-alone applications.
 
 Refer to <font face="CMTT10"> ?tcplConf </font> for more information. At any time, users can check the settings using <font face="CMTT10"> tcplConfList() </font>. An example of database settings using <font face="CMTT10"> tcpl </font> would be as follows:
 
@@ -99,8 +95,9 @@ tcplConf(db   = "invitrodb",
          drvr = "MySQL")
 ```
 
-
 <font face="CMTT10"> tcplConfList </font> will list connection information. Note, <font face="CMTT10"> tcplSetOpts </font> will only make changes to the parameters given. The package is always loaded with the settings stored in the TCPL.config file located within the package directory. The user can edit the file, such that the package loads with the desired settings, rather than having to call the <font face="CMTT10"> tcplSetOpts </font> function every time. The TCPL.config file has to be edited whenever the package is updated or re-installed.
+
+With no TCPL.config file available, the package defaults to an "API" connection configuration with the [CTX APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). This configuration requires a personal API key. Refer to the related package vignette "Data Retrieval via APIs" to learn more.
 
 # Database Structure
 
