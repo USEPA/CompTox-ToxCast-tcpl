@@ -449,6 +449,32 @@ To collapse the data by sample ID, the median response value of replicates withi
 
 Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 2 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
 
+Sometimes it is necessary to prevent active hitcalls from $\mathit{max\_med}$ > cutoff in the biologically irrelevant direction. Level 2 now contains two methods for overwriting the $\mathit{max\_med}$ value. If applied, these will prevent an active hitcall value for any $\mathit{max\_med}$ > cutoff in the biologically unintended direction. Here, they replace $\mathit{max\_med}$ with either a true minimum or maximum rather than the greatest absolute value median. 
+
+```{r warning = FALSE, echo = FALSE}
+Method <- c(
+  25,27
+)
+Method_Name <- c(
+  "ow_bidirectional_gain", "ow_bidirectional_loss"
+)
+Description <- c(
+  "Where responses only in the positive direction are biologically relevant, overwrite the max_med and max_tmp values, which were calculated using absolute value, to a calculation using a true maximum for uni-directional data.",
+  "Where responses only in the negative direction are biologically relevant, overwrite the max_med and max_tmp values, which were calculated using absolute value, to a calculation using a true minimum for uni-directional data."
+)
+# Compile all of the information for the table.
+output <- 
+  data.frame(Method,Method_Name,Description)
+# Export/print the table to an html rendered table.
+htmlTable(output,
+          align = 'l',
+          align.header = 'l',
+          rnames = FALSE  ,
+          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+          caption="Table 5: Level 2 overwrite (ow) methods for preventing an active hitcall when max_med > cutoff in the unintended direction."
+          )
+```
+
 ```{r eval = FALSE}
 # Assign a cutoff value of log2(1.2).
 tcplMthdAssign(lvl = 2, # processing level
@@ -468,9 +494,9 @@ sc2_res <- tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 
 ## Multiple-concentration Screening Data
 
-This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 5).
+This section will cover the <font face="CMTT10"> tcpl </font> process for handling multiple-concentration data^[This section assumes a working knowledge of the concepts covered in the Data Processing and Data Normalization sections]. The goal of multiple-concentration processing is to estimate the activity, potency, efficacy, and other parameters for sample-assay pairs. After the data is loaded into the <font face="CMTT10"> tcpl </font> database, the multiple-concentration processing consists of six* levels (Table 6).
 
-<!--#Table 5-->
+<!--#Table 6-->
 
 ```{r warning = FALSE, echo = FALSE}
 Level <- c("Lvl 0 ", "Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5", "Lvl 6")
@@ -500,7 +526,7 @@ htmlTable(output,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         align = 'l',
         align.header = 'l',
-        caption="Table 5: Summary of the tcpl multiple-concentration pipeline.",
+        caption="Table 6: Summary of the tcpl multiple-concentration pipeline.",
         tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette.")
 
 ```
@@ -635,7 +661,7 @@ Level 4 processing splits the data into concentration-response series by sample 
 Level 4 processing starts with the removal of well types with only one concentration (e.g. 'wllt = b'; empty/blank wells). Next, a noise-band is established for the assay endpoint using the baseline median absolute deviation ($\mathit{bmad}$).  Here, the  $\mathit{bmad}$ is calculated by the baseline response values which are assumed to be either untreated control wells (e.g. 'wllt = n'; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. 'wllt = t' & concentration index is 1 or 2). The calculation to define $\mathit{bmad}$ is done once across the entire assay endpoint. **If additional data is added to the database for an assay component, the $\mathit{bmad}$ values for all associated assay endpoints will change.**
 
 $$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
-Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 6 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for further details.
+Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 7 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for further details.
 
 In <font face="CMTT10"> tcpl_v3 </font> onward, the new mc4 method "onesd.aeid.lowconc.twells" must also be assigned in order to calculate one standard deviation of baseline response, which is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples across all chemicals. **It should be noted that the benchmark response (BMR) as defined will change for a single sample in a given assay endpoint as additional screening data are pipelined. Thus, the benchmark dose (BMD) estimate may change over time.**
 
@@ -677,7 +703,7 @@ htmlTable(output,
           align.header = 'l',
           rnames = FALSE  ,
           css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-          caption="Table 6: Multiple concentration *baseline* variability estimation by method assignment in Level 4 processing."
+          caption="Table 7: Multiple concentration *baseline* variability estimation by method assignment in Level 4 processing."
           )
 ```
 
@@ -890,7 +916,7 @@ mc3 <- tcpl::tcplPrepOtpt(
 
 #### Concentration-Response Modeling Details
 
-After the summary values are obtained for each concentration-response series, all ten parametric models available in <font face="CMTT10"> tcplFit2 </font> are used to fit each series.  See Table 7 for model details.
+After the summary values are obtained for each concentration-response series, all ten parametric models available in <font face="CMTT10"> tcplFit2 </font> are used to fit each series.  See Table 8 for model details.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 available models.
@@ -954,7 +980,7 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 7: *tcplfit2* model details.",
+        caption="Table 8: *tcplfit2* model details.",
         tfoot = "Model descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/package=tcplfit2/tcplfit2.pdf>."
 )
 
@@ -962,7 +988,7 @@ htmlTable(output,
 
 Most of these models assume the background response is zero and the absolute response (or initial response) is increasing. In other words, most of these models are able to fit a monotonic curve for either direction. The polynomial 2 model is an exception because it has two parameterizations. By default, the biphasic parameterization will be used in <font face="CMTT10"> tcpl </font>. A biphasic polynomial 2 model is able to fit curve to responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). In applications in which biphasic responses are not reasonable, polynomial 2 can be fit using the monotonic only parameterization. 
 
-Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplFit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 8 below.
+Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplFit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 9 below.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 additional fit parameters.
@@ -988,7 +1014,7 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         
-          caption="Table 8: Model output descriptions." ,
+          caption="Table 9: Model output descriptions." ,
           tfoot = "Model output descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/package=tcplfit2/tcplfit2.pdf>."
 )
 ```
@@ -1225,7 +1251,7 @@ Level 5 processing determines the winning model and activity for the concentrati
 
 #### Methods Assignment
 
-**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as 'none'. Table 9 provides a side-by-side comparison of AIC values from each of the ten model fits for the concentration-response series we include in the example dataset <font face="CMTT10"> mc_vignette</font>.
+**The model with the lowest AIC value is selected as the winning model** ($\mathit{modl}$ ), and is used to determine the activity (or hit call) for the concentration series. If two models have equal AIC values, then the simpler model (i.e. model with fewer parameters) wins. Additionally, if the constant model describes the response best out of all the models fit then $\mathit{modl}$ is reported as 'none'. Table 10 provides a side-by-side comparison of AIC values from each of the ten model fits for the concentration-response series we include in the example dataset <font face="CMTT10"> mc_vignette</font>.
 
 ```{r echo=FALSE}
 # Obtain the AIC values from each of the model fits from
@@ -1250,7 +1276,7 @@ mc4_aic %>%
     escape = FALSE,
     format = 'html',
     centering = TRUE,
-    caption = "Table 9: AIC values from All Fits in Level 4.  Values highlighted in blue indicate the winning model for the compound.") %>%
+    caption = "Table 10: AIC values from All Fits in Level 4.  Values highlighted in blue indicate the winning model for the compound.") %>%
   kable_styling(
     font_size = 14,
     c("striped","hover"),
@@ -1261,6 +1287,32 @@ mc4_aic %>%
 The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein, hitc < 0.9 are considered inactive. This cutoff was determined from extensive analysis of high-throughput transcriptomics (HTTr) data analyzed using tcplfit2, and comparison to known positive and negative reference chemicals. Continuous hitc in tcplfit2 (Sheffield et al., 2021; USEPA, 2022c) are defined as the product of three proportional weights: 1) the AIC of the winning model is better than the constant model (i.e. winning model is not fit to background noise), 2) at least one concentration has a median response that exceeds cutoff, and 3) the top from the winning model exceeds the cutoff. The constant model may never be selected as the winning model, but if the constant model has the lowest AIC compared to other models, the calculated continuous hitc will be zero. Users may interpret the continuous hitc into active or inactive designations based on different thresholds. Further testing through implementation of this new functionality may reveal appropriate thresholds for different applications or assays.
 
 The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
+
+While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitcalls of curves fit in the biologically irrelevant direction. Level 5 now contains two methods for overwriting the hitcall value. If applied, these will overwrite the hitcall value for any biologically irrelevant curve by flipping it negative. 
+
+```{r warning = FALSE, echo = FALSE}
+Method <- c(
+  27,28
+)
+Method_Name <- c(
+  "ow_bidirectional_loss", "ow_bidirectional_gain"
+)
+Description <- c(
+  "Multiply winning model hitcall (hitc) by -1 for models fit in the positive analysis direction. Typically used for endpoints where only negative responses are biologically relevant.",
+  "Multiply winning model hitcall (hitc) by -1 for models fit in the negative analysis direction. Typically used for endpoints where only positive responses are biologically relevant."
+)
+# Compile all of the information for the table.
+output <- 
+  data.frame(Method,Method_Name,Description)
+# Export/print the table to an html rendered table.
+htmlTable(output,
+          align = 'l',
+          align.header = 'l',
+          rnames = FALSE  ,
+          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+          caption="Table 11: Level 5 overwrite (ow) methods for censoring the hitcall in curves fit in the unintended direction."
+          )
+```
 
 The example we include in this vignette for demonstrating the assignment of level 5 methods specifies three different efficacy cutoff estimates for consideration.  These efficacy cutoff estimates include $3*\mathit{bmad}$, $log_2(1.2)$, and $5*\mathit{bmad}$, which correspond to $\mathit{mthd\_id}$ assignments 1, 3, and 5 respectively.  As mentioned previously, the largest of these three values will be selected as the cutoff for processing the endpoint.  
 
@@ -1501,9 +1553,9 @@ $\mathit{Fitc}$ 36 describes a curve that is of low efficacy and with a low AC~5
 
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. Cautionary flags on fitting were developed in previous versions of <font face="CMTT10">tcpl</font> and have been stored at level 6. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data.
 
-For example, a curve may be considered a single point hit with activity not at the highest concentration tested, but re-inspection of the flagged curve could indicate a potential false positive. Other flags may suggest borderline activity, overfitting, or cell viability assays that are fit with gain-loss as the winning model. It is important to note that flags have no effect on the $hitc$ or potency estimates, but they may indicate that a curve requires further examination to aid in data interpretation. For a full list of flags implemented and descriptions, refer to Table 10.
+For example, a curve may be considered a single point hit with activity not at the highest concentration tested, but re-inspection of the flagged curve could indicate a potential false positive. Other flags may suggest borderline activity, overfitting, or cell viability assays that are fit with gain-loss as the winning model. It is important to note that flags have no effect on the $hitc$ or potency estimates, but they may indicate that a curve requires further examination to aid in data interpretation. For a full list of flags implemented and descriptions, refer to Table 12.
 
-<!--#Table 10-->
+<!--#Table 12-->
 ```{r lvl-6-flag-table, warning = FALSE, echo = FALSE}
 # First column - Level 6 Method ID
 Method <- c(5:11, 13:15, 17:20)
@@ -1572,7 +1624,7 @@ htmlTable(output,
           rnames = FALSE,
           css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
           
-          caption = "Table 10: Level 6 Methods - Cautionary Flags" #,
+          caption = "Table 12: Level 6 Methods - Cautionary Flags" #,
           #tfoot = "Level 6 flag descriptions are pulled from ##SOURCE## <SOURCE>."
 )
 ```
