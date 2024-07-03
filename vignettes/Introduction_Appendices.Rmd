@@ -869,21 +869,41 @@ The global MAD gives an estimate of overall cytotoxicity window, and allows for 
 
 The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-assay matrices for the level 4 and level 5 data. When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See <font face="CMTT10">?tcplSubsetChid </font> for more information. <br/>
 
- 1. "modl\_ga" -- The $\log_{10}\mathit{AC_{50}}$ (in the gain direction) for the winning model. <br/>
- 2. "hitc" -- The hit call for the winning model. <br/>
- 3. "m4id" -- The m4id, listing the concentration series selected by  <font face="CMTT10">tcplSubsetChid </font>. <br\>
- 4. "zscore" -- The z-score (described below). <br\>
- 5.  "tested\_sc" -- $1$ or $0$, $1$ indicating the chemical/assay pair was tested in the single-concentration format. <br\>
- 6. "tested\_mc" -- $1$ or $0$, $1$ indicating the chemical/assay pair was tested in the multiple-concentration format. <br\>
- 7. "ac50" -- a modified AC$_{50}$ table (in non-log units) where assay/chemical pairs that were not tested, or tested and had a hit call of $0$ or $-1$ have the value $1e6$. <br\>
- 8. "neglogac50" -- $-\log_{10}\frac{\mathit{AC_{50}}}{1e6}$ where assay/chemical pairs that were not tested, or tested and had a hit call of $0$ or $-1$ have the value $0$. <br\>
+ 1. "ac50" -- The active concentration at 50% maximal response ($\mathit{AC_{50}}$) for the winning model. <br/>
+ 2. "ac50_verbose" -- The $\mathit{AC_{50}}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
+ 3. "acc" -- The active concentration at user-defined cutoff ($\mathit{ACC}$ ) for the winning model. <br/>
+ 4. "acc_verbose" -- The $\mathit{ACC}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
+ 5. "mc_hitc" -- The hit-call for the winning model in multiple-concentration (mc) screening. <br/>
+ 6. "sc_hitc" -- The hit-call in single concentration (sc) screening. <br/>
 
-The z-score calculation is based on the output from <font face="CMTT10"> tcplCytoPt </font> (Appendix C), and is calculated for each AC$_{50}$ value as follows:
-$$
-\mathit{z-score} = -\frac{\mathit{modl\_ga} - \mathit{cyto\_pt}}{\mathit{global\_mad}}\mathrm{,}
-$$
-Note: the burst z-score values are multiplied by -1 to make values that are more potent relative to the burst distribution a higher positive z-score.
+<font face="CMTT10">tcplVarMat </font> produces matrices of combined sc-mc output. For the $\mathit{AC_{50}}$ and $\mathit{ACC}$ matrices specifically, values are inserted in place to show complete views of what was tested and what the results. Further, "ac50_verbose" and "acc_verbose" replace such values with text. $\mathit{AC_{50}}$ and $\mathit{ACC}$ are:
 
-In addition, additional matrices can be defined by the 'add.vars' parameter in the <font face="CMTT10"> tcplCytoPt </font>  function. The 'add.vars' function will take any level 4 or level 5 field and create the respective matrix.
+- set to 1e6 when the chemical is tested but negative in mc. In _verbose matrices, these are indicated as "MC neg".
 
+- set to 1e7 when the chemical is not tested in mc but was screened in sc with a positive hitcall for the same aeid. In _verbose matrices, these are indicated as "SC pos, No MC".
 
+- set to 1e8 when the chemical is not tested in mc but was screened in sc with a negative hitcall for the same aeid. In _verbose matrices, these are indicated as "SC neg, No MC".
+
+- not changed when the chemical is tested in mc and positive, or not tested in either mc or sc.
+
+Both sc and mc data are required for <font face="CMTT10">tcplVarMat</font>. As a result, the "API" driver is not currently supported since it does not return sc data.
+
+In addition, additional matrices can be defined by the 'add.vars' parameter. The 'add.vars' parameter will take any level 4 or level 5 field and create the respective matrix.
+
+```{r varmat_use, eval = FALSE}
+# create matrices with all chemicals and assays; the entire database
+varmat <- tcplVarMat()
+# create matrices using a subset of chemicals and/or aeids
+aeids <- c(80)
+dtxsid <- c("DTXSID80379721", "DTXSID10379991", "DTXSID7021106", "DTXSID1026081")
+varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
+# create extra matrices by adding vars
+varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
+```
+
+<font face="CMTT10">tcplVarMat </font> returns a list of chemical by assay matrices (data.tables) where the rows are given by the dsstox_substance_id and corresponding chnm (chemical name) columns and the colnames are given by assay endpoint name (aenm). To export this list, save to a .xlsx. Each matrix will have its own sheet.
+
+```{r varmat_save, eval = FALSE}
+library(writexl)
+write_xlsx(varmat, path = "varmat_output.xlsx")
+```
