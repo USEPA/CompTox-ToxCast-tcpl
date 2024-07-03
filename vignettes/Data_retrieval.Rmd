@@ -1,5 +1,5 @@
 ---
-title: Data Retrieval with tcpl
+title: Data Retrieval with invitrodb
 author: "Center for Computational Toxicology and Exposure, US EPA"
 output:
   prettydoc::html_pretty:
