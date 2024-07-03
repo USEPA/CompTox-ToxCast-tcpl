@@ -488,7 +488,7 @@ objective curve-fitting functions from tcplfit2: (1) constant, (2) hill, (3) gai
 the response cutoff based on methods in the \'mc5_aeid\' table, and
 determine activity",
 "Flag: Flag potential false positive and false negative endings based
-on methods in the \'mc6_aeid\' table&ddagger;"
+on methods in the \'mc6_aeid\' table"
                  )
 
 output <- 
@@ -501,7 +501,7 @@ htmlTable(output,
         align = 'l',
         align.header = 'l',
         caption="Table 5: Summary of the tcpl multiple-concentration pipeline.",
-        tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette. \n&ddagger;Level 6 processing *will not* be possible in  tcpl v3.0, but may be included in future versions.")
+        tfoot="&dagger; Level 0 pre-processing occurs outside the package and specifics are covered in Introduction vignette.")
 
 ```
 
