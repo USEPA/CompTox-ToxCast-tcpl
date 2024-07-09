@@ -710,15 +710,20 @@ htmlTable(output,
 Before the model parameters are estimated, a set of summary values are calculated for each concentration series:
 
 * Minimum and maximum observed responses (resp_min & resp_max, respectively).
-* Minimum and maximum concentrations (on the log-scale) (logc_min & logc_max, respectively).
+* Minimum and maximum concentrations (conc_min & conc_max, respectively).
 * The total number of concentration groups (nconc).
 * Total number of observed responses (i.e. data points in the concentration series) (npts).
 * Number of replicates in concentration groups (nrep).
 * The maximum mean and median responses along with the concentration at which
 they occur (max_mean, max_med, max_mean_conc, & max_med_conc, respectively).
+* The minimum mean and median responses along with the concentration at which
+they occur (min_mean, min_med, min_mean_conc, & min_med_conc, respectively).
+* The maximum median difference response -- the greater distance to 0 of max_med 
+and min_med -- along with the concentration at which it occurs (max_med_diff and
+max_med_diff_conc, respectively)
 * The number of median responses greater than $3\mathit{bmad}$ (nmed_gtbl).
 
-When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series.
+When referring to the concentration series , the "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across the concentration groups in the series. Similarly, the minimum median is the true minimum (or max in the negative direction) of all median response values across the concentration groups in the series.
 
 The following code demonstrates how a user, when connected to a database with tcpl pipelined data, can load the level 3 multiple concentration data for a single assay endpoint (aeid).
 
