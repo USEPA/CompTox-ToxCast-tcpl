@@ -165,8 +165,7 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   
   cat("8: Determining representative sample\n")
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
-  #filter out gnls curves
-  zdat <- zdat[modl != "gnls",]
+
   #filter out null chids
   zdat <- zdat[!is.na(chid)]
   cat("9: Calculating intermediate summary statistics\n")
