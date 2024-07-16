@@ -160,9 +160,12 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
     zdat <- zdat[chid %in% ch]
   }
   
-  #for bidirectional burst endpoints only consider down response (BSK and APR aeids below)
-  zdat <- zdat[!(aeid %in% c(26, 46, 158, 160, 178, 198, 222, 226, 252, 254, 270, 292, 316, 318, 2873, 2929, 2931) & top>0),]
+  # set list of assays where we should only consider negative direction
+  burst_down <- c(26, 46, 158, 160, 178, 198, 222, 226, 252, 254, 270, 292, 316, 318,1091, 2873, 2929, 2931)
   
+  # set down burst to -1 hitc but do not filter so it is still included in Ntested.
+  zdat[aeid %in% burst_down & top>0,hitc:=-1]
+ 
   cat("8: Determining representative sample\n")
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
 
