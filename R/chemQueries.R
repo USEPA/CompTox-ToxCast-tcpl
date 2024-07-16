@@ -66,13 +66,14 @@
 
 .ClibQ <- function(field, val) {
   
-  qformat <- "SELECT chid, clib FROM chemical_library"
+  qformat <- "SELECT * FROM chemical_lists"
   
   if (!is.null(field)) {
     
     nfld <- switch(field,
                    chid = "chid",
-                   clib = "clib")
+                   dsstox_substance_id = "dsstox_substance_id",
+                   list_acronym = "list_acronym")
     
     qformat <- paste(qformat, "WHERE %s IN (%s);")
     qstring <- sprintf(qformat, nfld, paste0("\"", val, "\"", collapse = ","))
