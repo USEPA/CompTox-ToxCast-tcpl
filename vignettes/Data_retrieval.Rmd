@@ -559,6 +559,8 @@ tcplPlot(fld = c("aeid", "spid"),        # field to query on
          by = "aeid",                    # only one aeid, so not necessary here
          multi = TRUE,                   # multiple plots per page - output 4 per page
          verbose = TRUE,                 # output all details
+         flags = TRUE,                   # include level 6 flags in output
+         yrange = c(-0.5,1.5),           # integer length of two to set y-axis range
          output = "pdf",                 # output as pdf
          fileprefix = "output_pdf")      # prefix of the filename
 ```
@@ -576,6 +578,7 @@ tcplPlot(type = "mc",               # not required; "mc" is default
          val = list(80,'01504209'), # values must be listed for each corresponding 'fld'
          multi = FALSE,             # single plot per page, this is default
          verbose = TRUE,            # output all details
+         flags = TRUE,              # include level 6 flags in output
          output = "jpg",            # output as jpg
          fileprefix = "output_jpg") # set file prefix
 ```
@@ -607,6 +610,56 @@ tcplPlot(type = "mc",                # not required; "mc" is default
 ```
 <center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209</i></font>](img/output_console.png)</center>
 
+## Output PDF of Multiple Comparison Plots per Page, by M4ID
+
+The “compare"/dual-plot feature can be used by supplying a list or vector of the same length to `val` and `compare.val`. In the example below, plots are generated for 4 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
+
+```{r plot_m4id_compare, eval = FALSE}
+spids <- c("EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20")
+# default parameters used here: type = "mc"
+tcplPlot(fld = c("spid","aeid"),          # field(s) to query on
+         val = list(spids, 3074),         # values must be listed for each corresponding `fld`
+         compare.val = list(spids, 3076), # length must equal that of 'val'
+         output = "pdf",                  # output as pdf
+         verbose = TRUE,                  # output all details
+         multi = TRUE,                    # multiple plots per page - output 4 per page
+         flags = TRUE,                    # include level 6 flags in output
+         yuniform = TRUE,                 # set y-axis bounds to be uniform across plots
+         fileprefix = "plot_compare")     # set file prefix
+```
+
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for spids "EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20" across two different endpoints (aeids 3074 and 3076)</i></font>](img/plot_compare.png)</center>
+
+## Advanced Comparison Plotting
+
+<font face="CMTT10">tcplPlot</font> supports advanced comparison plotting across data connections. If working on a local invitrodb instance, additional dose-response data may be available, data reprocessed, methods adjusted, etc. Users may wish to compare data released in different versions, such as comparing CTX Bioactivity API data or versioned database (invitrodb v4.1 and later) to one's local invitrodb database.
+
+Using the utility function <font face="CMTT10">tcplPlotLoadData</font> while connected to one data source, users can switch to a new data configuration and pass along data via <font face="CMTT10">tcplPlot</font>’s `dat` parameter and use `compare.val` for their new connection's data.
+
+```{r plot_standalone, eval = FALSE}
+# tcplConf() configured with some connection like invitrodb v4.1 or CTX APIs
+plot_data <- tcplPlotLoadData(lvl = 5,      # always = 5 for 'mc' data
+                              fld = "aeid", # same as will be used in tcplPlot
+                              val = 704,    # values should match their corresponding 'fld'
+                              type = "mc",  # type; either "mc" or "sc"
+                              flags = TRUE) # load level 6 flags for following tcplPlot output
+
+# fill with different database connection information
+tcplConf(user="", pass="", db="invitrodb", drvr="MySQL", host="")
+
+# Plot comparisons of aeid 704 from one database version to another and output to pdf
+tcplPlot(dat = plot_data,             # previously loaded data from tcplPlotLoadData()
+         fld = "aeid",                # field to query on
+         val = 704,                   # include as copy of 'val' from tcplPlotLoadData()
+         compare.val = 704,           # length must equal that of 'val', assumes aeid has not gained any samples
+         output = "pdf",              # output as pdf
+         verbose = TRUE,              # output all details
+         multi = TRUE,                # multiple plots per page - output 4 per page
+         flags = TRUE,                # include level 6 flags in output
+         fileprefix = "plot_compare") # set file prefix
+```
+
+<center>![<font style="font-size:15px"><i>Comparison plots with parameters: dat = plot_data from tcplPlotLoadData(), output = "pdf", verbose = TRUE, multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/API_plot_standalone.png)</center>
 
 # Additional Examples
 

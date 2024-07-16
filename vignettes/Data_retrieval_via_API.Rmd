@@ -477,7 +477,7 @@ api_data <- tcplPlotLoadData(lvl = 5, fld = "aeid", val = 704, type = "mc", flag
 # fill with database connection information
 tcplConf(user="", pass="", db="", drvr="", host="")
 
-# add 
+# plot all comparisons of samples from the same endpoint across two database versions
 tcplPlot(dat = api_data,
          fld = "aeid", 
          val = 704, 
