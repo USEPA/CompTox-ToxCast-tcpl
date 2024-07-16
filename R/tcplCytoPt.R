@@ -184,6 +184,11 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                by = list(chid,code, chnm, casn)]
   
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
+  #add chems that are not tested in the burst
+  total_chem <- tcplLoadChem() |> select(chid,code,chnm,casn) |> as.data.table() |> unique()
+  total_chem <- total_chem[!chid %in% zdst$chid,][,`:=`(ntst = 0, nhit = 0, burstpct = 0)]
+  zdst <- rbindlist(list(zdst,total_chem), fill = TRUE)
+  
   zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst>=60)] 
   gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
