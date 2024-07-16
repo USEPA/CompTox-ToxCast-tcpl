@@ -610,11 +610,27 @@ tcplPlot(type = "mc",                # not required; "mc" is default
 ```
 <center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209</i></font>](img/output_console.png)</center>
 
-## Output PDF of Multiple Comparison Plots per Page, by M4ID
+## Output PDF of Single Concentration Plots, Multiple Plots per Page, by AEID
+
+Single concentration plotting is enabled by setting `type = "sc"`. The example below plots all samples for one endpoint.
+
+```{r sc_plot_pdf_aeid, eval = FALSE}
+# Plot SC data for aeid 704 and outputs plots separate pdfs by aeid.
+tcplPlot(type = "sc",              # load and plot single concentration data
+         fld = "aeid",             # field to query on
+         val = 704,                # values should match their corresponding 'fld'
+         multi = TRUE,             # multiple plots per page - output 6 per page for SC
+         verbose = TRUE,           # output all details
+         output = "pdf",           # output as pdf
+         fileprefix = "sc_output") # set file prefix
+```
+<center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", multi = TRUE, and verbose = TRUE for aeid 704  </i></font>](img/sc_output.png)</center>
+
+## Output PDF of Multiple Comparison Plots per Page, by AEID and SPID
 
 The “compare"/dual-plot feature can be used by supplying a list or vector of the same length to `val` and `compare.val`. In the example below, plots are generated for 4 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
 
-```{r plot_m4id_compare, eval = FALSE}
+```{r plot_compare, eval = FALSE}
 spids <- c("EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20")
 # default parameters used here: type = "mc"
 tcplPlot(fld = c("spid","aeid"),          # field(s) to query on
@@ -629,6 +645,25 @@ tcplPlot(fld = c("spid","aeid"),          # field(s) to query on
 ```
 
 <center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for spids "EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20" across two different endpoints (aeids 3074 and 3076)</i></font>](img/plot_compare.png)</center>
+
+## Output PDF of Multiple Comparison Plots per Page, by AEID and SPID
+
+The “compare"/dual-plot feature can also be used with single concentration plotting. In the example below, plots are generated for 6 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
+
+```{r sc_plot_compare, eval = FALSE}
+spids <- c("MLS", "DMSO", "Tox21_400088", "Tox21_200265", "Tox21_200001", "Tox21_200266")
+# Plot comparison across two different endpoints with same samples
+tcplPlot(type = "sc",                     # load and plot single concentration data
+         fld = c("spid","aeid"),          # field(s) to query on
+         val = list(spids, 3017),         # values must be listed for each corresponding `fld`
+         compare.val = list(spids, 3018), # length must equal that of 'val'
+         output = "pdf",                  # output as pdf
+         verbose = TRUE,                  # output all details
+         multi = TRUE,                    # multiple plots per page - output 6 per page
+         fileprefix = "sc_plot_compare")  # set file prefix
+```
+
+<center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", verbose = TRUE, and multi = TRUE for spids "MLS", "DMSO", "Tox21_400088", "Tox21_200265", "Tox21_200001", "Tox21_200266" across two different endpoints (aeids 3017 and 3018)</i></font>](img/sc_plot_compare.png)</center>
 
 ## Advanced Comparison Plotting
 
