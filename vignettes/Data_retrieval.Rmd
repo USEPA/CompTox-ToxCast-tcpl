@@ -53,7 +53,7 @@ This vignette describes how the user can retrieve data from the ToxCast database
 
 :::
 
-# R Packages
+## R Packages
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 # Primary Packages #
@@ -74,13 +74,25 @@ library(htmlTable)
 library(kableExtra)
 ```
 
+## Establishing Database Connection
+
+After loading <font face="CMTT10">tcpl</font>, the function <font face="CMTT10">tcplConf</font> is used to establish connection to a database server or the CTX APIs. At any time, users can check the settings using <font face="CMTT10"> tcplConfList() </font>. An example of database settings using <font face="CMTT10"> tcpl </font> would be as follows:
+
+```{r setup-config, eval = FALSE}
+tcplConf(db   = "invitrodb",
+         user = "username", 
+         pass = "password", 
+         host = "localhost",
+         drvr = "MySQL")
+```
+
+## Data Nomenclature
+
+Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC.' 'MC' is used for assay data with multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing single concentration data from level 2 processing, then we will use the abbreviation 'SC2.'
+
 ## Overview of Key Functions
 
 To support different data retrieval needs within <font face="CMTT10">tcpl</font>, there are a number of functions which query the database and return information to the local R session.
-
-## Overview of Data Nomenclature
-
-Throughout this vignette we will use abbreviated designations for data retrieved from the database or to refer to processing steps within <font face="CMTT10">tcpl</font>. For data from single concentration assays we use 'SC.' 'MC' is used for assay data with multiple concentrations. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if we are discussing single concentration data from level 2 processing, then we will use the abbreviation 'SC2.'
 
 ### Assay Elements
 
@@ -127,7 +139,9 @@ mc2_fmtd <- tcplPrepOtpt(
 head(mc2_fmtd)
 ```
 
-When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the tcpl Data Processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, and MC5, one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
+When loading data, the user must indicate the applicable fields and ids for the corresponding data level of interest. Loading level 0 (SC0 and MC0), MC1, and MC2 data the assay component id ($\mathit{acid}$) will always be used. As described in Table 1 of the tcpl Data Processing vignette, SC1 and MC3 processing levels perform data normalization where assay component ids ($\mathit{acid}$) are converted to assay endpoint ids ($\mathit{aeid}$). Thus, the SC1 and MC3 data tables contain both $\mathit{acid}$ and ($\mathit{aeid}$) ID's.  Data can be loaded using either id as long as it is properly specified. Loading SC2, MC4, 5, and 6, one should always use the assay endpoint id ($\mathit{aeid}$). Selected id(s) are based on the primary key within each table containing data. Examples of loading data are detailed in later sections.
+
+Note - there is no need to use earlier versions of <font face="CMTT10">tcpl</font> to load data from an earlier version of invitrodb. <font face="CMTT10">tcpl</font> $\geq$v3.2 <font face="CMTT10">tcplLoadData</font> is fully backwards compatible with any version of invitrodb. 
 
 ### Assay Annotations
 
