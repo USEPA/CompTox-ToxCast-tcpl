@@ -174,7 +174,7 @@ annotations <- tcplQuery("SELECT * FROM invitrodb.assay
 
 ### Chemical Information
 
-The <font face="CMTT10">tcplLoadChem</font> function returns chemical information for user specified parameters, e.g. the chemical name (chnm) and chemical id (chid). The <font face="CMTT10">tcplLoadClib</font> function provides more information about the ToxCast chemical library used for sample generation.
+The <font face="CMTT10">tcplLoadChem</font> function returns chemical information for user specified parameters, e.g. the chemical name (chnm) and chemical id (chid). The <font face="CMTT10">tcplLoadChemList</font> function provides more information about the ToxCast chemical library used for sample generation.
 
 ### Methods
 
