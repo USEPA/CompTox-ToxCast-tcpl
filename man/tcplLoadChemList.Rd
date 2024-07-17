@@ -7,8 +7,9 @@
 tcplLoadChemList(field = NULL, val = NULL)
 }
 \arguments{
-\item{field}{Character of length 1, \code{'chid'} or \code{'clib'}, whether 
-to search by chemical id (chid), dsstox_substance_id, or list_acronym}
+\item{field}{Character of length 1, \code{'chid'}, \code{'dsstox_substance_id'} 
+or \code{'list_acronym'}, whether to search by chemical id (chid), 
+dsstox_substance_id, or list_acronym}
 
 \item{val}{The values to query on}
 }
@@ -17,7 +18,7 @@ A data.table with the chemical list information for the given
 parameters.
 }
 \description{
-\code{tcplLoadClib} queries the tcpl databases and returns information 
+\code{tcplLoadChemList} queries the tcpl databases and returns information 
 about the chemical lists.
 }
 \details{

@@ -5,11 +5,12 @@
 #' @title Load chemical list information
 #' 
 #' @description
-#' \code{tcplLoadClib} queries the tcpl databases and returns information 
+#' \code{tcplLoadChemList} queries the tcpl databases and returns information 
 #' about the chemical lists.
 #' 
-#' @param field Character of length 1, \code{'chid'} or \code{'clib'}, whether 
-#' to search by chemical id (chid), dsstox_substance_id, or list_acronym
+#' @param field Character of length 1, \code{'chid'}, \code{'dsstox_substance_id'} 
+#' or \code{'list_acronym'}, whether to search by chemical id (chid), 
+#' dsstox_substance_id, or list_acronym
 #' @param val The values to query on
 #' 
 #' @details
@@ -63,7 +64,7 @@ tcplLoadChemList <- function(field = NULL, val = NULL) {
     if (!field %in% vfield) stop("Invalid 'field' value.")
   }
     
-  qstring <- .ClibQ(field = field, val = val)
+  qstring <- .ChemListQ(field = field, val = val)
   
   dat <- tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl=tbl)
   
