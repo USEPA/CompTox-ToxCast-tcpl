@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------------------
 
 #' @rdname config_funcs
-#' @importFrom ccdR register_ccdr
+#' @importFrom ctxR register_ctx_api_key
 #' @export
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 
@@ -78,7 +78,7 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
                               the 'pass' parameter. To request a key, send an
                               email to ccte_api@epa.gov.")
       if (is.null(host)) options("TCPL_HOST" = "https://api-ccte.epa.gov/bioactivity")
-      register_ccdr(key = pass)
+      register_ctx_api_key(key = pass)
     }
     
   }

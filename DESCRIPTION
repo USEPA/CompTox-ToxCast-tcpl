@@ -44,7 +44,7 @@ Imports:
     gridExtra,
     stringr,
     rlang,
-    ccdR
+    ctxR
 Suggests:
     roxygen2,
     knitr,
