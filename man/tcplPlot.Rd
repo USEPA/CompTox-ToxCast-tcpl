@@ -67,11 +67,11 @@ y axis scaling, automatically determined.}
 c(<min>,<max>). By default, c(NA,NA).}
 }
 \description{
-\code{tcplLoadData} queries the tcpl databases and returns a plot
+\code{tcplPlot} queries the tcpl databases and returns a plot
 for the given level and data type.
 }
 \details{
-The data type can be either 'mc' for mutliple concentration data, or 'sc'
+The data type can be either 'mc' for multiple concentration data, or 'sc'
 for single concentration data. Multiple concentration data will be loaded
 into the 'mc' tables, whereas the single concentration will be loaded into
 the 'sc' tables.
