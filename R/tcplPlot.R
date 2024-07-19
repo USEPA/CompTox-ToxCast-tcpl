@@ -114,7 +114,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       nrow = ncol = 1
     }
     # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(dat[compare == FALSE]) != 1 && output == "console" && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
+    if(nrow(dat[compare == FALSE]) != 1 && output %in% c("ggplot", "console") && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
     }
