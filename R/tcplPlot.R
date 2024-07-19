@@ -58,7 +58,7 @@
 #'
 #' ## Reset configuration
 #' options(conf_store)
-tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
+tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   conc_unit <- bmd <- resp <- compare.dat <- NULL
   
@@ -123,18 +123,22 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     }
     
     
-    
-    
     if (nrow(dat[compare == FALSE]) == 1) {
-      # plot single graph
-      # this needs to be fixed to be more succinct about users selected option
-      ifelse(output[1] == "console",
-      # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
-      # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
-        return(tcplPlotlyPlot(dat, lvl)),
-        return(ggsave(filename=paste0(fileprefix,"_",paste0(ifelse(type=="mc",dat$m4id,dat$s2id), collapse = "_"),".",output),
-                      plot= if(is.null(compare.val)) tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange) else tcplggplotCompare(dat[compare == FALSE],dat[compare == TRUE],verbose = verbose, lvl = lvl, flags = flags, yrange = yrange), width = 7, height = 5, dpi=dpi))
-      )
+      if (output[1] == "console") {
+        # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
+        return(tcplPlotlyPlot(dat, lvl))
+      } else {
+        # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
+        ggplot <- if(is.null(compare.val)) tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange) else 
+          tcplggplotCompare(dat[compare == FALSE],dat[compare == TRUE],verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
+        if (output[1] == "ggplot") {
+          if (verbose) message("ggplot object and verbose table arranged into gtable object. To work with a simple ggplot object, set `verbose = FALSE`.")
+          return(ggplot)
+        } 
+        ggsave(filename = paste0(fileprefix, "_", paste0(ifelse(type=="mc", dat$m4id, dat$s2id), collapse = "_"), ".", output),
+               plot = ggplot, width = 7, height = 5, dpi=dpi)
+        return(ggplot)
+      }
     } else {
       split_dat <- list(dat)
       if(!is.null(by)){
@@ -1441,7 +1445,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     t <- tableGrob(details, rows = c("A", "B"))
     ifelse(verbose,
            return(arrangeGrob(gg, t, nrow = 1, widths = 2:1)),
-           return(arrangeGrob(gg))
+           return(gg)
     )
   } else {
     details <- tibble(Hitcall = c(dat$hitc, compare.dat$hitc))
