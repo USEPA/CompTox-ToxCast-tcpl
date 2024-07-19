@@ -8,6 +8,10 @@
 #' \code{tcplPlot} queries the tcpl databases and returns a plot
 #' for the given level and data type.
 #'
+#' @param dat data.table containing plot-prepared data, used for stand-alone 
+#' (non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
+#' (generating comparison plots across multiple database configurations) and not
+#' required. See \code{tcplPlotLoadData}.
 #' @param type Character of length 1, the data type, "sc" or "mc".
 #' @param fld Character, the field(s) to query on.
 #' @param val List, vectors of values for each field to query on. Must be in
@@ -16,8 +20,9 @@
 #' compare with val. Must be in the same order as 'fld'. Must have the same
 #' length as val (1:1 comparison). Must be set to compare plots; otherwise leave
 #' NULL
-#' @param output How should the plot be presented. To view the plot in application,
-#'  use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
+#' @param output How should the plot be presented. To work with the plot in 
+#' environment, use "ggplot"; to interact with the plot in application, use 
+#' "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
 #' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
 #' by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
 #' 'verbose' = FALSE.
