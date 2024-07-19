@@ -15,9 +15,9 @@ vignette: >
 
 ```{r eval = TRUE, hide=TRUE, message = FALSE, echo=FALSE, warning=FALSE}
 # Primary Packages #
-devtools::load_all() #use when dev versions are installed locally
-#library(tcpl)
-#library(tcplfit2)
+#devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
+library(tcpl)
+library(tcplfit2)
 # Data Formatting Packages #
 library(data.table)
 library(dplyr)

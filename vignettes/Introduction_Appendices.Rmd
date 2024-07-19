@@ -385,7 +385,10 @@ Description <- c("Level 5 ID",
                  "Fit category",
                  "Efficacy cutoff value",
                 "Activity probability (1 - *const_prob* not used with *tcplFit2*)",
-                "Model type placeholder for use when number of fitting methodologies increases" )
+                "Model type. Options include: </br>
+                2: Bidirectional: Data is fit bidirectionally.</br>
+                3: Gain: Data is fit bidirectionally, but gain is the intended direction of response. Hitcalls (hitc) for winnings models is multiplied by -1 for models fit in the negative analysis direction. </br>
+                4: Loss: Data is fit bidirectionally, but loss is the intended direction of response. Hitcalls (hitc) for winnings models is multiplied by -1 for models fit in the positive analysis direction." )
 
 output <- data.frame(Field, Description)
 
