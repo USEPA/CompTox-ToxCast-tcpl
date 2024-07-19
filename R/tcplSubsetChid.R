@@ -23,7 +23,7 @@
 #' To select a single sample, first a "consensus hit-call" is made by majority
 #' rule, with ties defaulting to active. After the chemical-wise hit call is
 #' made, the samples corresponding to to chemical-wise hit call are logically
-#' ordered using the fit category, the number of the flags, and the modl_ga,
+#' ordered using the fit category, the number of the flags, and AC50 (or modl_ga),
 #' then the first sample for every chemical is selected.
 #'
 #' The \code{flag} param can be used to specify a subset of flags to be used in

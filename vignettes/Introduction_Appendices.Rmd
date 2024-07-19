@@ -1,47 +1,35 @@
 ---
-title: The ToxCast(TM) Analysis Pipeline(tcpl)<br /> An R Package for Processing and Modeling Chemical Screening Data (Version 3.0)<br />
-author: "Center for Computational Toxicology and Exposure, US EPA"
+title: "tcpl: The ToxCast^TM^ Analysis Pipeline Supporting Accessible Bioactivity Data for Toxicology" 
+author: US EPA's Center for Computational Toxicology and Exposure ccte@epa.gov
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    toc: yes
-    toc_depth: 4
+  rmdformats::readthedown
+params:
+  my_css: css/rmdformats.css
 vignette: >
   %\VignetteIndexEntry{1. Introduction to tcpl and invitrodb}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
+
 ---
-<!-- This CSS script ensures autonumbering of equations-->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
-</script>
 
-
-<script>
-$(document).ready(function() {
-  $items = $('div#TOC li');
-  $items.each(function(idx) {
-    num_ul = $(this).parentsUntil('#TOC').length;
-    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
-  });
-
-});
-</script>
+```{css, code = readLines(params$my_css), hide=TRUE, echo = FALSE}
+```
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-
 library(htmlTable)
 ```
 
+<img style="float: right; margin-left: 10px;" src="img/tcpl_hex.png" width="200">
+
 # Introduction
 
-This vignette provides an overview of the <font face="CMTT10"> tcpl </font> package, including set up, database structure, and pre-processing. Assay registration, data processing, and data retrieval are topics covered in separate vignettes.
+This vignette provides an overview of the <font face="CMTT10"> tcpl </font> package, including set up, database structure, and pre-processing requirements. Assay and chemical registration, data processing, data retrieval with invitrodb and via API, and data interpretation are topics covered in separate vignettes.
 
 # Overview
 
-The ToxCast pipeline (<font face="CMTT10"> tcpl </font>) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, InvitroDB. The U.S. Environmental Protection Agency (EPA) ToxCast^TM^ program includes in vitro medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. These assays comprise Tier 2-3 of the new Computational Toxicology Blueprint, and employ automated chemical screening technologies, to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins (Thomas et al., 2019). More information on the ToxCast program can be found at <https://www.epa.gov/chemical-research/toxicity-forecasting>.
+The ToxCast Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, InvitroDB. The U.S. Environmental Protection Agency (EPA)'s ToxCast^TM^ program includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins. More information on the ToxCast program can be found at <https://www.epa.gov/chemical-research/toxicity-forecasting>.
 
-This flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format and loaded into the <font face="CMTT10"> tcpl </font> database by vendor-specific R scripts. Once data is loaded into the database, ToxCast utilizes generalized processing functions provided in this package to process, normalize, model, qualify, and visualize the data.
+Tcpl is a flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format and loaded into the <font face="CMTT10"> tcpl </font> database by vendor-specific R scripts. Once data is loaded into the database, ToxCast utilizes generalized processing functions provided in this package to process, normalize, model, qualify, and visualize the data.
 
 <center>
 
@@ -49,11 +37,11 @@ This flexible analysis pipeline is capable of efficiently processing and storing
 
 </center>
 
-The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting. Processing with <font face="CMTT10"> tcpl_v3 </font> and beyond depends on the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond.^[Using <font face="CMTT10"> tcpl_v3 </font> with the schema from invitrodb versions 2.0-3.5 will still default to <font face="CMTT10"> tcplFit() </font> modeling with constant, Hill, and gain-loss] The main set of extensions includes all of the concentration-response models that are contained in the program BMDExpress. These include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Similar to the program BMDExpress, <font face="CMTT10"> tcplFit2 </font> curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hitcall value be a continuous number ranging from 0 to 1 (in contrast to binary hitcall values from <font face="CMTT10"> tcplFit() </font>. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
+The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting. Processing with <font face="CMTT10"> tcpl_v3 </font> and beyond depends on the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond. Using <font face="CMTT10"> tcpl_v3 </font> with the schema from invitrodb versions 2.0-3.5 will still default to <font face="CMTT10"> tcplFit() </font> modeling with constant, Hill, and gain-loss. The main set of extensions includes all of the concentration-response models that are contained in the program BMDExpress. These include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Similar to the program BMDExpress, <font face="CMTT10"> tcplFit2 </font> curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hitcall value be a continuous number ranging from 0 to 1 (in contrast to binary hitcall values from <font face="CMTT10"> tcplFit() </font>. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
 
-The <font face="CMTT10"> tcpl </font> package includes processing functionality for two screening paradigms: (1) single-concentration screening and (2) multiple-concentration screening. Single-concentration screening consists of testing chemicals at one concentration, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. Multiple-concentration screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
+The <font face="CMTT10"> tcpl </font> package includes processing functionality for two screening paradigms: (1) single-concentration (SC) and (2) multiple-concentration (MC) screening. Single-concentration screening consists of testing chemicals at one to three concentrations, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. Multiple-concentration screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
 
-Prior to the pipeline processing provided in this package, all the data must go through pre-processing (level 0). Level 0 pre-processing utilizes dataset-specific R scripts to process the heterogeneous data into a uniform format and to load the uniform data into the <font face="CMTT10"> tcpl </font> database. Level 0 pre-processing is outside the scope of this package, but can be done for virtually any high-throughput or high-content chemical screening effort, provided the resulting data includes the minimum required information. 
+Prior to the pipeline processing provided in this package, all the data must go through pre-processing to get to Level 0 formatting. [Level 0 pre-processing](lvl0-preprocessing) utilizes dataset-specific R scripts to process the heterogeneous data into a uniform format and to load the uniform data into the <font face="CMTT10"> tcpl </font> database. Level 0 pre-processing is outside the scope of this package, but can be done for virtually any chemical screening effort, provided the data includes the minimum required information. 
 
 In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette and others, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. <font face="CMTT10"> tcplLite </font> is no longer supported by <font face="CMTT10"> tcpl</font> because <font face="CMTT10"> tcplFit2</font> can be used to curve-fit data and make hitcalls independent of invitrodb, available at <https://cran.r-project.org/package=tcplfit2>. <font face="CMTT10"> tcplLite </font> relied on flat files structured like invitrodb to produce curve-fitting and summary information like hitcalls and AC50 values. Functionally <font face="CMTT10"> tcplFit2 </font> replaces <font face="CMTT10"> tcplLite </font> because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the invitrodb schema. For the ToxCast program it is still important to use invitrodb when curve-fitting as invitrodb serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using <font face="CMTT10"> tcpl</font>, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
@@ -77,7 +65,7 @@ tcpl (v3.1.0) loaded with the following settings:
 Default settings stored in tcpl config file. See ?tcplConf for more information.
 ```
 
-The package consists of five settings: 
+Establishing a connection utilizes the following settings: 
 
 1. <font face="CMTT10"> $TCPL_DB </font> points to the <font face="CMTT10"> tcpl </font> database (if using "MySQL" drvr),
 2. <font face="CMTT10"> $TCPL_USER </font> stores the username for accessing the database (if using "MySQL" drvr),
@@ -113,10 +101,11 @@ Each of the methods tables have fields analogous to $\mathit{mc5\_mthd\_id}$, $\
 
 Many of the tables also include the $\mathit{created\_date}$, $\mathit{modified\_date}$, and $\mathit{modified\_by}$ fields that store helpful information  for tracking changes to the data. These fields will not be discussed further or included in the tables below.
 
-Many of the tables specific to the assay annotation are populated semi-manually based on expert curation of information on assay design; these tables of assay annotation are not currently utilized by the <font face="CMTT10"> tcpl </font> package, but instead act as meta-data for users. The full complexity of the assay annotation used by the ToxCast program is beyond the scope of this vignette and the  <font face="CMTT10"> tcpl </font> package. Additionally, assay description documents for ToxCast assays can be found at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+Many of the tables specific to the assay annotation are populated semi-manually based on expert curation of information on assay design; these tables of assay annotation are not currently utilized by the <font face="CMTT10"> tcpl </font> package, but instead act as meta-data for users. The full complexity of the assay annotation used by the ToxCast program is somewhat beyond the scope of the vignettes and the <font face="CMTT10"> tcpl </font> package. Additionally, a compiled report of assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data)
 
-## Single-concentration Data-containing Tables
-<!-- Table 1-->
+# Level 0 {#lvl0-table}
+The "mc0" and "sc0" tables are identical, other than containing $\mathit{m0id}$ rather than $\mathit{s0id}$, respectively. See the [Level 0 Pre-processing section](#lvl0-preprocessing) for more information.
+
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("s0id ", "acid", "spid", "apid", "rowi", "coli", "wllt", "wllq", "conc", "rval", "srcf")
 Description <- c("Level 0 ID",
@@ -129,23 +118,23 @@ Description <- c("Level 0 ID",
                  "1 if the well quality was good, else 0;",
                  "Concentration is micromolar",
                  "Raw assay component value/readout from vendor",
-                 "Filename of the source file containing the data"
-                 )
+                 "Filename of the source file containing the data")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 1: Fields in sc0 table.",
-        tfoot="&dagger;Information about the different well types is available in Appendix B.")
+        caption="Table 1: Fields in Level 0 tables, mc0 and sc0.",
+        tfoot="&dagger;Information about the different well types is available in Level 0 Pre-processing section.")
 
 ```
 
-<!-- Table 2-->
+# SC Data-containing Tables
+
+## Level 1
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("s1id ", "s0id", "acid", "aeid", "conc", "bval", "pval", "resp")
 Description <- c("Level 1 ID",
@@ -155,12 +144,9 @@ Description <- c("Level 1 ID",
                  "Concentration is micromolar",
                  "Baseline value",
                  "Positive control value",
-                 "Normalized response value"
-              
-                 )
+                 "Normalized response value" )
 
-output <- 
-  data.frame(Field, Description)
+output <-  data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
@@ -172,30 +158,7 @@ htmlTable(output,
 
 ```
 
-<!-- Table 3-->
-```{r warning = FALSE, echo = FALSE}
-Field <- c("aeid ", "s0id", "s1id", "s2id")
-Description <- c("Assay component endpoint ID",
-                 "Level 0 ID",
-                 "Level 1 ID",
-                 "Level 2 ID"
-              
-                 )
-
-output <- 
-  data.frame(Field, Description)
-
-htmlTable(output,
-        align = 'l',
-        align.header = 'l',
-        rnames = FALSE  ,
-        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 3: Fields in sc2_agg table."
-)
-
-```
-
-<!-- Table 4-->
+## Level 2
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("s2id ", "aeid", "spid", "bmad", "max_med", "coff", "hitc", "tmpi")
 Description <- c("Level 2 ID",
@@ -205,8 +168,27 @@ Description <- c("Level 2 ID",
                  "Maximum median response value",
                  "Efficacy cutoff value",
                  "Hit-/activity-call: 1 if active, 0 if inactive&dagger;",
-                 "Ignore, temporary index used for uploading purposes"
-                 )
+                 "Ignore, temporary index used for uploading purposes" )
+
+output <- data.frame(Field, Description)
+
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        caption="Table 3: Fields in sc2 table.",
+        tfoot = "&dagger; As sc data are not curve-fit, the hitcalling procedure performed at sc2 remains binary (hitc=1 or hitc=0).")
+
+```
+
+## Aggregated IDs
+```{r warning = FALSE, echo = FALSE}
+Field <- c("aeid ", "s0id", "s1id", "s2id")
+Description <- c("Assay component endpoint ID",
+                 "Level 0 ID",
+                 "Level 1 ID",
+                 "Level 2 ID" )
 
 output <- 
   data.frame(Field, Description)
@@ -216,84 +198,72 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 4: Fields in sc2 table.",
-        tfoot = "&dagger; As sc data are not curve-fit, the hitcalling procedure performed at sc2 remains binary (hitc=1 or hitc=0)."
-)
+        caption="Table 4: Fields in sc2_agg table.")
 
 ```
 
-<!-- Table 5-->
+## Representative Samples
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("s2id", "chid_rep")
 
 Description <- c("Level 2 ID",
-                 "Representative sample designation for a tested chemical: 1 if representative sample, else 0"
-                 )
+                 "Representative sample designation for a tested chemical: 1 if representative sample, else 0")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 5: Fields in sc2_chid.",
-        
-     
-)
+        caption="Table 5: Fields in sc2_chid.")
 
 ```
 
 
-## Multiple-concentration Data-containing Tables
-<!-- Table 6-->
-The "mc0" table, other than containing $\mathit{m0id}$ rather than $\mathit{s0id}$, is identical to the "sc0" described in the section above.
+# MC Data-containing Tables
+
+## Level 1
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("m1id", "m0id", "acid", "cndx", "repi")
 Description <- c("Level 1 ID",
                  "Level 0 ID",
                  "Assay component ID",
                  "Concentration index",
-                 "Replicate index"
-                 )
+                 "Replicate index" )
 
-output <- 
-  data.frame(Field, Description)
+output <-  data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 6: Fields in mc1 table."
-)
+        caption="Table 6: Fields in mc1 table.")
 
 ```
 
-<!-- Table 7-->
+## Level 2
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("m2id", "m0id", "acid", "m1id", "cval")
 Description <- c("Level 2 ID",
                  "Level 0 ID",
                  "Assay component ID",
                  "Level 1 ID",
-                 "Corrected value"
-                 )
+                 "Corrected value"   )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 7: Fields in mc2 table."
-)
+        caption="Table 7: Fields in mc2 table.")
 
 ```
-<!-- Table 8-->
+
+## Level 3
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("m3id", "aeid", "m0id", "acid", "m1id", "m2id", "bval", "pval", "conc", "resp")
 Description <- c("Level 3 ID",
@@ -305,11 +275,9 @@ Description <- c("Level 3 ID",
                  "Baseline value",
                  "Positive control value",
                  "Concentration is micromolar",
-                 "Normalized response value"
-                 )
+                 "Normalized response value")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
@@ -320,7 +288,8 @@ htmlTable(output,
 )
 
 ```
-<!-- Table 9-->
+
+## Aggregated IDs
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("aeid", "m0id", "m1id", "m2id", "m3id", "m4id")
 Description <- c(
@@ -328,23 +297,20 @@ Description <- c(
                  "Level 1 ID",
                  "Level 2 ID",
                  "Level 3 ID",
-                 "Level 4 ID"
-                 
-                 )
+                 "Level 4 ID" )
 
-output <- 
-  data.frame(Field, Description)
+output <-  data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 9: Fields in mc4_agg table."
-)
+        caption="Table 9: Fields in mc4_agg table.")
 
 ```
-<!-- Table 10-->
+
+## Level 4
 ```{r warning = FALSE, echo = FALSE}
 
 Field <- c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", "max_mean", "max_mean_conc", "min_mean", "min_mean_conc", "max_med", "max_med_conc", "min_med", "min_med_conc", "max_med_diff", "max_med_diff_conc", "conc_max", "conc_min", "nconc", "npts", "nrep", "nmed_gtbl_pos", "nmed_gtbl_neg", "tmpi")
@@ -373,24 +339,20 @@ Description <- c("Level 4 ID",
                  "Number of replicates in the concentration series",
                  "Number of median values greater than *3bmad* in the positive direction",
                  "Number of median values greater than *3bmad* in the negative direction",
-                 "Ignore, temporary index used for uploading purposes"
-                 )
+                 "Ignore, temporary index used for uploading purposes"  )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 10: Fields in mc4 table."
-)
+        caption="Table 10: Fields in mc4 table.")
 
 ```
 
-
-<!-- Table 11-->
+## Level 4 Parameters
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("m4id", "aeid", "model", "model_param", "model_val")
 
@@ -398,41 +360,34 @@ Description <- c("Level 4 ID",
                  "Assay endpoint ID",
                  "Model that was fit",
                  "Key for the parameter that was fit with the corresponding model",
-                 "Value for the associated key in the corresponding model"
-                )
+                 "Value for the associated key in the corresponding model")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 11: Fields in mc4_param table."
-)
+        caption="Table 11: Fields in mc4_param table.")
 
 ```
 
-<!-- Table 12-->
+## Level 5
 ```{r warning = FALSE, echo = FALSE}
-
 Field <- c("m5id", "m4id", "aeid", "modl", "hitc", "fitc", "coff", "actp", "model_type")
-
 
 Description <- c("Level 5 ID",
                  "Level 4 ID",
                  "Assay endpoint ID",
                  "Winning model",
-                 "Hit-/activity-call, generally a continuous value from 0 to 1 if using *tcplFit2* fitting&dagger;" ,
+                 "Activity Hitcall" ,
                  "Fit category",
                  "Efficacy cutoff value",
                 "Activity probability (1 - *const_prob* not used with *tcplFit2*)",
-                "Model type placeholder for use when number of fitting methodologies increases"
-                 )
+                "Model type placeholder for use when number of fitting methodologies increases" )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
@@ -440,44 +395,39 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         caption="Table 12: Fields in mc5 table.",
-        tfoot = "&dagger; The continuous hitcalls produced resultant to *tcplFit2* curve-fitting are described in more detail in library(tcplFit2) and Sheffield et al. 2021 (https://doi.org/10.1093/bioinformatics/btab779)."
+        tfoot = "&dagger; The continuous hitcalls produced resultant to *tcplFit2* curve-fitting are described in more detail in library(tcplFit2) and [Sheffield et al. 2021](https://doi.org/10.1093/bioinformatics/btab779)."
 )
 
 ```
 
-
+## Level 5 Parameters
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("m5id", "aeid", "hit_param", "hit_val")
 
 Description <- c("Level 5 ID",
                  "Assay endpoint ID",
                  "Key for the parameter that was fit with winning model",
-                 "Value for the associated key in the winning model"
-                 )
+                 "Value for the associated key in the winning model" )
 
-output <- 
-  data.frame(Field, Description)
+output <-  data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 13: Fields in mc5_param table."
-)
+        caption="Table 13: Fields in mc5_param table.")
 
 ```
 
-<!-- Table 14-->
+## Representative Samples
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("m5id", "chid_rep")
 
 Description <- c("Level 5 ID",
-                 "Representative sample designation for a tested chemical: 1 if representative sample, else 0"
-                 )
+                 "Representative sample designation for a tested chemical: 1 if representative sample, else 0" )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
@@ -488,17 +438,64 @@ htmlTable(output,
 
 ```
 
-## Assay and Auxiliary Annotation Tables
+## Level 6
+```{r warning = FALSE, echo = FALSE}
+Field <- c("m6id", "m5id", "m4id", "aeid", "mc6_mthd_id", "flag")
+
+Description <- c("Level 6 ID",
+                 "Level 5 ID",
+                 "Level 4 ID",
+                 "Assay endpoint ID",
+                 "Level 6 Method ID",
+                 "Short Flag Description to be displayed in data retrieval and plotting. Extended description available in MC6_Methods table." )
+
+output <- data.frame(Field, Description)
+
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        caption="Table 15: Fields in mc6 table."
+)
+
+```
+
+## Level 7
+```{r warning = FALSE, echo = FALSE}
+Field <- c("m7id", "m4id", "aeid", "potency_val_type", "aed_type", "aed_val", "aed_val_unit", "interindividual_var_perc", "httk_model", "invitrodb_version", "httk_version")
+
+Description <- c("Level 7 ID",
+                 "Level 4 ID",
+                 "Assay endpoint ID", "Potency value type used in the calc_mc_oral_equiv() calculation", 
+                 "Descriptive vector that begins with “aed,” followed by potency metric used, followed by a short name of the httk model used, ending with the percentile from the modeled population with respect to interindividual variability", 
+                 "Numeric value of the AED",
+                 "Unit associated with AED, mg/kg/day", "Interindividual variability percentile, either 50th or 95th", 
+                 "The httk model used; 3-compartment steady state (3compartmentss) or pbtk; note that all models used here were for adult humans.", 
+                 "invitrodb version of data",
+                 "Version of [httk R package](https://cran.r-project.org/web/packages/httk/index.html) used" )
+
+output <- data.frame(Field, Description)
+
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        caption="Table 16: Fields in mc7 table."
+)
+
+```
+
+
+# Assay and Auxiliary Annotation Tables
  
 The definition of an "assay" is, for the purposes of this package, broken into:
 
-**assay_source**: the vendor/origination of the data 
-
-**assay**: the procedure to generate the component data  
-
-**assay_component**: the raw data readout(s)  
-
-**assay_component_endpoint**: the normalized component data  
+* **assay_source**: the vendor/origination of the data  
+* **assay**: the procedure to generate the component data 
+* **assay_component**: the raw data readout(s)  
+* **assay_component_endpoint**: the normalized component data 
 
 Each assay element is represented by a separate table in the <font face="CMTT10"> tcpl </font> database. In general, we refer to an "assay_component_endpoint" as an "assay endpoint." As we move down the hierarchy, each additional layer may have a one-to-many relationship with the previous layer. For example, an assay source can include multiple assays. Given bidirectional fitting in <font face="CMTT10"> tcpl_v3 </font>, in many cases, a single assay endpoint may be derived from each component, as the "up" and "dn" curve-fitting directions will no longer be separated into different assay endpoints.
 
@@ -508,24 +505,47 @@ Throughout the package, the levels of assay hierarchy are defined and referenced
 
 A full description of the assay annotation is beyond the scope of this vignette. The fields pertinent to the <font face="CMTT10"> tcpl </font> package are listed in the tables below.
 
-<!-- Table 15-->
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("assay", "assay_component", "assay_component_endpoint", "assay_component_map", "assay_reagent**", "assay_reference**", "assay_source", "chemical", "chemical_library", "citations**", "gene**", "intended_target**", "organism**", "sample")
+Field <- c("assay_source", "assay", "assay_component", "assay_component_endpoint", "assay_component_map", "assay_descriptions**", "assay_reagent**", "assay_reference**",  "chemical", "chemical_analytical_qc**", "chemical_lists", "citations**", "gene**", "intended_target**", "organism**", "sample")
 
-Description <- c("Assay-level annotation",
+Description <- c("Assay source-level annotation", "Assay-level annotation",
                  "Assay component-level annotation",
                  "Assay endpoint-level annotation",
                  "Assay component source names and their corresponding assay component ids",
+                 "Additional assay descriptions curated per OECD Guidance Document 211 (GD211)",
                  "Assay reagent information",
                  "Map of citations to assay",
-                 "Assay source-level annotation",
                  "List of chemicals and associated identifiers",
-                 "Map of chemicals to different chemical libraries",
+                 "Analytical QC information curated at the chemical substance or sample level to inform applicability domain",
+                 "Lists of chemicals and their presence in curated chemical lists",
                  "List of citations",
                  "Gene identifiers and descriptions",
                  "Intended assay target at the assay endpoint level",
                  "Organism identifiers and descriptions",
-                 "Sample ID information and chemical ID mapping")
+                 "Sample identifiers and chemical provenance information")
+
+output <- data.frame(Field, Description)
+
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        caption="Table 17: List of annotation tables.",
+        tfoot = "** indicates tables may have limited tcpl functionality, i.e. accessible only via tcplQuery or data downloads",
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em '
+)
+
+```
+
+## Assay Source
+```{r warning = FALSE, echo = FALSE}
+Field <- c("asid&dagger;", "assay_source_name&dagger;", "assay_source_long_name", "assay_source_desc")
+
+Description <- c("Assay source ID",
+                 "Assay source name (typically an abbreviation of the assay_source_long_name, abbreviated \"asnm\" within the package)",
+                 "Full assay source name", 
+                 "Assay source description"
+                 )
 
 output <- 
   data.frame(Field, Description)
@@ -534,14 +554,14 @@ htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
-        caption="Table 15: List of annotation tables.",
-        tfoot = "** indicates tables not currently used by the *tcpl* package",
-        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em '
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        tfoot = "&dagger; Required fields for registration",
+        caption="Table 18: Fields in assay_source."
 )
 
 ```
 
-<!-- Table 16-->
+## Assay
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("aid", "asid&dagger;", "assay_name&dagger;", "assay_desc", "timepoint_hr", 
             "organism_id", "organism",'tissue',"cell_format",
@@ -580,14 +600,14 @@ htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
-        caption="Table 16: Fields in assay.",
+        caption="Table 19: Fields in assay.",
         tfoot = "&dagger; Required fields for registration",
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em '
 )
 
 ```
 
-<!-- Table 17-->
+## Assay Component
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("acid", "aid&dagger;", "assay_component_name&dagger;", "assay_component_desc", "assay_component_target_desc", "parameter_readout_type","assay_design_type", "assay_design_type_sub", "biological_process_target", "detection_technology_type", "detection_technology_type_sub", "detection_technology", "key_assay_reagent_type", "key_assay_reagent", "technological_target_type", "technological_target_type_sub")
 
@@ -618,36 +638,12 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         tfoot = "&dagger; Required fields for registration",
-        caption="Table 17: Fields in assay_component."
+        caption="Table 20: Fields in assay_component."
 )
 
 ```
 
-<!-- Table 18-->
-```{r warning = FALSE, echo = FALSE}
-Field <- c("asid&dagger;", "assay_source_name&dagger;", "assay_source_long_name", "assay_source_desc")
-
-Description <- c("Assay source ID",
-                 "Assay source name (typically an abbreviation of the assay_source_long_name, abbreviated \"asnm\" within the package)",
-                 "Full assay source name", 
-                 "Assay source description"
-                 )
-
-output <- 
-  data.frame(Field, Description)
-
-htmlTable(output,
-        align = 'l',
-        align.header = 'l',
-        rnames = FALSE  ,
-        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        tfoot = "&dagger; Required fields for registration",
-        caption="Table 18: Fields in assay_source."
-)
-
-```
-
-<!-- Table 19-->
+## Assay Component Endpoint
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("aeid", "acid", "assay_component_endpoint_name", "assay_component_endpoint_desc", "assay_function_type", "normalized_data_type&dagger;", "burst_assay&dagger;", "key_positive_control", "signal_direction", "intended_target_type", "intended_target_type_sub", "intended_target_family", "intended_target_family_sub", "fit_all&dagger;", "cell_viability_assay")
            
@@ -675,42 +671,67 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 19: Fields in assay_component_endpoint.",
+        caption="Table 21: Fields in assay_component_endpoint.",
         tfoot = "&dagger; Required fields for registration"
 )
 
 ```
 
-<!-- Table 20-->
+## Assay Component Map
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("acid", "acsn")
 
 Description <- c("Assay component ID",
-                 "Assay component source name"
-                 )
+                 "Assay component source name" )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 20: Fields in assay_component_map table."
+        caption="Table 22: Fields in assay_component_map table."
 )
 
 ```
 
-<!-- Table 21-->
+## Assay Descriptions
+```{r warning = FALSE, echo = FALSE}
+Field <- c("aeid", "assay_title", "assay_objectives", "assay_throughput", "scientific_principles", "biological_responses", "analytical_description", 
+           "basic_procedures", "experimental_system", "xenobiotic_biotransformation", "proprietary_elements")
+           
+Description <- c("Assay component endpoint ID", 
+                 "Short and descriptive title for the assay; opposed to assay component endpoint name", 
+                 "Purpose of the test method: Inserted after assay_component_target_desc; The claimed purpose and rationale for intended use of the method (e.g. alternative to an existing method, screening, provision of novel information in regulatory decision-making, mechanistic information, adjunct test, replacement, etc.) should be explicitly described and documented. The response measured in the assay should be put in the context of the biology/physiology leading to the in vivo response or effect. If the biological activity or response refers to a key event or molecular initiating event (MIE), provide a short description indicating firstly what key event within an existing or developing AOP, or in relation to a mechanism or mode of action, the assay is aiming to characterize (i.e. which level of biological organization the assay may be attributed (e.g. sub-cellular, cellular, tissue, organ or individual), and secondly where the assay might fit in the context of an existing regulatory hazard (i.e. adverse outcome). In the absence of any AOP, provide an indication of the plausible linkage between the mechanism(s) the assay is measuring and the resulting hazard endpoint.", 
+                 "Information about the throughput of the assay: indicate the throughput of the assay to provide an indication of likely resource intensity e.g. low (manual assay, one chemical tested at a time), lowmoderate, moderate, moderate-high, high throughput (e.g. in 96 well-plate and higher), and qualify with e.g. approximate number of chemicals/concentrations per run. If appropriate indicate whether a manual assay could be run in a higher throughput mode", 
+                 "Scientific principle of the method: provide the scientific rationale, supported by bibliographic references to articles, for the development of the assay. A summary description of the scientific principle including the biological/physiological basis and relevance (e.g. modeling of a specific organ) and/or mechanistic basis (e.g. modeling a particular mechanism by biochemical parameters) should be described. If possible, indicate what the anchor point is within an AOP.", 
+                 "Response and Response Measurement: response here makes reference to any biological effect, process or activity that can be measured. Specify precisely and describe the response and its measurement, e.g. corneal opacity measured using an opacitometer; half maximal activity concentration (AC50) derived from a competitive binding assay in human estrogen receptor assay or from the up-regulation of the proinflammatory antiangiogenic chemokine CXCL10.", 
+                 "Data analysis: Comment on the response value in terms of a boundary or range to provide a context for interpretation.", 
+                 "Description of the experimental system exposure regime: provide a summary description of the essential information pertaining to the exposure regime (dosage and exposure time including observation frequency) of the test compounds to the experimental system including information on metabolic competence if appropriate; number of doses/concentrations tested or testing range, number of replicates, the use of control(s) and vehicle. Also, describe any specialized equipment needed to perform the assay and measure the response. Indicate whether there might be potential solubility issues with the test system, and solutions proposed to address the issue.", 
+                 "Tissue, cells or extracts utilised in the assay and the species source: indicate the experimental system for the activity or response being measured.", "Metabolic competence of the test system: describe and discuss the extent to which the test system can be considered metabolically competent, either by itself, or with the addition of an enzymatic fraction, if appropriate. Provide reference if available.", 
+                 "Status of method development and uses: compile information for the following sections if appropriate. Considerations could include: i) Development status: Indicate if the assay is still under development, and the estimated timeline for completion as far as possible ii) Known uses: Summarise the current and/or past use of the assay by different laboratories iii) Evaluation study: Summarise the main conclusions or refer to individual protocol if available iv) Validation study: Indicate participation in a formal validation study/studies and summarise the conclusions and their outcomes or refer to the individual protocol if available v) Regulatory use: Provide details of any potential regulatory application and of the toxicological hazard endpoint being addressed by the assay.")
+
+output <- data.frame(Field, Description)
+
+htmlTable(output,
+        align = 'l',
+        align.header = 'l',
+        rnames = FALSE  ,
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+        caption="Table 23: Fields in assay_descriptions.",
+)
+
+```
+
+## Chemical
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("chid", "casn", "chnm", "dsstox_substance_id")
 
 Description <- c("Chemical ID&dagger;",
                  "CAS Registry Number",
                  "Chemical name",
-                 "Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database"
-                 )
+                 "Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database")
 
 output <- 
   data.frame(Field, Description)
@@ -720,69 +741,67 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 21: Fields in chemical table." ,
+        caption="Table 24: Fields in chemical table." ,
         tfoot = "&dagger; This is the DSSTox GSID within the ToxCast data, but can be any integer and will be auto-generated (if not explicitly defined) for newly registered
 chemicals"
 )
 
 ```
 
-<!-- Table 24-->
+## Chemical Lists
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("chid", "clib")
+Field <- c("chemical_lists_id", "chid", "dsstox_substance_id", "list_acronym", "list_name", "list_desc")
 
-Description <- c("Chemical ID",
-                 "Chemical library"
-                 )
+Description <- c("Chemical List ID", "Chemical ID", "Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database", 
+                 "Chemical list acronym", "Chemical list name", "Chemical list description")
 
-output <- 
-  data.frame(Field, Description)
+output <-  data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 22: Fields in chemical_library table." 
-     
-)
+        caption="Table 25: Fields in chemical_lists table." )
 
 ```
 
-<!-- Table 23-->
+## Sample
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("spid", "chid", "stkc", "stkc_unit", "tested_conc_unit")
+Field <- c("spid", "chid", "stkc", "stkc_unit", "tested_conc_unit", "bottle_barcode", "source", "bottle_type", "lot_number", "purity_percentage", "solubility")
 
 Description <- c("Sample ID",
                  "Chemical ID",
                  "Stock concentration" ,
                  "Stock concentration unit",
-                 "The concentration unit for the concentration values in the data-containing tables"
-                 )
+                 "The concentration unit for the concentration values in the data-containing tables", 
+                 "Bottle barcode of sample", "Source (i.e. manufacturer or supplier) of procured bottle", 
+                 "Type of bottle, which can reflect storage condition", "Lot or batch number of bottle", 
+                 "Reported purity percentage from bottle Certificate of Analysis (CoA)", "Solubility")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 23: Fields in sample table." 
+        caption="Table 26: Fields in sample table." 
 )
 
 ```
 The stock concentration fields in the "sample" table allow the user to track the original concentration when the neat sample is solubilized in vehicle before any serial dilutions for testing purposes. The US EPA's ChemTrack application and database supports chemical procurement and sample management for ToxCast in vitro screening efforts.
 
-# Level 0 Pre-processing
+# Level 0 Pre-Processing {#lvl0-preprocessing}
 
-Level 0 pre-processing can be done on virtually any high-throughput/high-content screening application. In the ToxCast program, level 0 processing is done in R by vendor/dataset-specific scripts. The individual R scripts act as the "laboratory notebook" for the data, with all pre-processing decisions clearly commented and explained. The standard Level 0 format to enter the pipeline is identical between testing paradigms, single concentration (sc) and multi-concentration (mc).
+Level 0 pre-processing can be done on virtually any high-throughput screening application to prepare data for ToxCast data processing. In the ToxCast program, level 0 processing is done in R by vendor/dataset-specific scripts. The individual R scripts act as the "laboratory notebook" for the data, with all pre-processing decisions clearly commented and explained. The standard Level 0 format to enter the pipeline is identical between testing paradigms, single concentration (sc) and multi-concentration (mc) as described in the [Database Structure>Level 0 section](#lvl0-table).
 
-Level 0 pre-processing has to reformat the raw data into the standard format for the pipeline, and also can make manual transformations to the data as pre-normalization steps. All manual transformations to the data should be very well documented with justification. Common examples of manual transformations include fixing a sample ID typo, or changing well quality value(s) to 0 after finding obvious problems like a plate row/column missing an assay reagent. 
+Level 0 pre-processing reformats the raw, source data into the standard format for the pipeline, and also can make manual transformations to the data as pre-normalization steps. All manual transformations to the data should be very well documented with justification. Common examples of manual transformations include fixing a sample ID typo, or changing well quality value(s) to 0 after finding obvious problems like a plate row/column missing an assay reagent. 
 
 Each row in the level 0 pre-processing data represents one well-assay component combination, containing 11 fields. The only field in level 0 pre-processing not stored at level 0 is the assay component source name ($\mathit{acsn}$). The assay component source name should be some concatenation of data from the assay source file that identifies the unique assay components. When the data are loaded into the database, the assay component source name is mapped to assay component ID through the assay\_component\_map table in the <font face="CMTT10"> tcpl </font> database. Assay components can have multiple assay component source names, but each assay component source name can only map to a single assay component. 
 
-<!-- Table 24-->
+## Required Fields
+
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("acsn", "spid", "cpid", "apid", "rowi", 
            "coli", "wllt", "wllq", "conc", "rval", "srcf")
@@ -810,17 +829,17 @@ htmlTable(output,
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         
-          caption="Table 24: Required fields in level 0 pre-processing." ,
-          tfoot = "The N/A column indicates whether the field can be N/A in the pre-processed data. 
- &dagger; In past versions of *tcpl*, there were some exceptions where concentrations could be N/A. For *tcpl_v3*, conc values must be numeric for processing since N/A values will result in processing error.  
- &ddagger;If the raw value is N/A, well quality must be 0."
+          caption="Table 27: Required fields in level 0 pre-processing." ,
+          tfoot = "The N/A column indicates whether the field can be NULL in the pre-processed data when writing Level 0. 
+ &dagger; In past versions of *tcpl*, there were some exceptions where concentrations could be NULL. All conc values must be numeric for processing. For blank and neutral control wells, NULL concs will automatically be set to zero if not provided. If other concs are NULL, user will get a warning and be unable to write Level 0.  
+ &ddagger;If the raw value is NULL, well quality must be 0."
 )
 
 ```
 
-The well type field is used in the processing to differentiate controls from test compounds in numerous applications, including normalization and definition of the assay noise level. Currently, the <font face="CMTT10"> tcpl </font> package includes the eight well types in Table 29. Package users are encouraged to suggest new well types and methods to better accommodate their data. 
+The well type field is used in the processing to differentiate controls from test compounds in numerous applications, including normalization and definition of the assay noise level. Currently, the <font face="CMTT10"> tcpl </font> package includes the eight well types in Table 25. Package users are encouraged to  utilize additional well types (for example, well types "x", "y", "z") or suggest new methods to better accommodate their data. 
 
-<!-- Table 25-->
+## Well Types
 ```{r warning = FALSE, echo = FALSE}
 `Well Type` <- c("t", "c", "p", "n", "m",  "o", "b", "v")
 
@@ -843,64 +862,17 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 25: Well types" 
+        caption="Table 28: Well types" 
 )
 
 ```
 
 The final step in level 0 pre-processing is loading the data into the <font face="CMTT10"> tcpl </font> database. The  <font face="CMTT10"> tcpl </font> package includes the <font face="CMTT10"> tcplWriteLvl0 </font> function to load data into the database. The <font face="CMTT10"> tcplWriteLvl0</font> function maps the assay component source name to the appropriate assay component ID, checks each field for the correct class, and checks the database for the sample IDs with well type "t." Each test compound sample ID must be included in the <font face="CMTT10"> tcpl</font> database before loading data. The <font face="CMTT10"> tcplWriteLvl0</font> also checks each test compound for concentration values.
 
-# Appendix
+# ToxCast Publications
+Check out the following publications for additional information on the overall [US EPA's Toxicity Forecaster (ToxCast) Program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast). Assay-specific publications describing assay design or results are available within the assay_references and citations table.
 
-## A: Cytotoxicity Distribution
-
-Recognizing the substantial impact of cytotoxicity in confounding high-throughput and high-content screening results, the <font face="CMTT10"> tcpl</font>  package includes methodology for defining chemical-specific cytotoxicity estimates. Our observations based on ToxCast data suggest a complex, and not-yet fully understood cellular biology that includes non-specific activation of many targets as cells approach death. For example, a chemical may induce activity in an estrogen-related assay, but if that chemical also causes activity in hundreds of other assays at or around the same concentration as cytotoxicity, should the chemical be called an estrogen agonist? The <font face="CMTT10"> tcplCytpPt</font>  function provides an estimate of chemical-specific cytotoxicity points to provide some context to the "burst" phenomenon.
-
-The cytotoxicity point is simply the median AC$_{50}$ for a set of assay endpoints, either given by the user or defined within the <font face="CMTT10"> tcpl</font>  database. By default, the <font face="CMTT10"> tcplCytoPt</font>  function uses the assay endpoints listed in the $\mathit{burst\_assay}$ field of the "assay\_component\_endpoint" table, where 1 indicates including the assay endpoint in the calculation. The "burst" assay endpoints can be identified by running  <font face="CMTT10"> tcplLoadAeid(fld = "burst\_assay", val = 1) </font>.
-
-In addition to the cytotoxicity point, <font face="CMTT10">tcplCytoPt </font> provides two additional estimates: (1) the MAD of the AC$_{50}$ ($\mathit{modl\_ga}$) values used to calculate the cytotoxicity point, and (2) the global MAD. Note, only active assay endpoints (where the hit call, $\mathit{hitc}$, equals $1$) are included in the calculations. Once the burst distribution (cytotoxicity point and MAD) is defined for each chemical, the global burst MAD is defined as the median of the MAD values. Not every chemical may be tested in every "burst" assay, so the user can determine the minimum number of tested assays as a condition for the MAD value for a particular chemical to be included in the global MAD calculation. By default, if "aeid" is the vector of assay endpoints used in the calculation, <font face="CMTT10">tcplCytoPt </font> requires the chemical to be tested in at least <font face="CMTT10">floor(0.8 * length(aeid)) </font> assay endpoints to be included in the calculation. The user can specify to include all calculated MAD values (note, there must be at least two active assay endpoints to calculate the MAD) by setting 'min.test' to <font face="CMTT10">FALSE </font>. The 'min.test' parameter also accepts a number, allowing the user to explicitly set the requirement.
-
-The global MAD gives an estimate of overall cytotoxicity window, and allows for a cytotoxicity distribution to be determined for chemicals with less than two active "burst" assay endpoints. The cytotoxicity point for chemicals with less than two active "burst" endpoints is set to the value given to the 'default.pt' parameter. By default, the <font face="CMTT10">tcplCytoPt </font> assigns 'default.pt' to 3.^[$10^3 = 1000$, therefore, when using micromolar units, $3$ is equivalent to $1$ millimolar. $1$ millimolar was chosen as an arbitrary high concentration (outside the testing range for ToxCast data), based on the principle that all compounds are toxic if given in high enough concentration.]
-
-## B: Build Variable Matrices
-
-The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-assay matrices for the level 4 and level 5 data. When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See <font face="CMTT10">?tcplSubsetChid </font> for more information. <br/>
-
- 1. "ac50" -- The active concentration at 50% maximal response ($\mathit{AC_{50}}$) for the winning model. <br/>
- 2. "ac50_verbose" -- The $\mathit{AC_{50}}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
- 3. "acc" -- The active concentration at user-defined cutoff ($\mathit{ACC}$ ) for the winning model. <br/>
- 4. "acc_verbose" -- The $\mathit{ACC}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
- 5. "mc_hitc" -- The hit-call for the winning model in multiple-concentration (mc) screening. <br/>
- 6. "sc_hitc" -- The hit-call in single concentration (sc) screening. <br/>
-
-<font face="CMTT10">tcplVarMat </font> produces matrices of combined sc-mc output. For the $\mathit{AC_{50}}$ and $\mathit{ACC}$ matrices specifically, values are inserted in place to show complete views of what was tested and what the results. Further, "ac50_verbose" and "acc_verbose" replace such values with text. $\mathit{AC_{50}}$ and $\mathit{ACC}$ are:
-
-- set to 1e6 when the chemical is tested but negative in mc. In _verbose matrices, these are indicated as "MC neg".
-
-- set to 1e7 when the chemical is not tested in mc but was screened in sc with a positive hitcall for the same aeid. In _verbose matrices, these are indicated as "SC pos, No MC".
-
-- set to 1e8 when the chemical is not tested in mc but was screened in sc with a negative hitcall for the same aeid. In _verbose matrices, these are indicated as "SC neg, No MC".
-
-- not changed when the chemical is tested in mc and positive, or not tested in either mc or sc.
-
-Both sc and mc data are required for <font face="CMTT10">tcplVarMat</font>. As a result, the "API" driver is not currently supported since it does not return sc data.
-
-In addition, additional matrices can be defined by the 'add.vars' parameter. The 'add.vars' parameter will take any level 4 or level 5 field and create the respective matrix.
-
-```{r varmat_use, eval = FALSE}
-# create matrices with all chemicals and assays; the entire database
-varmat <- tcplVarMat()
-# create matrices using a subset of chemicals and/or aeids
-aeids <- c(80)
-dtxsid <- c("DTXSID80379721", "DTXSID10379991", "DTXSID7021106", "DTXSID1026081")
-varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
-# create extra matrices by adding vars
-varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
-```
-
-<font face="CMTT10">tcplVarMat </font> returns a list of chemical by assay matrices (data.tables) where the rows are given by the dsstox_substance_id and corresponding chnm (chemical name) columns and the colnames are given by assay endpoint name (aenm). To export this list, save to a .xlsx. Each matrix will have its own sheet.
-
-```{r varmat_save, eval = FALSE}
-library(writexl)
-write_xlsx(varmat, path = "varmat_output.xlsx")
-```
+* [Feshuk et al., 2023](https://www.frontiersin.org/journals/toxicology/articles/10.3389/ftox.2023.1275980): The ToxCast pipeline: updates to curve-fitting approaches and database structure
+* [Filer et al.,2017](https://pubmed.ncbi.nlm.nih.gov/27797781/): tcpl: the ToxCast pipeline for high-throughput screening data
+* [Sheffield et al., 2021](https://doi.org/10.1093/bioinformatics/btab779): tcplfit2: an R-language general purpose concentration–response modeling package
+* [Judson et al., 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7297301/):  Analysis of the Effects of Cell Stress and Cytotoxicity on In Vitro Assay Activity Across a Diverse Chemical and Assay Space
