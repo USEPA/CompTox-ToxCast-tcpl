@@ -114,7 +114,7 @@ As described in greater detail within the processing vignette, a goal of MC proc
 
 ## Data
 
-Loading data is can be done for a given endpoint (aeid), sample (spid), chemical (dtxsid), or endpoint-sample (m4id) by specifying "fld". Set add.fld = FALSE is used to limit fields to those which are defaults for each level when loading from invitrodb directly. Leaving add.fld = TRUE (default) will return all available fields, i.e. all information from levels 3 through 6.
+Loading data is completed for a given endpoint (aeid), sample (spid), chemical (dtxsid), or endpoint-sample (m4id) by specifying "fld". Set add.fld = FALSE is the option used to limit fields to those which are defaults for each level when loading from invitrodb directly. Leaving add.fld = TRUE (default) will return all available fields, i.e. all information from levels 3 through 6.
 
 ### By aeid
 ```{r data_by_aeid}
@@ -390,7 +390,7 @@ printFormattedTable(chem_info)
 
 As with loading data via <font face="CMTT10">tcplLoadData</font>, the user must indicate the applicable fields and ids which are query-able via the CTX Bioactivity API. These such fields are limited to “aeid”, “m4id”, “spid”, and “dtxsid”, and any other fields input will result in error.
 
-While supplying multiple ids (through val) are valid, but multiple fields are not. For example, if fld = "spid", no aeid can be specified, meaning every matching spid will be plotted. If fld = "aeid", every sample within the given endpoint(s) will be plotted. If fld = "m4id", only one plot will output for every each m4id input. Combinations of fields are currently not supported with tcplPlot using API connections. Therefore, if looking for a specific aeid and spid combo, one should determine the corresponding m4id, like so:
+While supplying multiple ids (through val) is valid, supplying multiple fields is not. For example, if fld = "spid", no aeid can be specified, meaning every matching spid will be plotted. If fld = "aeid", every sample within the given endpoint(s) will be plotted. If fld = "m4id", only one plot will output for every each m4id input. Combinations of fields are currently not supported with tcplPlot using API connections. Therefore, if looking for a specific aeid and spid combo, one should determine the corresponding m4id, like so:
 
 ## Output Image File (JPG) of Single Verbose Plot, by M4ID
 
