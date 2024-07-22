@@ -20,7 +20,7 @@ vignette: >
 
 This vignette describes how the user can retrieve data from the ToxCast database, known as invitrodb, using <font face="CMTT10">tcpl</font>. The MySQL version of the ToxCast database and summary files are publicly available for download on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data).
 
-To support different data retrieval needs within <font face="CMTT10">tcpl</font>, there are a number of functions which query the database and return information to the local R session. Throughout this vignette, abbreviations will used to describe data retrieved from the database or to refer to processing steps. 'MC' is used for assay data with multiple concentrations whereas 'SC' describes single concentration. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if discussing single concentration data from level 2 processing: 'SC2.' See tcpl's other vignettes for more information. 
+To support different data retrieval needs within <font face="CMTT10">tcpl</font>, there are a number of functions which query the database and return information to the local R session. Throughout this vignette, abbreviations are used to describe data retrieved from the database or to refer to processing steps. 'MC' is used for assay data with multiple concentrations screened, whereas 'SC' describes single concentration assay data. A particular data or processing level is indicated by appending the level id/number to the end of the 'SC' or 'MC' designation. For example, if discussing single concentration data from level 2 processing: 'SC2.' See tcpl's other vignettes for more information. 
 
 ```{r eval = TRUE, hide=TRUE, message = FALSE, warning=FALSE, echo=FALSE}
 # Primary Packages #
@@ -71,7 +71,7 @@ aeids <- tcplLoadAeid(fld="asid", # field to query on
 
 # Retrieving Assay Annotations
 
-Assay source, assay, assay component, and assay endpoint are registered via tcpl scripting into a collection of tables. The database structure takes the annotations and organizes them as attributes of the assay conductors, the assays (i.e., experiments), the assay components (i.e., raw readouts), or the assay endpoints (i.e., normalized component data) enabling aggregation and differentiation of the data generated through ToxCast and Tox21. The annotations capture four types of information:
+Assay source, assay, assay component, and assay endpoint are registered via tcpl scripting into a collection of tables. The database structure takes the annotations and organizes them as attributes of the assay conductors, the assays (i.e., experiments), the assay components (i.e., raw readouts), or the assay endpoints (i.e., normalized component data) enabling aggregation and differentiation of the data generated through ToxCast and Tox21 (or other relevant partners). The annotations capture four types of information:
 
 i. Identification information
 ii. Design information such as the technology, format, and objective aspects that decompress the assay’s innovations,
@@ -158,7 +158,7 @@ The <font face="CMTT10">**tcplMthdLoad**</font> function returns the method assi
 
 # Retrieving Data 
 
-The <font face="CMTT10">**tcplQuery**</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided in our example. Please see the introductory vignette in the tcpl package for more information on database structure to help construct these queries.
+The <font face="CMTT10">**tcplQuery**</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided in our example. Please see the Introductory vignette in the tcpl package for more information on database structure to help construct these queries.
 
 ```{r tcplquery, eval = FALSE}
 # Load sample table using a MySQL query.
