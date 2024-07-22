@@ -354,7 +354,7 @@ To collapse the data by sample ID, the median response value of replicates withi
 
 Once the data are collapsed, such that each assay endpoint-sample pair only has one value, the activity is determined. For a sample to get an active hit call, the $\mathit{max\_med}$ must be greater than a specified efficacy cutoff. The efficacy cutoff is determined by the level 2 methods. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the assigned level 2 methods. Failing to assign a level 2 method will result in every sample being called active. For a complete list of level 2 methods, see <font face="CMTT10"> tcplMthdList(lvl = 2, type = "sc") </font> or <font face="CMTT10">?SC2\_Methods. </font>
 
-Sometimes it is necessary to prevent active hitcalls from $\mathit{max\_med}$ > cutoff in the biologically irrelevant direction. Level 2 now contains two methods for overwriting the $\mathit{max\_med}$ value. If applied, these will prevent an active hitcall value for any $\mathit{max\_med}$ > cutoff in the biologically unintended direction. Here, they replace $\mathit{max\_med}$ with either a true minimum or maximum rather than the greatest absolute value median. 
+Sometimes it is necessary to prevent active hit calls from $\mathit{max\_med}$ > cutoff in the biologically irrelevant direction. Level 2 now contains two methods for overwriting the $\mathit{max\_med}$ value. If applied, these will prevent an active hitcall value for any $\mathit{max\_med}$ > cutoff in the biologically unintended direction. Here, they replace $\mathit{max\_med}$ with either a true minimum or maximum rather than the greatest absolute value median. 
 
 ```{r warning = FALSE, echo = FALSE}
 Method <- c(
@@ -559,7 +559,7 @@ If the starting level (slvl) is less than 4, then 'id' is interpreted by <font f
 
 ##   Level 4
 
-Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity (i.e. response) of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplFit2 </font> R package ([Sheffield et al., 2021](https://academic.oup.com/bioinformatics/article-abstract/38/4/1157/6428656?redirectedFrom=fulltext&login=true)). Bi-directional fitting directly models the activity in the concentration series without performing curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend) as used in previous versions of <font face="CMTT10"> tcpl </font>.
+Level 4 processing splits the data into concentration-response series by sample and assay endpoint, then models the activity (i.e. response) of each series. Each series is modeled using the bi-directional fitting methods available in the <font face="CMTT10"> tcplfit2 </font> R package ([Sheffield et al., 2021](https://academic.oup.com/bioinformatics/article-abstract/38/4/1157/6428656?redirectedFrom=fulltext&login=true)). Bi-directional fitting directly models the activity in the concentration series without performing curve inversion (i.e. observed responses producing a 'negative/decreasing' trend with increasing concentration groups are multiplied by $-1$ to induce a 'positive/increasing' trend) as used in previous versions of <font face="CMTT10"> tcpl </font>.
 
 ### Pre-Modeling Processes
 
@@ -568,7 +568,7 @@ Level 4 processing starts with establishing a noise-band for the assay endpoint 
 $$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 Where $y_{i}$ is the $i^{th}$ baseline observation, defined based on the assigned method - see Table 7 for details, and $\tilde{y}$ is the median of all the baseline observations.  The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for further details.
 
-One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplFit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on bmad method. **It should be noted that the benchmark response (BMR) as defined will change for a single sample in a given assay endpoint as additional screening data are pipelined. Thus, the benchmark dose (BMD) estimate may change over time.**
+One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response (BMR) used both in the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplfit2 </font> (i.e. <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively).  One standard deviation of the baseline response for an assay endpoint is estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on bmad method. **It should be noted that the benchmark response (BMR) as defined will change for a single sample in a given assay endpoint as additional screening data are pipelined. Thus, the benchmark dose (BMD) estimate may change over time.**
 
 ```{r warning = FALSE, echo = FALSE}
 # First column with the method assignment index.
@@ -645,7 +645,7 @@ mc3 <- tcplPrepOtpt(mc3)
 mc3
 ```
 
-For demonstration purposes, we provide the <font face="CMTT10"> mc_vignette </font> R data object within the <font face="CMTT10"> tcpl </font> package since the vignette is not directly connected to such a database.  The <font face="CMTT10"> mc_vignette </font> object contains a subset of data from level 3 through 5 from the most recent version of the invitroDB database.  The following code demonstrates how to load the example data object and accessing/storing the level 3 data in the <font face="CMTT10"> mc3 </font> object.
+For demonstration purposes, we provide the <font face="CMTT10"> mc_vignette </font> R data object within the <font face="CMTT10"> tcpl </font> package since the vignette is not directly connected to such a database.  The <font face="CMTT10"> mc_vignette </font> object contains a subset of data from level 3 through 5 from the most recent version of the invitrodb database.  The following code demonstrates how to load the example data object and accessing/storing the level 3 data in the <font face="CMTT10"> mc3 </font> object.
 
 ```{r message=FALSE}
 # Load the example data from the `tcpl` package.
@@ -898,7 +898,7 @@ htmlTable(output,
 
 Most of these models assume the background response is zero and the absolute response (or initial response) is increasing. In other words, most of these models are able to fit a monotonic curve for either direction. The polynomial 2 model is an exception because it has two parameterizations. By default, the biphasic parameterization will be used in <font face="CMTT10"> tcpl </font>. A biphasic polynomial 2 model is able to fit curve to responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). In applications in which biphasic responses are not reasonable, polynomial 2 can be fit using the monotonic only parameterization. 
 
-Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplFit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 9 below.
+Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplfit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 9 below.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column - tcplfit2 additional fit parameters.
@@ -909,7 +909,7 @@ FitParameters <- c(
 # Second column - description of additional fit parameters.
 Description <- c(
   "Error term","Success of Fit/Model Convergenece","Success of Covariance",
-  "Aikaike Information Criteria", "Root Mean Squared Error",
+  "Akaike Information Criteria", "Root Mean Squared Error",
   "Vector of Model Estimated Values at Given Concentrations",
   "Model Parameter Values", "Standard deviation of Model Parameter Values",
   "Vector of Parameter Names","Vectors of Parameter Standard Deviation Names"
@@ -925,11 +925,11 @@ htmlTable(output,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
         
           caption="Table 9: Model output descriptions." ,
-          tfoot = "Model output descriptions are pulled from tcplFit2 manual at <https://cran.r-project.org/package=tcplfit2/tcplfit2.pdf>."
+          tfoot = "Model output descriptions are pulled from tcplfit2 manual at <https://cran.r-project.org/package=tcplfit2/tcplfit2.pdf>."
 )
 ```
 
-Maximum likelihood estimation is utilized in the model fitting algorithm to estimate model parameters for all available models in <font face="CMTT10"> tcplFit2 </font>. Even though <font face="CMTT10"> tcplFit2 </font> allows maximum likelihood estimation assuming the error follows a Student's t-distribution or a normal distribution, <font face="CMTT10"> tcpl </font> assumes for all models the error follows a t-distribution with four degrees of freedom. Heavier (i.e. wider) tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than the more commonly used normal distribution. Robust model fitting removes the need to eliminate potential outliers prior to fitting. 
+Maximum likelihood estimation is utilized in the model fitting algorithm to estimate model parameters for all available models in <font face="CMTT10"> tcplfit2 </font>. Even though <font face="CMTT10"> tcplfit2 </font> allows maximum likelihood estimation assuming the error follows a Student's t-distribution or a normal distribution, <font face="CMTT10"> tcpl </font> assumes for all models the error follows a t-distribution with four degrees of freedom. Heavier (i.e., wider) tails in the t-distribution diminish the influence of outlier values, and produce more robust estimates than the more commonly used normal distribution. Robust model fitting removes the need to eliminate potential outliers prior to fitting. 
 
 Let $t(z,\nu)$ be the Student's t-distribution with $\nu$ degrees of freedom,
 $y_{i}$ be the observed response at the $i^{th}$ observation, and $\mu_{i}$ be
@@ -1002,13 +1002,13 @@ fits %>%
   ylab("Response")
 ```
 
-**Figure 2:** This figure contains simulated concentration-response curves to illustrate the general underlying curve shape covered by each of the models included in the <font face="CMTT10">tcplFit2</font> package and used on the back-end of the level 4 data processing in <font face="CMTT10">tcpl</font>.  Each sub-plot in the figure corresponds to a single parametric model included in the model fitting process and has a corresponding color and line type to accompany it.  All sub-plots are plotted such that the x-axis represents the log-transformed concentration ($base=10$) and the y-axis represents the response values. 
+**Figure 2:** This figure contains simulated concentration-response curves to illustrate the general underlying curve shape covered by each of the models included in the <font face="CMTT10">tcplfit2</font> package and used on the back-end of the level 4 data processing in <font face="CMTT10">tcpl</font>.  Each sub-plot in the figure corresponds to a single parametric model included in the model fitting process and has a corresponding color and line type to accompany it.  All sub-plots are plotted such that the x-axis represents the log-transformed concentration ($base=10$) and the y-axis represents the response values. 
 
 ### Methods Assignment
 
 Level 4 does not utilize any assay endpoint-specific methods; the user only needs to run the <font face="CMTT10"> tcplRun</font> function. **Level 4 processing and all subsequent processing is done by assay endpoint, not assay component**. The previous section showed how to find the assay endpoints for an assay component using the <font face="CMTT10"> tcplLoadAeid </font> function.
 
-For demonstrating the assignment of level 4 methods, method '1' will be specified to calculate that the BMAD and estimate one standard deviation of baseline using the two lowest concentration groups of **treatment wells**.
+For demonstrating the assignment of level 4 methods, method '1' will be specified to calculate that the BMAD and estimate one standard deviation of baseline using the two lowest concentration groups of **treatment wells** (well type, or wllt, equal to "t").
 
 ```{r eval=FALSE}
 ## Methods Assignment ##
@@ -1157,7 +1157,7 @@ where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estim
 
 ## Level 5
 
-Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates point-of-departure estimates based on the activity cutoff.
+Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into categories, and calculates potency estimates based on the activity cutoff.
 
 ### Methods Assignment
 
@@ -1194,11 +1194,11 @@ mc4_aic %>%
   )
 ```
 
-The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit-call model that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein, hitc < 0.9 are considered inactive. This cutoff was determined from extensive analysis of high-throughput transcriptomics (HTTr) data analyzed using tcplfit2, and comparison to known positive and negative reference chemicals. Continuous hitc in tcplfit2 [(Sheffield et al.)], 2021](https://doi.org/10.1093/bioinformatics/btab779) are defined as the product of three proportional weights: 1) the AIC of the winning model is better than the constant model (i.e. winning model is not fit to background noise), 2) at least one concentration has a median response that exceeds cutoff, and 3) the top from the winning model exceeds the cutoff. The constant model may never be selected as the winning model, but if the constant model has the lowest AIC compared to other models, the calculated continuous hitc will be zero. Users may interpret the continuous hitc into active or inactive designations based on different thresholds. Further testing through implementation of this new functionality may reveal appropriate thresholds for different applications or assays.
+The estimated parameters from the winning model are stored in their respective parameter fields at level 5.  The activity of each concentration-response series is determined by calculating a continuous hit call that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein, hitc < 0.9 are considered inactive. This cutoff was determined from extensive analysis of high-throughput transcriptomics (HTTr) data analyzed using tcplfit2, and comparison to known positive and negative reference chemicals. Continuous hitc in tcplfit2 [(Sheffield et al.)], 2021](https://doi.org/10.1093/bioinformatics/btab779) are defined as the product of three proportional weights: 1) the AIC of the winning model is better than the constant model (i.e. winning model is not fit to background noise), 2) at least one concentration has a median response that exceeds cutoff, and 3) the top from the winning model exceeds the cutoff. The constant model may never be selected as the winning model, but if the constant model has the lowest AIC compared to other models, the calculated continuous hitc will be zero. Though the hitc tend to approach 0 or 1, and are not normally distributed as a set of values, users may interpret the continuous hitc into active or inactive designations based on different thresholds. Further testing through implementation of this new functionality may reveal appropriate thresholds for different applications or assays. Hitc should not be interpreted as a probability (i.e., a hitc of 0.7 does not indicate a 70% chance of an active hitc).
 
 The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
 
-While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitcalls of curves fit in the biologically irrelevant direction. Level 5 now contains two methods for overwriting the hitcall value. If applied, these will overwrite the hitcall value for any biologically irrelevant curve by flipping it negative. 
+While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitc of curves fit in the biologically irrelevant direction. Level 5 now contains two methods for overwriting the hitc value. If applied, these will overwrite the hitc value for any biologically irrelevant curve by flipping the hitc to a negative value. 
 
 ```{r warning = FALSE, echo = FALSE}
 Method <- c(
@@ -1237,9 +1237,9 @@ tcplMthdAssign(
   type = "mc") # the data/processing type
 ```
 
-As described previously, since the continuous hit call is the product of three proportional weights, and the resulting value is between 0 and 1.  The higher the hitcall (i.e. close to 1) the more plausible the concentration-response series indicates true biological activity in the measured response (i.e. 'active' hit).
+As described previously, since the continuous hitc is the product of three proportional weights, and the resulting value is between 0 and 1.  Hitc that approach 1 indicate concentration-response series more likely associated with true biological activity in the measured response rather than noise (i.e., an 'active' hit).
 
-For each concentration series, several potency or point-of-departure (POD) estimates are calculated on the winning model. The major estimates include: (1) the activity concentration at the specified benchmark response (BMR) ($\mathit{bmd}$), (2) the activity concentration at $50\%$ of the maximal response ($\mathit{ac50}$), (3) the activity concentration at the efficacy cutoff ($\mathit{acc}$), (4) the activity concentration at $10\%$ of the maximal response, and (5) the concentration at $5\%$ of the maximal response. There are several additional potency and uncertainty estimates included as part of the level 5. The POD estimates mentioned in here are summarized in Figure 4. The winning model may return a $\mathit{bmd}$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $\mathit{bmd}$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the the highest test concentration}$, respectively. If the calculated $\mathit{bmd}$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $\mathit{bmd}$ estimate instead.
+For each concentration series, several potency estimates are calculated on the winning model. The primary estimates include: (1) the activity concentration at the specified benchmark response (BMR) ($\mathit{bmd}$), (2) the activity concentration at $50\%$ of the maximal response ($\mathit{ac50}$), (3) the activity concentration at the efficacy cutoff ($\mathit{acc}$), (4) the activity concentration at $10\%$ of the maximal response, and (5) the concentration at $5\%$ of the maximal response. There are several additional potency and uncertainty estimates included as part of the level 5. The potency estimates are summarized in Figure 4. The winning model may return a $\mathit{bmd}$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $\mathit{bmd}$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the the highest test concentration}$, respectively. If the calculated $\mathit{bmd}$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $\mathit{bmd}$ estimate instead.
 
 ```{r echo=FALSE, eval=FALSE}
 # With the level 5 methods assigned, the data are ready for level 5 processing:
@@ -1275,7 +1275,7 @@ A subset of this data is already available within <font face="CMTT10"> mc_vignet
 mc5 <- mc_vignette[["mc5"]]
 ```
 
-The level 5 data includes fields for the best model fit, the POD estimates, other estimates from the best model fit, as well as the ID fields.  A complete list of level 5 fields is available in the Introduction vignette.
+The level 5 data includes fields for the best model fit, the potency estimates, other estimates from the best model fit, as well as the ID fields.  A complete list of level 5 fields is available in the Introduction vignette.
 
 The user can visualize the model fitting results with <font face="CMTT10"> tcpl </font> using the <font face="CMTT10"> tcplPlot </font> functions, when connected to a database. The resulting figure is an interactive plot displaying the concentration-response series data, the ten curve fits from level 4 with the best model distiguished by color, and the AC50 estimate.
 
@@ -1442,7 +1442,7 @@ fullPlot <- linePlot + geom_point(
 fullPlot
 ```
 
-**Figure 4:** This figure illustrates the results from the Level 5 analyses in the <font face="CMTT10"> tcpl </font> pipeline package including the best model fit and subsequent point-of-departure (POD) estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity responses from which potency estimates of interest are defined, and the vertical lines show the corresponding POD estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
+**Figure 4:** This figure illustrates the results from the Level 5 analyses in the <font face="CMTT10"> tcpl </font> pipeline package including the best model fit and subsequent potency estimates. The light-blue shaded region represents the estimated efficacy cutoff ($\mathit{coff}$). Each of the concentration-response models fit in Level 4 are included in the plot, where the blue curve indicates the best model fit for the observed data (white circles) and the rest are depicted by the gray curves.  The horizontal lines show the activity response levels from which potency estimates of interest are defined, and the vertical lines show the corresponding potency estimates.  The black point shows the AC~5~ (concentration producing $5 \%$ of the maximal response), the purple point shows the AC~10~ (concentration producing $10 \%$ of the maximal response), the yellow point shows the BMD (benchmark dose), the orange point shows the ACC (concentration producing a response at the efficacy cutoff), and the pink point shows the AC~50~ (concentration producing $50 \%$ of the maximal response).
 
 ### Fit Categories
 
