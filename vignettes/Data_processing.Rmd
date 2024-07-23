@@ -857,15 +857,14 @@ Equations <- c(
 OutputParameters <- c(
   "", # constant
   "a (y-scale)", # linear,
-  "a (y-scale), b (x-scale)", # quadratic
-  "b1 (linear coefficient), b2 (quadratic coefficient)", # biphasic poly2
-  "a (y-scale), p (power)", # power
-  "tp (top), ga (gain AC50), p (gain-power)", # hill
-  "tp (top), ga (gain AC50), p (gain power), la (loss AC50), q (loss power)", # gain-loss
-  "a (y-scale), b (x-scale)", # exp2
-  "a (y-scale), b (x-scale), p (power)", # exp3
-  "tp (top), ga (AC50)", # exp4
-  "tp (top), ga (AC50), p (power)" # exp5
+  "a (y-scale) </br> b (x-scale)", # quadratic
+  "a (y-scale) </br> p (power)", # power
+  "tp (top) </br> ga (gain AC50) </br> p (gain-power)", # hill
+  "tp (top) </br> ga (gain AC50) </br> p (gain power) </br> la (loss AC50) </br> q (loss power)", # gain-loss
+  "a (y-scale) </br> b (x-scale)", # exp2
+  "a (y-scale) </br> b (x-scale) </br> p (power)", # exp3
+  "tp (top) </br> ga (AC50)", # exp4
+  "tp (top) </br> ga (AC50) </br> p (power)" # exp5
 )
 # Fifth column - additional model details.
 Details <- c(
@@ -896,7 +895,7 @@ htmlTable(output,
 
 ```
 
-Most of these models assume the background response is zero and the absolute response (or initial response) is increasing. In other words, most of these models are able to fit a monotonic curve for either direction. The polynomial 2 model is an exception because it has two parameterizations. By default, the biphasic parameterization will be used in <font face="CMTT10"> tcpl </font>. A biphasic polynomial 2 model is able to fit curve to responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). In applications in which biphasic responses are not reasonable, polynomial 2 can be fit using the monotonic only parameterization. 
+Most of these models assume the background response is zero and the absolute response (or initial response) is increasing. In other words, most of these models are able to fit a monotonic curve for either direction. The polynomial 2 (poly2) model is an exception because it has two parameterizations. By default, the biphasic parameterization will be used in <font face="CMTT10"> tcpl </font>. A biphasic poly2 model is able to fit curve to responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). If biphasic responses are not reasonable, data can be fit using the monotonic only parameterization in a standalone application of <font face="CMTT10"> tcplfit2_core </font> with the parameter <font face="CMTT10"> biphasic=FALSE</font> assigned. 
 
 Upon completion of the model fitting, each model gets a success designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within <font face="CMTT10"> tcplfit2_core </font> function from <font face="CMTT10"> tcplfit2 </font>.  Similarly, if the Hessian matrix was successfully inverted then 1 is returned to indicate a successful covariance calculation (cov); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within <font face="CMTT10"> tcplFit2::tcplfit2_core </font>) or the model fit failed the Akaike information criterion (aic), root mean squared error (rme), model estimated responses (modl), model parameters (parameters), and the standard deviation of model parameters (parameter sds) are set to NA.  A complete list of model output parameters is provided in Table 9 below.
 

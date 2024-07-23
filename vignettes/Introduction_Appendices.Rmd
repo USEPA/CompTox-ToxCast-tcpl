@@ -1,5 +1,5 @@
 ---
-title: "tcpl: The ToxCast^TM^ Analysis Pipeline Supporting Accessible Bioactivity Data for Toxicology" 
+title: "tcpl: The ToxCast Data Analysis Pipeline </br> *Supporting Accessible Bioactivity Data for Toxicology*" 
 author: US EPA's Center for Computational Toxicology and Exposure ccte@epa.gov
 output:
   rmdformats::readthedown
@@ -27,13 +27,13 @@ This vignette provides an overview of the <font face="CMTT10"> tcpl </font> pack
 
 # Overview
 
-The ToxCast Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The U.S. Environmental Protection Agency (EPA)'s ToxCast^TM^ program includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins. More information on the ToxCast program can be found at <https://www.epa.gov/chemical-research/toxicity-forecasting>.
+The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/chemical-research/toxicity-forecasting>) includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
 
 Tcpl is a flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format and loaded into the <font face="CMTT10"> tcpl </font> database by vendor-specific R scripts. Once data is loaded into the database, ToxCast utilizes generalized processing functions provided in this package to process, normalize, model, qualify, and visualize the data.
 
 <center>
 
-![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline functionality</i></font>](img/Fig1_tcpl_overview.png)
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline</i></font>](img/Fig1_tcpl_overview.png)
 
 </center>
 
@@ -873,7 +873,7 @@ htmlTable(output,
 The final step in level 0 pre-processing is loading the data into the <font face="CMTT10"> tcpl </font> database. The  <font face="CMTT10"> tcpl </font> package includes the <font face="CMTT10"> tcplWriteLvl0 </font> function to load data into the database. The <font face="CMTT10"> tcplWriteLvl0</font> function maps the assay component source name to the appropriate assay component ID, checks each field for the correct class, and checks the database for the sample IDs with well type "t." Each test compound sample ID must be included in the <font face="CMTT10"> tcpl</font> database before loading data. The <font face="CMTT10"> tcplWriteLvl0</font> also checks each test compound for concentration values.
 
 # ToxCast Publications
-Check out the following publications for additional information on the overall [US EPA's Toxicity Forecaster (ToxCast) Program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast). Assay-specific publications describing assay design or results are available within the assay_references and citations table.
+Check out the following publications for additional information on the overall [US EPA's Toxicity Forecaster (ToxCast) Program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast). Assay-specific publications describing assay design or results are available in the assay_references and citations tables.
 
 * [Feshuk et al., 2023](https://www.frontiersin.org/journals/toxicology/articles/10.3389/ftox.2023.1275980): The ToxCast pipeline: updates to curve-fitting approaches and database structure
 * [Filer et al.,2017](https://pubmed.ncbi.nlm.nih.gov/27797781/): tcpl: the ToxCast pipeline for high-throughput screening data
