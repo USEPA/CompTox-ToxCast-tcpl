@@ -6,12 +6,10 @@
 <!-- badges: start -->
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/tcpl)](https://cran.r-project.org/package=tcpl)
-[![Active](http://img.shields.io/badge/Status-Active-green.svg)](https://tterb.github.io)
+[![Active](http://img.shields.io/badge/Status-Active-green.svg)](https://cran.r-project.org/package=tcpl)
 [![Monthly
 Downloads](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)
 [![DOI](https://zenodo.org/badge/doi/%2010.32614/CRAN.package.tcpl.svg)](http://dx.doi.org/10.32614/CRAN.package.tcpl)
-[![Open
-Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
 
 <!-- badges: end -->
 
