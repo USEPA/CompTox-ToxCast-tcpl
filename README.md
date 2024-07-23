@@ -1,8 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img style="float: right; margin-left: 10px; margin-bottom: 10px;" src="vignettes/img/tcpl_hex.png" width="200">
-
 # tcpl: The ToxCast Data Analysis Pipeline Supporting Accessible Bioactivity Data for Toxicology
 
 <!-- badges: start -->
@@ -16,6 +14,8 @@ Downloads](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)](http
 <!-- badges: end -->
 
 ## Welcome to the GitHub repository for the tcpl package.
+
+<a href="https://cran.r-project.org/web/packages/tcpl/index.html"><img src="vignettes/img/tcpl_hex.png" width="200" align="right" /></a>
 
 The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages,
 curve-fits, plots, and stores ToxCast data to populate its linked MySQL
