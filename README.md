@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<img style="float: right; margin-left: 10px; margin-bottom: 10px;" src="vignettes/img/tcpl_hex.png" width="200">
+
 # tcpl: The ToxCast Data Analysis Pipeline Supporting Accessible Bioactivity Data for Toxicology
 
 <!-- badges: start -->
@@ -8,6 +10,7 @@
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/tcpl)](https://cran.r-project.org/package=tcpl)
 [![Monthly
 Downloads](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)
+[![DOI](https://zenodo.org/badge/doi/%2010.32614/CRAN.package.tcpl.svg)](http://dx.doi.org/%2010.32614/CRAN.package.tcpl)
 
 <!-- badges: end -->
 
