@@ -8,9 +8,10 @@
 <!-- badges: start -->
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/tcpl)](https://cran.r-project.org/package=tcpl)
+[![R-CMD-check](https://github.com/USEPA/CompTox-ToxCast-tcpl/actions/workflows/test-on-PR.yaml/badge.svg)](https://github.com/USEPA/CompTox-ToxCast-tcpl/actions/workflows/test-on-PR.yaml)
 [![Monthly
 Downloads](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)
-[![DOI](https://zenodo.org/badge/doi/%2010.32614/CRAN.package.tcpl.svg)](http://dx.doi.org/%2010.32614/CRAN.package.tcpl)
+[![DOI](https://zenodo.org/badge/doi/%2010.32614/CRAN.package.tcpl.svg)](http://dx.doi.org/10.32614/CRAN.package.tcpl)
 
 <!-- badges: end -->
 
