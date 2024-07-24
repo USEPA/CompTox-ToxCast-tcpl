@@ -160,13 +160,15 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
     zdat <- zdat[chid %in% ch]
   }
   
-  #for bidirectional burst endpoints only consider down response (BSK and APR aeids below)
-  zdat <- zdat[!(aeid %in% c(26, 46, 158, 160, 178, 198, 222, 226, 252, 254, 270, 292, 316, 318, 2873, 2929, 2931) & top>0),]
+  # set list of assays where we should only consider negative direction
+  burst_down <- c(26, 46, 158, 160, 178, 198, 222, 226, 252, 254, 270, 292, 316, 318,1091, 2873, 2929, 2931)
   
+  # set down burst to -1 hitc but do not filter so it is still included in Ntested.
+  zdat[aeid %in% burst_down & top>0,hitc:=-1]
+ 
   cat("8: Determining representative sample\n")
   zdat <- tcplSubsetChid(dat = zdat, flag = flag)
-  #filter out gnls curves
-  zdat <- zdat[modl != "gnls",]
+
   #filter out null chids
   zdat <- zdat[!is.na(chid)]
   cat("9: Calculating intermediate summary statistics\n")
@@ -182,6 +184,11 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
                by = list(chid,code, chnm, casn)]
   
   cat("10: Calculating the cytotoxicity point based on the 'burst' endpoints\n")
+  #add chems that are not tested in the burst
+  total_chem <- tcplLoadChem() |> select(chid,code,chnm,casn) |> as.data.table() |> unique()
+  total_chem <- total_chem[!chid %in% zdst$chid,][,`:=`(ntst = 0, nhit = 0, burstpct = 0)]
+  zdst <- rbindlist(list(zdst,total_chem), fill = TRUE)
+  
   zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst>=60)] 
   gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
