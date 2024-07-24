@@ -46,7 +46,7 @@ tcplConf(db = dbfile_temp, drvr = 'tcplLite')
 
 ```
 
-<img style="float: right; margin-left: 10px;" src="img/tcpl_hex.png" width="200">
+<a href="https://cran.r-project.org/web/packages/tcpl/index.html"><img src="img/tcpl_hex.png" width="200" align="right" style="float: right; margin-left: 10px; margin-bottom: 10px;"/></a>
 
 # Introduction
 

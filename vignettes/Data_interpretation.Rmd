@@ -32,7 +32,7 @@ library(htmlTable)
 library(kableExtra)
 ```
 
-<img style="float: right; margin-left: 10px; margin-bottom: 10px;" src="img/tcpl_hex.png" width="200">
+<a href="https://cran.r-project.org/web/packages/tcpl/index.html"><img src="img/tcpl_hex.png" width="200" align="right" style="float: right; margin-left: 10px; margin-bottom: 10px;"/></a>
 
 # Introduction
 After fitting, a continuous hit call (hitc) is calculated as the product of three proportional weights. Several potency estimates are also calculated for the winning model, including activity concentrations at specified levels of response, such as concentration at 50% of maximal activity (AC50) and concentration at activity observed at the cutoff (ACC), and a benchmark dose (BMD) at a specified benchmark response (BMR). This vignette will review the statistics behind the activity and potency estimates available for each concentration-response series and how the user may interpret these values alongside other available information, such as fit categories, representative samples, and cytotoxicity burst thresholds. Overall, this Data Interpretation vignette seeks to enhance user confidence in reviewing and using ToxCast data for different tasks.
