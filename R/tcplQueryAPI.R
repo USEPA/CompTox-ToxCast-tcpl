@@ -5,7 +5,7 @@
 #' @rdname query_funcs
 #' 
 #' @import data.table
-#' @importFrom ccdR get_bioactivity_details_batch get_all_assays
+#' @importFrom ctxR get_bioactivity_details_batch get_all_assays
 #' @importFrom tidyr unnest
 #' @export
 
