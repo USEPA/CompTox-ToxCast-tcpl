@@ -5,9 +5,13 @@
 #'  Generic Plotting Function for tcpl
 #'
 #' @description
-#' \code{tcplLoadData} queries the tcpl databases and returns a plot
+#' \code{tcplPlot} queries the tcpl databases and returns a plot
 #' for the given level and data type.
 #'
+#' @param dat data.table containing plot-prepared data, used for stand-alone 
+#' (non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
+#' (generating comparison plots across multiple database configurations) and not
+#' required. See \code{tcplPlotLoadData}.
 #' @param type Character of length 1, the data type, "sc" or "mc".
 #' @param fld Character, the field(s) to query on.
 #' @param val List, vectors of values for each field to query on. Must be in
@@ -16,8 +20,9 @@
 #' compare with val. Must be in the same order as 'fld'. Must have the same
 #' length as val (1:1 comparison). Must be set to compare plots; otherwise leave
 #' NULL
-#' @param output How should the plot be presented. To view the plot in application,
-#'  use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
+#' @param output How should the plot be presented. To work with the plot in 
+#' environment, use "ggplot"; to interact with the plot in application, use 
+#' "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
 #' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
 #' by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
 #' 'verbose' = FALSE.
@@ -36,7 +41,7 @@
 #' c(<min>,<max>). By default, c(NA,NA).
 #'
 #' @details
-#' The data type can be either 'mc' for mutliple concentration data, or 'sc'
+#' The data type can be either 'mc' for multiple concentration data, or 'sc'
 #' for single concentration data. Multiple concentration data will be loaded
 #' into the 'mc' tables, whereas the single concentration will be loaded into
 #' the 'sc' tables.
@@ -71,13 +76,12 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
   if (check_tcpl_db_schema() | !is.null(dat) | getOption("TCPL_DRVR") == "API") {
     # check if user supplied data.  If not, load from db connection
     if(is.null(dat)){
-      dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = val, type = type,flags = flags, compare = FALSE) #code defined in tcplPlotUtils.R
-    } else {
-      # if user supplies dat we still need to add compare indicator
-      dat <- dat[,compare := FALSE]
-    }
+      dat <- tcplPlotLoadData(type = type, fld = fld, val = val, flags = flags) #code defined in tcplPlotUtils.R
+    } 
+    # if user supplies dat we still need to add compare indicator
+    dat <- dat[,compare := FALSE]
     if(!is.null(compare.val)){
-      compare.dat <- tcplPlotLoadData(lvl = lvl, fld = fld, val = compare.val, type = type,flags = flags, compare = TRUE) #code defined in tcplPlotUtils.R
+      compare.dat <- tcplPlotLoadData(type = type,fld = fld, val = compare.val, flags = flags)[,compare := TRUE] #code defined in tcplPlotUtils.R
       if (nrow(compare.dat) == 0) stop("No compare data for fld/val provided")
     }
     
