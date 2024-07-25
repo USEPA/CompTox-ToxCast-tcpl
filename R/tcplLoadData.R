@@ -253,6 +253,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
                                                joins = "mc4.m4id = mc5.m4id AND mc5.m5id = mc5_param.m5id"),
       table == "mc6" ~ list(tbls = "mc4,mc6", 
                             joins = "mc6.m4id = mc4.m4id"),
+      table == "mc7" ~ list(tbls = "mc4,mc7", 
+                            joins = "mc7.m4id = mc4.m4id"),
       TRUE ~ list(tbls = NULL, joins = NULL))
 
     if (is.null(tbls_joins$tbls)) stop("Invalid 'lvl' and 'type' combination.")
