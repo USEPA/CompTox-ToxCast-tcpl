@@ -1,7 +1,8 @@
 test_that("example=driver updates option TCPL_DRVR", {
-  tcplConf(drvr = "example")
-  expect_equal("example",
-                    getOption("TCPL_DRVR"))
+  drvr <- "example"
+  tcplConf(drvr)
+  expect_equal(getOption("TCPL_DRVR"),
+               drvr)
 })
 
 test_that("unsupported driver error message", {
@@ -22,7 +23,7 @@ test_that("API driver no key error message", {
 
 test_that("API driver properly sets URL", {
   tcplConf(drvr = "API", pass = "api_key")
-  expect_equal("https://api-ccte.epa.gov/bioactivity",
-               getOption("TCPL_HOST")
+  expect_equal(getOption("TCPL_HOST"), 
+               "https://api-ccte.epa.gov/bioactivity"
   )
 })
