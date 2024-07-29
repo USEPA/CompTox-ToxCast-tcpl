@@ -86,7 +86,7 @@ Curve-fitting enables determination of various metrics of potency, i.e., concent
 
 ## Activity Concentrations at Specified Response
 
-An activity concentration is the estimated concentration inducing a specified level of response (activity). A common potency metric used from tcpl is the activity concentration at 50% of maximal activity, or **AC50**, provided for the Hill and Gain-Loss models. All versions of tcpl output the activity concentrations as described in Table 2. 
+An activity concentration is the estimated concentration inducing a specified level of response (activity). A common potency metric used from tcpl is the activity concentration at 50% of maximal activity, or **AC50**. All versions of tcpl output the activity concentrations as described in Table 2. 
 
 ```{r warning = FALSE, echo = FALSE}
 Activity_Concentration_uM <- c("AC5", "AC10", "AC20", "AC50", "ACB", "ACC", "AC1SD")
