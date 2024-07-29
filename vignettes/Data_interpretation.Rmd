@@ -230,7 +230,7 @@ Multiple samples of the same chemical (many spids per chid) may be tested for a 
 ## MC Representative Samples
 To select a representative sample in MC, a "consensus hitc" is made by taking the mean of all binarized sample hitc, with ties defaulting to active. After the chemical-wise hitc is made, the samples corresponding to chemical-wise hit call are logically ordered using the fit category, the number of the flags, and AC50, then the first sample for every chemical is selected. This logic prioritizes active over inactive hit calls when there is a disagreement among samples, but then attempts to pick the representative sample with the highest quality curve, with the goal of minimizing false negatives. Logic encompasses the following:
 
-1. Hitc are first binarized to active or inactive, where hitc >= 0.9 is deemed active. Mean of the binarized hitc across samples is calculated for the chemical. Representative sample must match mean activity call (active or inactive)
+1. Hitc are first binarized to active (1) or inactive (0), where hitc >= 0.9 is deemed active. Mean of the binarized hitc across samples is calculated for the chemical. Representative sample must match mean activity call (active or inactive), where a mean activity hit call >= 0.5 is considered active.
 2. Samples are prioritized first by [Fit Categories](fitc). Generally AC50 values within concentration range (fitc = 37, 41) are prioritized over AC50 values above concentration range (fitc = 38, 42) then AC50 values below concentration range (fitc = 36, 40)
 4. Samples are then sorted based on number of flags. Curve fits for samples with fewer flags are prioritized.
 5. Finally, if all things are equal, the sample with a lower AC50 is selected over higher AC50.
@@ -240,7 +240,9 @@ To select a representative sample in SC, a "consensus hitc" is made by taking th
 
 # Variable Matrices
 
-The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-assay matrices for the Level 4 and 5 data. When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](chid) for more information. <br/>
+The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-endpoint matrices, combining summary information for single-concentration and/or multiple-concentration screening. Such a matrix can be useful for understanding which chemicals were tested, and what hit calls and potency values resulted from this screening. For example, one might ask, "Which chemicals were screened in either single-concentration or multi-concentration for some assay endpoint, and if multi-concentration screening was performed, what potency was estimated for any observed activity?" 
+
+For variable matrices from <font face="CMTT10">tcplVarMat </font>, a representative sample is selected using the tcplSubsetChid function in cases where a chemical-by-endpoint was tested in multiple samples (performed separately for multiple-concentration or single-concentration screening). When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](chid) for more information. <br/>
 
  1. "ac50" -- The active concentration at 50% maximal response ($\mathit{AC_{50}}$) for the winning model. <br/>
  2. "ac50_verbose" -- The $\mathit{AC_{50}}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
