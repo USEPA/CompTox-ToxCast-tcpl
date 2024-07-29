@@ -156,33 +156,9 @@ test_that("mc example error message appears", {
   )
 })
 
-# test_that("description", {
-#   expect_*(code)
-# })
 
-
-
-## this stores simple string responses for .prepField
-# test_that("tcplLoadData loads mc4 data for one m4id", {
-#   data("mc_test")
-#   mocked <- mc_test$mc4_m4id_12699347
-#   local_mocked_bindings(
-#     tcplQuery = function(query, db, tbl) {
-#       if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
-#       else mocked$tcplQuery
-#     },
-#     .prepField = function(fld, tbl, db) mocked$.prepField
-#   )
-#   tcplConf(drvr = "MySQL")
-#   mc4 <- tcplLoadData(lvl = 4, fld = "m4id", val = 12699347)
-#   expect_true(
-#     is.data.table(mc4)
-#   )
-# })
-
-
-
-## this way avoids storing a .prepField and allows getting coverage there
+# new method using mocking for tcplQuery function
+# TODO: add more expectations to check for columns/rows of the data table, etc
 test_that("tcplLoadData loads mc4 data for one m4id", {
   data("mc_test")
   mocked <- mc_test$mc4_m4id_12699347
@@ -192,7 +168,7 @@ test_that("tcplLoadData loads mc4 data for one m4id", {
       else mocked[query][[1]]
     }
   )
-  tcplConf(drvr = "MySQL")
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   mc4 <- tcplLoadData(lvl = 4, fld = "m4id", val = 12699347)
   expect_true(
     is.data.table(mc4)
@@ -208,7 +184,7 @@ test_that("tcplLoadData loads mc5 data for one m4id", {
       else mocked[query][[1]]
     }
   )
-  tcplConf(drvr = "MySQL")
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   mc5 <- tcplLoadData(lvl = 5, fld = "m4id", val = 12699347)
   expect_true(
     is.data.table(mc5)

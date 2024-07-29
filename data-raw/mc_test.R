@@ -22,27 +22,6 @@ tcplConf(user = userid,
          drvr = "MySQL")
 
 
-# #add temporary line to tcplLoadData to print 'fld' from .prepField and qstring
-# hide_response <- tcplLoadData(lvl = 4, fld = "m4id", val = 12699347)
-# 
-# 
-# # use queries to save data
-# mc4_m4id_12699347 <- list(.prepField = "mc4_param.m4id", 
-#                           tcplQuery = tcplQuery('SELECT * FROM mc4,mc4_param WHERE mc4.m4id = mc4_param.m4id AND  mc4_param.m4id IN ("12699347");'))
-# 
-# 
-# # collate the data into a single object 'mc_test'
-# mc_test <- list(
-#   tcplConfQuery = tcplQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"),
-#   mc4_m4id_12699347 = mc4_m4id_12699347
-# )
-# #---------------------------#
-# ## save the data
-# usethis::use_data(mc_test, overwrite = TRUE)
-# #---------------------------#
-
-
-
 get_query_data <- function(lvl, fld, val, add.fld = TRUE) {
   
   # different style of saving just tcplQuery output
@@ -59,6 +38,8 @@ get_query_data <- function(lvl, fld, val, add.fld = TRUE) {
   
 }
 
+# TODO: consider a more generalizable way to pick an m4id, so this script can be
+# run without issues in the future.
 mc4_m4id_12699347 <- get_query_data(lvl = 4, fld = "m4id", val = 12699347)
 mc5_m4id_12699347 <- get_query_data(lvl = 5, fld = "m4id", val = 12699347)
 
