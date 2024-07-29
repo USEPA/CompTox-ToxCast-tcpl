@@ -52,7 +52,7 @@ Continuous $hitc$ as defined in [tcplfit2 R package](https://cran.r-project.org/
 See [Sheffield et al., 2021](https://doi.org/10.1093/bioinformatics/btab779) for more information on tcplfit2.
 
 # Cutoff
-The cutoff is a user-defined level of efficacy that corresponds to statistical and/or biological relevant change from baseline for each assay endpoint. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5. When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
+The cutoff is a user-defined level of efficacy that corresponds to statistical and/or biological relevant change from baseline for each assay endpoint. All versions of tcpl provide methods for estimation of the baseline sampling variability, or noise around the assay controls, including calculation of the median absolute deviation over all response values given by wells that may represent baseline response (the BMAD), such as the neutral or vehicle control or the first two concentrations in the concentration series for all chemicals screened as defined by Level 4 methods. Users define mc5 methods depending on assay and data type, with some common cutoff thresholds used to establish a cutoff including $3*BMAD$, 20% percent change, or 1.2*log10 fold-change.  Operationally in tcpl, the efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5. When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>.
 
 While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitcalls of responses in the biologically irrelevant direction. Level 5 now contains two methods for "overwriting" the hitcall value. If applied, the continuous hitcall product will be preserved, but the hitcall value for any biologically irrelevant response (i.e., response in an unintended direction, such as an increase observed when the assay examines inhibition only) will be multiplied by negative 1.
 
@@ -87,7 +87,9 @@ Curve-fitting enables determination of various metrics of potency, i.e., concent
 
 ## Activity Concentrations at Specified Response
 
-An activity concentration is the estimated concentration inducing a specified level of response (activity). A common potency metric used from tcpl is the activity concentration at 50% of maximal activity, or **AC50**. All versions of tcpl output the activity concentrations as described in Table 2. Note that potency metrics such as **AC50** are reported even if the hit call is inactive if a non-constant model could be fit to the data.
+An activity concentration is the estimated concentration inducing a specified level of response (activity). A common potency metric used from tcpl is the activity concentration at 50% of maximal activity, or **AC50**. The default baseline region is defined as ± $3*BMAD$⁠, and the ACB is the concentration at which the model first reaches a default of $3*BMAD$⁠, whereas ACC is defined as the concentration at which the model reaches the user-defined cutoff. Note that potency metrics such as **AC50** are reported even if the hit call is inactive if a non-constant model could be fit to the data.
+
+All versions of tcpl output the activity concentrations as described in Table 2. 
 
 ```{r warning = FALSE, echo = FALSE}
 Activity_Concentration_uM <- c("AC5", "AC10", "AC20", "AC50", "ACB", "ACC", "AC1SD")
@@ -111,7 +113,7 @@ htmlTable(output,
 
 ```
 
-All versions of tcpl provide methods for estimation of the baseline sampling variability, or noise around the assay controls, including calculation of the median absolute deviation over all response values given by wells that may represent baseline response (the BMAD), such as the neutral or vehicle control or the first two concentrations in the concentration series for all chemicals screened as defined by Level 4 methods. The default baseline region is defined as ± $3*BMAD$⁠, and the ACB is the concentration at which the model first reaches a default of $3*BMAD$⁠. Users define mc5 methods depending on assay and data type, with some common cutoff thresholds used to establish a cutoff including $3*BMAD$, 20% percent change, or 1.2*log10 fold-change.
+
 
 ## Benchmark Dose
 
@@ -143,7 +145,7 @@ For active curves, efficacy, as represented by the modeled top, is compared to 1
 
 $\mathit{Fitc}$ 36 describes a curve that is of low efficacy and with a low AC~50~, below the concentration range screened. These are more likely to be noise or less reproducible fits. $\mathit{Fitc}$ 41 and 42 are the ideal $\mathit{fitc}$ for reproducible curves, as demonstrated by these two $\mathit{fitc}$ comprising the majority of positive ($\mathit{hitc}$ > 0.9) curves in <font face="CMTT10">invitrodb v4.1</font>. $\mathit{Fitc}$ 40 indicates a curve with at least moderate efficacy, but an AC~50~ below the concentration range screened. These chemicals may be positive or reference chemicals screened in the incorrect concentration window to observe their minimum activity. These curves may also represent high-confidence positives for which we have limited understanding of the slope of the concentration-response curve, and as such, the AC~50~ may be associated with more uncertainty.
 
-# Flags
+# Flags (Level 6)
 
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. Cautionary flags on fitting were developed in previous versions of <font face="CMTT10">tcpl</font> and have been stored at Level 6. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data.
 
