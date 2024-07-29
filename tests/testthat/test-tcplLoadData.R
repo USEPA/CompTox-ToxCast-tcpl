@@ -157,11 +157,15 @@ test_that("mc example error message appears", {
 })
 
 
+#-------------------------------------------------------------------------------
 # new method using mocking for tcplQuery function
 # TODO: add more expectations to check for columns/rows of the data table, etc
-test_that("tcplLoadData loads mc4 data for one m4id", {
+#-------------------------------------------------------------------------------
+
+# MC0
+test_that("tcplLoadData loads mc0 data for one m0id", {
   data("mc_test")
-  mocked <- mc_test$mc4_m4id_12699347
+  mocked <- mc_test$mc0_by_m0id
   local_mocked_bindings(
     tcplQuery = function(query, db, tbl) {
       if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
@@ -169,15 +173,15 @@ test_that("tcplLoadData loads mc4 data for one m4id", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  mc4 <- tcplLoadData(lvl = 4, fld = "m4id", val = 12699347)
+  dat <- tcplLoadData(lvl = 0, fld = "m0id", val = mocked$m0id)
   expect_true(
-    is.data.table(mc4)
+    is.data.table(dat)
   )
 })
 
-test_that("tcplLoadData loads mc5 data for one m4id", {
+test_that("tcplLoadData loads mc0 data for one acid", {
   data("mc_test")
-  mocked <- mc_test$mc5_m4id_12699347
+  mocked <- mc_test$mc0_by_acid
   local_mocked_bindings(
     tcplQuery = function(query, db, tbl) {
       if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
@@ -185,8 +189,256 @@ test_that("tcplLoadData loads mc5 data for one m4id", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  mc5 <- tcplLoadData(lvl = 5, fld = "m4id", val = 12699347)
+  dat <- tcplLoadData(lvl = 0, fld = "acid", val = mocked$acid)
   expect_true(
-    is.data.table(mc5)
+    is.data.table(dat)
+  )
+})
+
+# MC1
+test_that("tcplLoadData loads mc1 data for one m1id", {
+  data("mc_test")
+  mocked <- mc_test$mc1_by_m1id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 1, fld = "m1id", val = mocked$m1id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc1 data for one acid", {
+  data("mc_test")
+  mocked <- mc_test$mc1_by_acid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 1, fld = "acid", val = mocked$acid)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MC2
+test_that("tcplLoadData loads mc2 data for one m2id", {
+  data("mc_test")
+  mocked <- mc_test$mc2_by_m2id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 2, fld = "m2id", val = mocked$m2id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc2 data for one acid", {
+  data("mc_test")
+  mocked <- mc_test$mc2_by_acid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 2, fld = "acid", val = mocked$acid)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MC3
+test_that("tcplLoadData loads mc3 data for one m3id", {
+  data("mc_test")
+  mocked <- mc_test$mc3_by_m3id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 3, fld = "m3id", val = mocked$m3id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc3 data for one aeid", {
+  data("mc_test")
+  mocked <- mc_test$mc3_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 3, fld = "aeid", val = mocked$aeid)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MC4
+test_that("tcplLoadData loads mc4 data for one m4id", {
+  data("mc_test")
+  mocked <- mc_test$mc4_by_m4id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 4, fld = "m4id", val = mocked$m4id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc4 data for one aeid with add.fld = FALSE", {
+  data("mc_test")
+  mocked <- mc_test$mc4_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 4, fld = "aeid", val = mocked$aeid, add.fld = FALSE)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MC5
+test_that("tcplLoadData loads mc5 data for one m5id", {
+  data("mc_test")
+  mocked <- mc_test$mc5_by_m5id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 5, fld = "m5id", val = mocked$m5id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc5 data for one aeid with add.fld = FALSE", {
+  data("mc_test")
+  mocked <- mc_test$mc5_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 5, fld = "aeid", val = mocked$aeid, add.fld = FALSE)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MC6
+test_that("tcplLoadData loads mc6 data for one m6id", {
+  data("mc_test")
+  mocked <- mc_test$mc6_by_m6id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 6, fld = "m6id", val = mocked$m6id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc6 data for one aeid", {
+  data("mc_test")
+  mocked <- mc_test$mc6_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 6, fld = "aeid", val = mocked$aeid)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MC7
+test_that("tcplLoadData loads mc7 data for one m7id", {
+  data("mc_test")
+  mocked <- mc_test$mc7_by_m7id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 7, fld = "m7id", val = mocked$m7id)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+test_that("tcplLoadData loads mc7 data for one aeid", {
+  data("mc_test")
+  mocked <- mc_test$mc7_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = 7, fld = "aeid", val = mocked$aeid)
+  expect_true(
+    is.data.table(dat)
+  )
+})
+
+# MCagg
+test_that("tcplLoadData loads mc 'agg' data for one aeid", {
+  data("mc_test")
+  mocked <- mc_test$mcagg_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(lvl = "agg", fld = "aeid", val = mocked$aeid)
+  expect_true(
+    is.data.table(dat)
   )
 })
