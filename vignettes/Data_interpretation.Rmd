@@ -106,7 +106,7 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 2: Activity Concentrations at Specificed Response.",
+        caption="Table 2: Activity Concentrations at Specified Response.",
         tfoot="&dagger;Additional information about the different well types, and their use in describing baseline activity, is available in the Data Processing vignette.")
 
 ```
