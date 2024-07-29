@@ -77,7 +77,7 @@ htmlTable(output,
 ```
 
 # Potency Estimates
-Curve-fitting enables determination of various metrics of potency, i.e., concentrations at which some amount of *in vitro* bioactivity is expected to occur, as illustrated below. 
+Curve-fitting enables determination of various metrics of potency, i.e., concentrations at which some amount of *in vitro* bioactivity is expected to occur, as illustrated below. This is provided in two sections, Activity Concentrations at Specified Response and Benchmark Dose (BMD), due to differences in the mathematical approach for computing these values, noting that logic for computation of the BMD is controlled in the R package tcplfit2.
 
 <center>
 
