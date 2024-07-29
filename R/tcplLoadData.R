@@ -108,7 +108,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       }
       else if (lvl == 1L) {
         sc1 <- sc_vignette[["sc1"]]
-        sc1 <- sc1[,c("s0id","s1id","spid","acid","aeid","apid","rowi","coli","wllt","logc","resp")]
+        sc1 <- sc1[,c("s0id","s1id","spid","acid","aeid","apid","rowi","coli","wllt","conc","resp")]
         return(sc1)
       }
       
@@ -121,7 +121,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         sc1 <- sc_vignette[["sc1"]]
         sc2 <- sc_vignette[["sc2"]]
         agg <- sc1[sc2, on = c("spid","aeid")]
-        agg <- agg[,c("aeid","s2id","s1id","s0id","logc","resp")]
+        agg <- agg[,c("aeid","s2id","s1id","s0id","conc","resp")]
         return(agg)
       }
       else stop("example tables for sc0, sc1, sc2, agg available.")
@@ -146,14 +146,17 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       } 
       else if (lvl == 3L) {
         mc3 <- mc_vignette[["mc3"]]
-        mc3 <- mc3[,c("m0id","m1id","m2id","m3id","spid","aeid","logc","resp","cndx","wllt","apid","rowi","coli","repi")]
+        mc3 <- mc3[,c("m0id","m1id","m2id","m3id","spid","aeid","conc","resp","cndx","wllt","apid","rowi","coli","repi")]
         return(mc3)
       } 
       else if (lvl == 4L) {
         mc4 <- mc_vignette[["mc4"]]
         if (!add.fld) {
-          mc4 <- mc4[,c("m4id","aeid","spid","bmad","resp_max","resp_min","max_mean","max_mean_conc","max_med","max_med_conc",
-                        "logc_max","logc_min","nconc","npts","nrep","nmed_gtbl")]
+          mc4 <- mc4[,c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", 
+                        "max_mean", "max_mean_conc", "min_mean", "min_mean_conc", 
+                        "max_med", "max_med_conc", "min_med", "min_med_conc", 
+                        "max_med_diff", "max_med_diff_conc", "conc_max", "conc_min", 
+                        "nconc", "npts", "nrep", "nmed_gtbl_pos", "nmed_gtbl_neg")]
         } else {
           mc4 <- mc4[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm","resp_unit","conc_unit")]
           setcolorder(mc4, c("m4id", "aeid", "spid"))
@@ -163,10 +166,15 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       else if (lvl == 5L) {
         mc5 <- mc_vignette[["mc5"]]
         if (!add.fld){
-          mc5 <- mc5[,c("m5id","m4id","aeid","spid","bmad","resp_max","resp_min","max_mean","max_mean_conc","max_med",
-                        "max_med_conc","logc_max","logc_min","nconc","npts","nrep","nmed_gtbl","hitc","modl","fitc","coff")]
+          mc5 <- mc5[,c("m5id","m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", 
+                        "max_mean", "max_mean_conc", "min_mean", "min_mean_conc", 
+                        "max_med", "max_med_conc", "min_med", "min_med_conc", 
+                        "max_med_diff", "max_med_diff_conc", "conc_max", "conc_min", 
+                        "nconc", "npts", "nrep", "nmed_gtbl_pos", "nmed_gtbl_neg",
+                        "hitc", "modl", "fitc", "coff")]
         } else {
-          mc5 <- mc5[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm","resp_unit","conc_unit","tp","ga","q","la","ac50_loss")]
+          mc5 <- mc5[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm",
+                         "resp_unit","conc_unit","tp","ga","q","la","ac50_loss")]
           setcolorder(mc5, c("m5id", "m4id","aeid", "spid"))
         }
         return(mc5)
@@ -175,7 +183,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         mc3 <- mc_vignette[["mc3"]]
         mc4 <- mc_vignette[["mc4"]]
         agg <- mc3[mc4, on = c("spid","aeid")]
-        agg <- agg[, c("aeid", "m4id", "m3id", "m2id", "m1id", "m0id", "spid", "logc", "resp")]
+        agg <- agg[, c("aeid", "m4id", "m3id", "m2id", "m1id", "m0id", "spid", 
+                       "conc", "resp")]
         return(agg)
 
       }
