@@ -188,12 +188,12 @@ tcplCytoPt <- function(chid = NULL, aeid = NULL, flag = TRUE,
   total_chem <- tcplLoadChem() |> select(chid,code,chnm,casn) |> as.data.table() |> unique()
   total_chem <- total_chem[!chid %in% zdst$chid,][,`:=`(ntst = 0, nhit = 0, burstpct = 0)]
   zdst <- rbindlist(list(zdst,total_chem), fill = TRUE)
-  
+
   zdst[, `:=`(used_in_global_mad_calc, burstpct > 0.05 & ntst>=60)] 
   gb_mad <- median(zdst[used_in_global_mad_calc=='TRUE', mad])  #calculate global mad
   zdst[,global_mad := gb_mad] # add column for global mad
   zdst[, cyto_pt := med]
-  zdst[burstpct < 0.05, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 use the default pt instead
+  zdst[burstpct < 0.05 & nhit < 2, `:=`(cyto_pt, default.pt)] # if the burst percent is less than .05 and at least 2 hits use the default pt instead
   zdst[, `:=`(cyto_pt_um, 10^cyto_pt)]
   zdst[, `:=`(lower_bnd_um, 10^(cyto_pt - 3 * global_mad))]
   zdst[,burstpct:=NULL] # remove burstpct from final results to match previous iterations of tcplCytopt
