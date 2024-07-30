@@ -158,8 +158,8 @@ test_that("mc example error message appears", {
 
 
 #-------------------------------------------------------------------------------
+# Covers testing tcplLoadData with "MySQL" driver
 # new method using mocking for tcplQuery function
-# TODO: add more expectations to check for columns/rows of the data table, etc
 #-------------------------------------------------------------------------------
 
 # MC0
@@ -174,9 +174,11 @@ test_that("tcplLoadData loads mc0 data for one m0id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 0, fld = "m0id", val = mocked$m0id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "acid", "spid", "wllt", "wllq", "conc", "rval") %in% colnames(dat)))
+  expect_true(mocked$m0id %in% dat$m0id)
 })
 
 test_that("tcplLoadData loads mc0 data for one acid", {
@@ -190,9 +192,11 @@ test_that("tcplLoadData loads mc0 data for one acid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 0, fld = "acid", val = mocked$acid)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "acid", "spid", "wllt", "wllq", "conc", "rval") %in% colnames(dat)))
+  expect_true(mocked$acid %in% dat$acid)
 })
 
 # MC1
@@ -207,9 +211,11 @@ test_that("tcplLoadData loads mc1 data for one m1id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 1, fld = "m1id", val = mocked$m1id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "acid", "spid", "wllt", "wllq", "conc", "rval") %in% colnames(dat)))
+  expect_true(mocked$m1id %in% dat$m1id)
 })
 
 test_that("tcplLoadData loads mc1 data for one acid", {
@@ -223,9 +229,11 @@ test_that("tcplLoadData loads mc1 data for one acid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 1, fld = "acid", val = mocked$acid)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "acid", "spid", "wllt", "wllq", "conc", "rval") %in% colnames(dat)))
+  expect_true(mocked$acid %in% dat$acid)
 })
 
 # MC2
@@ -240,9 +248,11 @@ test_that("tcplLoadData loads mc2 data for one m2id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 2, fld = "m2id", val = mocked$m2id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "m2id", "acid", "spid", "wllt", "wllq", "conc", "rval", "cval") %in% colnames(dat)))
+  expect_true(mocked$m2id %in% dat$m2id)
 })
 
 test_that("tcplLoadData loads mc2 data for one acid", {
@@ -256,9 +266,11 @@ test_that("tcplLoadData loads mc2 data for one acid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 2, fld = "acid", val = mocked$acid)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "m2id", "acid", "spid", "wllt", "wllq", "conc", "rval", "cval") %in% colnames(dat)))
+  expect_true(mocked$acid %in% dat$acid)
 })
 
 # MC3
@@ -273,9 +285,11 @@ test_that("tcplLoadData loads mc3 data for one m3id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 3, fld = "m3id", val = mocked$m3id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "m2id", "m3id", "acid", "aeid", "spid", "wllt", "wllq", "conc", "rval", "resp") %in% colnames(dat)))
+  expect_true(mocked$m3id %in% dat$m3id)
 })
 
 test_that("tcplLoadData loads mc3 data for one aeid", {
@@ -289,9 +303,11 @@ test_that("tcplLoadData loads mc3 data for one aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 3, fld = "aeid", val = mocked$aeid)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "m2id", "m3id", "acid", "aeid", "spid", "wllt", "wllq", "conc", "rval", "resp") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
 })
 
 # MC4
@@ -306,9 +322,11 @@ test_that("tcplLoadData loads mc4 data for one m4id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 4, fld = "m4id", val = mocked$m4id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "aeid", "spid", "bmad", "nconc", "nrep", "cnst_aic") %in% colnames(dat)))
+  expect_true(mocked$m4id %in% dat$m4id)
 })
 
 test_that("tcplLoadData loads mc4 data for one aeid with add.fld = FALSE", {
@@ -322,9 +340,11 @@ test_that("tcplLoadData loads mc4 data for one aeid with add.fld = FALSE", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 4, fld = "aeid", val = mocked$aeid, add.fld = FALSE)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "aeid", "spid", "bmad", "nconc", "nrep") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
 })
 
 # MC5
@@ -339,9 +359,11 @@ test_that("tcplLoadData loads mc5 data for one m5id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 5, fld = "m5id", val = mocked$m5id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "m5id", "aeid", "spid", "bmad", "nconc", "nrep", "modl", "hitc", "coff", "top") %in% colnames(dat)))
+  expect_true(mocked$m5id %in% dat$m5id)
 })
 
 test_that("tcplLoadData loads mc5 data for one aeid with add.fld = FALSE", {
@@ -355,9 +377,11 @@ test_that("tcplLoadData loads mc5 data for one aeid with add.fld = FALSE", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 5, fld = "aeid", val = mocked$aeid, add.fld = FALSE)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "m5id", "aeid", "spid", "bmad", "nconc", "nrep", "modl", "hitc", "coff") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
 })
 
 # MC6
@@ -372,9 +396,11 @@ test_that("tcplLoadData loads mc6 data for one m6id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 6, fld = "m6id", val = mocked$m6id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "m5id", "m6id", "aeid", "spid", "bmad", "nconc", "nrep", "flag") %in% colnames(dat)))
+  expect_true(mocked$m6id %in% dat$m6id)
 })
 
 test_that("tcplLoadData loads mc6 data for one aeid", {
@@ -388,9 +414,11 @@ test_that("tcplLoadData loads mc6 data for one aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 6, fld = "aeid", val = mocked$aeid)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "m5id", "m6id", "aeid", "spid", "bmad", "nconc", "nrep", "flag") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
 })
 
 # MC7
@@ -405,9 +433,11 @@ test_that("tcplLoadData loads mc7 data for one m7id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 7, fld = "m7id", val = mocked$m7id)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "m7id", "aeid", "spid", "bmad", "nconc", "nrep", "aed_val") %in% colnames(dat)))
+  expect_true(mocked$m7id %in% dat$m7id)
 })
 
 test_that("tcplLoadData loads mc7 data for one aeid", {
@@ -421,9 +451,11 @@ test_that("tcplLoadData loads mc7 data for one aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = 7, fld = "aeid", val = mocked$aeid)
-  expect_true(
-    is.data.table(dat)
-  )
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m4id", "m7id", "aeid", "spid", "bmad", "nconc", "nrep", "aed_val") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
 })
 
 # MCagg
@@ -438,7 +470,43 @@ test_that("tcplLoadData loads mc 'agg' data for one aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplLoadData(lvl = "agg", fld = "aeid", val = mocked$aeid)
-  expect_true(
-    is.data.table(dat)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("m0id", "m1id", "m2id", "m3id", "m4id", "acid", "aeid", "spid", 
+                    "conc", "resp", "bmad", "nconc", "nrep") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
+})
+
+# error cases
+test_that("invalid lvl and type error message", {
+  data("mc_test")
+  mocked <- mc_test$mcagg_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  expect_error(
+    tcplLoadData(lvl = 5, type = "sc"),
+    "Invalid 'lvl' and 'type' combination."
+  )
+})
+
+test_that("missing val error message", {
+  data("mc_test")
+  mocked <- mc_test$mcagg_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  expect_error(
+    tcplLoadData(lvl = 5, type = "mc", fld = "aeid"),
+    "'val' cannot be NULL check that a valid value was provided for the specified field"
   )
 })
