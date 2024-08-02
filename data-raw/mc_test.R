@@ -14,6 +14,7 @@ devtools::load_all()
 
 library(here)
 library(dplyr)
+library(stringr)
 #---------------------------#
 ## code to prepare `mc_test` dataset goes here
 # source the user ID, password, host, and database information for connection
@@ -68,7 +69,11 @@ get_query_data <- function(lvl, fld, val, compare.val = NULL, add.fld = TRUE, fu
     # add temporary line to top of tcplQuery to get the query string: print(query)
     query_strings <- capture.output(result<-tcplLoadData(lvl = lvl, fld = fld, val = val, add.fld = add.fld))
   } else if (func == "tcplPlot") {
-    query_strings <- capture.output(result<-tcplPlot(type = "mc", fld = fld, val = val, compare.val = compare.val, output = "pdf", multi = TRUE))
+    query_strings <- capture.output(result<-tcplPlot(type = "mc", fld = fld, 
+                                                     val = val, compare.val = compare.val, 
+                                                     output = "pdf", multi = TRUE, flags = TRUE, 
+                                                     fileprefix = "temp_tcplPlot"))
+    file.remove(stringr::str_subset(list.files(), "^temp_tcplPlot")) # clean up
   }
   
   query_strings <- unique(gsub("\\\\", "\\\"", gsub("\"", "", gsub("\\\\n", "\\\n", gsub("\\[1\\] ", "", query_strings)))))
@@ -81,6 +86,7 @@ get_query_data <- function(lvl, fld, val, compare.val = NULL, add.fld = TRUE, fu
   
   # also store fld and val in list object for use in test case
   dat[fld] <- val
+  if (!is.null(compare.val)) dat[sprintf("compare.%s", fld)] <- compare.val
   return(dat)
   
 }
@@ -110,13 +116,13 @@ mc_test <- list(
                                     val = l5_sample1$m4id, 
                                     func = "tcplPlot"),
   plot_multiple_m4id = get_query_data(fld = "m4id", 
-                                      val = l5_sample2$m4id, 
+                                      val = list(l5_sample2$m4id), 
                                       func = "tcplPlot"),
   plot_single_aeid = get_query_data(fld = "aeid", 
                                     val = aeid, 
                                     func = "tcplPlot"),
   plot_multiple_aeid = get_query_data(fld = "aeid", 
-                                      val = c(aeid, compare.aeid), 
+                                      val = list(c(aeid, compare.aeid)), 
                                       func = "tcplPlot"),
   plot_single_spid = get_query_data(fld = c("spid", "aeid"), 
                                     val = list(l5_sample1$spid, aeid), 
@@ -129,16 +135,16 @@ mc_test <- list(
                                             compare.val = compare.l5_sample1$m4id, 
                                             func = "tcplPlot"),
   plot_multiple_m4id_compare = get_query_data(fld = "m4id", 
-                                              val = l5_sample2$m4id, 
-                                              compare.val = compare.l5_sample2$m4id, 
+                                              val = list(l5_sample2$m4id), 
+                                              compare.val = list(compare.l5_sample2$m4id), 
                                               func = "tcplPlot"),
   plot_single_aeid_compare = get_query_data(fld = "aeid", 
                                             val = aeid, 
                                             compare.val = compare.aeid, 
                                             func = "tcplPlot"),
   plot_multiple_aeid_compare = get_query_data(fld = "aeid", 
-                                              val = c(aeid, compare.aeid), 
-                                              compare.val = c(compare.aeid, aeid), 
+                                              val = list(c(aeid, compare.aeid)), 
+                                              compare.val = list(c(compare.aeid, aeid)), 
                                               func = "tcplPlot"),
   plot_single_spid_compare = get_query_data(fld = c("spid", "aeid"), 
                                             val = list(l5_sample1$spid, aeid), 
