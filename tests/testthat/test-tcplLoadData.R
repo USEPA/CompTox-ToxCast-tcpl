@@ -162,6 +162,136 @@ test_that("mc example error message appears", {
 # new method using mocking for tcplQuery function
 #-------------------------------------------------------------------------------
 
+# SC0
+test_that("tcplLoadData loads sc0 data for one s0id", {
+  data("sc_test")
+  mocked <- sc_test$sc0_by_s0id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = 0, fld = "s0id", val = mocked$s0id)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s0id", "acid", "spid", "wllt", "wllq", "conc", "rval") %in% colnames(dat)))
+  expect_true(mocked$s0id %in% dat$s0id)
+})
+
+test_that("tcplLoadData loads sc0 data for one acid", {
+  data("sc_test")
+  mocked <- sc_test$sc0_by_acid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = 0, fld = "acid", val = mocked$acid)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s0id", "acid", "spid", "wllt", "wllq", "conc", "rval") %in% colnames(dat)))
+  expect_true(mocked$acid %in% dat$acid)
+})
+
+# SC1
+test_that("tcplLoadData loads sc1 data for one s1id", {
+  data("sc_test")
+  mocked <- sc_test$sc1_by_s1id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = 1, fld = "s1id", val = mocked$s1id)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s0id", "s1id", "acid", "aeid", "spid", "wllt", "wllq", "conc", "resp") %in% colnames(dat)))
+  expect_true(mocked$s1id %in% dat$s1id)
+})
+
+test_that("tcplLoadData loads sc1 data for one acid", {
+  data("sc_test")
+  mocked <- sc_test$sc1_by_acid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = 1, fld = "acid", val = mocked$acid)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s0id", "s1id", "acid", "aeid", "spid", "wllt", "wllq", "conc", "resp") %in% colnames(dat)))
+  expect_true(mocked$acid %in% dat$acid)
+})
+
+# SC2
+test_that("tcplLoadData loads sc2 data for one s2id", {
+  data("sc_test")
+  mocked <- sc_test$sc2_by_s2id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = 2, fld = "s2id", val = mocked$s2id)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s2id", "aeid", "spid", "bmad", "max_med", "coff", "hitc") %in% colnames(dat)))
+  expect_true(mocked$s2id %in% dat$s2id)
+})
+
+test_that("tcplLoadData loads sc2 data for one aeid", {
+  data("sc_test")
+  mocked <- sc_test$sc2_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = 2, fld = "aeid", val = mocked$aeid)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s2id", "aeid", "spid", "bmad", "max_med", "coff", "hitc") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
+})
+
+# SCagg
+test_that("tcplLoadData loads sc 'agg' data for one aeid", {
+  data("sc_test")
+  mocked <- sc_test$scagg_by_aeid
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplLoadData(type = "sc", lvl = "agg", fld = "aeid", val = mocked$aeid)
+  #expectations
+  expect_true(is.data.table(dat))
+  expect_true(nrow(dat) > 0)
+  expect_true(all(c("s0id", "s1id", "s2id", "acid", "aeid", "conc", "resp") %in% colnames(dat)))
+  expect_true(mocked$aeid %in% dat$aeid)
+})
+
 # MC0
 test_that("tcplLoadData loads mc0 data for one m0id", {
   data("mc_test")
