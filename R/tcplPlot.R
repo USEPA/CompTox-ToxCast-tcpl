@@ -413,11 +413,13 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     }
     
     # compare data
-    if (!is.null(compare.dat$coff) && compare.dat$max_med < 0) {
-      compare.dat$coff <- compare.dat$coff * -1
-    }
-    if (!is.null(compare.dat$coff) && !is.null(compare.dat$hitc) && compare.dat$hitc < 0) {
-      compare.dat$coff <- compare.dat$coff * -1
+    if (nrow(compare.dat) > 0) {
+      if (!is.null(compare.dat$coff) && compare.dat$max_med < 0) {
+        compare.dat$coff <- compare.dat$coff * -1
+      }
+      if (!is.null(compare.dat$coff) && !is.null(compare.dat$hitc) && compare.dat$hitc < 0) {
+        compare.dat$coff <- compare.dat$coff * -1
+      }
     }
   }
   
