@@ -202,7 +202,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   # extract range from level 3 data for creating plotting all the functions
   # increase resolution to get smoother curves
   resolution <- 100
-  x_min_max <- range(l3_dat_both$conc)
+  x_min_max <- range(l3_dat_both$conc, na.rm=TRUE)
   #if the overall minimum conc is greater than 0 (test wells)
   if (x_min_max[1] > 0) {
     hline_range <- 10^(seq(from = log10(x_min_max[1]/100), to = log10(x_min_max[2]*100), length.out = resolution))
