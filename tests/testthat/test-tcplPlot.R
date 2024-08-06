@@ -275,11 +275,12 @@ test_that("tcplPlot works for multiple aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", by = "aeid", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: 4")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
-  expect_length(fn, 1) # exactly one file created
+  expect_length(fn, 3) # exactly three files created (2 from `by = "aeid"` output)
   file.remove(fn) # clean up
 })
 
@@ -496,11 +497,12 @@ test_that("tcplPlot works for multiple aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, by = "aeid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: 14")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
-  expect_length(fn, 1) # exactly one file created
+  expect_length(fn, 3) # exactly one file created
   file.remove(fn) # clean up
 })
 
