@@ -47,7 +47,7 @@ start_vignette("api")
 
 # Introduction
 
-This vignette provides an overview of the <font face="CMTT10"> tcpl </font> package, including set up, database structure, and pre-processing requirements. Assay and chemical registration, data processing, data retrieval with invitrodb and via API, and data interpretation are topics covered in separate vignettes.
+This vignette provides an overview of the <font face="CMTT10"> tcpl </font> package, including set up, [Database Structure](#db), [Pre-processing Requirements](#lvl0-preprocessing), [Assay and Chemical Registration](#register), [Data Processing](#data_process), [Data Interpretation](#data_interp), and [Data Retrieval with invitrodb and via API](#data_retrieval).
 
 # Overview
 
@@ -136,7 +136,7 @@ The following contains reference tables that describe the structure and fields f
 
 <center>
 
-![<font style="font-size:15px"><i>General representation of the invitrodb Schema</i></font>](img/schema.png){width=80%}
+![<font style="font-size:15px"><i>General representation of the invitrodb Schema</i></font>](img/schema.png){width=100%}
 
 </center>
 
@@ -787,7 +787,7 @@ Reasons for name changes could include:
 
 Thus, users should be advised that while assay naming is used to infer information about the biology of the assay, assay naming will change over time to reflect progress in building ToxCast as a data resource.
 
-## Chemical Registration
+# Chemical Registration
 
 With the minimal assay information registered, the next step is to register the necessary chemical and sample information with <font face="CMTT10">**tcplRegister**</font>. The <font face="CMTT10">**tcplLoadChem**</font> function returns all chemical information or can be filtered for user specified parameters, e.g. the chemical name (chnm) and chemical id (chid).
 
@@ -2102,7 +2102,7 @@ tcplRun(id = list$aeid, type = "mc", slvl = 4L, elvl = 5L)
 ```
 
 # Data Interpretation {#data_interp}
-After fitting, a continuous hit call (hitc) is calculated as the product of three proportional weights. Several potency estimates are also calculated for the winning model, including activity concentrations at specified levels of response, such as concentration at 50% of maximal activity (AC50) and concentration at activity observed at the cutoff (ACC), and a benchmark dose (BMD) at a specified benchmark response (BMR). This vignette will review the statistics behind the activity and potency estimates available for each concentration-response series and how the user may interpret these values alongside other available information, such as fit categories, representative samples, and cytotoxicity burst thresholds. Overall, this Data Interpretation section vignette seeks to enhance user confidence in reviewing and using ToxCast data for different tasks.
+After fitting, a continuous hit call (hitc) is calculated as the product of three proportional weights. Several potency estimates are also calculated for the winning model, including activity concentrations at specified levels of response, such as concentration at 50% of maximal activity (AC50) and concentration at activity observed at the cutoff (ACC), and a benchmark dose (BMD) at a specified benchmark response (BMR). This section will review the statistics behind the activity and potency estimates available for each concentration-response series and how the user may interpret these values alongside other available information, such as fit categories, representative samples, and cytotoxicity burst thresholds. Overall, this Data Interpretation section seeks to enhance user confidence in reviewing and using ToxCast data for different tasks.
 
 ## [Hit Calls](#hitc)
 In tcpl v2, activity hit calls (hitc) were binary, where 0 was negative, 1 was positive, and −1 corresponded to concentration-response series that tcpl was “unable to fit” (e.g., <4 concentrations). In tcpl v3 onwards, the hitc is the product of three proportional weights, and the resulting continuous value is between 0 and 1, though the values are not normally distributed and tend to approach 0 or 1. Hitcalls that approach 1 indicate concentration-response series with biological activity in the measured response (i.e. 'active' hit). $Hitc$ is typically binarized into active or inactive designations, depending on the level of stringency required by the user. For current ToxCast work, a $hitc$ greater than or equal to 0.90 is labeled active, whereas anything less was considered inactive. This threshold of 0.90 was based on other $tcplfit2$ implementations with in vitro screening data [(Nyffeler et al., 2023)](https://www.sciencedirect.com/science/article/pii/S0041008X23001527) and reflects the apparent bimodal nature of the $hitc$ distribution, where a preponderance of the $hitc$ fall between 0 and 0.1 and 0.9 and 1.0. Users may interpret the continuous $hitc$ into active or inactive designations based on different thresholds. Further testing through implementation of this new functionality may reveal appropriate thresholds for different applications or assays. The “unable to fit” series now appear as model “none” with a $hitc$ of 0 (inactive). Negative $hitc$ in tcpl v3.2 correspond to curves that suggest biological activity in an unintended direction, as further described below.
@@ -2332,9 +2332,7 @@ A cytotox_median is computed for any chemical in the database screened with at l
 In contrast, for a chemical to be included in a computation of the global median absolute deviation (global_MAD), the chemical must be screened in a higher number of burst assays. The global MAD is an estimate of the variance expected for a chemical tested in many cytotoxicity and cell stress assays, currently defined as greater than or equal to 60 assay endpoints annotated as “burst” endpoints and with an active hit call in at least 5% of "burst" assay endpoints tested. This typically includes chemicals that were highly screened in a multitude of assays, based on inclusion in initial ToxCast Phase I and II chemical screening. Additional filtering of burst assay data was also required to ensure only losses in cell viability were included and any cell proliferation responses were excluded (for a subset of bidirectional endpoints in the set of burst assay endpoints). 
 
 ## Assay Description Documents
-Given ToxCast includes a heterogeneous set of assays across a diverse biological space, annotations in the database help flexibly aggregate and differentiate processed data whereas assay documentation aligned with international standardization efforts can make ToxCast data more useful and interpretable for use in decision-making. Assay Element and Auxillary Annotation structure is described in tcpl's Introduction vignette, whereas how to access databased annotation information is described in the Data Retrieval vignettes.
-
-The [OECD Guidance Document 211 (GD211)](https://ntp.niehs.nih.gov/sites/default/files/iccvam/suppdocs/feddocs/oecd/oecd-gd211-2014-508.pdf) is a standard for comprehensive assay documentation describing non-guideline in vitro test methods and their interpretation. This template is intended to harmonize non-guideline, *in vitro* method descriptions to allow assessment of the relevance of the test method for biological responses of interest and the quality of the data produced. Unlike the assay element annotations which are often short in a standardized format or use a controlled term list, the assay_descriptions fields have no character limit for text. A compiled report of these assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data).
+Given ToxCast includes a heterogeneous set of assays across a diverse biological space, annotations in the database help flexibly aggregate and differentiate processed data whereas assay documentation aligned with international standardization efforts can make ToxCast data more useful and interpretable for use in decision-making. The [OECD Guidance Document 211 (GD211)](https://ntp.niehs.nih.gov/sites/default/files/iccvam/suppdocs/feddocs/oecd/oecd-gd211-2014-508.pdf) is a standard for comprehensive assay documentation describing non-guideline in vitro test methods and their interpretation. This template is intended to harmonize non-guideline, *in vitro* method descriptions to allow assessment of the relevance of the test method for biological responses of interest and the quality of the data produced. Unlike the assay element annotations which are often short in a standardized format or use a controlled term list, the assay_descriptions fields have no character limit for text. A compiled report of these assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data).
 
 ## Adminstered Equivalent Doses (Level 7) {#aed}
 The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE and httk models for it, please see: [Breen et al, 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
@@ -2527,7 +2525,7 @@ The <font face="CMTT10">**tcplMthdLoad**</font> function returns the method assi
 
 ## Retrieving Data 
 
-The <font face="CMTT10">**tcplQuery**</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided. Please see the Introductory vignette in the tcpl package for more information on database structure to help construct these queries.
+The <font face="CMTT10">**tcplQuery**</font> function allows a user to provide an SQL query to load data from the MySQL database into the R session. In the following chunk we provide an example, but any valid SQL query can replace the one provided. Please review [Database Structure](#db) section to help construct these queries.
 
 ```{r tcplquery, eval = FALSE}
 # Load sample table using a MySQL query.
@@ -2980,7 +2978,7 @@ assays <- tcplQueryAPI(resource = "assay")
 
 ## Retrieving Processed Multi-Concentration (MC) Data and Annotations
 
-As described in greater detail within the processing vignette, a goal of MC processing is to derive the efficacy and potency estimates for for each modeled endpoint-sample dose response. API data is available for levels 3 through 6, herein users can inspect the MC data including efficacy and potency estimates, model parameters, raw concentration response values, cautionary flags, and applied methods.
+As described in greater detail within the Data Processing sections, a goal of MC processing is to derive the efficacy and potency estimates for for each modeled endpoint-sample dose response. API data is available for levels 3 through 6, herein users can inspect the MC data including efficacy and potency estimates, model parameters, raw concentration response values, cautionary flags, and applied methods.
 
 ## Data
 
