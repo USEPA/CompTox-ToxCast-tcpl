@@ -53,7 +53,7 @@ This vignette provides an overview of the <font face="CMTT10"> tcpl </font> pack
 
 The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/chemical-research/toxicity-forecasting>) includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
 
-Tcpl is a flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format and loaded into the <font face="CMTT10"> tcpl </font> database by vendor-specific R scripts. Once data is loaded into the database, ToxCast utilizes generalized processing functions provided in this package to process, normalize, model, qualify, and visualize the data.
+The <font face="CMTT10"> tcpl </font> package is a flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format via [Level 0 Preprocessing](#lvl0-preprocessing) then loaded into the database by vendor-specific R scripts. Describing the specific transformations may be outside the scope of this package, but can be done for virtually any chemical screening effort, provided the data includes the minimum required information. Once data is loaded into the database, generalized processing functions provided in this package process, normalize, model, qualify, and visualize the data.
 
 <center>
 
@@ -61,11 +61,9 @@ Tcpl is a flexible analysis pipeline is capable of efficiently processing and st
 
 </center>
 
-The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting. Processing with <font face="CMTT10"> tcpl_v3 </font> and beyond depends on the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond. Using <font face="CMTT10"> tcpl_v3 </font> with the schema from invitrodb versions 2.0-3.5 will still default to <font face="CMTT10"> tcplFit() </font> modeling with constant, Hill, and gain-loss. The main improvement provided by updating to using <font face="CMTT10"> tcplFit2</font> is inclusion of concentration-response models like those contained in the program BMDExpress. These models include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Similar to the program BMDExpress, <font face="CMTT10"> tcplFit2 </font> curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hit call value be a continuous number ranging from 0 to 1 (in contrast to binary hit call values from <font face="CMTT10"> tcplFit() </font>. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
+The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting. Processing with <font face="CMTT10"> tcpl v3 </font> and beyond depends on the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond. Using <font face="CMTT10"> tcpl_v3 </font> with the schema from invitrodb versions 2.0-3.5 will still default to <font face="CMTT10"> tcplFit() </font> modeling with constant, Hill, and gain-loss. The main improvement provided by updating to using <font face="CMTT10"> tcplFit2</font> is inclusion of concentration-response models like those contained in the program BMDExpress. These models include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Similar to the program BMDExpress, <font face="CMTT10"> tcplFit2 </font> curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hit call value be a continuous number ranging from 0 to 1 (in contrast to binary hit call values from <font face="CMTT10"> tcplFit() </font>. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
 
 The <font face="CMTT10"> tcpl </font> package includes processing functionality for two screening paradigms: (1) single-concentration (SC) and (2) multiple-concentration (MC) screening. SC screening consists of testing chemicals at one to three concentrations, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. MC screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
-
-Prior to the pipeline processing provided in this package, all the data must go through pre-processing to get to Level 0 formatting. [Level 0 pre-processing](lvl0-preprocessing) utilizes dataset-specific R scripts to process the heterogeneous data into a uniform format and to load the uniform data into the <font face="CMTT10"> tcpl </font> database. Level 0 pre-processing is outside the scope of this package, but can be done for virtually any chemical screening effort, provided the data includes the minimum required information. 
 
 In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette and others, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. <font face="CMTT10"> tcplLite </font> is no longer supported by <font face="CMTT10"> tcpl</font> because <font face="CMTT10"> tcplfit2</font> can be used to curve-fit data and make hit calls independent of invitrodb, available at <https://cran.r-project.org/package=tcplfit2>. <font face="CMTT10"> tcplLite </font> relied on flat files structured like invitrodb to produce curve-fitting and summary information like hit calls and AC50 values. Functionally <font face="CMTT10"> tcplfit2 </font> replaces <font face="CMTT10"> tcplLite </font> because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the invitrodb schema. For the ToxCast program it is still important to use invitrodb when curve-fitting as invitrodb serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using <font face="CMTT10"> tcpl</font>, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
@@ -825,7 +823,7 @@ tcplLoadChemList(field = "chid", val = 1:2)
 
 # Level 0 Pre-Processing {#lvl0-preprocessing}
 
-Level 0 pre-processing can be done on virtually any high-throughput screening application to prepare data for ToxCast data processing. In the ToxCast program, level 0 processing is done in R by vendor/dataset-specific scripts. The individual R scripts act as the "laboratory notebook" for the data, with all pre-processing decisions clearly commented and explained. The standard Level 0 format to enter the pipeline is identical between testing paradigms, single concentration (sc) and multi-concentration (mc) as described in the [Database Structure>Level 0 section](#lvl0-table).
+Level 0 pre-processing can be done on virtually any high-throughput screening application to prepare data for ToxCast data processing. In the ToxCast program, level 0 processing is done in R by vendor/dataset-specific scripts. The individual R scripts act as the "laboratory notebook" for the data, with all pre-processing decisions clearly commented and explained. The standard Level 0 format to enter the pipeline is identical between testing paradigms, single concentration ("SC") and multi-concentration ("MC") as described in the [Database Structure>Level 0 section](#lvl0-table).
 
 Level 0 pre-processing reformats the raw, source data into the standard format for the pipeline, and also can make manual transformations to the data as pre-normalization steps. All manual transformations to the data should be very well documented with justification. Common examples of manual transformations include fixing a sample ID typo, or changing well quality value(s) to 0 after finding obvious problems like a plate row/column missing an assay reagent. 
 
@@ -834,23 +832,22 @@ Each row in the level 0 pre-processing data represents one well-assay component 
 ## Required Fields
 
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("acsn", "spid", "cpid", "apid", "rowi", 
+Field <- c("'acsn' or 'acid'", "spid", "apid", "rowi", 
            "coli", "wllt", "wllq", "conc", "rval", "srcf")
 
-Description <- c("Assay component source name",
+Description <- c("Assay component source name can be used to map to assay component ID, or acid can be directly provided",
                  "Sample ID",
-                 "Chemical plate ID" ,
                  "Assay plate ID",
                  "Assay plate row index, as an integer",
                  "Assay plate column index, as an integer",
                  "Well type",
-                 "1 if the well quality was acceptable, else 0",
+                 "Well quality: 1 was good, else 0",
                  "Concentration in micromolar",
                  "Raw assay component value or readout from vendor",
                  "Filename of the source file containing the data"  )
-`N/A` <- c("No", "No", "Yes", "Yes","Yes","Yes", "No", "No", "No", "Yes", "No")
+Required_NA_allowed <- c("No", "No", "Yes","Yes","Yes", "No", "No", "No", "Yes", "No")
 
-output <- data.frame(Field, Description, `N/A`)
+output <- data.frame(Field, Description, Required_NA_allowed)
 
 kable(output)%>% 
   kable_styling("striped")
@@ -891,7 +888,7 @@ The final step in level 0 pre-processing is to load the data into the database. 
 tcplWriteLvl0(dat=mcdat, type ="mc")
 ```
 
-As a check to confirm data has been written, the  <font face="CMTT10"> **tcplLoadData** </font> function is used to load data from the database into user's R session. Furthermore, the <font face="CMTT10"> **tcplPrepOtpt** </font> function can be used in conjunction with tcplLoadData to prepare the data in a readable format with additional chemical and assay annotation information. See [Data Retrieval sections](#data_retrieval) for further details.
+As a check to confirm data has been written, the  <font face="CMTT10"> **tcplLoadData** </font> function is used to load data from the database into user's R session. Furthermore, the <font face="CMTT10"> **tcplPrepOtpt** </font> function can be used in conjunction with tcplLoadData to prepare the data in a readable format with additional chemical and assay annotation information. See [Data Retrieval](#data_retrieval) sections for further details.
 
 ```{r eval = FALSE, message = FALSE}
 # Load the level 0 data from the database to R.
@@ -2058,7 +2055,7 @@ Additional information on derivations on potency estimates is found in [Data Int
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data. See the [Data Interpretation>Flags](#flags) section for more details.
 
 ## - Level 7
-For invitrodb v4.2 onward, a new multi-concentration level 7 (mc7) table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model for the large number of chemicals included in invitrodb v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](aed) section.
+For invitrodb v4.2 onward, a new mc7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model for the large number of chemicals included in invitrodb v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](aed) section.
 
 ## Compiled Processing Examples
 
@@ -2264,7 +2261,7 @@ To select a representative sample in SC, a "consensus hitc" is made by taking th
 
 ## Variable Matrices
 
-The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-endpoint matrices, combining summary information for single-concentration and/or multiple-concentration screening. Such a matrix can be useful for understanding which chemicals were tested, and what hit calls and potency values resulted from this screening. For example, one might ask, "Which chemicals were screened in either single-concentration or multi-concentration for some assay endpoint, and if multi-concentration screening was performed, what potency was estimated for any observed activity?" 
+The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-endpoint matrices, combining summary information for single-concentration and/or multiple-concentration screening. Such a matrix can be useful for understanding which chemicals were tested, and what hit calls and potency values resulted from this screening. For example, one might ask, "Which chemicals were screened in either single-concentration or multi-concentration for some assay endpoint, and if MC screening was performed, what potency was estimated for any observed activity?" 
 
 For variable matrices from <font face="CMTT10">tcplVarMat </font>, a representative sample is selected using the tcplSubsetChid function in cases where a chemical-by-endpoint was tested in multiple samples (performed separately for multiple-concentration or single-concentration screening). When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](chid) for more information. <br/>
 
@@ -2337,7 +2334,7 @@ Given ToxCast includes a heterogeneous set of assays across a diverse biological
 ## Adminstered Equivalent Doses (Level 7) {#aed}
 The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE and httk models for it, please see: [Breen et al, 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
 
-For invitrodb v4.2 onward, a new multi-concentration level 7 (MC7) table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. As implemented, this MC7 table provides users with pre-calculated estimates of the *in vivo* human administered dose (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
+For invitrodb v4.2 onward, a new MC7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. As implemented, this MC7 table provides users with pre-calculated estimates of the *in vivo* human administered dose (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
 
 ### Implementation
 AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model. Given the large number of chemicals and endpoints included in invitrodb v4.2, generation of the MC7 table as configured with the options below took 24 hours using 40 cores.
@@ -2425,7 +2422,7 @@ htmlTable(output,
 
 ```
 
-# Data Retrieval in invitrodb
+# Data Retrieval in invitrodb {#data_retrieval}
 
 ## Retrieving Assay Element IDs
 
@@ -2549,7 +2546,7 @@ Prior to the pipeline processing provided in this package, all the data must go 
 ## - Load SC0 Data
 
 ```{r sc0, eval = FALSE}
-# Load Level 0 single concentration data for a single acid to R.
+# Load Level 0 single concentration (SC0) data for a single acid to R.
 sc0 <- tcplLoadData(lvl=0,  fld="acid", val=1, type = "sc") # data type - single concentration
 # Alternatively, load data in and format with tcplPrepOtpt.
 sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
@@ -2558,7 +2555,7 @@ sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
 ## - Load MC0 Data
 
 ```{r mc0, eval = FALSE}
-# Load Level 0 multiple concentration data.
+# Load Level 0 multiple concentration (MC0) data.
 mc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "mc"))
 ```
 
@@ -2691,7 +2688,7 @@ smthds <- sc_methods(aeids)
 
 ## Retrieving MC Data and Methods
 
-The goal of MC processing is to estimate the hitcall, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. After processing, users can inspect the activity hitcalls, model parameters, concentration-response plots, and the applied methods for the multiple concentration data. 
+The goal of MC processing is to estimate the hitcall, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. After processing, users can inspect the activity hitcalls, model parameters, concentration-response plots, and the applied methods for the MC data. 
 
 ## - Load MC5 Data
 
@@ -2764,7 +2761,7 @@ mmthds <- mc_methods(aeids)
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("type", "fld", "val", "compare.val", "output", "verbose", "multi", "by",
            "fileprefix", "'nrow' and 'ncol'", "dpi", "flag", "yuniform", "yrange", "dat")
-Description <- c("'MC' assumed default. type = 'mc' plots available multi-concentration-response series fit by all models and highlights the winning model with activity hit call presented where type = 'sc' plots available single-concentration data including response values, maximum median, and cutoff with activity hit call presented.",
+Description <- c("'MC' assumed as default. type = 'mc' plots available MC data fit by all models and highlights the winning model with activity hit call presented whereas type = 'sc' plots available SC data including response values, maximum median, and cutoff with activity hit call presented.",
                  "Required parameter for field to query on",
                  "Required parameter for values to query on that must be listed for each corresponding 'fld'",
                  "Parameter is used to generate comparison or dual plots. Using the same field(s) as `val`, supply a list or vector of values for each field to be plot one-to-one alongside val. Since tcplPlot matches ids between val and compare.val, `compare.val` must be the same length as `val` and the order `val` and `compare.val` are given will be maintained in the output. The default value is `compare.val = NULL` where the plots will be individual; if it is set, tcplPlot will attempt to generate comparison plots. For example, if fld = m4id and the user supplies three m4ids to `val`, `compare.val` must also contain three m4ids, where the first element of each `val` parameter are plot together, the second elements together, etc.",
@@ -2944,9 +2941,7 @@ tcplPlot(fld = c("spid","aeid"), val = list(spid.mc5$spid, spid.mc5$aeid), by = 
 
 # Data Retrieval via API
 
-To support different ToxCast data retrieval needs, there are a number of <font face="CMTT10">tcpl</font> functions that can be used to query the API and return information to a local R environment.
-
-Throughout this vignette, abbreviations may be used to refer to processing steps or data. Single-concentration 'SC' assay data is not currently available via API. ‘MC’ describes multiple-concentration assay data. A particular data or processing level is indicated by appending the level id/number to the end of the ‘SC’ or ‘MC’ designation. For example, multiple concentration data from level 3 processing uses the abbreviation ‘MC3.’
+To support different ToxCast data retrieval needs, there are a number of <font face="CMTT10">tcpl</font> functions that can be used to query the API and return information to a local R environment. Abbreviations may be used to refer to processing steps or data. **Single-concentration "SC" assay data is not currently available via API.** "MC" describes multiple-concentration assay data. A particular data or processing level is indicated by appending the level id/number to the end of the SC or MC designation. For example, multiple concentration data from level 3 processing uses the abbreviation MC3.
 
 ## Assay Elements
 
@@ -2976,7 +2971,7 @@ Assay source, assay, assay component, and assay endpoint are registered via tcpl
 assays <- tcplQueryAPI(resource = "assay")
 ```
 
-## Retrieving Processed Multi-Concentration (MC) Data and Annotations
+## Retrieving Processed MC Data and Annotations
 
 As described in greater detail within the Data Processing sections, a goal of MC processing is to derive the efficacy and potency estimates for for each modeled endpoint-sample dose response. API data is available for levels 3 through 6, herein users can inspect the MC data including efficacy and potency estimates, model parameters, raw concentration response values, cautionary flags, and applied methods.
 
