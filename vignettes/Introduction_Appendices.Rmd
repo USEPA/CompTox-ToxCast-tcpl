@@ -51,7 +51,7 @@ This vignette provides an overview of the <font face="CMTT10"> tcpl </font> pack
 
 # Overview
 
-The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/chemical-research/toxicity-forecasting>) includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
+The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/chemical-research/toxicity-forecasting) includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
 
 The <font face="CMTT10"> tcpl </font> package is a flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format via [Level 0 Preprocessing](#lvl0-preprocessing) then loaded into the database by vendor-specific R scripts. Describing the specific transformations may be outside the scope of this package, but can be done for virtually any chemical screening effort, provided the data includes the minimum required information. Once data is loaded into the database, generalized processing functions provided in this package process, normalize, model, qualify, and visualize the data.
 
@@ -528,7 +528,7 @@ Description <- c("Assay ID",
                  "Assay name, abbreviated \"anm\" within the package. Required for registration.",
                  "Assay description",
                  "Treatment duration in hours",
-                 "NCBI taxonomic identifier, available here <https://www.ncbi.nlm.nih.gov/taxonomy>",
+                 "NCBI taxonomic identifier, available at https://www.ncbi.nlm.nih.gov/taxonomy",
                 "Organism of origin",
                 "Tissue of origin", "Description of cell format",
                 "Description of source for targeted cell-free components",
@@ -912,7 +912,8 @@ For tcplRun, the user must supply a starting level (slvl) and ending level (elvl
 
 Processing of multiple assay components or endpoints can be executed simultaneously. This is done with the internal utilization of the <font face="CMTT10">mclapply</font> function from the <font face="CMTT10">parallel</font> package. Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. For processing on a Windows operating system, the default is $mc.cores = 1$, unless otherwise specified. For processing on a Unix-based operating system, the default is $mc.cores = NULL$ i.e. to utilize all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the "mc.cores" parameter to the desired level. **Note, this specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
 
-{#lvl_ids}
+## Level IDs {#lvl_ids}
+
 ```{r warning = FALSE, echo = FALSE}
 Type <- c('SC', 'SC', 'MC', 'MC', 'MC', 'MC', 'MC', 'MC')
 Level <- c('Lvl1', 'Lvl2', 'Lvl1', 'Lvl2', 'Lvl3', 'Lvl4', 'Lvl5', 'Lvl6')
@@ -924,7 +925,7 @@ kable(output)%>%
   kable_styling("striped")
 ```
 
-In this table, the Input ID column indicates the ID used for each processing step where Method ID indicates the ID used for assigning methods for data processing, when necessary. SC1 requires an $\mathit{acid}$ input, but the methods are assigned by $\mathit{aeid}$. The same is true for MC3 processing. SC1 and MC3 are the normalization steps and convert $\mathit{acid}$ to $\mathit{aeid}$.Only MC2 has methods assigned by $\mathit{acid}$.
+In this table, the Input ID column indicates the ID used for each processing step where Method ID indicates the ID used for assigning methods for data processing, when necessary. SC1 requires an $\mathit{acid}$ input, but the methods are assigned by $\mathit{aeid}$. The same is true for MC3 processing. SC1 and MC3 are the normalization steps and convert $\mathit{acid}$ to $\mathit{aeid}$. Only MC2 has methods assigned by $\mathit{acid}$.
 
 The processing requirements vary by screening paradigm and level, which later sections cover in detail. However, in general, specific method assignments will be required to accommodate different experimental designs or data processing approaches.
 
@@ -1684,7 +1685,8 @@ tcplMthdAssign(
     type = "mc") # the data/processing type
 
 ## Methods Assignment #2 ##
-## Obtain the 'aeid' Values for all endpoints containing "ATG" string. "ATG" is the abbreviated assay source name of Attagene 
+# Obtain the 'aeid' Values for all endpoints containing "ATG" string.
+# "ATG" is the abbreviated assay source name of Attagene.
 atg.aeid <- tcpl::tcplGetAeid(name = "ATG") 
 ## Assign the MC4 processing methods for subset of aeids 
 tcpl::tcplMthdAssign( lvl = 4,
@@ -1888,7 +1890,7 @@ A subset of MC5 data is available in the <font face="CMTT10"> mc_vignette </font
 mc5_example <- mc_vignette[["mc5"]]
 ```
 
-For demonstrative purposes, an alternative visual of the model fits from MC4 and the best model as well as the potency estimates from MC5 data is produced below. {#mc5_plot}
+For demonstrative purposes, an alternative visual of the model fits from MC4 and the best model as well as the potency estimates from MC5 data is produced below.{#mc5_plot}
 
 ```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100"}
 ## Obtain Data ##
@@ -2055,7 +2057,7 @@ Additional information on derivations on potency estimates is found in [Data Int
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data. See the [Data Interpretation>Flags](#flags) section for more details.
 
 ## - Level 7
-For invitrodb v4.2 onward, a new mc7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model for the large number of chemicals included in invitrodb v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](aed) section.
+For invitrodb v4.2 onward, a new mc7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model for the large number of chemicals included in invitrodb v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](#aed) section.
 
 ## Compiled Processing Examples
 
@@ -2088,7 +2090,9 @@ tcplMthdAssign(lvl = 5,id = 2, mthd_id = c(1,3,5),ordr = 1:3, type = "mc")
 
 ## Assign the Number of Processing Cores.
 mycores <- 1 # If users do NOT want to leverage parallel computing. 
-# Users that want to leverage parallel computing set to > 1, but less than the total number of cores (i.e. need at least 1 core open for overhead). If not provided, this will be assumed. "parallel::detectCores()" can be run to understand the maximum allowed number of cores.
+# Users that want to leverage parallel computing set to > 1, but less than the total number of cores
+# (i.e. need at least 1 core open for overhead). If not provided, this will be assumed. 
+# "parallel::detectCores()" can be run to understand the maximum allowed number of cores.
 
 ## Option A: MC0-5 Processing by acid
 tcplRun(id = 80, type = "mc",  slvl = 0L,   elvl = 5L,  mc.cores = 20)
@@ -2101,7 +2105,7 @@ tcplRun(id = list$aeid, type = "mc", slvl = 4L, elvl = 5L)
 # Data Interpretation {#data_interp}
 After fitting, a continuous hit call (hitc) is calculated as the product of three proportional weights. Several potency estimates are also calculated for the winning model, including activity concentrations at specified levels of response, such as concentration at 50% of maximal activity (AC50) and concentration at activity observed at the cutoff (ACC), and a benchmark dose (BMD) at a specified benchmark response (BMR). This section will review the statistics behind the activity and potency estimates available for each concentration-response series and how the user may interpret these values alongside other available information, such as fit categories, representative samples, and cytotoxicity burst thresholds. Overall, this Data Interpretation section seeks to enhance user confidence in reviewing and using ToxCast data for different tasks.
 
-## [Hit Calls](#hitc)
+## Hit Calls {#hitc}
 In tcpl v2, activity hit calls (hitc) were binary, where 0 was negative, 1 was positive, and −1 corresponded to concentration-response series that tcpl was “unable to fit” (e.g., <4 concentrations). In tcpl v3 onwards, the hitc is the product of three proportional weights, and the resulting continuous value is between 0 and 1, though the values are not normally distributed and tend to approach 0 or 1. Hitcalls that approach 1 indicate concentration-response series with biological activity in the measured response (i.e. 'active' hit). $Hitc$ is typically binarized into active or inactive designations, depending on the level of stringency required by the user. For current ToxCast work, a $hitc$ greater than or equal to 0.90 is labeled active, whereas anything less was considered inactive. This threshold of 0.90 was based on other $tcplfit2$ implementations with in vitro screening data [(Nyffeler et al., 2023)](https://www.sciencedirect.com/science/article/pii/S0041008X23001527) and reflects the apparent bimodal nature of the $hitc$ distribution, where a preponderance of the $hitc$ fall between 0 and 0.1 and 0.9 and 1.0. Users may interpret the continuous $hitc$ into active or inactive designations based on different thresholds. Further testing through implementation of this new functionality may reveal appropriate thresholds for different applications or assays. The “unable to fit” series now appear as model “none” with a $hitc$ of 0 (inactive). Negative $hitc$ in tcpl v3.2 correspond to curves that suggest biological activity in an unintended direction, as further described below.
 
 Continuous $hitc$ as defined in [tcplfit2 R package](https://cran.r-project.org/web/packages/tcplfit2/index.html) is calculated as the product of three proportional weights representing the confidence that: 
@@ -2143,7 +2147,7 @@ kable(output)%>%
   kable_styling("striped")
 ```
 
-## - Benchmark Dose
+## - Benchmark Dose {#bmd}
 
 A Benchmark Dose (BMD) is the activity concentration observed at the Benchmark Response (BMR) level. In the current implementation of tcpl and tcplfit2, BMR is only defined as 1.349 standard deviations of baseline response in the two lowest concentrations of treatment wells or neutral controls wells, as defined by Level 4 methods. <font face="CMTT10">tcpl</font> uses the following definitions and assumptions for setting the BMR:
 
@@ -2155,7 +2159,7 @@ $𝜇(𝑏)+𝑐∗𝑠𝑑(𝑏)=𝐵𝑀𝑅=𝜇(𝐵𝑀𝐷)$
 
 </center>
 
-Here, the baseline $(𝑏)$ is defined as samples from the two lowest concentrations across chemicals within an assay endpoint and the $𝑐=1.349a$ ([(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387)).
+Here, the baseline $(𝑏)$ is defined as samples from the two lowest concentrations across chemicals within an assay endpoint and the $𝑐=1.349a$ [(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387).
 
 A 90% confidence interval around the BMD, bounded by the benchmark dose lower bound (BMDL) and the benchmark dose upper bound (BMDU), is also computed and provided to reflect the uncertainty in the BMD estimate. The calculation of these confidence intervals will occasionally fail due to a singular matrix inverse, and in these cases, BMDU and BMDL will not be reported. This case occurs when the data are especially noisy and the confidence interval around the BMD approaches infinity. The winning model may return a $\mathit{bmd}$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $\mathit{bmd}$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the the highest test concentration}$, respectively. If the calculated $\mathit{bmd}$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $\mathit{bmd}$ estimate instead.
 
@@ -2173,7 +2177,7 @@ For active curves, efficacy, as represented by the modeled top, is compared to 1
 
 $\mathit{Fitc}$ 36 describes a curve that is of low efficacy and with a low AC~50~, below the concentration range screened. These are more likely to be noise or less reproducible fits. $\mathit{Fitc}$ 41 and 42 are the ideal $\mathit{fitc}$ for reproducible curves, as demonstrated by these two $\mathit{fitc}$ comprising the majority of positive ($\mathit{hitc}$ > 0.9) curves in <font face="CMTT10">invitrodb v4.1</font>. $\mathit{Fitc}$ 40 indicates a curve with at least moderate efficacy, but an AC~50~ below the concentration range screened. These chemicals may be positive or reference chemicals screened in the incorrect concentration window to observe their minimum activity. These curves may also represent high-confidence positives for which we have limited understanding of the slope of the concentration-response curve, and as such, the AC~50~ may be associated with more uncertainty.
 
-## [Flags (Level 6)](#flags)
+## Flags (Level 6) {#flags}
 
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. Cautionary flags on fitting were developed in previous versions of <font face="CMTT10">tcpl</font> and have been stored at Level 6. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data.
 
@@ -2252,7 +2256,7 @@ Multiple samples of the same chemical (many spids per chid) may be tested for a 
 To select a representative sample in MC, a "consensus hitc" is made by taking the mean of all binarized sample hitc, with ties defaulting to active. After the chemical-wise hitc is made, the samples corresponding to chemical-wise hit call are logically ordered using the fit category, the number of the flags, and AC50, then the first sample for every chemical is selected. This logic prioritizes active over inactive hit calls when there is a disagreement among samples, but then attempts to pick the representative sample with the highest quality curve, with the goal of minimizing false negatives. Logic encompasses the following:
 
 1. Hitc are first binarized to active (1) or inactive (0), where hitc >= 0.9 is deemed active. Mean of the binarized hitc across samples is calculated for the chemical. Representative sample must match mean activity call (active or inactive), where a mean activity hit call >= 0.5 is considered active.
-2. Samples are prioritized first by [Fit Categories](fitc). Generally AC50 values within concentration range (fitc = 37, 41) are prioritized over AC50 values above concentration range (fitc = 38, 42) then AC50 values below concentration range (fitc = 36, 40)
+2. Samples are prioritized first by [Fit Categories](#fitc). Generally AC50 values within concentration range (fitc = 37, 41) are prioritized over AC50 values above concentration range (fitc = 38, 42) then AC50 values below concentration range (fitc = 36, 40)
 4. Samples are then sorted based on number of flags. Curve fits for samples with fewer flags are prioritized.
 5. Finally, if all things are equal, the sample with a lower AC50 is selected over higher AC50.
 
@@ -2263,7 +2267,7 @@ To select a representative sample in SC, a "consensus hitc" is made by taking th
 
 The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-endpoint matrices, combining summary information for single-concentration and/or multiple-concentration screening. Such a matrix can be useful for understanding which chemicals were tested, and what hit calls and potency values resulted from this screening. For example, one might ask, "Which chemicals were screened in either single-concentration or multi-concentration for some assay endpoint, and if MC screening was performed, what potency was estimated for any observed activity?" 
 
-For variable matrices from <font face="CMTT10">tcplVarMat </font>, a representative sample is selected using the tcplSubsetChid function in cases where a chemical-by-endpoint was tested in multiple samples (performed separately for multiple-concentration or single-concentration screening). When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](chid) for more information. <br/>
+For variable matrices from <font face="CMTT10">tcplVarMat </font>, a representative sample is selected using the tcplSubsetChid function in cases where a chemical-by-endpoint was tested in multiple samples (performed separately for multiple-concentration or single-concentration screening). When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](#chid) for more information. <br/>
 
  1. "ac50" -- The active concentration at 50% maximal response ($\mathit{AC_{50}}$) for the winning model. <br/>
  2. "ac50_verbose" -- The $\mathit{AC_{50}}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
@@ -2302,7 +2306,7 @@ library(writexl)
 write_xlsx(varmat, path = "varmat_output.xlsx")
 ```
 
-## Cytotoxicity Burst Distribution {#burst}
+## Cytotoxicity Burst Distribution{#burst}
 Estimates of chemical concentrations that elicit cytotoxicity and/or cell stress have been informative for contextualizing bioactivity screening data in ToxCast by providing information on the likelihood that these data may be confounded by assay interference resulting from cytotoxicity and/or cell stress, particularly when a parallel or in-well estimate of cell viability is unavailable. As such, general estimates of the median and lower bound concentrations that might elicit cytotoxicity and/or cell stress in vitro have previously been calculated using the <font face="CMTT10">**tcplCytoPt**</font> function, which considers activity across a suite of cell-based assays based on updates to previous work [(Judson et al., 2016)](https://pubmed.ncbi.nlm.nih.gov/27605417/).
 
 The burst threshold can be used to infer activity above or below an estimated threshold of generalized cell stress and/or cytotoxicity, where users can define the degree of difference between some observed bioactivity and estimates of cell stress and/or cytotoxicity needed in order to discern "selective" activity (i.e., bioactivity thought to occur independently of cell stress and/or cytotoxicity) vs. "non-selective" activity (i.e., bioactivity that appears to occur concomitantly with estimates of the concentration needed for cell stress and/or cytotoxicity).
@@ -2328,7 +2332,7 @@ A cytotox_median is computed for any chemical in the database screened with at l
 
 In contrast, for a chemical to be included in a computation of the global median absolute deviation (global_MAD), the chemical must be screened in a higher number of burst assays. The global MAD is an estimate of the variance expected for a chemical tested in many cytotoxicity and cell stress assays, currently defined as greater than or equal to 60 assay endpoints annotated as “burst” endpoints and with an active hit call in at least 5% of "burst" assay endpoints tested. This typically includes chemicals that were highly screened in a multitude of assays, based on inclusion in initial ToxCast Phase I and II chemical screening. Additional filtering of burst assay data was also required to ensure only losses in cell viability were included and any cell proliferation responses were excluded (for a subset of bidirectional endpoints in the set of burst assay endpoints). 
 
-## Assay Description Documents
+## Assay Description Documents {#add}
 Given ToxCast includes a heterogeneous set of assays across a diverse biological space, annotations in the database help flexibly aggregate and differentiate processed data whereas assay documentation aligned with international standardization efforts can make ToxCast data more useful and interpretable for use in decision-making. The [OECD Guidance Document 211 (GD211)](https://ntp.niehs.nih.gov/sites/default/files/iccvam/suppdocs/feddocs/oecd/oecd-gd211-2014-508.pdf) is a standard for comprehensive assay documentation describing non-guideline in vitro test methods and their interpretation. This template is intended to harmonize non-guideline, *in vitro* method descriptions to allow assessment of the relevance of the test method for biological responses of interest and the quality of the data produced. Unlike the assay element annotations which are often short in a standardized format or use a controlled term list, the assay_descriptions fields have no character limit for text. A compiled report of these assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data).
 
 ## Adminstered Equivalent Doses (Level 7) {#aed}
