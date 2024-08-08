@@ -51,7 +51,7 @@ This vignette provides an overview of the <font face="CMTT10"> tcpl </font> pack
 
 # Overview
 
-The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/chemical-research/toxicity-forecasting>) includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
+The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/chemical-research/toxicity-forecasting) includes *in vitro* medium- and high-throughput screening assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
 
 The <font face="CMTT10"> tcpl </font> package is a flexible analysis pipeline is capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format via [Level 0 Preprocessing](#lvl0-preprocessing) then loaded into the database by vendor-specific R scripts. Describing the specific transformations may be outside the scope of this package, but can be done for virtually any chemical screening effort, provided the data includes the minimum required information. Once data is loaded into the database, generalized processing functions provided in this package process, normalize, model, qualify, and visualize the data.
 
@@ -61,11 +61,11 @@ The <font face="CMTT10"> tcpl </font> package is a flexible analysis pipeline is
 
 </center>
 
-The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting. Processing with <font face="CMTT10"> tcpl v3 </font> and beyond depends on the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond. Using <font face="CMTT10"> tcpl_v3 </font> with the schema from invitrodb versions 2.0-3.5 will still default to <font face="CMTT10"> tcplFit() </font> modeling with constant, Hill, and gain-loss. The main improvement provided by updating to using <font face="CMTT10"> tcplFit2</font> is inclusion of concentration-response models like those contained in the program BMDExpress. These models include polynomial, exponential and power functions in addition to the original Hill, gain-loss and constant models. Similar to the program BMDExpress, <font face="CMTT10"> tcplFit2 </font> curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hit call value be a continuous number ranging from 0 to 1 (in contrast to binary hit call values from <font face="CMTT10"> tcplFit() </font>. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
+The original <font face="CMTT10"> tcplFit() </font> functions performed basic concentration response curve fitting. Processing with <font face="CMTT10"> tcpl v3 </font> and beyond depends on the stand-alone <font face="CMTT10"> tcplFit2 </font> package to allow a wider variety of concentration-response models when using invitrodb in the 4.0 schema and beyond. Using <font face="CMTT10"> tcpl_v3 </font> with the schema from invitrodb versions 2.0-3.5 will still default to <font face="CMTT10"> tcplFit() </font> modeling with constant, Hill, and gain-loss. The main improvement provided by updating to using <font face="CMTT10"> tcplFit2</font> is inclusion of concentration-response models like those contained in the program BMDExpress. These models include polynomial, exponential, and power functions in addition to the original Hill, gain-loss, and constant models. Similar to the program BMDExpress, <font face="CMTT10"> tcplFit2 </font> curve-fitting uses a defined Benchmark Response (BMR) level to estimate a benchmark dose (BMD), which is the concentration where the curve-fit intersects with this BMR threshold. One final addition was to let the hit call value be a continuous number ranging from 0 to 1 (in contrast to binary hit call values from <font face="CMTT10"> tcplFit() </font>. While developed primarily for ToxCast, the <font face="CMTT10"> tcpl </font> package is written to be generally applicable to the chemical-screening community.
 
 The <font face="CMTT10"> tcpl </font> package includes processing functionality for two screening paradigms: (1) single-concentration (SC) and (2) multiple-concentration (MC) screening. SC screening consists of testing chemicals at one to three concentrations, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. MC screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
 
-In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette and others, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. <font face="CMTT10"> tcplLite </font> is no longer supported by <font face="CMTT10"> tcpl</font> because <font face="CMTT10"> tcplfit2</font> can be used to curve-fit data and make hit calls independent of invitrodb, available at <https://cran.r-project.org/package=tcplfit2>. <font face="CMTT10"> tcplLite </font> relied on flat files structured like invitrodb to produce curve-fitting and summary information like hit calls and AC50 values. Functionally <font face="CMTT10"> tcplfit2 </font> replaces <font face="CMTT10"> tcplLite </font> because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the invitrodb schema. For the ToxCast program it is still important to use invitrodb when curve-fitting as invitrodb serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using <font face="CMTT10"> tcpl</font>, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
+In addition to storing the data, the <font face="CMTT10"> tcpl </font> database stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For the illustrative purposes of this vignette, we have included a CSV version of the <font face="CMTT10"> tcpl </font> database containing a small subset of data from the ToxCast program. <font face="CMTT10"> tcplLite </font> is no longer supported by <font face="CMTT10"> tcpl</font> because <font face="CMTT10"> tcplfit2</font> can be used to curve-fit data and make hit calls independent of invitrodb, available at <https://cran.r-project.org/package=tcplfit2>. <font face="CMTT10"> tcplLite </font> relied on flat files structured like invitrodb to produce curve-fitting and summary information like hit calls and AC50 values. Functionally <font face="CMTT10"> tcplfit2 </font> replaces <font face="CMTT10"> tcplLite </font> because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the invitrodb schema. For the ToxCast program it is still important to use invitrodb when curve-fitting as invitrodb serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using <font face="CMTT10"> tcpl</font>, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data>.
 
 # ToxCast Publications
 Check out the following publications for additional information on the overall [US EPA's Toxicity Forecaster (ToxCast) Program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast). Assay-specific publications describing assay design or results are available in the assay_references and citations tables.
@@ -87,7 +87,7 @@ library(tcpl)
 After loading <font face="CMTT10">tcpl</font>, the function <font face="CMTT10">tcplConf</font> is used to establish connection to a database server or the API. While a typical database connection requires 5 parameters to be provided, using an API connection requires the user to only specify password (`pass`) and driver (`drvr`):
 
 ```{r setup-api, eval=FALSE}
-tcplConf(pass = "API key provided by emailing CTX API support at ccte_api@epa.gov>",
+tcplConf(pass = "API key provided by emailing CTX API support at ccte_api@epa.gov",
          drvr = "API")
 ```
 
@@ -148,7 +148,7 @@ Each of the methods tables have fields analogous to $\mathit{mc5\_mthd\_id}$, $\
 
 Many of the tables also include the $\mathit{created\_date}$, $\mathit{modified\_date}$, and $\mathit{modified\_by}$ fields that store helpful information  for tracking changes to the data. These fields will not be discussed further or included in the tables below.
 
-Many of the tables specific to the assay annotation are populated semi-manually based on expert curation of information on assay design; these tables of assay annotation are not currently utilized by the <font face="CMTT10"> tcpl </font> package, but instead act as meta-data for users. The full complexity of the assay annotation used by the ToxCast program is somewhat beyond the scope of the vignettes and the <font face="CMTT10"> tcpl </font> package. Additionally, a compiled report of assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data)
+Many of the tables specific to the assay annotation are populated semi-manually based on expert curation of information on assay design; these tables of assay annotation are not currently utilized by the <font face="CMTT10"> tcpl </font> package, but instead act as meta-data for users. The full complexity of the assay annotation used by the ToxCast program is somewhat beyond the scope of this vignette and the <font face="CMTT10"> tcpl </font> package. Additionally, a compiled report of assay description documents are available on the [ToxCast Downloadable Data page.](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data)
 
 ## Level 0 {#lvl0-table}
 The "mc0" and "sc0" tables are identical, other than containing $\mathit{m0id}$ rather than $\mathit{s0id}$, respectively. See the [Level 0 Pre-processing section](#lvl0-preprocessing) for more information.
@@ -322,30 +322,30 @@ Description <- c("Level 4 ID",
                  "Baseline median absolute deviation",
                  "Maximum response value",
                  "Minimum response value",
-                 "Maximum mean response value",
-                 "Concentration at *max_mean*",
-                 "Minimum mean response value",
-                 "Concentration at *min_mean*",
-                 "Maximum median response value",
-                 "Concentration at *max_med*",
-                 "Minimum median response value",
-                 "Concentration at *min_med*",
-                 "Maximum median difference response value (greater distance to 0 of *max_med* and *min_med*)",
-                 "Concentration at *max_med_diff*",
+                 "Maximal mean response at a given concentration",
+                 "Corresponding concentration of *max_mean*",
+                 "Minimum mean response value at a given concentration",
+                 "Corresponding concentration of *min_mean*",
+                 "Maximum median response value  at a given concentration",
+                 "Corresponding concentration of *max_med*",
+                 "Minimum median response value  at a given concentration",
+                 "Corresponding concentration of *min_med*",
+                 "Absolute difference between maximal and minimal median response at a given concentration",
+                 "Absolute difference between corresponding concentration of max_med and min_med",
                  "Maximum concentration tested",
                  "Minimum concentration tested",
-                 "Number of concentrations tested ",
+                 "Number of concentrations tested",
                  "Number of points in the concentration series",
                  "Number of replicates in the concentration series",
-                 "Number of median values greater than *3bmad* in the positive direction",
-                 "Number of median values greater than *3bmad* in the negative direction",
+                 "Number of median response values greater than baseline of 3 * *bmad*",
+                 "Number of median response values less than baseline of -3 * *bmad*",
                  "Ignore, temporary index used for uploading purposes"  )
 
 output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped") %>%
-  kableExtra::scroll_box(width = "100%", height="400px")
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
 ## - Level 4 Parameters
@@ -372,7 +372,7 @@ Description <- c("Level 5 ID",
                  "Level 4 ID",
                  "Assay endpoint ID",
                  "Winning model",
-                 "Activity Hitcall" ,
+                 "Activity hitcall" ,
                  "Fit category",
                  "Efficacy cutoff value",
                 "Activity probability (1 - *const_prob* not used with *tcplFit2*)",
@@ -384,10 +384,10 @@ Description <- c("Level 5 ID",
 output <- data.frame(Field, Description)
 
 htmlTable(output,
-          align = 'l',
-          align.header = 'l',
-          rnames = FALSE  ,
-          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ')
+          align='l',
+          align.header='l',
+          rnames=FALSE,
+          css.cell=' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ')
 ```
 
 See the [Data Interpretation>Hit Calls](#hitc) section for more details.
@@ -428,8 +428,8 @@ Description <- c("Level 6 ID",
                  "Level 5 ID",
                  "Level 4 ID",
                  "Assay endpoint ID",
-                 "Level 6 Method ID",
-                 "Short Flag Description to be displayed in data retrieval and plotting. Extended description available in MC6_Methods table." )
+                 "Level 6 method ID",
+                 "Short flag Ddescription to be displayed in data retrieval and plotting. Extended description available in MC6_Methods table." )
 
 output <- data.frame(Field, Description)
 
@@ -494,7 +494,7 @@ kable(output)%>%
 
 ## - Assay Source {#asid}
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("asid&dagger;", "assay_source_name&dagger;", "assay_source_long_name", "assay_source_desc")
+Field <- c("asid", "assay_source_name", "assay_source_long_name", "assay_source_desc")
 
 Description <- c("Assay source ID. Required for registration.",
                  "Assay source name, typically an abbreviation of the assay_source_long_name and abbreviated \"asnm\" within the package. Required for registration",
@@ -502,21 +502,20 @@ Description <- c("Assay source ID. Required for registration.",
                  "Assay source description"
                  )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped")
 ```
 
-## - Assay {aid}
+## - Assay {#aid}
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("aid", "asid;", "assay_name;", "assay_desc", "timepoint_hr", 
+Field <- c("aid", "asid;", "assay_name", "assay_desc", "timepoint_hr", 
             "organism_id", "organism",'tissue',"cell_format",
             'cell_free_component_source',
             'cell_short_name', 
             'cell_growth_mode',
-            "assay_footprint;", 
+            "assay_footprint", 
             "assay_format_type" ,
             "assay_format_type_sub" ,
             "content_readout_type",  
@@ -528,7 +527,7 @@ Description <- c("Assay ID",
                  "Assay name, abbreviated \"anm\" within the package. Required for registration.",
                  "Assay description",
                  "Treatment duration in hours",
-                 "NCBI taxonomic identifier, available here <https://www.ncbi.nlm.nih.gov/taxonomy>",
+                 "NCBI taxonomic identifier, available at https://www.ncbi.nlm.nih.gov/taxonomy",
                 "Organism of origin",
                 "Tissue of origin", "Description of cell format",
                 "Description of source for targeted cell-free components",
@@ -539,14 +538,13 @@ Description <- c("Assay ID",
                 "Specific description of assay format" ,
                 "Description of well characteristics being measured", 
                 "Solvent used in sample dilution",
-                "Maximum percent of dilution solvent used, from 0 to 1.")
+                "Maximum percent of dilution solvent used, from 0 to 1")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped") %>%
-  kableExtra::scroll_box(width = "100%", height="400px")
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
 ## - Assay Component {#acid}
@@ -570,12 +568,11 @@ Description <- c("Assay component ID",
                 "General description of technological target measured in assay platform",
                 "Specific description of technological target measured in assay platform")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped") %>%
-  kableExtra::scroll_box(width = "100%", height="400px")
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
 ## - Assay Component Endpoint {#aeid}
@@ -597,15 +594,14 @@ Description <- c("Assay component endpoint ID",
                 "Specific subfamily of intended target measured",
                 "Indicator of the impact of cytotoxicity in confounding (1) or no cytotoxic impact (0)" )
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped") %>%
-  kableExtra::scroll_box(width = "100%", height="400px")
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
-See the [Data Interpretation>Cytotoxicity Burst Distribution](#burst) section for more details on 'burst_assay'.
+See the [Data Interpretation>Cytotoxicity Burst Distribution](#burst) section for more details on "burst_assay".
 
 ## - Assay Component Map
 ```{r warning = FALSE, echo = FALSE}
@@ -627,20 +623,20 @@ Field <- c("aeid", "assay_title", "assay_objectives", "assay_throughput", "scien
            
 Description <- c("Assay component endpoint ID", 
                  "Short and descriptive title for the assay; opposed to assay component endpoint name", 
-                 "Purpose of the test method: Inserted after assay_component_target_desc; The claimed purpose and rationale for intended use of the method (e.g. alternative to an existing method, screening, provision of novel information in regulatory decision-making, mechanistic information, adjunct test, replacement, etc.) should be explicitly described and documented. The response measured in the assay should be put in the context of the biology/physiology leading to the in vivo response or effect. If the biological activity or response refers to a key event or molecular initiating event (MIE), provide a short description indicating firstly what key event within an existing or developing AOP, or in relation to a mechanism or mode of action, the assay is aiming to characterize (i.e. which level of biological organization the assay may be attributed (e.g. sub-cellular, cellular, tissue, organ or individual), and secondly where the assay might fit in the context of an existing regulatory hazard (i.e. adverse outcome). In the absence of any AOP, provide an indication of the plausible linkage between the mechanism(s) the assay is measuring and the resulting hazard endpoint.", 
-                 "Information about the throughput of the assay: indicate the throughput of the assay to provide an indication of likely resource intensity e.g. low (manual assay, one chemical tested at a time), lowmoderate, moderate, moderate-high, high throughput (e.g. in 96 well-plate and higher), and qualify with e.g. approximate number of chemicals/concentrations per run. If appropriate indicate whether a manual assay could be run in a higher throughput mode", 
-                 "Scientific principle of the method: provide the scientific rationale, supported by bibliographic references to articles, for the development of the assay. A summary description of the scientific principle including the biological/physiological basis and relevance (e.g. modeling of a specific organ) and/or mechanistic basis (e.g. modeling a particular mechanism by biochemical parameters) should be described. If possible, indicate what the anchor point is within an AOP.", 
-                 "Response and Response Measurement: response here makes reference to any biological effect, process or activity that can be measured. Specify precisely and describe the response and its measurement, e.g. corneal opacity measured using an opacitometer; half maximal activity concentration (AC50) derived from a competitive binding assay in human estrogen receptor assay or from the up-regulation of the proinflammatory antiangiogenic chemokine CXCL10.", 
+                 "Purpose of the test method: Inserted after assay_component_target_desc; the claimed purpose and rationale for intended use of the method (e.g. alternative to an existing method, screening, provision of novel information in regulatory decision-making, mechanistic information, adjunct test, replacement, etc.) should be explicitly described and documented. The response measured in the assay should be put in the context of the biology/physiology leading to the in vivo response or effect. If the biological activity or response refers to a key event or molecular initiating event (MIE), provide a short description indicating what key event within an existing or developing AOP, or in relation to a mechanism or mode of action, the assay is aiming to characterize (i.e. which level of biological organization the assay may be attributed (e.g. sub-cellular, cellular, tissue, organ or individual), and where the assay might fit in the context of an existing regulatory hazard (i.e. adverse outcome). In the absence of any AOP, provide an indication of the plausible linkage between the mechanism(s) the assay is measuring and the resulting hazard endpoint.", 
+                 "Information about the throughput of the assay: Indicate the throughput of the assay to provide an indication of likely resource intensity e.g. low (manual assay, one chemical tested at a time), lowmoderate, moderate, moderate-high, high throughput (e.g. in 96 well-plate and higher), and qualify with e.g. approximate number of chemicals/concentrations per run. If appropriate indicate whether a manual assay could be run in a higher throughput mode.", 
+                 "Scientific principle of the method: Provide the scientific rationale, supported by bibliographic references to articles, for the development of the assay. A summary description of the scientific principle including the biological/physiological basis and relevance (e.g. modeling of a specific organ) and/or mechanistic basis (e.g. modeling a particular mechanism by biochemical parameters) should be described. If possible, indicate what the anchor point is within an AOP.", 
+                 "Response and Response Measurement: Response here makes reference to any biological effect, process, or activity that can be measured. Specify precisely and describe the response and its measurement, e.g. corneal opacity measured using an opacitometer; half maximal activity concentration (AC50) derived from a competitive binding assay in human estrogen receptor assay or from the up-regulation of the proinflammatory antiangiogenic chemokine CXCL10.", 
                  "Data analysis: Comment on the response value in terms of a boundary or range to provide a context for interpretation.", 
-                 "Description of the experimental system exposure regime: provide a summary description of the essential information pertaining to the exposure regime (dosage and exposure time including observation frequency) of the test compounds to the experimental system including information on metabolic competence if appropriate; number of doses/concentrations tested or testing range, number of replicates, the use of control(s) and vehicle. Also, describe any specialized equipment needed to perform the assay and measure the response. Indicate whether there might be potential solubility issues with the test system, and solutions proposed to address the issue.", 
-                 "Tissue, cells or extracts utilised in the assay and the species source: indicate the experimental system for the activity or response being measured.", "Metabolic competence of the test system: describe and discuss the extent to which the test system can be considered metabolically competent, either by itself, or with the addition of an enzymatic fraction, if appropriate. Provide reference if available.", 
-                 "Status of method development and uses: compile information for the following sections if appropriate. Considerations could include: i) Development status: Indicate if the assay is still under development, and the estimated timeline for completion as far as possible ii) Known uses: Summarise the current and/or past use of the assay by different laboratories iii) Evaluation study: Summarise the main conclusions or refer to individual protocol if available iv) Validation study: Indicate participation in a formal validation study/studies and summarise the conclusions and their outcomes or refer to the individual protocol if available v) Regulatory use: Provide details of any potential regulatory application and of the toxicological hazard endpoint being addressed by the assay.")
+                 "Description of the experimental system exposure regime: Provide a summary description of the essential information pertaining to the exposure regime (dosage and exposure time including observation frequency) of the test compounds to the experimental system including information on metabolic competence if appropriate; number of doses/concentrations tested or testing range, number of replicates, the use of control(s) and vehicle. Also, describe any specialized equipment needed to perform the assay and measure the response. Indicate whether there might be potential solubility issues with the test system, and solutions proposed to address the issue.", 
+                 "Tissue, cells or extracts utilised in the assay and the species source: indicate the experimental system for the activity or response being measured.", "Metabolic competence of the test system: Describe and discuss the extent to which the test system can be considered metabolically competent, either by itself, or with the addition of an enzymatic fraction, if appropriate. Provide reference if available.", 
+                 "Status of method development and uses: Compile information for the following sections if appropriate. Considerations could include: i) Development status: Indicate if the assay is still under development, and the estimated timeline for completion as far as possible ii) Known uses: Summarise the current and/or past use of the assay by different laboratories iii) Evaluation study: Summarise the main conclusions or refer to individual protocol if available iv) Validation study: Indicate participation in a formal validation study/studies and summarise the conclusions and their outcomes or refer to the individual protocol if available v) Regulatory use: Provide details of any potential regulatory application and of the toxicological hazard endpoint being addressed by the assay.")
 
 output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped") %>%
-  kableExtra::scroll_box(width = "100%", height="400px")
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
 See the [Data Interpretation>Assay Description Documents](#add) section for more details.
@@ -649,13 +645,10 @@ See the [Data Interpretation>Assay Description Documents](#add) section for more
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("chid", "casn", "chnm", "dsstox_substance_id")
 
-Description <- c("Chemical ID",
-                 "CAS Registry Number",
-                 "Chemical name",
+Description <- c("Chemical ID", "CAS Registry Number", "Chemical name",
                  "Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database")
 
-output <- 
-  data.frame(Field, Description)
+output <- data.frame(Field, Description)
 
 kable(output)%>% 
   kable_styling("striped")
@@ -743,7 +736,7 @@ The <font face="CMTT10"> **tcplRegister** </font>  function takes the abbreviati
 
 The most distinguishing features will be selected to create a succinct assay name. Variation depends on the assay itself as well as other assays provided by the vendor. If multiple features are needed to describe an assay, order will be based on relative importance in describing the assay and the assay’s relation to other assays provided by the vendor to limit confusion. “Source_Technology_Format_Target” is a commonly used naming order. However, if one target is screened on different assay platforms by the vendor, “Source_Target_Technology” is a more appropriate naming convention. This is the case for the Tox21 assays. Additional features may be relevant, including agonist or antagonist mode, or “Follow-up” if the assay is a secondary specificity assay. Conversely, some assays utilize a cell-based format to screen a functional profile of targets. These assays follow a naming convention, *Source_Format*, where specific target information is defined at the component and endpoint level. Bioseek and Attagene are sources that provide cell-based assays. Considering the diversity of the data sources and high throughput assays in ToxCast, a flexible naming approach is best used in conjunction with subject matter expert discretion.
 ```{r eval = FALSE, message = FALSE}
-tcplLoadAid(what = "asid", val=1)
+tcplLoadAid(what = "asid", val = 1)
 tcplRegister(what = "aid", flds = list(asid = 1, anm = "TOX21_ERa_BLA_Agonist", assay_footprint = "1536 well"))
 ```
 When registering an assay ($\mathit{aid}$), the user must give an $\mathit{asid}$ to map the assay to the correct assay source. Registering an assay, in addition to an assay\_name ($\mathit{anm}$) and $\mathit{asid}$, requires $\mathit{assay\_footprint}$.  The $\mathit{assay\_footprint}$ field is used in the assay plate visualization functions (discussed later) to define the appropriate plate size. The $\mathit{assay\_footprint}$ field can take most string values, but only the numeric value will be extracted, e.g. the text string "hello 384" would indicate to draw a 384-well microtitier plate. Values containing multiple numeric values in $\mathit{assay\_footprint}$ may cause errors in plotting plate diagrams.
@@ -751,7 +744,7 @@ When registering an assay ($\mathit{aid}$), the user must give an $\mathit{asid}
 ## Assay Component
 [Assay component](#acid), or “component” for short, describes the raw data readouts. Like the previous level, one assay may have many components. **To register an assay component and create an $\mathit{acid}$, an $\mathit{aid}$ must be provided to map the component to the correct assay.** The assay component name will build on its respective assay name, to describe the specific feature being measured in each component. If there is only one component, the component name can be the same as the assay name. If there are multiple components measured in an assay, understanding the differences, and how one component may relate to another within an assay, are important naming considerations to prevent confusion. Assay component names will usually follow the naming convention of *Source_Assay_Component*, where “Component” is a brief description of what is being measured. 
 ```{r eval = FALSE, message = FALSE}
-tcplLoadAcid(what = "asid", val=1, add.fld=c("aid", "anm"))
+tcplLoadAcid(what = "asid", val = 1, add.fld = c("aid", "anm"))
 tcplRegister(what = "acid", flds = list(aid = 1, acnm = "TOX21_ERa_BLA_Agonist_ratio"))
 ```
 The final piece of assay information needed is the assay component source name (abbreviated $\mathit{acsn}$), stored in the "assay_component_map" table. The assay component source name is intended to simplify level 0 pre-processing by defining unique character strings (concatenating information if necessary) from the source files that identify the specific assay components. An assay component can have multiple $\mathit{acsn}$ values, but an $\mathit{acsn}$ must be unique to one assay component. Assay components can have multiple $\mathit{acsn}$ values to minimize the amount of data manipulation required (and therefore potential errors) during the level 0 pre-processing if assay source files change or are inconsistent. The unique character strings ($\mathit{acsn}$) get mapped to $\mathit{acid}$.
@@ -762,8 +755,8 @@ tcplRegister(what = "acsn", flds = list(acid = 1, acsn = "TCPL-MC-Demo"))
 ## Assay Component Endpoint
 [Assay component endpoint](aeid), or “endpoint” for short, represents the normalized component data. **To register an endpoint and create an $\mathit{aeid}$, an $\mathit{acid}$ must be provided to map the endpoint to the correct component.** In past <font face="CMTT10"> tcpl </font> versions, each component could have up to two endpoints therefore endpoint names would express directionality (*_up/_down*). <font face="CMTT10"> tcpl v3+ </font> allows bidirectional fitting to capture both the gain and loss of signal. Therefore with <font face="CMTT10"> tcpl v3+ </font>, the endpoint name will usually be the same as the component name.
 ```{r eval = FALSE, message = FALSE}
-tcplLoadAeid(fld="asid",val=1, add.fld = c("aid", "anm", "acid", "acnm"))
-tcplRegister(what = "aeid", flds = list(acid = 1, aenm = "TOX21_ERa_BLA_Agonist_ratio",normalized_data_type = "percent_activity", export_ready = 1,burst_assay = 0))
+tcplLoadAeid(fld = "asid", val = 1, add.fld = c("aid", "anm", "acid", "acnm"))
+tcplRegister(what = "aeid", flds = list(acid = 1, aenm = "TOX21_ERa_BLA_Agonist_ratio", normalized_data_type = "percent_activity", export_ready = 1, burst_assay = 0))
 ```
 Registering an assay endpoint also requires the $\mathit{normalized\_data\_type}$ field. The normalized_data_type is used when plotting and currently, the package supports the following values: percent_activity, log2_fold_induction, log10_fold_induction, and fold_induction. Any other values will be treated as "percent_activity."
 
@@ -832,8 +825,7 @@ Each row in the level 0 pre-processing data represents one well-assay component 
 ## Required Fields
 
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("'acsn' or 'acid'", "spid", "apid", "rowi", 
-           "coli", "wllt", "wllq", "conc", "rval", "srcf")
+Field <- c("'acsn' or 'acid'", "spid", "apid", "rowi", "coli", "wllt", "wllq", "conc", "rval", "srcf")
 
 Description <- c("Assay component source name can be used to map to assay component ID, or acid can be directly provided",
                  "Sample ID",
@@ -885,15 +877,15 @@ The final step in level 0 pre-processing is to load the data into the database. 
 
 ```{r eval = FALSE, message = FALSE}
 # Write/load the 'mcdat' into the database.
-tcplWriteLvl0(dat=mcdat, type ="mc")
+tcplWriteLvl0(dat = mcdat, type = "mc")
 ```
 
 As a check to confirm data has been written, the  <font face="CMTT10"> **tcplLoadData** </font> function is used to load data from the database into user's R session. Furthermore, the <font face="CMTT10"> **tcplPrepOtpt** </font> function can be used in conjunction with tcplLoadData to prepare the data in a readable format with additional chemical and assay annotation information. See [Data Retrieval](#data_retrieval) sections for further details.
 
 ```{r eval = FALSE, message = FALSE}
 # Load the level 0 data from the database to R.
-tcplLoadData(lvl=0, fld="acid", val=1, type = "mc")
-tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "mc"))
+tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "mc")
+tcplPrepOtpt(tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "mc"))
 ```
 
 In the loaded Level 0 data, $\mathit{acsn}$ is replaced with correct $\mathit{acid}$ and the $\mathit{m0id}$ field is added. These "m#" fields in MC data are primary keys for each level of data and can link the various levels of data. All keys are auto-generated and will change anytime data are reprocessed. Note, the primary keys only change for the levels affected, e.g. if the user reprocesses level 1, the level 0 keys will remain the same. 
@@ -912,7 +904,8 @@ For tcplRun, the user must supply a starting level (slvl) and ending level (elvl
 
 Processing of multiple assay components or endpoints can be executed simultaneously. This is done with the internal utilization of the <font face="CMTT10">mclapply</font> function from the <font face="CMTT10">parallel</font> package. Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. For processing on a Windows operating system, the default is $mc.cores = 1$, unless otherwise specified. For processing on a Unix-based operating system, the default is $mc.cores = NULL$ i.e. to utilize all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the "mc.cores" parameter to the desired level. **Note, this specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
 
-{#lvl_ids}
+## Level IDs {#lvl_ids}
+
 ```{r warning = FALSE, echo = FALSE}
 Type <- c('SC', 'SC', 'MC', 'MC', 'MC', 'MC', 'MC', 'MC')
 Level <- c('Lvl1', 'Lvl2', 'Lvl1', 'Lvl2', 'Lvl3', 'Lvl4', 'Lvl5', 'Lvl6')
@@ -924,7 +917,7 @@ kable(output)%>%
   kable_styling("striped")
 ```
 
-In this table, the Input ID column indicates the ID used for each processing step where Method ID indicates the ID used for assigning methods for data processing, when necessary. SC1 requires an $\mathit{acid}$ input, but the methods are assigned by $\mathit{aeid}$. The same is true for MC3 processing. SC1 and MC3 are the normalization steps and convert $\mathit{acid}$ to $\mathit{aeid}$.Only MC2 has methods assigned by $\mathit{acid}$.
+In this table, the Input ID column indicates the ID used for each processing step where Method ID indicates the ID used for assigning methods for data processing, when necessary. SC1 requires an $\mathit{acid}$ input, but the methods are assigned by $\mathit{aeid}$. The same is true for MC3 processing. SC1 and MC3 are the normalization steps and convert $\mathit{acid}$ to $\mathit{aeid}$. Only MC2 has methods assigned by $\mathit{acid}$.
 
 The processing requirements vary by screening paradigm and level, which later sections cover in detail. However, in general, specific method assignments will be required to accommodate different experimental designs or data processing approaches.
 
@@ -1024,7 +1017,7 @@ The goal of single-concentration processing is to identify potentially active co
 
 ```{r warning = FALSE, echo = FALSE}
 Level <- c(" Lvl 0", "Lvl 1  ", "Lvl 2  ")
-Description <- c("Pre-processing: Vendor/dataset-specific pre-processing to organize heterogeneous raw data to the uniform format for processing by the *tcpl* package&dagger;",
+Description <- c("Pre-processing: Vendor/dataset-specific pre-processing to organize heterogeneous raw data to the uniform format for processing by the *tcpl* package",
                  "Normalize: Apply assay endpoint-specific normalization listed in the \'sc1_aeid\' table to the raw data to define response",
                  "Activity Call: Collapse replicates by median response, define the response cutoff based on methods in the \'sc2_aeid\' table, and determine activity" )
 
@@ -1106,8 +1099,7 @@ ID <- c(
 Details <- c( "$s$ indicates the sample id within an 'acid' & $w$ indicates the well type",
   "$s$ indicates the sample id within an 'acid' & $w$ indicates the well type")
 # Create the output table.
-output <- 
-  data.frame(Method,Description,Observations,ID,Details)
+output <- data.frame(Method,Description,Observations,ID,Details)
 
 kable(output)%>% 
   kable_styling("striped")
@@ -1149,7 +1141,7 @@ The goal of multiple-concentration processing is to estimate the activity, poten
 
 ```{r warning = FALSE, echo = FALSE}
 Level <- c("Lvl 0 ", "Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5", "Lvl 6", "Lvl 7")
-Description <- c("Pre-processing: Vendor/dataset-specific pre-processing to organize heterogeneous raw data to the uniform format for processing by the *tcpl* package&dagger;",
+Description <- c("Pre-processing: Vendor/dataset-specific pre-processing to organize heterogeneous raw data to the uniform format for processing by the *tcpl* package",
                  "Index: Define the replicate and concentration indices to facilitate
 all subsequent processing",
                  "Transform: Apply assay component (acid) specifc transformations
@@ -1164,8 +1156,7 @@ the response cutoff based on methods in the \'mc5_aeid\' table, and
 determine activity",
 "Flag: Flag potential false positive and false negative fits", 
 "Extrapolate: Convert bioactive concentrations to Adminstered Equivalent Doses"  )
-output <- 
-  data.frame(Level, Description)
+output <- data.frame(Level, Description)
 
 kable(output)%>% 
   kable_styling("striped")
@@ -1196,7 +1187,7 @@ m1dat <- tcplPrepOtpt(m1dat)
 # Sort the data based on the concentration and replicate inidices.
 setkeyv(m1dat, c("repi", "cndx"))
 # Display the 'cndx' and 'repi' values.
-m1dat[chnm == "Bisphenol A",list(chnm, conc, cndx, repi)]
+m1dat[chnm == "Bisphenol A", list(chnm, conc, cndx, repi)]
 ```
 
 The package also contains a function, <font face="CMTT10"> **tcplPlotPlate** </font>, for visualizing the data at the assay plate level. This function can be used to visualize the data at levels 1 to 3.
@@ -1221,7 +1212,7 @@ Every assay component needs at least one transformation method assigned to compl
 ## Methods Assignment ##
 # Assign the level 2 transformation method 'none' to ACID 1.
 tcplMthdAssign(lvl = 2, # processing level
-               id =1, # assay component ID's to assign methods
+               id = 1, # assay component ID's to assign methods
                mthd_id = 1, # method(s) to be assigned
                ordr = 1, # order of the method(s) should be assigned
                type = "mc") # the data/processing type
@@ -1277,7 +1268,7 @@ Level 4 processing establishes a noise-band for the endpoint using the baseline 
 $$ bmad_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 Where $y_{i}$ is the $i^{th}$ baseline observation as defined by the assigned method and $\tilde{y}$ is the median of all the baseline observations. The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $bmad$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for more details.
 
-One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response (BMR) in both the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplfit2 </font>, <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively.  One standard deviation of the baseline response will be estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on bmad method selected. **BMR, like bmad, may change if additional data is added. Thus, the BMD estimates may also change.** See the [Data Interpretation>Benchmark Dose](#bmd) section for more details.
+One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response (BMR) in both the curve-fitting and hit-calling functions from  <font face="CMTT10"> tcplfit2 </font>, <font face="CMTT10"> tcplfit_core </font> and <font face="CMTT10"> tcplhit2_core </font>, respectively.  One standard deviation of the baseline response will be estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on $bmad$ method selected. **BMR, like bmad, may change if additional data is added. Thus, the BMD estimates may also change.** See the [Data Interpretation>Benchmark Dose](#bmd) section for more details.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column with the method assignment index.
@@ -1319,7 +1310,7 @@ htmlTable(output,
           css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ' )
 ```
 
-Before the model parameters are estimated, a set of summary values are calculated for each concentration-reponse series:
+Before the model parameters are estimated, a set of summary values are calculated for each concentration-response series:
 
 * Minimum and maximum observed responses (resp_min & resp_max, respectively).
 * Minimum and maximum concentrations (conc_min & conc_max, respectively).
@@ -1331,9 +1322,9 @@ they occur (max_mean, max_med, max_mean_conc, & max_med_conc, respectively).
 * The minimum mean and median responses along with the concentration at which
 they occur (min_mean, min_med, min_mean_conc, & min_med_conc, respectively).
 * The maximum median difference response -- the greater distance to 0 of max_med 
-and min_med -- along with the concentration at which it occurs (max_med_diff and
+and min_med -- along with the concentration at which it occurs (max_med_diff &
 max_med_diff_conc, respectively)
-* The number of median responses greater than $3\mathit{bmad}$ (nmed_gtbl).
+* The number of median responses greater than $3*\mathit{bmad}$ or less than $-3*\mathit{bmad}$ (nmed_gtbl_pos & nmed_gtbl_neg, respectively).
 
 The "mean" and "median" response values are defined as the mean or median of all observed response values at each concentration. In other words, the maximum median is the maximum of all median response values across all concentrations in the series. Similarly, the minimum median is the true minimum (or max in the negative direction) of all median response values across the concentrations in the series.
 
@@ -1354,7 +1345,7 @@ For demonstration purposes, the <font face="CMTT10"> mc_vignette </font> R data 
 
 ```{r fig.align='center',message=FALSE, class.source="scroll-100",message=FALSE,fig.dim=c(8,10), eval=FALSE}
 # Load the example data from the `tcpl` package.
-data(mc_vignette,package = 'tcpl')
+data(mc_vignette, package = 'tcpl')
 # Allocate the level 3 example data to `mc3`.
 mc3_example <- mc_vignette[['mc3']]
 # level 3 does not store logc anymore, create it for plotting purposes
@@ -1363,140 +1354,140 @@ mc3_example[, logc := log10(conc)]
 mc4_example <- mc_vignette[["mc4"]]
 # Obtain the minimum response observed and the 'logc' group - 'resp_min'.
 level3_min <- mc3_example %>%
-  dplyr::group_by(spid,chnm) %>% 
+  dplyr::group_by(spid, chnm) %>% 
   dplyr::filter(resp == min(resp)) %>% 
   dplyr::filter(spid == "01504209")
 # Obtain the maximum response observed and the 'logc' group - 'resp_max'.
 level3_max <- mc3_example %>% 
-  dplyr::group_by(spid,chnm) %>% 
+  dplyr::group_by(spid, chnm) %>% 
   dplyr::filter(resp == max(resp)) %>% 
   dplyr::filter(spid == "01504209")
 # Obtain the level 3 data and 'center' estimates for responses per 'logc' group.
 level3_summary <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
-  dplyr::select(.,c(spid,chnm,logc,resp)) %>%
-  dplyr::group_by(spid,chnm,logc) %>% 
-  dplyr::summarise(mean_resp = mean(resp),med_resp = median(resp))
+  dplyr::select(., c(spid, chnm, logc, resp)) %>%
+  dplyr::group_by(spid, chnm, logc) %>% 
+  dplyr::summarise(mean_resp = mean(resp), med_resp = median(resp))
 
 ## Generate Individual Summary Plots ##
 # Plot the mean responses for each log-concentration group.
 A <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(pch = 1,size = 2)+
+  ggplot(data = ., aes(logc, resp)) +
+  geom_point(pch = 1, size = 2) +
   geom_point(data = level3_summary,
-             aes(x = logc,y = mean_resp,
+             aes(x = logc, y = mean_resp,
                  col = 'mean responses'),
-             alpha = 0.75,size = 2)+
+             alpha = 0.75,size = 2) +
   scale_color_manual(values = 'paleturquoise3',
-                     aesthetics = 'col')+
-  labs(lty = "",colour = "")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+
-  ggtitle("Mean Responses")+
-  theme_bw()+
+                     aesthetics = 'col') +
+  labs(lty = "", colour = "")+
+  xlab(expression(paste(log[10],"(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +
+  ggtitle("Mean Responses") +
+  theme_bw() +
   theme(legend.position = 'bottom')
 # Plot the median responses for each log-concentration group.
 B <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(pch = 1,size = 2)+
+  ggplot(data = .,aes(logc,resp)) +
+  geom_point(pch = 1, size = 2) +
   geom_point(data = level3_summary,
-             aes(x = logc,y = med_resp,
+             aes(x = logc, y = med_resp,
                  col = 'median response'),
-             alpha = 0.75,size = 2)+
+             alpha = 0.75, size = 2) +
   scale_color_manual(values = 'hotpink',
-                     aesthetics = 'col')+
-  labs(lty = "",colour = "")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+
-  ggtitle("Median Responses")+
-  theme_bw()+
+                     aesthetics = 'col') +
+  labs(lty = "", colour = "")+
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +
+  ggtitle("Median Responses") +
+  theme_bw() +
   theme(legend.position = 'bottom')
 # Plot the maximum mean & median responses at the related log-concentration -
 #   'max_mean' & 'max_mean_conc'.
 C <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(pch = 1,size = 2)+
-  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
-             aes(x = log10(max_mean_conc),y = max_mean,
+  ggplot(data = .,aes(logc, resp)) +
+  geom_point(pch = 1, size = 2) +
+  geom_point(data = dplyr::filter(mc4, spid == "01504209"),
+             aes(x = log10(max_mean_conc), y = max_mean,
                  col = 'maximum mean response'),
-             alpha = 0.75,size = 2)+
+             alpha = 0.75, size = 2)+
   scale_color_manual(values = 'paleturquoise3',
-                     aesthetics = 'col')+
-  labs(lty = "",colour = "")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+
-  ggtitle(label = "Maximum Mean Response")+
-  theme_bw()+
+                     aesthetics = 'col') +
+  labs(lty = "", colour = "")+
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +
+  ggtitle(label = "Maximum Mean Response") +
+  theme_bw() +
   theme(legend.position = 'bottom')
 # Plot the maximum mean & median responses at the related log-concentration -
 #   'max_med' & 'max_med_conc'.
 D <- example %>%
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(pch = 1,size = 2)+
-  geom_point(data = dplyr::filter(mc4,spid == "01504209"),
-             aes(x = log10(max_med_conc),y = max_med,
+  ggplot(data = ., aes(logc, resp)) +
+  geom_point(pch = 1, size = 2) +
+  geom_point(data = dplyr::filter(mc4, spid == "01504209"),
+             aes(x = log10(max_med_conc), y = max_med,
                  col = "maximum median response"),
-             alpha = 0.75,size = 2)+
+             alpha = 0.75, size = 2)+
   scale_color_manual(values = 'hotpink',
-                     aesthetics = 'col')+
-  labs(lty = "",colour = "")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+
-  ggtitle(label = "Maximum Median Response")+
-  theme_bw()+
+                     aesthetics = 'col') +
+  labs(lty = "", colour = "") +
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +
+  ggtitle(label = "Maximum Median Response") +
+  theme_bw() +
   theme(legend.position = 'bottom')
 # Plot the minimum & maximum observed responses.
 E <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(pch = 1,size = 2)+
+  ggplot(data = ., aes(logc, resp)) +
+  geom_point(pch = 1, size = 2) +
   geom_point(data = level3_min,
-             aes(x = logc,y = resp,
+             aes(x = logc, y = resp,
                  col = "minimum response"),
-             alpha = 0.75,size = 2)+
+             alpha = 0.75, size = 2) +
   geom_point(data = level3_max,
-             aes(x = logc,y = resp,
+             aes(x = logc, y = resp,
                  col = "maximum response"),
-             alpha = 0.75,size = 2)+
-  scale_color_manual(values = c('red','blue'),
-                     aesthetics = 'col')+
-  labs(lty = "",colour = "")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+
-  ggtitle(label = "Minimum & Maximum\nResponses")+
-  theme_bw()+
+             alpha = 0.75, size = 2) +
+  scale_color_manual(values = c('red', 'blue'),
+                     aesthetics = 'col') +
+  labs(lty = "", colour = "") +
+  xlab(expression(paste(log[10], "(Concentration) ", mu,"M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +
+  ggtitle(label = "Minimum & Maximum\nResponses") +
+  theme_bw() +
   theme(legend.position = 'bottom')
 # Plot the minimum & maximum experimental log-concentration groups -
 #   'logc_min' & 'logc_max'.
 G <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(data = .,aes(logc,resp))+
-  geom_point(pch = 1,size = 2)+
-  geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
+  ggplot(data = ., aes(logc, resp)) +
+  geom_point(pch = 1, size = 2) +
+  geom_vline(data = dplyr::filter(mc4, spid == "01504209"),
              aes(xintercept = log10(conc_min),
                  col = 'minimum concentration'),
-             lty = "dashed")+
-  geom_vline(data = dplyr::filter(mc4,spid == "01504209"),
+             lty = "dashed") +
+  geom_vline(data = dplyr::filter(mc4, spid == "01504209"),
              aes(xintercept = log10(conc_max),
                  col = 'maximum concentration'),
-             lty = "dashed")+
-  scale_color_manual(values = c('red','blue'),
-                     aesthetics = 'col')+
-  labs(lty = "",colour = "")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+
-  ggtitle(label = "Minimum & Maximum\nConcentrations")+
-  theme_bw()+
+             lty = "dashed") +
+  scale_color_manual(values = c('red', 'blue'),
+                     aesthetics = 'col') +
+  labs(lty = "", colour = "") +
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +
+  ggtitle(label = "Minimum & Maximum\nConcentrations") +
+  theme_bw() +
   theme(legend.position = 'bottom')
 ## Compile Summary Plots in One Figure ##
 gridExtra::grid.arrange(
   A,B,C,D,E,G,
-  nrow = 3,ncol = 2,
-  top = mc3[which(mc4[,spid] == "01504209"),aenm]
+  nrow = 3, ncol = 2,
+  top = mc3[which(mc4[,spid] == "01504209"), aenm]
 )
 ```
 
@@ -1588,8 +1579,7 @@ Description <- c(
   "Model Parameter Values", "Standard deviation of Model Parameter Values",
   "Vector of Parameter Names","Vectors of Parameter Standard Deviation Names")
 # Consolidate all columns into a table.
-output <- 
-  data.frame(FitParameters, Description)
+output <- data.frame(FitParameters, Description)
 # Export/print the table into an html rendered table.
 kable(output)%>% 
   kable_styling("striped")
@@ -1614,30 +1604,25 @@ The following plots provide simulated concentration-response curves to illustrat
 ```{r class.source="scroll-100",fig.align='center'}
 ## Example Data ##
 # example fit concentration series
-ex_conc <- seq(0.03, 100,length.out = 100)
+ex_conc <- seq(0.03, 100, length.out = 100)
 
 ## Obtain the Continuous Fit of Level 4 Model Estimates ##
 fits <- data.frame(
   # log-scale concentrations
   logc = log10(ex_conc),
   # parametric model fits from `tcplfit2`
-  constant = tcplfit2::cnst(ps = c(er = 0.1),ex_conc),
-  poly1 = tcplfit2::poly1(ps = c(a = 3.5,er = 0.1),x = ex_conc),
-  poly2.mono.only = tcplfit2::poly2(ps = c(a = 0.13,b = 2,er = 0.1),x = ex_conc),
-  poly2.biphasic = tcplfit2::poly2bmds(ps = c(b1 = 14, b2 = -0.1,er = 0.1),x = ex_conc),
-  power = tcplfit2::pow(ps = c(a = 1.23,p = 1.45,er = 0.1),x = ex_conc),
-  hill = tcplfit2::hillfn(ps = c(tp = 750,ga = 5,p = 1.76,er = 0.1),
-                          x = ex_conc),
-  gnls = tcplfit2::gnls(ps = c(tp = 750,ga = 15,p = 1.45,la = 50,q = 1.34,
-                               er = 0.1),
+  constant = tcplfit2::cnst(ps = c(er = 0.1), ex_conc),
+  poly1 = tcplfit2::poly1(ps = c(a = 3.5, er = 0.1),x = ex_conc),
+  poly2.mono.only = tcplfit2::poly2(ps = c(a = 0.13, b = 2, er = 0.1), x = ex_conc),
+  poly2.biphasic = tcplfit2::poly2bmds(ps = c(b1 = 14, b2 = -0.1, er = 0.1), x = ex_conc),
+  power = tcplfit2::pow(ps = c(a = 1.23, p = 1.45, er = 0.1), x = ex_conc),
+  hill = tcplfit2::hillfn(ps = c(tp = 750, ga = 5, p = 1.76, er = 0.1), x = ex_conc),
+  gnls = tcplfit2::gnls(ps = c(tp = 750, ga = 15, p = 1.45, la = 50, q = 1.34, er = 0.1),
                         x = ex_conc),
-  exp2 = tcplfit2::exp2(ps = c(a = 0.45,b = 13.5,er = 0.1),
-                        x = ex_conc),
-  exp3 = tcplfit2::exp3(ps = c(a = 1.67,b = 12.5,p = 0.87,er = 0.1),
-                        x = ex_conc),
-  exp4 = tcplfit2::exp4(ps = c(tp = 895,ga = 15,er = 0.1),x = ex_conc),
-  exp5 = tcplfit2::exp5(ps = c(tp = 793,ga = 6.25,p = 1.25,er = 0.1),
-                        x = ex_conc)
+  exp2 = tcplfit2::exp2(ps = c(a = 0.45, b = 13.5, er = 0.1), x = ex_conc),
+  exp3 = tcplfit2::exp3(ps = c(a = 1.67, b = 12.5, p = 0.87, er = 0.1), x = ex_conc),
+  exp4 = tcplfit2::exp4(ps = c(tp = 895, ga = 15, er = 0.1), x = ex_conc),
+  exp5 = tcplfit2::exp5(ps = c(tp = 793, ga = 6.25, p = 1.25, er = 0.1), x = ex_conc)
 ) %>% 
   reshape2::melt(data = .,measure.vars = c(
     "constant",
@@ -1648,20 +1633,20 @@ fits <- data.frame(
 ## Updated Colors ##
 fit_cols <-
   # choose 10 distinct colors
-  viridis::magma(n = 11,direction = 1) %>% 
+  viridis::magma(n = 11, direction = 1) %>% 
   # darken the original colors to make them more visible
-  colorspace::darken(.,amount = 0.2)
+  colorspace::darken(., amount = 0.2)
 
 ## Plot ##
 fits %>%
-  ggplot()+
-  geom_line(aes(x = logc,y = value,lty = variable,colour = variable))+
-  facet_wrap(facets = "variable")+
-  theme_bw()+
-  labs(lty = "Models",colour = "Models")+
-  scale_colour_manual(values = fit_cols)+
-  ggtitle("General Shape of Models Included in `tcplfit2`")+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
+  ggplot() +
+  geom_line(aes(x = logc, y = value, lty = variable, colour = variable)) +
+  facet_wrap(facets = "variable") +
+  theme_bw() +
+  labs(lty = "Models", colour = "Models") +
+  scale_colour_manual(values = fit_cols) +
+  ggtitle("General Shape of Models Included in `tcplfit2`") +
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
   ylab("Response")
 ```
 
@@ -1669,7 +1654,7 @@ fits %>%
 
 ## - Methods Assignment
 
-For demonstrating the assignment of MC4 methods, method '1' will be specified to calculate that the BMAD and estimate one standard deviation of baseline using the two lowest concentration groups of **treatment wells** (well type, or wllt, equal to "t"). 
+For demonstrating the assignment of MC4 methods, method '1' will be specified to calculate that the $bmad$ and estimate one standard deviation of baseline using the two lowest concentration groups of **treatment wells** (well type, or wllt, equal to "t"). 
 
 Two examples of MC4 method assignments are provided below: (1) for a single assay endpoint and (2) all assay endpoints in containing string using <font face="CMTT10"> **tcplGetAeid** </font>. The assignment in the second approach can adapted for any subset of aeids.
 
@@ -1684,11 +1669,12 @@ tcplMthdAssign(
     type = "mc") # the data/processing type
 
 ## Methods Assignment #2 ##
-## Obtain the 'aeid' Values for all endpoints containing "ATG" string. "ATG" is the abbreviated assay source name of Attagene 
+# Obtain the 'aeid' Values for all endpoints containing "ATG" string.
+# "ATG" is the abbreviated assay source name of Attagene.
 atg.aeid <- tcpl::tcplGetAeid(name = "ATG") 
 ## Assign the MC4 processing methods for subset of aeids 
 tcpl::tcplMthdAssign( lvl = 4,
-    id = atg.aeid[,aeid],
+    id = atg.aeid[, aeid],
     mthd_id = c(1),  ordr = 1, type = "mc")
 ```
 
@@ -1696,7 +1682,7 @@ With the methods assigned, the MC4 processing can be completed for the desired s
 
 ```{r echo=FALSE, eval=FALSE}
 # MC4 Processing for subset of aeids #
-tcpl::tcplRun( id = atg.aeid[,aeid],slvl = 4L, elvl = 4L, type = 'mc' )
+tcpl::tcplRun( id = atg.aeid[, aeid], slvl = 4L, elvl = 4L, type = 'mc' )
 
 # Load the Mc4 data
 mc4 <- tcplLoadData(lvl = 4, type = 'mc', fld = 'aeid', val = 80,  add.fld = TRUE)
@@ -1710,7 +1696,7 @@ The level 4 data includes fields for each of the ten model fits as well as the I
 
 ```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100", warnings=FALSE, message=FALSE}
 # Load the example data from the `tcpl` package.
-data(mc_vignette,package = 'tcpl')
+data(mc_vignette, package = 'tcpl')
 # Allocate the level 3 example data to `mc3`.
 mc3_example <- mc_vignette[['mc3']]
 # level 3 does not store logc anymore, create it for plotting purposes
@@ -1720,8 +1706,8 @@ mc4_example <- mc_vignette[["mc4"]]
 
 ## Create a Sequence of Concentration Values within Observed Range ##
 X <- seq(
- mc4_example[which(mc4_example[,spid] == "01504209"),conc_min],
- mc4_example[which(mc4_example[,spid] == "01504209"),conc_max],
+ mc4_example[which(mc4_example[, spid] == "01504209"), conc_min],
+ mc4_example[which(mc4_example[, spid] == "01504209"), conc_max],
  length.out = 100
 )
 ## Obtain the Continuous Fit of Level 4 Model Estimates ##
@@ -1730,46 +1716,45 @@ X <- seq(
 estDR <- mc4_example %>% 
   dplyr::filter(spid == "01504209") %>% 
   dplyr::reframe(
-    cnst  = tcplfit2::cnst(.[,c(cnst_er)],X),
-    poly1 = tcplfit2::poly1(.[,c(poly1_a,poly1_er)],X),
-    poly2 = tcplfit2::poly2(.[,c(poly2_a,poly2_b,poly2_er)],X),
-    power = tcplfit2::pow(.[,c(pow_a,pow_p,pow_er)],X),
-    hill  = tcplfit2::hillfn(.[,c(hill_tp,hill_ga,hill_p)],X),
-    gnls  = tcplfit2::gnls(.[,c(gnls_tp,gnls_ga,gnls_p,gnls_la,gnls_q,gnls_er)],
-                           x = X),
-    exp2  = tcplfit2::exp2(.[,c(exp2_a,exp2_b,exp2_er)],x = X),
-    exp3  = tcplfit2::exp3(.[,c(exp3_a,exp3_b,exp3_p,exp3_er)],x = X),
-    exp4  = tcplfit2::exp4(.[,c(exp4_tp,exp4_ga,exp4_er)],x = X),
-    exp5  = tcplfit2::exp5(.[,c(exp5_tp,exp5_ga,exp5_p,exp5_er)],x = X) )
+    cnst  = tcplfit2::cnst(.[, c(cnst_er)], x = X),
+    poly1 = tcplfit2::poly1(.[, c(poly1_a, poly1_er)], x =  X),
+    poly2 = tcplfit2::poly2(.[, c(poly2_a, poly2_b, poly2_er)], x = X),
+    power = tcplfit2::pow(.[, c(pow_a, pow_p, pow_er)], x = X),
+    hill  = tcplfit2::hillfn(.[, c(hill_tp, hill_ga, hill_p)], x = X),
+    gnls  = tcplfit2::gnls(.[, c(gnls_tp, gnls_ga, gnls_p, gnls_la, gnls_q, gnls_er)], x = X),
+    exp2  = tcplfit2::exp2(.[,c(exp2_a, exp2_b, exp2_er)], x = X),
+    exp3  = tcplfit2::exp3(.[,c(exp3_a, exp3_b, exp3_p, exp3_er)], x = X),
+    exp4  = tcplfit2::exp4(.[,c(exp4_tp, exp4_ga, exp4_er)], x = X),
+    exp5  = tcplfit2::exp5(.[,c(exp5_tp, exp5_ga, exp5_p, exp5_er)], x = X) )
 # Format data into a data.frame for ease of plotting.
-estDR <- cbind.data.frame(X,estDR) %>%
+estDR <- cbind.data.frame(X, estDR) %>%
   reshape2::melt(data = .,measure.vars = c(
-    "cnst","poly1","poly2","power","hill","gnls","exp2","exp3","exp4","exp5"))
+    "cnst", "poly1", "poly2", "power", "hill", "gnls", "exp2", "exp3", "exp4", "exp5"))
 
 ## Updated Colors ##
 fit_cols <-
   # choose 10 distinct colors
   viridis::magma(n = 10,direction = 1) %>% 
   # darken the original colors to make them more visible
-  colorspace::darken(.,amount = 0.2)
+  colorspace::darken(., amount = 0.2)
 
 ## Plot the Model Fits from Level 4 ##
 mc3_example %>% 
   dplyr::filter(spid == "01504209") %>% 
-  ggplot(.,aes(x = logc,y = resp))+
-  geom_point(pch = 1,size = 2)+
+  ggplot(.,aes(x = logc, y = resp))+
+  geom_point(pch = 1, size = 2)+
   geom_line(data = estDR,
-            aes(x = log10(X),y = value,colour = variable,lty = variable))+
-  labs(colour = "Models",lty = "Models")+
-  scale_colour_manual(values = fit_cols)+
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+# )+
+            aes(x = log10(X), y = value, colour = variable, lty = variable)) +
+  labs(colour = "Models", lty = "Models") +
+  scale_colour_manual(values = fit_cols) +
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +# )+
   ggtitle(
     label = paste("Level 4 Model Fits",
-                  mc4_example[which(mc4_example[,spid] == "01504209"),dsstox_substance_id],
+                  mc4_example[which(mc4_example[,spid] == "01504209"), dsstox_substance_id],
                   sep = "\n"),
     subtitle = paste("Assay Endpoint: ",
-                  mc4_example[which(mc4_example[,spid] == "01504209"),aenm]))+
+                  mc4_example[which(mc4_example[, spid] == "01504209"), aenm])) +
   theme_bw()
 ```
 
@@ -1799,9 +1784,9 @@ mc4_example <- mc_vignette[["mc4"]]
 # Obtain the AIC values from each of the model fits from
 # the level 4 data.
 mc4_aic <- mc4_example %>% 
-  dplyr::select(.,grep(colnames(.),pattern = "aic")) %>% 
+  dplyr::select(., grep(colnames(.),pattern = "aic")) %>% 
   round(.,3) %>% 
-  apply(.,MARGIN = 1,FUN = function(x){
+  apply(.,MARGIN = 1, FUN = function(x){
     cell_spec(x,color = ifelse(x == min(x),
                                yes = "blue",
                                no = "black"))
@@ -1820,7 +1805,7 @@ mc4_aic %>%
     centering = TRUE) %>%
   kable_styling(
     font_size = 14,
-    c("striped","hover"),
+    c("striped", "hover"),
     full_width = FALSE
   )
 ```
@@ -1830,19 +1815,14 @@ The estimated parameters from the winning model are stored in the respective [mc
 While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitc of curves fit in the biologically irrelevant direction. There are two methods for overwriting the hitc value, and if applied, these will overwrite the hitc value for any biologically irrelevant curve by flipping the hitc to a negative value. 
 
 ```{r warning = FALSE, echo = FALSE}
-Method <- c(
-  27,28
-)
-Method_Name <- c(
-  "ow_bidirectional_loss", "ow_bidirectional_gain"
-)
+Method <- c(27,28)
+Method_Name <- c("ow_bidirectional_loss", "ow_bidirectional_gain")
 Description <- c(
   "Multiply winning model hitcall (hitc) by -1 for models fit in the positive analysis direction. Typically used for endpoints where only negative responses are biologically relevant.",
   "Multiply winning model hitcall (hitc) by -1 for models fit in the negative analysis direction. Typically used for endpoints where only positive responses are biologically relevant."
 )
 # Compile all of the information for the table.
-output <- 
-  data.frame(Method,Method_Name,Description)
+output <- data.frame(Method,Method_Name,Description)
 # Export/print the table to an html rendered table.
 htmlTable(output,
           align = 'l',
@@ -1860,13 +1840,13 @@ The example we include in this vignette for demonstrating the assignment of leve
 tcplMthdAssign(
   lvl = 5, # processing level
   id = 80, # assay endpoint ID(s) to assign method(s)
-  mthd_id = c(1,3,5), # method(s) to be assigned
+  mthd_id = c(1, 3, 5), # method(s) to be assigned
   ordr = 1:3, # order the method(s) should be assigned
   type = "mc") # the data/processing type
 
 #MC5 processing for aeid 80
 tcpl::tcplRun(
-  id = atg.aeid[,aeid], # assay endpoint id to pipeline
+  id = atg.aeid[, aeid], # assay endpoint id to pipeline
   slvl = 5L, # level to start pipelining on
   elvl = 5L, # level to end pipelining on
   type = 'mc' # endpoint processing type - 'mc' = "multiple concentrations"
@@ -1882,13 +1862,13 @@ mc5 <- tcplLoadData(lvl = 5,
 mc5 <- tcplPrepOtpt(mc5)
 ```
 
-A subset of MC5 data is available in the <font face="CMTT10"> mc_vignette </font> object, and includes fields for the best model fit, the potency estimates, other estimates from the best model fit, as well as the ID fields. The user can visualize the model fitting results using the <font face="CMTT10"> tcplPlot </font> functions. See the <font face="CMTT10"> tcpl </font>'s Data Retrieval vignettes for more information. 
+A subset of MC5 data is available in the <font face="CMTT10"> mc_vignette </font> object, and includes fields for the best model fit, the potency estimates, other estimates from the best model fit, as well as the ID fields. The user can visualize the model fitting results using the <font face="CMTT10"> tcplPlot </font> functions. See the [Data Retrieval with invitrodb and via API](#data_retrieval) sections for more information. 
 ```{r}
 # Allocate the level 5 data in `mc_vignette` to the `mc5` object.
 mc5_example <- mc_vignette[["mc5"]]
 ```
 
-For demonstrative purposes, an alternative visual of the model fits from MC4 and the best model as well as the potency estimates from MC5 data is produced below. {#mc5_plot}
+For demonstrative purposes, an alternative visual of the model fits from MC4 and the best model as well as the potency estimates from MC5 data is produced below.{#mc5_plot}
 
 ```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100"}
 ## Obtain Data ##
@@ -1910,37 +1890,37 @@ mc5_ss <- mc5_example %>% dplyr::filter(spid == "01504209") # Level 5 - best fit
 # Next, we need to obtain the smooth curve estimate for the best model found
 # in the Level 5 analyses of the `tcpl` pipeline.
 estDR <- estDR %>%
-  dplyr::mutate(.,best_modl = ifelse(variable == mc5_ss[,modl],
-                                     yes = "best model",no = NA))
+  dplyr::mutate(., best_modl = ifelse(variable == mc5_ss[, modl],
+                                     yes = "best model", no = NA))
 
 ## Generate a Base Concentration-Response Plot ##
 basePlot <- mc3_ss %>% 
   # Observed Concentration-Response Data
   ggplot()+
-  geom_point(aes(x = logc,y = resp),pch = 1,size = 2)+
+  geom_point(aes(x = logc,y = resp),pch = 1,size = 2) +
   # Cutoff Band
   geom_rect(data = mc5_ss,
-            aes(xmin = log10(conc_min),xmax = log10(conc_max),ymin = -coff,ymax = coff),
-            alpha = 0.15,fill = "skyblue")+
+            aes(xmin = log10(conc_min), xmax = log10(conc_max), ymin = -coff, ymax = coff),
+            alpha = 0.15, fill = "skyblue") +
   # Best Model Fit
-  geom_line(data = dplyr::filter(estDR,variable == mc5_ss[,modl]),
-            aes(x = log10(X),y = value,color = mc5_ss[,modl]))+
-  scale_colour_manual(values = c("royalblue3"),aesthetics = "color")+
+  geom_line(data = dplyr::filter(estDR, variable == mc5_ss[,modl]),
+            aes(x = log10(X), y = value,color = mc5_ss[,modl])) +
+  scale_colour_manual(values = c("royalblue3"), aesthetics = "color") +
   # Other Model Fits
-  geom_line(data = dplyr::filter(estDR,variable != mc5_ss[,modl]),
-            aes(x = log10(X),y = value,lty = variable),
-            alpha = 0.3,show.legend = TRUE)+
+  geom_line(data = dplyr::filter(estDR,variable != mc5_ss[, modl]),
+            aes(x = log10(X), y = value, lty = variable),
+            alpha = 0.3, show.legend = TRUE) +
   # Legend Information
-  labs(lty = "Other Models",color = "Best Fit")+
+  labs(lty = "Other Models", color = "Best Fit") +
   # Titles and Labels
-  xlab(expression(paste(log[10],"(Concentration) ",mu,"M")))+
-  ylab(expression(paste(log[2],"(Fold Induction)")))+# )+
+  xlab(expression(paste(log[10], "(Concentration) ", mu, "M"))) +
+  ylab(expression(paste(log[2], "(Fold Induction)"))) +# )+
   ggtitle(
     label = paste("Level 5 Best Model Fit",
-                  mc4_ss[which(mc4_ss[,spid] == "01504209"),dsstox_substance_id],
+                  mc4_ss[which(mc4_ss[, spid] == "01504209"), dsstox_substance_id],
                   sep = "\n"),
     subtitle = paste("Assay Endpoint: ",
-                     mc4_ss[which(mc4_ss[,spid] == "01504209"),aenm]))+
+                     mc4_ss[which(mc4_ss[,spid] == "01504209"), aenm])) +
   # Background Plot Theme
   theme_bw()
 
@@ -1948,9 +1928,9 @@ basePlot <- mc3_ss %>%
 # First, we need to obtain/assign colors for the potency estimates to be displayed.
 potency_cols <-
   # choose 5 distinct colors
-  viridis::plasma(n = 5,direction = -1) %>% 
+  viridis::plasma(n = 5, direction = -1) %>% 
   # darken the original colors to make them more visible
-  colorspace::darken(.,amount = 0.1)
+  colorspace::darken(., amount = 0.1)
   
 ## Compile the Full Level 5 Plot ##
 linePlot <-
@@ -2055,7 +2035,7 @@ Additional information on derivations on potency estimates is found in [Data Int
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data. See the [Data Interpretation>Flags](#flags) section for more details.
 
 ## - Level 7
-For invitrodb v4.2 onward, a new mc7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model for the large number of chemicals included in invitrodb v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](aed) section.
+For invitrodb v4.2 onward, a new mc7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. AEDs are generated in a separate .R script using the [httk R package](https://cran.r-project.org/web/packages/httk/index.html) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state (3compartmentss) model and the physiologically-based toxicokinetic (pbtk) model for the large number of chemicals included in invitrodb v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](#aed) section.
 
 ## Compiled Processing Examples
 
@@ -2070,7 +2050,7 @@ After SC0 is loaded into the database, SC1 and SC2 methods can be assigned. Once
 tcplMthdAssign(lvl = 1, id = 1:2, mthd_id = c(1, 11, 13), ordr = 1:3, type = "sc")
 tcplMthdAssign(lvl = 2, id = 1, mthd_id = 3, type = "sc")
 ## SC0-2 Processing by acid
-tcplRun(id = 1, type = "sc", slvl = 0,  elvl = 2)
+tcplRun(id = 1, type = "sc", slvl = 0, elvl = 2)
 ```
 
 ## - MC Data
@@ -2082,13 +2062,15 @@ After MC0 is loaded into the database, methods can be assigned. Once assigned, d
 # No MC1 methods needed
 tcplMthdAssign(lvl = 2, id = 1, mthd_id = c(3,4,2), ordr = 1:3, type = "mc")
 tcplMthdAssign(lvl = 3, id = 2, mthd_id = 1, ordr = 1, type = "mc")
-tcplMthdAssign(lvl = 4, id = 2, mthd_id = c(1), ordr = 1:2, type = "mc")
-tcplMthdAssign(lvl = 5,id = 2, mthd_id = c(1,3,5),ordr = 1:3, type = "mc") 
-tcplMthdAssign(lvl = 5,id = 2, mthd_id = c(1,3,5),ordr = 1:3, type = "mc") 
+tcplMthdAssign(lvl = 4, id = 2, mthd_id = 1, ordr = 1:2, type = "mc")
+tcplMthdAssign(lvl = 5, id = 2, mthd_id = c(1,3,5), ordr = 1:3, type = "mc") 
+tcplMthdAssign(lvl = 5, id = 2, mthd_id = c(1,3,5), ordr = 1:3, type = "mc") 
 
 ## Assign the Number of Processing Cores.
 mycores <- 1 # If users do NOT want to leverage parallel computing. 
-# Users that want to leverage parallel computing set to > 1, but less than the total number of cores (i.e. need at least 1 core open for overhead). If not provided, this will be assumed. "parallel::detectCores()" can be run to understand the maximum allowed number of cores.
+# Users that want to leverage parallel computing set to > 1, but less than the total number of cores
+# (i.e. need at least 1 core open for overhead). If not provided, this will be assumed. 
+# "parallel::detectCores()" can be run to understand the maximum allowed number of cores.
 
 ## Option A: MC0-5 Processing by acid
 tcplRun(id = 80, type = "mc",  slvl = 0L,   elvl = 5L,  mc.cores = 20)
@@ -2101,7 +2083,7 @@ tcplRun(id = list$aeid, type = "mc", slvl = 4L, elvl = 5L)
 # Data Interpretation {#data_interp}
 After fitting, a continuous hit call (hitc) is calculated as the product of three proportional weights. Several potency estimates are also calculated for the winning model, including activity concentrations at specified levels of response, such as concentration at 50% of maximal activity (AC50) and concentration at activity observed at the cutoff (ACC), and a benchmark dose (BMD) at a specified benchmark response (BMR). This section will review the statistics behind the activity and potency estimates available for each concentration-response series and how the user may interpret these values alongside other available information, such as fit categories, representative samples, and cytotoxicity burst thresholds. Overall, this Data Interpretation section seeks to enhance user confidence in reviewing and using ToxCast data for different tasks.
 
-## [Hit Calls](#hitc)
+## Hit Calls {#hitc}
 In tcpl v2, activity hit calls (hitc) were binary, where 0 was negative, 1 was positive, and −1 corresponded to concentration-response series that tcpl was “unable to fit” (e.g., <4 concentrations). In tcpl v3 onwards, the hitc is the product of three proportional weights, and the resulting continuous value is between 0 and 1, though the values are not normally distributed and tend to approach 0 or 1. Hitcalls that approach 1 indicate concentration-response series with biological activity in the measured response (i.e. 'active' hit). $Hitc$ is typically binarized into active or inactive designations, depending on the level of stringency required by the user. For current ToxCast work, a $hitc$ greater than or equal to 0.90 is labeled active, whereas anything less was considered inactive. This threshold of 0.90 was based on other $tcplfit2$ implementations with in vitro screening data [(Nyffeler et al., 2023)](https://www.sciencedirect.com/science/article/pii/S0041008X23001527) and reflects the apparent bimodal nature of the $hitc$ distribution, where a preponderance of the $hitc$ fall between 0 and 0.1 and 0.9 and 1.0. Users may interpret the continuous $hitc$ into active or inactive designations based on different thresholds. Further testing through implementation of this new functionality may reveal appropriate thresholds for different applications or assays. The “unable to fit” series now appear as model “none” with a $hitc$ of 0 (inactive). Negative $hitc$ in tcpl v3.2 correspond to curves that suggest biological activity in an unintended direction, as further described below.
 
 Continuous $hitc$ as defined in [tcplfit2 R package](https://cran.r-project.org/web/packages/tcplfit2/index.html) is calculated as the product of three proportional weights representing the confidence that: 
@@ -2143,7 +2125,7 @@ kable(output)%>%
   kable_styling("striped")
 ```
 
-## - Benchmark Dose
+## - Benchmark Dose {#bmd}
 
 A Benchmark Dose (BMD) is the activity concentration observed at the Benchmark Response (BMR) level. In the current implementation of tcpl and tcplfit2, BMR is only defined as 1.349 standard deviations of baseline response in the two lowest concentrations of treatment wells or neutral controls wells, as defined by Level 4 methods. <font face="CMTT10">tcpl</font> uses the following definitions and assumptions for setting the BMR:
 
@@ -2155,7 +2137,7 @@ $𝜇(𝑏)+𝑐∗𝑠𝑑(𝑏)=𝐵𝑀𝑅=𝜇(𝐵𝑀𝐷)$
 
 </center>
 
-Here, the baseline $(𝑏)$ is defined as samples from the two lowest concentrations across chemicals within an assay endpoint and the $𝑐=1.349a$ ([(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387)).
+Here, the baseline $(𝑏)$ is defined as samples from the two lowest concentrations across chemicals within an assay endpoint and the $𝑐=1.349a$ [(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387).
 
 A 90% confidence interval around the BMD, bounded by the benchmark dose lower bound (BMDL) and the benchmark dose upper bound (BMDU), is also computed and provided to reflect the uncertainty in the BMD estimate. The calculation of these confidence intervals will occasionally fail due to a singular matrix inverse, and in these cases, BMDU and BMDL will not be reported. This case occurs when the data are especially noisy and the confidence interval around the BMD approaches infinity. The winning model may return a $\mathit{bmd}$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $\mathit{bmd}$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the the highest test concentration}$, respectively. If the calculated $\mathit{bmd}$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $\mathit{bmd}$ estimate instead.
 
@@ -2173,7 +2155,7 @@ For active curves, efficacy, as represented by the modeled top, is compared to 1
 
 $\mathit{Fitc}$ 36 describes a curve that is of low efficacy and with a low AC~50~, below the concentration range screened. These are more likely to be noise or less reproducible fits. $\mathit{Fitc}$ 41 and 42 are the ideal $\mathit{fitc}$ for reproducible curves, as demonstrated by these two $\mathit{fitc}$ comprising the majority of positive ($\mathit{hitc}$ > 0.9) curves in <font face="CMTT10">invitrodb v4.1</font>. $\mathit{Fitc}$ 40 indicates a curve with at least moderate efficacy, but an AC~50~ below the concentration range screened. These chemicals may be positive or reference chemicals screened in the incorrect concentration window to observe their minimum activity. These curves may also represent high-confidence positives for which we have limited understanding of the slope of the concentration-response curve, and as such, the AC~50~ may be associated with more uncertainty.
 
-## [Flags (Level 6)](#flags)
+## Flags (Level 6) {#flags}
 
 In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted in vitro screening data. Cautionary flags on fitting were developed in previous versions of <font face="CMTT10">tcpl</font> and have been stored at Level 6. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data.
 
@@ -2232,7 +2214,7 @@ FlagDescription <- c("Flag series if model directionality is questionable, i.e. 
                      viability assay with winning model is gain-loss $(gnls)$; if $hitc >= 0.9$, 
                      $modl = gnls$ and $cell\\_viability\\_assay = 1$, then flag.",
                      "Flag series where no median response values are greater than baseline as 
-                     defined by 3 times the baseline median absolute deviation $(bmad)$; both $nmed_gtbl_pos$ and $nmed_gtbl_neg = 0$, where $nmed_gtbl_pos/_neg$ is the number of medians greater than $3 * bmad$ or less than $-3 * bmad$")
+                     defined by 3 times the baseline median absolute deviation $(bmad)$ or less than baseline as defined by -3 times $bmad$; both $nmed\\_gtbl\\_pos$ and $nmed\\_gtbl\\_neg = 0$, where $nmed\\_gtbl\\_pos$ is the number of median response values $> 3 * bmad$ and $nmed\\_gtbl\\_neg$ is the number of median response values $< -3 * bmad$.")
 
 # Consolidate all columns into a table.
 output <- data.frame(Method, FlagNames, FlagDescription)
@@ -2252,7 +2234,7 @@ Multiple samples of the same chemical (many spids per chid) may be tested for a 
 To select a representative sample in MC, a "consensus hitc" is made by taking the mean of all binarized sample hitc, with ties defaulting to active. After the chemical-wise hitc is made, the samples corresponding to chemical-wise hit call are logically ordered using the fit category, the number of the flags, and AC50, then the first sample for every chemical is selected. This logic prioritizes active over inactive hit calls when there is a disagreement among samples, but then attempts to pick the representative sample with the highest quality curve, with the goal of minimizing false negatives. Logic encompasses the following:
 
 1. Hitc are first binarized to active (1) or inactive (0), where hitc >= 0.9 is deemed active. Mean of the binarized hitc across samples is calculated for the chemical. Representative sample must match mean activity call (active or inactive), where a mean activity hit call >= 0.5 is considered active.
-2. Samples are prioritized first by [Fit Categories](fitc). Generally AC50 values within concentration range (fitc = 37, 41) are prioritized over AC50 values above concentration range (fitc = 38, 42) then AC50 values below concentration range (fitc = 36, 40)
+2. Samples are prioritized first by [Fit Categories](#fitc). Generally AC50 values within concentration range (fitc = 37, 41) are prioritized over AC50 values above concentration range (fitc = 38, 42) then AC50 values below concentration range (fitc = 36, 40)
 4. Samples are then sorted based on number of flags. Curve fits for samples with fewer flags are prioritized.
 5. Finally, if all things are equal, the sample with a lower AC50 is selected over higher AC50.
 
@@ -2263,7 +2245,7 @@ To select a representative sample in SC, a "consensus hitc" is made by taking th
 
 The  <font face="CMTT10">tcplVarMat </font> function creates chemical-by-endpoint matrices, combining summary information for single-concentration and/or multiple-concentration screening. Such a matrix can be useful for understanding which chemicals were tested, and what hit calls and potency values resulted from this screening. For example, one might ask, "Which chemicals were screened in either single-concentration or multi-concentration for some assay endpoint, and if MC screening was performed, what potency was estimated for any observed activity?" 
 
-For variable matrices from <font face="CMTT10">tcplVarMat </font>, a representative sample is selected using the tcplSubsetChid function in cases where a chemical-by-endpoint was tested in multiple samples (performed separately for multiple-concentration or single-concentration screening). When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](chid) for more information. <br/>
+For variable matrices from <font face="CMTT10">tcplVarMat </font>, a representative sample is selected using the tcplSubsetChid function in cases where a chemical-by-endpoint was tested in multiple samples (performed separately for multiple-concentration or single-concentration screening). When multiple sample-assay series exist for one chemical, a single series is selected by the <font face="CMTT10"> tcplSubsetChid </font> function. See the [Representative Samples section](#chid) for more information. <br/>
 
  1. "ac50" -- The active concentration at 50% maximal response ($\mathit{AC_{50}}$) for the winning model. <br/>
  2. "ac50_verbose" -- The $\mathit{AC_{50}}$ for the winning model, with text inserted in place for some situations touched on below. <br/>
@@ -2302,7 +2284,7 @@ library(writexl)
 write_xlsx(varmat, path = "varmat_output.xlsx")
 ```
 
-## Cytotoxicity Burst Distribution {#burst}
+## Cytotoxicity Burst Distribution{#burst}
 Estimates of chemical concentrations that elicit cytotoxicity and/or cell stress have been informative for contextualizing bioactivity screening data in ToxCast by providing information on the likelihood that these data may be confounded by assay interference resulting from cytotoxicity and/or cell stress, particularly when a parallel or in-well estimate of cell viability is unavailable. As such, general estimates of the median and lower bound concentrations that might elicit cytotoxicity and/or cell stress in vitro have previously been calculated using the <font face="CMTT10">**tcplCytoPt**</font> function, which considers activity across a suite of cell-based assays based on updates to previous work [(Judson et al., 2016)](https://pubmed.ncbi.nlm.nih.gov/27605417/).
 
 The burst threshold can be used to infer activity above or below an estimated threshold of generalized cell stress and/or cytotoxicity, where users can define the degree of difference between some observed bioactivity and estimates of cell stress and/or cytotoxicity needed in order to discern "selective" activity (i.e., bioactivity thought to occur independently of cell stress and/or cytotoxicity) vs. "non-selective" activity (i.e., bioactivity that appears to occur concomitantly with estimates of the concentration needed for cell stress and/or cytotoxicity).
@@ -2328,7 +2310,7 @@ A cytotox_median is computed for any chemical in the database screened with at l
 
 In contrast, for a chemical to be included in a computation of the global median absolute deviation (global_MAD), the chemical must be screened in a higher number of burst assays. The global MAD is an estimate of the variance expected for a chemical tested in many cytotoxicity and cell stress assays, currently defined as greater than or equal to 60 assay endpoints annotated as “burst” endpoints and with an active hit call in at least 5% of "burst" assay endpoints tested. This typically includes chemicals that were highly screened in a multitude of assays, based on inclusion in initial ToxCast Phase I and II chemical screening. Additional filtering of burst assay data was also required to ensure only losses in cell viability were included and any cell proliferation responses were excluded (for a subset of bidirectional endpoints in the set of burst assay endpoints). 
 
-## Assay Description Documents
+## Assay Description Documents {#add}
 Given ToxCast includes a heterogeneous set of assays across a diverse biological space, annotations in the database help flexibly aggregate and differentiate processed data whereas assay documentation aligned with international standardization efforts can make ToxCast data more useful and interpretable for use in decision-making. The [OECD Guidance Document 211 (GD211)](https://ntp.niehs.nih.gov/sites/default/files/iccvam/suppdocs/feddocs/oecd/oecd-gd211-2014-508.pdf) is a standard for comprehensive assay documentation describing non-guideline in vitro test methods and their interpretation. This template is intended to harmonize non-guideline, *in vitro* method descriptions to allow assessment of the relevance of the test method for biological responses of interest and the quality of the data produced. Unlike the assay element annotations which are often short in a standardized format or use a controlled term list, the assay_descriptions fields have no character limit for text. A compiled report of these assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/chemical-research/exploring-toxcast-data-downloadable-data).
 
 ## Adminstered Equivalent Doses (Level 7) {#aed}
@@ -2366,7 +2348,7 @@ htmlTable(output,
           align.header = 'l',
           rnames = FALSE  ,
           css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-          caption="Options Applied when extrapolating Adminstered Equivalent Doses."
+          caption = "Options Applied when extrapolating Adminstered Equivalent Doses."
           )
 ```
 
@@ -2418,7 +2400,7 @@ htmlTable(output,
         align.header = 'l',
         rnames = FALSE  ,
         css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption="Table 4: Fields in the Chemical_Analytical_QC Table.")
+        caption = "Table 4: Fields in the Chemical_Analytical_QC Table.")
 
 ```
 
@@ -2432,8 +2414,8 @@ The <font face="CMTT10">**tcplLoadAsid, tcplLoadAid, tcplLoadAcid**</font>, and 
 # List all assay source IDs
 tcplLoadAsid() 
 # Create table of all assay endpoint ids (aeids) per assay source
-aeids <- tcplLoadAeid(fld="asid", # field to query on
-                      val=14, # value for each field
+aeids <- tcplLoadAeid(fld = "asid", # field to query on
+                      val = 14, # value for each field
                       add.fld = c("aid", "anm", "acid", "acnm")) # additional fields to return
 ```
 
@@ -2547,16 +2529,16 @@ Prior to the pipeline processing provided in this package, all the data must go 
 
 ```{r sc0, eval = FALSE}
 # Load Level 0 single concentration (SC0) data for a single acid to R.
-sc0 <- tcplLoadData(lvl=0,  fld="acid", val=1, type = "sc") # data type - single concentration
+sc0 <- tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "sc") # data type - single concentration
 # Alternatively, load data in and format with tcplPrepOtpt.
-sc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "sc"))
+sc0 <- tcplPrepOtpt(tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "sc"))
 ```
 
 ## - Load MC0 Data
 
 ```{r mc0, eval = FALSE}
 # Load Level 0 multiple concentration (MC0) data.
-mc0 <- tcplPrepOtpt(tcplLoadData(lvl=0, fld="acid", val=1, type = "mc"))
+mc0 <- tcplPrepOtpt(tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "mc"))
 ```
 
 ## - Review MC assay quality
@@ -2567,26 +2549,26 @@ The goal of this section is to provide example quantitative metrics, such as z-p
 # Create a function to review assay quality metrics using indexed Level 0 data.
 aq <- function(ac){
   # obtain level 1 multiple concentration data for specified acids
-  dat <- tcplPrepOtpt(tcplLoadData(1L, "acid", aeids$acid, type="mc"))
+  dat <- tcplPrepOtpt(tcplLoadData(1L, "acid", aeids$acid, type = "mc"))
   
   # keep only observations with good well quality (wllq = 1)
-  dat <- dat[wllq==1]
+  dat <- dat[wllq == 1]
   
   # obtain summary values for data and remove missing data (i.e. NA's)
   agg <- dat[ ,
               list(
                 # median response values (rval) of neutral wells (wllt = n)
-                nmed = median(rval[wllt=="n"], na.rm=TRUE), 
+                nmed = median(rval[wllt == "n"], na.rm = TRUE), 
                 # median absolute deviation (mad) of neutral wells (wllt = n)
-                nmad = mad(rval[wllt=="n"], na.rm=TRUE), 
+                nmad = mad(rval[wllt == "n"], na.rm = TRUE), 
                 # median response values of positive control wells (wllt = p)
-                pmed = median(rval[wllt=="p"], na.rm=TRUE),
+                pmed = median(rval[wllt == "p"], na.rm = TRUE),
                 # median absolute deviation of positive control wells (wllt = p)
-                pmad = mad(rval[wllt=="p"], na.rm=TRUE),
+                pmad = mad(rval[wllt == "p"], na.rm = TRUE),
                 # median response values of negative control wells (wllt = m)
-                mmed = median(rval[wllt=="m"], na.rm=TRUE),
+                mmed = median(rval[wllt == "m"], na.rm = TRUE),
                 # median absolute deviation of negative control wells (wllt = m)
-                mmad = mad(rval[wllt=="m"], na.rm=TRUE)
+                mmad = mad(rval[wllt == "m"], na.rm = TRUE)
                 ),
               # aggregate on assay component id, assay component name,
               # and assay plate id
@@ -2602,8 +2584,8 @@ aq <- function(ac){
   # obtain the z-prime factor for negative controls and neutral
   agg[ , zprm.m := 1 - ((3 * (mmad + nmad)) / abs(mmed - nmed))]
   
-  agg[ , ssmd.p := (pmed - nmed) / sqrt(pmad^2 + nmad^2 )]
-  agg[ , ssmd.m := (mmed - nmed) / sqrt(mmad^2 + nmad^2 )]
+  agg[ , ssmd.p := (pmed - nmed) / sqrt(pmad^2 + nmad^2)]
+  agg[ , ssmd.m := (mmed - nmed) / sqrt(mmad^2 + nmad^2)]
   
   # Coefficient of Variation (cv) of neutral control
   # - Ideally should be under 25%
@@ -2623,15 +2605,15 @@ aq <- function(ac){
                        pmad   = signif(median(pmad, na.rm = TRUE)),
                        mmed   = signif(median(mmed, na.rm = TRUE)),
                        mmad   = signif(median(mmad, na.rm = TRUE)),
-                       zprm.p = round(median(zprm.p, na.rm=TRUE),2),
-                       zprm.m = round(median(zprm.m, na.rm=TRUE),2),
-                       ssmd.p = round(median(ssmd.p, na.rm=TRUE),0),
-                       ssmd.m = round(median(ssmd.m, na.rm=TRUE),0),
-                       cv = round(median(cv, na.rm=TRUE),2),
-                       sn.p = round(median(sn.p, na.rm=TRUE),2),
-                       sn.m = round(median(sn.m, na.rm=TRUE),2),
-                       sb.p = round(median(sb.p, na.rm=TRUE),2),
-                       sb.m = round(median(sb.m, na.rm=TRUE),2)
+                       zprm.p = round(median(zprm.p, na.rm = TRUE), 2),
+                       zprm.m = round(median(zprm.m, na.rm = TRUE), 2),
+                       ssmd.p = round(median(ssmd.p, na.rm = TRUE), 0),
+                       ssmd.m = round(median(ssmd.m, na.rm = TRUE), 0),
+                       cv = round(median(cv, na.rm = TRUE), 2),
+                       sn.p = round(median(sn.p, na.rm = TRUE), 2),
+                       sn.m = round(median(sn.m, na.rm = TRUE), 2),
+                       sb.p = round(median(sb.p, na.rm = TRUE), 2),
+                       sb.m = round(median(sb.m, na.rm = TRUE), 2)
   ), by = list(acid, acnm)]
   # Return the Results.
   return(acqu)
@@ -2649,9 +2631,9 @@ The goal of SC processing is to identify potentially active compounds from a lar
 
 ```{r sc2, eval = FALSE}
 # Load Level 2 single concentration data for a single aeid.
-sc2 <- tcplPrepOtpt(tcplLoadData(lvl=2, fld="aeid", val=3, type = "sc"))
+sc2 <- tcplPrepOtpt(tcplLoadData(lvl = 2, fld = "aeid", val = 3, type = "sc"))
 # Alternatively, data for a set of aeids can be loaded with a vector of ids.
-sc2 <- tcplPrepOtpt(tcplLoadData(lvl=2, fld="aeid", val=aeids$aeid, type = "sc"))
+sc2 <- tcplPrepOtpt(tcplLoadData(lvl = 2, fld = "aeid", val = aeids$aeid, type = "sc"))
 ```
 
 ## - Load SC Methods
@@ -2661,14 +2643,14 @@ sc2 <- tcplPrepOtpt(tcplLoadData(lvl=2, fld="aeid", val=aeids$aeid, type = "sc")
 # steps for given aeids.
 sc_methods <- function(aeids) {
   # load the level 1 methods assigned for the single concentration aeid's
-  sc1_mthds <- tcplMthdLoad(lvl=1, type ="sc", id=aeids$aeid)
+  sc1_mthds <- tcplMthdLoad(lvl = 1, type = "sc", id = aeids$aeid)
   # aggregate the method id's by aeid
   sc1_mthds<- aggregate(mthd_id ~ aeid, sc1_mthds, toString)
   # reset the names of the sc1_mthds object
   setnames(sc1_mthds, "mthd_id", "sc1_mthd_id")
   
   # load the level 2 methods assigned for the single concentration aeid's
-  sc2_mthds <- tcplMthdLoad(lvl=2, type ="sc", id=aeids$aeid)
+  sc2_mthds <- tcplMthdLoad(lvl = 2, type = "sc", id = aeids$aeid)
   # aggregate the method id's by aeid
   sc2_mthds<- aggregate(mthd_id ~ aeid, sc2_mthds, toString)
   # reset the names of the sc2_mthds object
@@ -2683,7 +2665,6 @@ sc_methods <- function(aeids) {
 
 # Run the 'sc_methods' function and store the output.
 smthds <- sc_methods(aeids)
-
 ```
 
 ## Retrieving MC Data and Methods
@@ -2696,7 +2677,7 @@ The goal of MC processing is to estimate the hitcall, potency, efficacy, and oth
 # Load Level 5 MC data summary values for a set of aeids. 
 # Note: to output mc5_param information with the mc5 results, 
 # 'add.fld' is set to TRUE by default.
-mc5 <- tcplPrepOtpt(tcplLoadData(lvl=5, fld="aeid", val=aeids$aeid, type = "mc"))
+mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = "aeid", val = aeids$aeid, type = "mc"))
 ```
 
 ## - Load MC Methods
@@ -2707,7 +2688,7 @@ mc5 <- tcplPrepOtpt(tcplLoadData(lvl=5, fld="aeid", val=aeids$aeid, type = "mc")
 mc_methods <- function(aeids) {
   # acid
   ## load the methods assigned to level 2 for given acids
-  mc2_mthds <- tcplMthdLoad(2,aeids$acid)
+  mc2_mthds <- tcplMthdLoad(2, aeids$acid)
   ## aggregate the assigned methods by acid
   mc2_mthds<- aggregate(mthd_id ~ acid, mc2_mthds, toString)
   ## rename the columns for the 'mc2_mthds' object
@@ -2715,19 +2696,19 @@ mc_methods <- function(aeids) {
   
   # aeid
   ## load the methods assigned to level 3 for given aeids
-  mc3_mthds <- tcplMthdLoad(3,aeids$aeid)
+  mc3_mthds <- tcplMthdLoad(3, aeids$aeid)
   ## aggregate the assigned methods by aeid
   mc3_mthds<- aggregate(mthd_id ~ aeid, mc3_mthds, toString)
   ## rename the columns for the 'mc3_mthds' object
   setnames(mc3_mthds, "mthd_id", "mc3_mthd_id")
   ## load the methods assigned to level 4 for given aeids
-  mc4_mthds <- tcplMthdLoad(4,aeids$aeid)
+  mc4_mthds <- tcplMthdLoad(4, aeids$aeid)
   ## aggregate the assigned methods by aeid
   mc4_mthds<- aggregate(mthd_id ~ aeid, mc4_mthds, toString) 
   ## rename the columns for 'mc4_mthds' object
   setnames(mc4_mthds, "mthd_id", "mc4_mthd_id")
   ## load the methods assigned to level 5 for given aeids
-  mc5_mthds <- tcplMthdLoad(5,aeids$aeid)
+  mc5_mthds <- tcplMthdLoad(5, aeids$aeid)
   ## aggregate the assigned methods by aeid
   mc5_mthds<- aggregate(mthd_id ~ aeid, mc5_mthds, toString)
   ## rename the columns for 'mc5_mthds' object
@@ -2735,14 +2716,14 @@ mc_methods <- function(aeids) {
 
   # Compile the Results.
   ## merge the aeid information with the level 2 methods by acid
-  acid.methods <- merge(aeids, mc2_mthds,by.x = "acid", by.y = "acid")
+  acid.methods <- merge(aeids, mc2_mthds, by.x = "acid", by.y = "acid")
   ## merge the level 3, 4, and 5 methods by aeid
   mthd35 <- merge(
     merge(mc3_mthds, mc4_mthds, by = "aeid", all = TRUE),
     mc5_mthds, by = "aeid", all = TRUE
     )
   ## merge all methods information by aeid
-  methods <- merge(acid.methods, mthd35,by.x = "aeid", by.y = "aeid")
+  methods <- merge(acid.methods, mthd35, by.x = "aeid", by.y = "aeid")
   # Print the Results.
   print(methods)
   # Return the Results.
@@ -2751,7 +2732,6 @@ mc_methods <- function(aeids) {
 
 # Run the 'methods' function and store the output.
 mmthds <- mc_methods(aeids)
-
 ```
 
 ## Plotting
@@ -2780,7 +2760,7 @@ Description <- c("'MC' assumed as default. type = 'mc' plots available MC data f
 output <- data.frame(Field, Description)
 
 knitr::kable(output) %>% kable_styling("striped")  %>%
-  kableExtra::scroll_box(width = "100%", height="400px")
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
 The following examples demonstrate <font face="CMTT10">tcplPlot</font> functionality through available the variety of customization options: 
@@ -2807,7 +2787,7 @@ mc5 <- mc_vignette[["mc5"]]
 # spids "TP0001652B01", 01504209", "TP0001652D01", "TP0001652A01", and "1210314466" 
 tcplPlot(fld = c("aeid", "spid"),        # field to query on
          val = list(mc5$aeid, mc5$spid), # values must be listed for each corresponding 'fld'
-         by = "aeid",   multi = TRUE, verbose = TRUE, flags = TRUE,  yrange = c(-0.5,1.5), 
+         by = "aeid", multi = TRUE, verbose = TRUE, flags = TRUE,  yrange = c(-0.5, 1.5), 
          output = "pdf", fileprefix = "output_pdf") 
 ```
 <center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and verbose = TRUE for aeid 80 and spids "TP0001652B01", 01504209", "TP0001652D01", "TP0001652A01", and "1210314466"</i></font>](img/output_pdf.png){width=80%}</center>
@@ -2819,7 +2799,7 @@ This example illustrates an MC verbose plot for a single endpoint-sample of outp
 ```{r mc_plot_jpg, eval = FALSE}
 # Plot a verbose plot of MC data for single aeid 80 and spid 01504209 and 
 # output as jpg.
-tcplPlot(type = "mc",  fld = c('aeid','spid'),  val = list(80,'01504209'), multi = FALSE, 
+tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80,'01504209'), multi = FALSE, 
          verbose = TRUE, flags = TRUE, output = "jpg", fileprefix = "output_jpg")
 ```
 
@@ -2832,13 +2812,13 @@ Due to the dynamic nature of _m#_ ids, the first example code chunk does not inc
 The second example includes a level 5 plot for one endpoint and one sample of output type “console”. Only 1 concentration series can be output in console at a time. 
 ```{r mc_plot_console, eval = FALSE}
 # Create MC plot for a single m4id.
-tcplPlot(type = "mc", fld = "m4id",  val = 482273, 
+tcplPlot(type = "mc", fld = "m4id", val = 482273, 
          multi = FALSE, verbose = FALSE, output = "console") 
 
 # Plot of MC data for single aeid (80) and spid (01504209)
 # and output to console.
-tcplPlot(type = "mc", fld = c('aeid','spid'),  val = list(80, '01504209'), 
-         multi = FALSE, verbose = FALSE,output = "console") 
+tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80, '01504209'), 
+         multi = FALSE, verbose = FALSE, output = "console") 
 ```
 <center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209</i></font>](img/output_console.png){width=80%}</center>
 
@@ -2848,8 +2828,8 @@ Single concentration plotting is enabled by setting `type = "sc"`. The example b
 
 ```{r sc_plot_pdf_aeid, eval = FALSE}
 # Plot SC data for aeid 704 and outputs plots separate pdfs by aeid.
-tcplPlot(type = "sc",  fld = "aeid",  val = 704,  multi = TRUE,  
-         verbose = TRUE, output = "pdf",  fileprefix = "sc_output")
+tcplPlot(type = "sc", fld = "aeid", val = 704, multi = TRUE,  
+         verbose = TRUE, output = "pdf", fileprefix = "sc_output")
 ```
 <center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", multi = TRUE, and verbose = TRUE for aeid 704  </i></font>](img/sc_output.png){width=80%}</center>
 
@@ -2862,7 +2842,7 @@ The “compare"/dual-plot feature can be used by supplying a list or vector of t
 ```{r plot_compare, eval = FALSE}
 spids <- c("EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20")
 # default parameters used here: type = "mc"
-tcplPlot(fld = c("spid","aeid"),          # field(s) to query on
+tcplPlot(fld = c("spid", "aeid"),         # field(s) to query on
          val = list(spids, 3074),         # values must be listed for each corresponding `fld`
          compare.val = list(spids, 3076), # length must equal that of 'val'
          output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE,          
@@ -2893,16 +2873,16 @@ Using the utility function <font face="CMTT10">**tcplPlotLoadData**</font> while
 
 ```{r plot_standalone, eval = FALSE}
 # tcplConf() configured with some connection like invitrodb v4.1 or CTX APIs
-plot_data <- tcplPlotLoadData(lvl = 5, fld = "aeid", val = 704,  type = "mc", flags = TRUE) 
+plot_data <- tcplPlotLoadData(lvl = 5, fld = "aeid", val = 704, type = "mc", flags = TRUE) 
 
 # fill with different database connection information
-tcplConf(user="", pass="", db="invitrodb", drvr="MySQL", host="")
+tcplConf(user = "", pass = "", db = "invitrodb", drvr = "MySQL", host = "")
 
 # Plot comparisons of aeid 704 from one database version to another and output to pdf
 tcplPlot(dat = plot_data,             # previously loaded data from tcplPlotLoadData()
          fld = "aeid",  val = 704,    # include as copy of 'val' from tcplPlotLoadData()
          compare.val = 704,           # length must equal that of 'val', assumes aeid has not gained any samples
-         output = "pdf", verbose = TRUE,   multi = TRUE, flags = TRUE, fileprefix = "plot_compare")
+         output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, fileprefix = "plot_compare")
 ```
 
 <center>![<font style="font-size:15px"><i>Comparison plots with parameters: dat = plot_data from tcplPlotLoadData(), output = "pdf", verbose = TRUE, multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/API_plot_standalone.png){width=80%}</center>
@@ -2919,9 +2899,9 @@ In this example, steps for extracting information about the compound *Bisphenol 
 # Provide the chemical name and assign to 'chnm'. Synonyms will not be matched, so other chemical identifiers may be more appropriate to query.
 chnm <- 'Bisphenol A'
 # Load the chemical data from the database.
-chem <- tcplLoadChem(field = 'chnm',val = chnm)
+chem <- tcplLoadChem(field = 'chnm', val = chnm)
 # Load mc5 data from the database for the specified chemical.
-BPA.mc5 <- tcplLoadData(lvl = 5, fld = 'spid', val = chem[,spid], type = 'mc') 
+BPA.mc5 <- tcplLoadData(lvl = 5, fld = 'spid', val = chem[, spid], type = 'mc') 
 ```
 
 ## - Plot Sample Subset 
@@ -2930,13 +2910,13 @@ In this example, plotting by endpoint for a sample subset, as opposed to plottin
 
 ```{r spid_plot, eval=FALSE}
 # Load MC% data summary values for select aeids
-mc5 <- tcplPrepOtpt(tcplLoadData(lvl=5, fld='aeid', val=tcplLoadAeid(fld="asid", val = 25)$aeid, type='mc', add.fld=TRUE))
+mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = 'aeid', val = tcplLoadAeid(fld = "asid", val = 25)$aeid, type = 'mc', add.fld = TRUE))
 
 # Identify sample subset.
-spid.mc5 <- mc5[spid %in% c("EPAPLT0018N08", "EPAPLT0023A16", "EPAPLT0020C11",  "EPAPLT0018B13","EPAPLT0018B14","EPAPLT0018B15"),]
+spid.mc5 <- mc5[spid %in% c("EPAPLT0018N08", "EPAPLT0023A16", "EPAPLT0020C11", "EPAPLT0018B13", "EPAPLT0018B14", "EPAPLT0018B15"),]
 
 # Plot by endpoint for sample subset.
-tcplPlot(fld = c("spid","aeid"), val = list(spid.mc5$spid, spid.mc5$aeid), by = "aeid", multi = TRUE, verbose = TRUE, output = "pdf", fileprefix = "output/upitt") 
+tcplPlot(fld = c("spid", "aeid"), val = list(spid.mc5$spid, spid.mc5$aeid), by = "aeid", multi = TRUE, verbose = TRUE, output = "pdf", fileprefix = "output/upitt") 
 ```
 
 # Data Retrieval via API
@@ -2982,11 +2962,11 @@ Loading data is completed for a given endpoint (aeid), sample (spid), chemical (
 ## - By id {#mc5}
 ```{r data_by_aeid}
 # Load MC5 data by aeid
-mc5 <- tcplLoadData(lvl=5,    # data level
-               fld="aeid",    # fields to query on
-               val=704,       # values should match their corresponding 'fld'
-               type = "mc",   # default. Note: sc data is not available on APIs yet
-               add.fld=FALSE) # restrict to just level 5 parameters 
+mc5 <- tcplLoadData(lvl = 5,         # data level
+                    fld = "aeid",    # fields to query on
+                    val = 704,       # values should match their corresponding 'fld'
+                    type = "mc",     # default. Note: sc data is not available on APIs yet
+                    add.fld = FALSE) # restrict to just level 5 parameters 
 ```
 
 ```{r, echo=FALSE}
@@ -2997,13 +2977,13 @@ knitr::kable(head(mc5))%>%
 
 ```{r data_by_id, eval=FALSE}
 ## Load MC5 data by spid
-mc5 <- tcplLoadData(lvl=5,  fld="spid", val="TP0000904H05",  type = "mc", add.fld=FALSE) 
+mc5 <- tcplLoadData(lvl=5, fld = "spid", val = "TP0000904H05", type = "mc", add.fld = FALSE) 
 
 ## Load MC5 data by m4id
-mc5 <- tcplLoadData(lvl=5, fld="m4id", val=1842443, type = "mc",add.fld=FALSE) 
+mc5 <- tcplLoadData(lvl=5, fld = "m4id", val = 1842443, type = "mc", add.fld = FALSE) 
 
 ## Load MC data by dtxsid
-mc5 <- tcplLoadData(lvl=5, fld="dtxsid", val="DTXSID30944145", type = "mc", add.fld=FALSE)  
+mc5 <- tcplLoadData(lvl=5, fld = "dtxsid", val = "DTXSID30944145", type = "mc", add.fld = FALSE)  
 ```
 
 ## - By level
@@ -3012,20 +2992,20 @@ In addition to level 5 data, levels 3, 4, 6, and 'agg' are available to pull fro
 
 ```{r data_level_3, eval=FALSE}
 ## Load MC3. This returns m4id, spid, conc, aeid, logc, resp
-mc3 <- tcplLoadData(lvl=3, fld="m4id", val=1842443, type = "mc",  add.fld=FALSE) 
+mc3 <- tcplLoadData(lvl = 3, fld = "m4id", val = 1842443, type = "mc", add.fld = FALSE) 
 
 ## Load MC4. This returns m4id, spid, bmad, resp_max, resp_min, max_mean,	max_mean_conc,	
 # max_med,	max_med_conc,	logc_max,	logc_min,	nconc,	npts,	nrep,	nmed_gtbl
-mc4 <- tcplLoadData(lvl=4, fld="m4id", val=1842443, type = "mc", add.fld=FALSE)
+mc4 <- tcplLoadData(lvl = 4, fld = "m4id", val= 1842443, type = "mc", add.fld = FALSE)
 
 ## Load MC6. This returns mc5 parameters plus flags
-mc6 <- tcplLoadData(lvl=6, fld="m4id", val=1842443, type = "mc", add.fld=FALSE)
+mc6 <- tcplLoadData(lvl = 6, fld = "m4id", val = 1842443, type = "mc", add.fld = FALSE)
 
 ## Load MC4 agg. This returns mc3 and mc4 parameters
-agg <- tcplLoadData(lvl="agg", fld="m4id", val=1842443, type = "mc", add.fld=FALSE)  
+agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = 1842443, type = "mc", add.fld = FALSE)  
 
 ## Load data with add.fld = TRUE to return all available processed data fields
-all_fields <- tcplLoadData(lvl=3, val=1842443, type = "mc", add.fld=TRUE)
+all_fields <- tcplLoadData(lvl = 3, val = 1842443, type = "mc", add.fld = TRUE)
 ```
 
 ## Assay Annotations
@@ -3159,8 +3139,8 @@ The “compare"/dual-plot feature can be used by supplying a list of m4ids to `v
 m4id <- mc5$m4id # create m4id vector length == 8
 
 # Default parameters used here: fld = "m4id", type = "mc" (type can never be "sc" when connected to API)
-tcplPlot(val = m4id[1:4],  compare.val = m4id[5:8],  output = "pdf",  verbose = TRUE, multi = TRUE, 
-         flags = TRUE,  yuniform = TRUE, fileprefix = "API_plot_compare")
+tcplPlot(val = m4id[1:4], compare.val = m4id[5:8], output = "pdf", verbose = TRUE, multi = TRUE, 
+         flags = TRUE, yuniform = TRUE, fileprefix = "API_plot_compare")
 ```
 
 <center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for m4ids 1833668, 1834094, 1836233, and 1836494, compared with m4ids 1839401, 1842443, 1847540, and 1850045</i></font>](img/API_plot_compare.png){#id .class width=75% height=75%}</center>
@@ -3171,8 +3151,8 @@ Supply `fld = "aeid"` to plot every curve available in the API for the given end
 
 ```{r plot_aeid, eval = FALSE}
 # plot all curves across endpoint(s)
-tcplPlot(fld = "aeid", val = 704,  output = "pdf",  verbose = TRUE, 
-         multi = TRUE, yrange = c(-100,100),  fileprefix = "API_plot_704")
+tcplPlot(fld = "aeid", val = 704, output = "pdf", verbose = TRUE, 
+         multi = TRUE, yrange = c(-100,100), fileprefix = "API_plot_704")
 ```
 
 <center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, and yrange = c(-100,100) for aeid 704</i></font>](img/API_plot_704.png){#id .class width=75% height=75%}</center>
@@ -3198,9 +3178,9 @@ After loading all chemical-specific data for "Pentachlorophenol", filter results
 toxref_chnm_liver <- toxref_batch_download_chnm %>% 
   filter(endpoint_target == 'liver') 
 
-toxref_chnm_liver_lel<-toxref_chnm_liver %>% 
-  summarise(lel=min(dose_adjusted[treatment_related==1]), 
-            loael=min(dose_adjusted[critical_effect==1]))
+toxref_chnm_liver_lel <- toxref_chnm_liver %>% 
+  summarise(lel = min(dose_adjusted[treatment_related == 1]), 
+            loael = min(dose_adjusted[critical_effect == 1]))
 ```
 
 ### Consider ToxCast *in vitro* bioactivity data as POD-NAM
@@ -3215,30 +3195,30 @@ For this subset of endpoints of targeted interest, pull assay results (mc5-mc6) 
 ```{r txct-data-pull, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
 # Load the chemical data from the database
 chnm <- 'Pentachlorophenol'
-chem <- tcplLoadChem(field = 'chnm',val = chnm)
+chem <- tcplLoadChem(field = 'chnm', val = chnm)
                      
 # Load mc5 data from the database for the specified chemical
-mc5 <- tcplLoadData(lvl = 5, fld = 'spid', val = chem[,spid], type = 'mc') 
+mc5 <- tcplLoadData(lvl = 5, fld = 'spid', val = chem[, spid], type = 'mc') 
 
 #Join with level 6 flag information
-mc6 <- tcplPrepOtpt(tcplLoadData(lvl=6, fld='m4id', val=mc5$m4id, type='mc'))
+mc6 <- tcplPrepOtpt(tcplLoadData(lvl = 6, fld = 'm4id', val = mc5$m4id, type = 'mc'))
 setDT(mc6)
 mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
 mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
 mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
 mc5[, flag.length := ifelse(!is.na(mc6_flags), 
-                     count.fields(textConnection(mc6_flags), sep =','), NA)]
+                     count.fields(textConnection(mc6_flags), sep = ','), NA)]
 
 # filter the potency and activity using coarse filters related to hitc, flags, fitc
-mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
-mc5[hitc>=0.9 & is.na(flag.length), use.me := 1]
-mc5[hitc>=0.9 & flag.length >= 3, use.me := 0]
-mc5[fitc %in% c(36,45), use.me := 0]
-mc5[hitc<0.9, use.me := 0]
-mc5[use.me==0, ac50 := as.numeric(NA)]
-mc5[use.me==0, hitc := 0]
-mc5[hitc==0, ac50 := as.numeric(NA)]
-mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
+mc5[hitc >= 0.9 & flag.length < 3, use.me := 1]
+mc5[hitc >= 0.9 & is.na(flag.length), use.me := 1]
+mc5[hitc >= 0.9 & flag.length >= 3, use.me := 0]
+mc5[fitc %in% c(36, 45), use.me := 0]
+mc5[hitc < 0.9, use.me := 0]
+mc5[use.me == 0, ac50 := as.numeric(NA)]
+mc5[use.me == 0, hitc := 0]
+mc5[hitc == 0, ac50 := as.numeric(NA)]
+mc5[hitc >= 0.9, ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
 
 #Filter to only liver endpoints
 toxcast_mc5_liver <- mc5[aeid %in% toxcast_annotations_subset$aeid,]
@@ -3249,9 +3229,9 @@ Obtain a summary of the ToxCast AC50 values with the 5th and 50th percentiles, a
 ```{r httk-prep, eval=FALSE}
 # Calculating summary statistics for ac50 values for httk processing to calculate AED
 toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
-  p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
-  p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
-  mean.ac50uM = mean(ac50_uM, na.rm=T))]
+  p5.ac50uM = quantile(ac50_uM, probs = c(0.05), na.rm = T),
+  p50.ac50uM = quantile(ac50_uM, probs = c(0.50), na.rm = T),
+  mean.ac50uM = mean(ac50_uM, na.rm = T))]
 ```
 
 [Administered Equivalent Doses](aeds) can be accessed from Level 7, or calculated *ad hoc* using the [High-throughput Toxicokinetics R package (httk)](https://cran.r-project.org/web/packages/httk/index.html). Potency estimates and model options can be adjusted based on use case. In this example, modeling assumptions when estimating the AEDs with httk were: 
@@ -3264,17 +3244,17 @@ toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
 # Generate AEDs
 toxcast_aed_liver_summary <- toxcast_mc5_liver_summary %>% 
       summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
-                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
-                  output.units='mgpkgpday', model='3compartmentss'),
-        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
-                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
-                  output.units='mgpkgpday', model='3compartmentss'),
-        aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
-                  dtxsid = 'DTXSID7021106', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
-                  output.units='mgpkgpday', model='3compartmentss'))
+                  dtxsid = 'DTXSID7021106', which.quantile = c(0.95),
+                  species ='Human', restrictive.clearance = T, 
+                  output.units = 'mgpkgpday', model = '3compartmentss'),
+        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc = p50.ac50uM, 
+                  dtxsid = 'DTXSID7021106', which.quantile = c(0.95),
+                  species = 'Human', restrictive.clearance = T, 
+                  output.units = 'mgpkgpday', model = '3compartmentss'),
+        aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc = mean.ac50uM, 
+                  dtxsid = 'DTXSID7021106', which.quantile = c(0.95),
+                  species = 'Human', restrictive.clearance = T, 
+                  output.units = 'mgpkgpday', model = '3compartmentss'))
 ```
 
 ### Compare POD-Traditional with POD-NAM
@@ -3326,63 +3306,63 @@ mc5 <- tcplLoadData(lvl = 5, # data level
                         type = 'mc') # data type - MC
 
 #Join with level 6 flag information
-mc6 <- tcplPrepOtpt(tcplLoadData(lvl=6, fld='m4id', val=mc5$m4id, type='mc'))
+mc6 <- tcplPrepOtpt(tcplLoadData(lvl = 6, fld = 'm4id', val = mc5$m4id, type = 'mc'))
 setDT(mc6)
-mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse=",")), by = m4id]
-mc6_flags <- mc6[ , .( flag = paste(flag, collapse=";")), by = m4id]
+mc6_mthds <- mc6[ , .( mc6_mthd_id = paste(mc6_mthd_id, collapse = ",")), by = m4id]
+mc6_flags <- mc6[ , .( flag = paste(flag, collapse = ";")), by = m4id]
 mc5$mc6_flags <- mc6_mthds$mc6_mthd_id[match(mc5$m4id, mc6_mthds$m4id)]
 mc5[, flag.length := ifelse(!is.na(mc6_flags), 
                      count.fields(textConnection(mc6_flags), sep =','), NA)]
 
 # filter the potency and activity using coarse filters related to hitc, flags, fitc
-mc5[hitc>=0.9 & flag.length < 3, use.me := 1]
-mc5[hitc>=0.9 & is.na(flag.length), use.me := 1]
-mc5[hitc>=0.9 & flag.length >= 3, use.me := 0]
+mc5[hitc >= 0.9 & flag.length < 3, use.me := 1]
+mc5[hitc >= 0.9 & is.na(flag.length), use.me := 1]
+mc5[hitc >= 0.9 & flag.length >= 3, use.me := 0]
 mc5[fitc %in% c(36,45), use.me := 0]
-mc5[hitc<0.9, use.me := 0]
-mc5[use.me==0, ac50 := as.numeric(NA)]
-mc5[use.me==0, hitc := 0]
-mc5[hitc==0, ac50 := as.numeric(NA)]
-mc5[hitc>=0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
+mc5[hitc < 0.9, use.me := 0]
+mc5[use.me == 0, ac50 := as.numeric(NA)]
+mc5[use.me == 0, hitc := 0]
+mc5[hitc == 0, ac50 := as.numeric(NA)]
+mc5[hitc >= 0.9,ac50_uM := ifelse(!is.na(ac50), ac50, NA)]
 
 # Calculating summary statistics for ac50 values for httk processing to calculate AED
 toxcast_mc5_EE2_summary <- mc5[,list(
-  p5.ac50uM = quantile(ac50_uM, probs=c(0.05), na.rm=T),
-  p50.ac50uM = quantile(ac50_uM, probs=c(0.50), na.rm=T),
+  p5.ac50uM = quantile(ac50_uM, probs = c(0.05), na.rm=T),
+  p50.ac50uM = quantile(ac50_uM, probs = c(0.50), na.rm=T),
   mean.ac50uM = mean(ac50_uM, na.rm=T))]
 
 # Generate AEDs
 toxcast_aed_EE2_summary <- toxcast_mc5_EE2_summary %>% 
-      summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc=p5.ac50uM, 
-                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
-                  output.units='mgpkgpday', model='3compartmentss'),
-        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc=p50.ac50uM, 
-                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
+      summarize(aed.p5ac50.hu.css.50 = calc_mc_oral_equiv(conc = p5.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile = c(0.95),
+                  species ='Human', restrictive.clearance = T, 
+                  output.units = 'mgpkgpday', model = '3compartmentss'),
+        aed.p50ac50.hu.css.50 = calc_mc_oral_equiv(conc = p50.ac50uM, 
+                  dtxsid = 'DTXSID5020576', which.quantile = c(0.95),
+                  species ='Human', restrictive.clearance = T, 
                   output.units='mgpkgpday', model='3compartmentss'),
         aed.meanac50.hu.css.50 = calc_mc_oral_equiv(conc=mean.ac50uM, 
-                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
-                  output.units='mgpkgpday', model='3compartmentss'), 
-        aed.minac50.aeid807.hu.css.50 = calc_mc_oral_equiv(conc=0.0002448276, 
-                  dtxsid = 'DTXSID5020576', which.quantile=c(0.95),
-                  species='Human', restrictive.clearance=T, 
-                  output.units='mgpkgpday', model='3compartmentss'))
+                  dtxsid = 'DTXSID5020576', which.quantile = c(0.95),
+                  species = 'Human', restrictive.clearance = T, 
+                  output.units = 'mgpkgpday', model = '3compartmentss'), 
+        aed.minac50.aeid807.hu.css.50 = calc_mc_oral_equiv(conc = 0.0002448276, 
+                  dtxsid = 'DTXSID5020576', which.quantile = c(0.95),
+                  species ='Human', restrictive.clearance = T, 
+                  output.units = 'mgpkgpday', model = '3compartmentss'))
 ```
 
 ``` {r compare2, echo=FALSE}
 #create comparison table
-POD <- c("ToxRefDB LEL", 
-            "ToxRefDB LOAEL",
-            "ToxCast AED at 5th percentile AC50", 
-            "ToxCast AED at 50th percentile/median AC50", 
-            "ToxCast AED at mean AC50")
+POD <- c("ToxRefDB LEL",
+         "ToxRefDB LOAEL",
+         "ToxCast AED at 5th percentile AC50", 
+         "ToxCast AED at 50th percentile/median AC50", 
+         "ToxCast AED at mean AC50")
 Value <- c("0.00012",
-          "0.00021", 
-          "2.26e-07",
-          "0.00661", 
-          "0.01994")
+           "0.00021", 
+           "2.26e-07",
+           "0.00661", 
+           "0.01994")
 
 Table <- as.data.table(t(data.frame(POD, Value)))
 setnames(Table, as.character(Table[1,]))
