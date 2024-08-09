@@ -326,9 +326,9 @@ Description <- c("Level 4 ID",
                  "Corresponding concentration of *max_mean*",
                  "Minimum mean response value at a given concentration",
                  "Corresponding concentration of *min_mean*",
-                 "Maximum median response value  at a given concentration",
+                 "Maximum median response value at a given concentration",
                  "Corresponding concentration of *max_med*",
-                 "Minimum median response value  at a given concentration",
+                 "Minimum median response value at a given concentration",
                  "Corresponding concentration of *min_med*",
                  "Absolute difference between maximal and minimal median response at a given concentration",
                  "Absolute difference between corresponding concentration of max_med and min_med",
@@ -528,17 +528,17 @@ Description <- c("Assay ID",
                  "Assay description",
                  "Treatment duration in hours",
                  "NCBI taxonomic identifier, available at https://www.ncbi.nlm.nih.gov/taxonomy",
-                "Organism of origin",
-                "Tissue of origin", "Description of cell format",
-                "Description of source for targeted cell-free components",
-                "Abbreviation of cell line",
-                "Cell growth modality", 
-                "Microtiter plate size. Required for registration.",
-                "General description of assay format",
-                "Specific description of assay format" ,
-                "Description of well characteristics being measured", 
-                "Solvent used in sample dilution",
-                "Maximum percent of dilution solvent used, from 0 to 1")
+                 "Organism of origin",
+                 "Tissue of origin", "Description of cell format",
+                 "Description of source for targeted cell-free components",
+                 "Abbreviation of cell line",
+                 "Cell growth modality", 
+                 "Microtiter plate size. Required for registration.",
+                 "General description of assay format",
+                 "Specific description of assay format" ,
+                 "Description of well characteristics being measured", 
+                 "Solvent used in sample dilution",
+                 "Maximum percent of dilution solvent used, from 0 to 1")
 
 output <- data.frame(Field, Description)
 
@@ -588,11 +588,11 @@ Description <- c("Assay component endpoint ID",
                  "Indicator if endpoint is included in the burst distribution (1) or not (0); Burst phenomenon can describe confounding activity, such as cytotoxicity due to non-specific activation of many targets at certain concentrations. Required for registration.", 
                  "Tested chemical sample expected to produce activity; Used to assess assay validity",
                  "Directionality of raw data signals from assay (gain or loss); Defines analysis direction",
-                "General group of intended targets measured",
-                "Specific subgroup of intended targets measured", 
-                "Family of intended target measured; Populated on ToxCast chemical activity plot within CompTox dashboard",
-                "Specific subfamily of intended target measured",
-                "Indicator of the impact of cytotoxicity in confounding (1) or no cytotoxic impact (0)" )
+                 "General group of intended targets measured",
+                 "Specific subgroup of intended targets measured", 
+                 "Family of intended target measured; Populated on ToxCast chemical activity plot within CompTox dashboard",
+                 "Specific subfamily of intended target measured",
+                 "Indicator of the impact of cytotoxicity in confounding (1) or no cytotoxic impact (0)" )
 
 output <- data.frame(Field, Description)
 
@@ -671,7 +671,8 @@ kable(output)%>%
 
 ## - Sample
 ```{r warning = FALSE, echo = FALSE}
-Field <- c("spid", "chid", "stkc", "stkc_unit", "tested_conc_unit", "bottle_barcode", "source", "bottle_type", "lot_number", "purity_percentage", "solubility")
+Field <- c("spid", "chid", "stkc", "stkc_unit", "tested_conc_unit", "bottle_barcode", "source",
+           "bottle_type", "lot_number", "purity_percentage", "solubility")
 
 Description <- c("Sample ID",
                  "Chemical ID",
