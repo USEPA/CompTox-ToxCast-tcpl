@@ -664,3 +664,115 @@ test_that("tcplPlot works for multiple spid/aeid compared", {
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
 })
+
+# Stand-alone plotting
+test_that("standalone plotting works in mc", {
+  data("mc_test")
+  mocked <- mc_test$plot_single_m4id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+test_that("standalone advanced comparison plotting works in mc", {
+  data("mc_test")
+  mocked <- mc_test$plot_single_m4id_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id , output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+test_that("standalone plotting works in sc", {
+  data("sc_test")
+  mocked <- sc_test$plot_single_s2id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplPlotLoadData(type = "sc", fld = "s2id", val = mocked$s2id)
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+test_that("standalone advanced comparison plotting works in sc", {
+  data("sc_test")
+  mocked <- sc_test$plot_single_s2id_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") sc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplPlotLoadData(type = "sc", fld = "s2id", val = mocked$s2id)
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id , output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+
+
+#-------------------------------------------------------------------------------
+# Covers testing tcplLoadData with "API" driver
+# Using httptest mocking to automatically save json responses from http requests
+# NOTE -- updates to the CTX API may mean stored json files are out of date. In 
+# this case, delete the 'ctx' folder and rerun this ENTIRE test file (temporarily
+# replacing the 'apikey' string with a valid key) to repopulate the stored 
+# .jsons. These will likely be huge and will need to be edited by hand to reduce
+# their sizes. To do this, open the file(s) and remove all but one element of
+# the outer array -- we don't need more than one endpoint-sample.
+#-------------------------------------------------------------------------------
+httptest::with_mock_dir("ctx", {
+  apikey <- "apikey"
+  tcplConf(pass = apikey,
+           drvr = "API")
+  data(test_api)
+  test_that("tcplPlot works with API data by m4id", {
+    expect_no_error(suppressWarnings(tcplPlot(val = test_api$m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+    fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+    expect_length(fn, 1) # exactly one file created
+    file.remove(fn) # clean up
+  })
+  test_that("tcplPlot works with API data by aeid", {
+    expect_no_error(suppressWarnings(tcplPlot(fld = "aeid", val = test_api$aeid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+    fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+    expect_length(fn, 1) # exactly one file created
+    file.remove(fn) # clean up
+  })
+  test_that("tcplPlot works with API data by spid", {
+    expect_no_error(suppressWarnings(tcplPlot(fld = "spid", val = test_api$spid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+    fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+    expect_length(fn, 1) # exactly one file created
+    file.remove(fn) # clean up
+  })
+  test_that("tcplPlot works with API data by dtxsid", {
+    expect_no_error(suppressWarnings(tcplPlot(fld = "dtxsid", val = test_api$dtxsid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+    fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+    expect_length(fn, 1) # exactly one file created
+    file.remove(fn) # clean up
+  })
+})
