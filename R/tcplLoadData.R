@@ -213,10 +213,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     # query the API 
     dat <- tcplQueryAPI(fld = fld, val = val, return_flds = cols)
     
-    if (lvl == 3) {
+    if (lvl == 3 | lvl == "agg") {
       dat$resp <- lapply(dat$resp, unlist)
       dat$logc <- lapply(dat$logc, unlist)
-      dat <- unnest_longer(dat, c(conc, logc, resp)) %>% as.data.table()
+      if (lvl == 3) dat <- unnest_longer(dat, c(conc, logc, resp)) %>% as.data.table() 
+      else dat <- unnest_longer(dat, c(logc, resp)) %>% as.data.table() 
     }
     
     if (lvl == 6) {
