@@ -59,6 +59,9 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
     if (tolower(field) != "spid") stop("When drvr option is set to 'API', only 'spid' is a valid 'field' value.")
     if (!exact) exact <- TRUE
     dat <- tcplQueryAPI(resource = "data", fld = "spid", val = val, return_flds = c("spid", "chid", "casn", "chnm", "dsstox_substance_id"))
+    if (!length(colnames(dat))) {
+      return(dat)
+    } 
     setorder(dat, "spid")
   } else {
     tbl <- c("chemical", "sample")
