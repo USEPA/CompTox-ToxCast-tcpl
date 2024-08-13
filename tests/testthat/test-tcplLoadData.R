@@ -818,11 +818,11 @@ httptest::with_mock_dir("ctx", {
                  "Only type = 'mc' is supported using API data as source.")
   })
   test_that("data not found results in null data.table", {
-    expect_warning(dat <- tcplLoadData(lvl = 5, fld = "aeid", val = 0, add.fld = FALSE), 
+    expect_warning(dat <- tcplLoadData(lvl = 3, fld = "aeid", val = 0, add.fld = FALSE), 
                    "Data not found for the following 'fld' and 'val' combos: 
 AEID: 0", fixed = TRUE)
     expect_equal(nrow(dat), 0)
-    expect_warning(dat <- tcplLoadData(lvl = 5, fld = "spid", val = "fakespid", add.fld = FALSE), 
+    expect_warning(dat <- tcplLoadData(lvl = 4, fld = "spid", val = "fakespid", add.fld = FALSE), 
                    "Data not found for the following 'fld' and 'val' combos: 
 SPID: fakespid", fixed = TRUE)
     expect_equal(nrow(dat), 0)
@@ -830,17 +830,17 @@ SPID: fakespid", fixed = TRUE)
                    "Data not found for the following 'fld' and 'val' combos: 
 DTXSID: fakedtxsid", fixed = TRUE)
     expect_equal(nrow(dat), 0)
-    expect_warning(dat <- tcplLoadData(lvl = 5, fld = "m4id", val = 0, add.fld = FALSE),
+    expect_warning(dat <- tcplLoadData(lvl = 6, fld = "m4id", val = 0, add.fld = FALSE),
                    "Data not found for the following 'fld' and 'val' combos: 
 m4id: 0", fixed = TRUE)
     expect_equal(nrow(dat), 0)
   })
   test_that("some data not found results in warning", {
-    expect_warning(dat <- tcplLoadData(lvl = 5, fld = "aeid", val = c(0, test_api$aeid), add.fld = FALSE), 
+    expect_warning(dat <- tcplLoadData(lvl = 3, fld = "aeid", val = c(0, test_api$aeid), add.fld = FALSE), 
                    "Data not found for the following 'fld' and 'val' combos: 
 AEID: 0", fixed = TRUE)
     expect_true(nrow(dat) > 0)
-    expect_warning(dat <- tcplLoadData(lvl = 5, fld = "spid", val = c("fakespid", test_api$spid), add.fld = FALSE), 
+    expect_warning(dat <- tcplLoadData(lvl = 4, fld = "spid", val = c("fakespid", test_api$spid), add.fld = FALSE), 
                    "Data not found for the following 'fld' and 'val' combos: 
 SPID: fakespid", fixed = TRUE)
     expect_true(nrow(dat) > 0)
@@ -848,7 +848,7 @@ SPID: fakespid", fixed = TRUE)
                    "Data not found for the following 'fld' and 'val' combos: 
 DTXSID: fakedtxsid", fixed = TRUE)
     expect_true(nrow(dat) > 0)
-    expect_warning(dat <- tcplLoadData(lvl = 5, fld = "m4id", val = c(0, test_api$m4id), add.fld = FALSE),
+    expect_warning(dat <- tcplLoadData(lvl = 6, fld = "m4id", val = c(0, test_api$m4id), add.fld = FALSE),
                    "Data not found for the following 'fld' and 'val' combos: 
 m4id: 0", fixed = TRUE)
     expect_true(nrow(dat) > 0)
