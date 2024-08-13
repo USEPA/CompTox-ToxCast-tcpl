@@ -28,6 +28,8 @@ tcplConf(pass = apikey,
 assays <- get_all_assays(Server = paste0(getOption("TCPL_HOST")))
 aeid <- assays[sample(1:nrow(assays), 1),]$aeid
 acid <- tcplLoadAcid(fld = "aeid", val = aeid)$acid
+aid <- tcplLoadAid(fld = "aeid", val = aeid)$aid
+asid <- tcplLoadAsid(fld = "aeid", val = aeid)$asid
 dat <- tcplLoadData(lvl = 5, fld = "aeid", val = aeid)
 sample <- dat[sample(1:nrow(dat), 1),]
 
@@ -35,6 +37,8 @@ sample <- dat[sample(1:nrow(dat), 1),]
 test_api <- list(
   aeid = aeid,
   acid = acid,
+  aid = aid,
+  asid = asid,
   dtxsid = sample$dtxsid,
   spid = sample$spid,
   m4id = sample$m4id
