@@ -21,8 +21,10 @@ tcplLoadConcUnit <- function(spid) {
   
   if (getOption("TCPL_DRVR") == "API") {
     dat <- tcplQueryAPI(resource = "data", fld = "spid", val = spid, return_flds = c("spid", "tested_conc_unit"))
-    setnames(dat, "tested_conc_unit", "conc_unit")
-    setorder(dat, "spid")
+    if (length(colnames(dat))) {
+      setnames(dat, "tested_conc_unit", "conc_unit")
+      setorder(dat, "spid")
+    }
     return(unique(dat, by = c("spid", "conc_unit")))
   }
   

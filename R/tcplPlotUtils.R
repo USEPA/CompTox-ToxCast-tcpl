@@ -38,7 +38,7 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
 }
   
   
-  tcplPlotValidate <- function(type = "mc",flags = NULL,output = "none",multi = FALSE,verbose = FALSE){
+  tcplPlotValidate <- function(type = "mc",flags = NULL,output = "none",multi = NULL,verbose = FALSE){
     
     # set lvl based on type
     lvl <- 5
@@ -46,6 +46,7 @@ tcplPlotSetYRange <- function(dat,yuniform,yrange,type){
       lvl <- 2
       if (flags == TRUE) {
         warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
+        flags = FALSE
       }
     }
     
