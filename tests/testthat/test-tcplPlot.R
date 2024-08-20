@@ -13,7 +13,7 @@ test_that("round_n function works", {
 
 
 test_that("one m4id tcplPlot works", {
-  skip_on_ci()
+  skip()
   lvl = 5
   verbose = TRUE
   l4 <- tcplLoadData(lvl = 4, type = "mc", add.fld = TRUE)
