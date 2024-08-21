@@ -41,7 +41,7 @@ These functions send a query to the given database, and are the access point
 for all tcpl functions that query or update the tcpl database.
 }
 \details{
-Currently, the tcpl package supports the "MySQL", "tcplLite", and "API"
+Currently, the tcpl package supports the "MySQL", "example", and "API"
 database drivers.
 
 \code{tcplQuery} returns a data.table object with the query results.
@@ -51,23 +51,13 @@ returns 'TRUE' or the error message given by the database.
 connected using "API" as driver.
 }
 \examples{
-
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
-
+\dontrun{
+# only with MySQL driver
 tcplQuery("SELECT 'Hello World';")
 
-## When using tcplLite, name of table must be passed into tcplQuery
-if (conf_store$TCPL_DRVR == 'MySQL') {
-  tcplQuery("SELECT * FROM assay;")
-} else {
-  tcplQuery("SELECT * FROM assay;", tbl='assay')
+# only with API driver
+tcplConfDefault()
+tcplQueryAPI(resource = "data", fld = "aeid", val = 2)
 }
- 
-## Reset configuration
-options(conf_store)
 
 }

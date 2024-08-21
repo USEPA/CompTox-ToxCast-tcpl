@@ -85,13 +85,7 @@ the 'sc' tables.
 Leaving \code{fld} NULL will return all data.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end
-## of the examples
-conf_store <- tcplConfList()
-tcplConfExample()
-
+\dontrun{
 tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
-
-## Reset configuration
-options(conf_store)
+}
 }

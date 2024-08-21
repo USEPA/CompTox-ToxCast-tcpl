@@ -39,16 +39,14 @@ available in the package vignette, "Data_processing."
 
   \describe{
     \item{bmad.aeid.lowconc.twells}{Calculate the baseline median absolute value (bmad) as the 
-    median absolute deviation of normalized response values (rep) for test compound wells 
-    (wllt = t) with concentration index (cndx) equal to 1 or 2.}
+    median absolute deviation of normalized response values (rep) for test compound wells (wllt = t) 
+    with concentration index (cndx) equal to 1 or 2. Calculate one standard deviation of the normalized 
+    response for test compound wells (wllt = t) with a concentration index (cndx) of 1 or 2; 
+    onesd = sqrt(sum((resp - mean resp)^2)/sample size - 1). Onesd is used to establish BMR and therefore required for tcplfit2 processing.}
     \item{bmad.aeid.lowconc.nwells}{Calculate the baseline median absolute value (bmad) as the 
-    median absolute deviation of normalized response values (resp) for neutral control wells 
-    (wllt = n).}
-    \item{onesd.aeid.lowconc.twells}{Calculate one standard deviation of the normalized response 
-    for test compound wells (wllt = t) with a concentration index (cndx) of 1 or 2; 
-     \eqn{onesd=\sqrt{\sum{(resp-mean(resp))^{2}}/(n-1)}}{onesd = sqrt(sum((resp - mean 
-     resp)^2)/sample size - 1)}. Used to establish BMR and therefore required for tcplfit2 
-     processing.}
+    median absolute deviation of normalized response values (resp) for neutral control wells (wllt = n).
+    Calculate one standard deviation of the normalized response for neutral control wells (wllt = n);
+    onesd = sqrt(sum((resp - mean resp)^2)/sample size - 1). Onesd is used to establish BMR and therefore required for tcplfit2 processing.}
     \item{bidirectional.false}{Limits bidirectional fitting and processes data in positive 
     analysis direction only. Use for gain-of-signal or inverted data.}
     \item{bmad5.onesd16.static}{Replace baseline median absolute deviation
@@ -56,6 +54,7 @@ available in the package vignette, "Data_processing."
     for test compound wells (wllt = t) with a concentration index (cndx) of 1
     or 2 with 16. Typically used for binary data where values would otherwise
     be 0; non-zero values are required for tcplfit2 processing.}
+    \item{no.unbounded.models}{Exclude unbounded models and only fit data to bounded models (hill, gnls, exp4 and exp5).}
   }
 }
 

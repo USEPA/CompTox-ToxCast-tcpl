@@ -4,12 +4,12 @@
 \alias{blineShift}
 \title{Shift the baseline to 0}
 \usage{
-blineShift(resp, logc, wndw)
+blineShift(resp, conc, wndw)
 }
 \arguments{
 \item{resp}{Numeric, the response values}
 
-\item{logc}{Numeric, the log10 concentration values}
+\item{conc}{Numeric, the concentration values}
 
 \item{wndw}{Numeric, the threshold window}
 }
