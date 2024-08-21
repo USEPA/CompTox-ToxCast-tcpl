@@ -39,13 +39,7 @@
 #' the registration process and all of the fields is available in the vignette. 
 #' 
 #' @examples
-#' 
 #' \dontrun{
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfDefault()
-#' 
 #' ## Load current ASID information
 #' tcplLoadAsid()
 #' 
@@ -66,9 +60,6 @@
 #' 
 #' ## Remove the created ASID. Note: Manually deleting primary keys can cause
 #' ## serious database problems and should not generally be done. 
-#' 
-#' ## Reset configuration
-#' options(conf_store)
 #' }
 #' 
 NULL

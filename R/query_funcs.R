@@ -20,15 +20,13 @@
 #' connected using "API" as driver.
 #' 
 #' @examples
-#' 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#' 
+#' \dontrun{
+#' # only with MySQL driver
 #' tcplQuery("SELECT 'Hello World';")
-#'  
-#' ## Reset configuration
-#' options(conf_store)
+#' 
+#' # only with API driver
+#' tcplConfDefault()
+#' tcplQueryAPI(resource = "data", fld = "aeid", val = 2)
+#' }
 #' 
 NULL

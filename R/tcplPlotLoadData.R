@@ -28,11 +28,7 @@
 #' 'sc' for single concentration data. 
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' ## load mc plot data for an entire endpoint
 #' dat <- tcplPlotLoadData(fld = "aeid", val = 703)
 #' 
@@ -56,9 +52,8 @@
 #'          output = "pdf", 
 #'          flags = TRUE,
 #'          fileprefix="example")
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
+#' 
 #' @return A data.table containing plot-ready data for the given fields.
 #'
 #' @seealso \code{\link{tcplPlot}}

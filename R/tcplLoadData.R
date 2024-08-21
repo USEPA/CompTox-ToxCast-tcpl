@@ -56,11 +56,7 @@
 #' }
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' ## Load all of level 0 for multiple-concentration data, note 'mc' is the
 #' ## default value for type
 #' tcplLoadData(lvl = 0)
@@ -75,9 +71,7 @@
 #' ## Load level 0 data where the well type is "t" and the concentration
 #' ## index is 3 or 4
 #' tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #' @return A data.table containing data for the given fields.
 #'
 #' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
