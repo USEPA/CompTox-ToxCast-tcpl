@@ -22,8 +22,7 @@
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+#' tcplConfExample()
 #' 
 #' ## The load assay functions can be used without any parameters to list the 
 #' ## full list of registered assay elements:

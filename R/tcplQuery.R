@@ -17,6 +17,9 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
   if (is.null(drvr)) drvr <- getOption("TCPL_DRVR")
   
   #Check for valid inputs
+  if (drvr == "API") {
+    stop("'API' driver not supported in tcplQuery.")
+  }
   if (length(query) != 1 || !is(query, "character")) {
     stop("The input 'query' must be a character of length one.")
   }
@@ -42,20 +45,6 @@ tcplQuery <- function(query, db = getOption("TCPL_DB"),
     additional_pars <- .Options[grepl("TCPL_(?!USER|HOST|DB|DRVR|HOST|PASS)",names(.Options),perl = TRUE)]
     names(additional_pars) <- tolower(gsub("TCPL_","",names(additional_pars)))
     db_pars <- append(db_pars,additional_pars)
-    
-  }
-  
-  if (drvr == "tcplLite") {
-    #query <- "SELECT spid,chemical.chid,casn,chnm FROM sample LEFT JOIN chemical ON chemical.chid=sample.chid WHERE sample.chid is NULL  "
-    db_pars <- "Just running tcplLite, we're OK"
-    for (t in tbl) {
-      fpath <- paste(db, t, sep='/')
-      fpath <- paste(fpath, 'csv', sep='.')
-      assign(t, read.table(fpath, header=T, sep=','))
-    }
-
-    result <- as.data.table(sqldf(query, stringsAsFactors=F))
-
     
   }
   
