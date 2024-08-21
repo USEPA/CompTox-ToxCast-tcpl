@@ -14,8 +14,10 @@
 #' tcplLoad- functions.
 #' 
 #' @examples 
+#' \dontrun{
 #' ## Gives the fields in the mc1 table
 #' tcplListFlds("mc1")
+#' }
 #' 
 #' @return A string of field names for the given table.
 #' 
