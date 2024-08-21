@@ -28,6 +28,9 @@ tcplListFlds <- function(tbl, db = getOption("TCPL_DB")) {
   ## Variable-binding to pass R CMD Check
   name <- COLUMN_NAME <- NULL
   
+  if (getOption("TCPL_DRVR") == "API")  {
+    stop("'API' driver not supported in tcplListFlds.")
+  }
   if (length(tbl) > 1 | length(db) > 1) {
     stop("tbl and db must both be of length 1.")  
   } 
@@ -48,16 +51,6 @@ tcplListFlds <- function(tbl, db = getOption("TCPL_DB")) {
       "
     
     return(tcplQuery(sprintf(qformat, db, tbl), db)[ , COLUMN_NAME])
-    
-  }
-  
-  if (getOption("TCPL_DRVR") == "tcplLite")  {
-    # return the data table by reading the file. No need to run tcplQuery, simply return data.table columns here
-    fpath <- paste(db, tbl, sep='/')
-    fpath <- paste(fpath, 'csv', sep='.')
-    DT <- read.table(fpath, header=T, sep=',', fill=T)
-    return(colnames(DT))
-
     
   }
   

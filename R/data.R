@@ -1,7 +1,7 @@
 #' A subset of ToxCast data showing changes in transcription factor activity for multiple targets.
 #'
 #' The example dataset is used to illustrate how the user can pipeline single-concentration
-#' data from chemical screening using tcplLite.
+#' data from chemical screening using tcpl.
 #'
 #' @format A data frame with 320 rows and 10 variables:
 #' \describe{
@@ -22,7 +22,7 @@
 #' A subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor.
 #'
 #' The example dataset is used to illustrate how the user can pipeline multiple-concentration
-#' data from chemical screening using tcplLite.
+#' data from chemical screening using tcpl.
 #'
 #' @format A data frame with 14183 rows and 10 variables:
 #' \describe{

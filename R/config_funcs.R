@@ -14,8 +14,8 @@
 #' @param ... Additional arguments that should be passed to dbConnect function
 #' 
 #' @details
-#' Currently, the tcpl package only supports the "MySQL" and "tcplLite" database
-#' drivers.
+#' Currently, the tcpl package supports the "MySQL", "example", and "API" 
+#' database drivers.
 #' 
 #' The settings can be stored in a configuration file to make the using the 
 #' package more user-friendly. To create the configuration file, the user must
@@ -48,8 +48,7 @@
 #' configuration file.
 #' 
 #' \code{tcplConfDefault} changes the \code{options} to reflect the default
-#' settings for the example tcplLite database, i.e. local directory, but does  
-#' not alter the configuration file.
+#' settings for the API connection, but does not alter the configuration file.
 #' 
 #' \code{tcplConfReset} is used to generate the initial configuration script,
 #' and can be used to reset or regenerate the configuration script by the user.

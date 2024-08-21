@@ -23,8 +23,7 @@
 #' ## Store the current config settings, so they can be reloaded at the end 
 #' ## of the examples
 #' conf_store <- tcplConfList()
-#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+#' tcplConfExample()
 #'  
 #' ## Get all counts for level 1 for multiple-concentration
 #' tcplLvlCount(lvls = 1)
