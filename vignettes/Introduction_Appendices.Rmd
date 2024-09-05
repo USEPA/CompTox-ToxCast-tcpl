@@ -1780,7 +1780,7 @@ $$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,}$
 
 where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estimated and observed values at the $i^{th}$ observation, respectively. 
 
-## > Level 5 {#mc5}
+## > Level 5
 
 Level 5 processing determines the winning model and activity for the concentration series, bins all of the concentration series into fitc categories, and calculates various potency estimates.
 
@@ -1820,7 +1820,7 @@ mc4_aic %>%
   )
 ```
 
-The estimated parameters from the winning model are stored in the respective [mc5_param] table.  The activity of each concentration-response series is determined by calculating a continuous hit call that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein, hitc < 0.9 are considered inactive. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>. See the [Data Interpretation](#hitc) section for more details on hit calls and cutoff.
+The summary values and estimated parameters from the winning model are stored in the respective [mc5](#mc5) and [mc5_param](#mc5_param) tables.  The activity of each concentration-response series is determined by calculating a continuous hit call that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein, hitc < 0.9 are considered inactive. The efficacy cutoff value ($\mathit{coff}$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see <font face="CMTT10"> tcplMthdList(lvl = 5) </font> or <font face="CMTT10"> ?MC5\_Methods </font>. See the [Data Interpretation](#hitc) section for more details on hit calls and cutoff.
 
 While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitc of curves fit in the biologically irrelevant direction. There are two methods for overwriting the hitc value, and if applied, these will overwrite the hitc value for any biologically irrelevant curve by flipping the hitc to a negative value. 
 
@@ -2756,7 +2756,7 @@ Description <- c("'MC' assumed as default. type = 'mc' plots available MC data f
                  "Required parameter for field to query on",
                  "Required parameter for values to query on that must be listed for each corresponding 'fld'",
                  "Parameter is used to generate comparison or dual plots. Using the same field(s) as `val`, supply a list or vector of values for each field to be plot one-to-one alongside val. Since tcplPlot matches ids between val and compare.val, `compare.val` must be the same length as `val` and the order `val` and `compare.val` are given will be maintained in the output. The default value is `compare.val = NULL` where the plots will be individual; if it is set, tcplPlot will attempt to generate comparison plots. For example, if fld = m4id and the user supplies three m4ids to `val`, `compare.val` must also contain three m4ids, where the first element of each `val` parameter are plot together, the second elements together, etc.",
-                 "Parameter indicates how the plots will be presented. In addition to outputs viewable with the R console, tcplPlot supports a variety of publication-quality file type options, including raster graphics (PNG, JPG, and TIFF) to retain color quality when printing to photograph and vector graphics (SVG and PDF) to retain image resolution when scaled to large formats.",
+                 "Parameter indicates how the plots will be presented. In addition to outputs viewable with the R `console`, tcplPlot supports a variety of publication-quality file type options, including raster graphics (`PNG`, `JPG`, and `TIFF`) to retain color quality when printing to photograph and vector graphics (`SVG` and `PDF`) to retain image resolution when scaled to large formats. For a more customizable option, an indivdiual plot can be output in environment as a `ggplot`",
                  "Parameter results in a plot that includes a table containing potency and model performance metrics; `verbose = FALSE` is default and the only option in console outputs.  When `verbose = TRUE` the model aic values are listed in descending order and generally the winning model will be listed first.",
                  "Parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `verbose` parameter. The default number of plots per page is either 6 plots per page (`verbose = FALSE`) or 4 plots per page (`verbose = TRUE`).",
                  "Parameter indicates how files should be divided, typically by $aeid$ or $spid$", 
@@ -2970,7 +2970,7 @@ As described in greater detail within the Data Processing sections, a goal of MC
 
 Loading data is completed for a given endpoint (aeid), sample (spid), chemical (dtxsid), or endpoint-sample (m4id) by specifying "fld". Set add.fld = FALSE is the option used to limit fields to those which are defaults for each level when loading from invitrodb directly. Leaving add.fld = TRUE (default) will return all available fields, i.e. all information from levels 3 through 6.
 
-## - By id {#mc5}
+## - By id 
 ```{r data_by_aeid}
 # Load MC5 data by aeid
 mc5 <- tcplLoadData(lvl = 5,         # data level
