@@ -28,12 +28,7 @@ and assay endpoint ID (aeid) values. However, if 'ids' is not null, the
 function will only attempt to map the ID fields given by 'ids.'
 }
 \examples{
-
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-tcplConfExample()
-
+\dontrun{
 ## Load some example data
 d1 <- tcplLoadData(1)
 
@@ -49,9 +44,6 @@ d2 <- tcplPrepOtpt(d1) ##
 d3 <- tcplPrepOtpt(d1, ids = "spid")
 "chnm" \%in\% names(d3) ## TRUE
 "acnm" \%in\% names(d3) ## FALSE
-
-## Reset configuration
-options(conf_store)
-
+}
 
 }

@@ -72,11 +72,7 @@
 #' 
 #' 
 #' @examples 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfDefault()
-#' 
+#' \dontrun{
 #' ## Can only calculate the cytotox burst if using the MySQL database and
 #' ## TCPL_DRVR == 'MySQL'
 #' 
@@ -99,9 +95,7 @@
 #' ## Changing 'default.pt' will change cyto_pt in the resulting data.table
 #' tcplCytoPt(aeid = 1:2, default.pt = 6)
 #' }
-#' 
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #' 
 #' @return A data.table with the cytotoxicity distribution for each chemical.
 #' The definition of the field names are listed under "details."

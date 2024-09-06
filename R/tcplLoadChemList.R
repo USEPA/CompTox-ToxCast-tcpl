@@ -23,11 +23,7 @@
 #' multiple times (one for each distinct list).
 #' 
 #' @examples 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#' 
+#' \dontrun{
 #' ## Passing no parameters gives all of the chemical IDs that have a chemical
 #' ## list registered
 #' clist <- tcplLoadChemList()
@@ -47,9 +43,7 @@
 #' tcplLoadChemList(field = "list_acronym", val = "CPDBAS")
 #' tcplLoadChemList(field = "chid", val = 20182)
 #' tcplLoadChemList(field = "dsstox_substance_id", val = "DTXSID7020182")
-#' 
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #' 
 #' @return A data.table with the chemical list information for the given
 #' parameters.

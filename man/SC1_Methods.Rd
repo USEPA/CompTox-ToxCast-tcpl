@@ -49,6 +49,8 @@ available in the package vignette, "Data_processing."
     \item{bval.apid.tn.med}{Calculate the baseline value (bval) as the plate-wise median,
      by assay plate ID (apid), of the raw values (rval) for test compound wells (wllt = t)
       and neutral control wells (wllt = n).}
+    \item{bval.nwlls.med}{Calculate the baseline value (bval) as the median of the raw values 
+     (rval) for neutral control wells (wllt = n) by assay endpoint id (aeid).}
   }
 } 
 

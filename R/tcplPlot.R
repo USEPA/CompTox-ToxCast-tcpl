@@ -54,15 +54,9 @@
 #' @export
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   conc_unit <- bmd <- resp <- compare.dat <- NULL

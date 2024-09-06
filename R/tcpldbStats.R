@@ -5,7 +5,7 @@
 #' @title Get summary statistics for the database
 #' 
 #' @description 
-#' \code{tcpldbStats} takes a string(type) and an optional parameter(val) to return the summary statistics on the entire tcplLite database
+#' \code{tcpldbStats} takes a string(type) and an optional parameter(val) to return the summary statistics on the entire tcpl database
 #'  When type = "all" the val is ignored. the function returns the number of distinct spid and aeids in the database at each level
 #'  When type = "aeid", the val parameter has to be a valid aeid in the database. The function returns a 
 #'  table consisting of the number of distinct spids at each level of processing for the aeid given in 'val'

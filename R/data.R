@@ -1,7 +1,7 @@
 #' A subset of ToxCast data showing changes in transcription factor activity for multiple targets.
 #'
 #' The example dataset is used to illustrate how the user can pipeline single-concentration
-#' data from chemical screening using tcplLite.
+#' data from chemical screening using tcpl.
 #'
 #' @format A data frame with 320 rows and 10 variables:
 #' \describe{
@@ -22,7 +22,7 @@
 #' A subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor.
 #'
 #' The example dataset is used to illustrate how the user can pipeline multiple-concentration
-#' data from chemical screening using tcplLite.
+#' data from chemical screening using tcpl.
 #'
 #' @format A data frame with 14183 rows and 10 variables:
 #' \describe{
@@ -39,21 +39,6 @@
 #' }
 #' @source ToxCast database
 "mcdat"
-#' Chemical library of tested chemicals in the example datasets with the corresponding sample IDs.
-#'
-#'
-#' @format A data frame with 6 rows and 6 variables:
-#' \describe{
-#'  \item{spid}{sample ID}
-#'   \item{casn}{Chemical Abstract Service(CAS) number}
-#'    \item{chnm}{chemical name}
-#'     \item{dsstox_substance_id}{chemical-specific DTXSID}
-#'      \item{code}{CAS number compressed into numeric string}
-#'       \item{chid}{unique chemical ID number for tcpl}
-#'
-#' }
-#' @source ToxCast database
-"chdat"
 
 
 #' List with multi-concentration data for the vignette

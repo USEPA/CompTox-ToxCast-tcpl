@@ -62,7 +62,6 @@
 #'  \item{agg.percent.rep.spid}{Use for binary data. Aggregate technical replicates as percentage by taking the sum of rval (raw values) relative to total replicates per sample id (spid) and concentration index (cndx); \eqn{cval = (sum(rval)/.N)*100}{cval = (sum(rval)/.N)*100}.}
 #'  \item{agg.percent.rep.spid.min1}{Use for binary data with variable number of replicates. Aggregate technical replicates as percentage by taking the sum of rval (raw values) relative to total replicates per per sample id (spid) and concentration index (cndx), where there is more than one replicate; \eqn{cval=(sum(rval)/.N)*100,~where~.N>1}{cval = (sum(rval)/.N)*100, where .N>1}.} Rvals are collapsed to one value per cndx.}
 #'   }
-#' }
 #' 
 #' @note
 #' This function is not exported and is not intended to be used by the user.

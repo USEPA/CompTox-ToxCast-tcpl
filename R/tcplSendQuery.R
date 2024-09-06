@@ -18,6 +18,9 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
                           drvr = getOption("TCPL_DRVR"), tbl=NULL, delete=F) {
   
   #Check for valid inputs
+  if (getOption("TCPL_DRVR") == "API") {
+    stop("'API' driver not supported in tcplSendQuery.")
+  }
   if (length(query) != 1 || !is(query,"character")) {
     stop("The input 'query' must be a character of length one.")
   }
@@ -45,28 +48,6 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
     names(additional_pars) <- tolower(gsub("TCPL_","",names(additional_pars)))
     db_pars <- append(db_pars,additional_pars)
     
-  }
-  
-  if (getOption("TCPL_DRVR") == "tcplLite") {
-    db_pars <- "Just running tcplLite, we're OK"
-    
-    for (t in tbl) {
-      fpath <- paste(db, t, sep='/')
-      fpath <- paste(fpath, 'csv', sep='.')
-      assign(t, read.table(fpath, header=T, sep=','))
-    }
-
-    temp <- as.data.table(sqldf(query, stringsAsFactors=F))
-    
-    if (delete == T) {
-      if (length(tbl) > 1) {
-        stop("Can't execute delete on more that one table")
-      }
-      db_pars <- db
-      fpath <- paste(db, tbl, sep='/')
-      fpath <- paste(fpath, 'csv', sep='.')
-      write.table(temp, file=fpath, append=F, row.names=F, sep=',', col.names=T) # Need to rewrite whole table
-    }
   }
   
   if (is.null(db_pars)) {

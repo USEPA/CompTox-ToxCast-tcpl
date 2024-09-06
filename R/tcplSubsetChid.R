@@ -32,11 +32,7 @@
 #' considering any flags.
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' ## Load the example level 5 data
 #' d1 <- tcplLoadData(lvl = 5, fld = "aeid", val = 797)
 #' d1 <- tcplPrepOtpt(d1)
@@ -49,9 +45,7 @@
 #' ## all equal. Therefore, if the flags are ignored, the selected sample will
 #' ## be the sample with the lowest modl_ga.
 #' tcplSubsetChid(dat = d2, flag = FALSE)[, list(m4id, modl_ga)]
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #'
 #' @return A data.table with a single sample for every given chemical-assay
 #' pair.

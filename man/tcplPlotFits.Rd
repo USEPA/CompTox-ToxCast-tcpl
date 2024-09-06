@@ -52,12 +52,7 @@ ID. Inputs with multiple assay endpoints will first be ordered by assay
 endpoint ID.
 }
 \examples{
-
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-tcplConfDefault()
-
+\dontrun{
 ## tcplPlotFits needs data.tables supplying the concentration/response
 ## data stored in mc4_agg, as well as the fit information from mc4 or mc5.
 ## Additionally, tcplPlotFits can take level 6 data from mc6 and add the
@@ -68,11 +63,9 @@ tcplConfDefault()
 l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = 18609966)
 l4_agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = 18609966)
 
-\dontrun{
 pdf(file = "tcplPlotFits.pdf", height = 6, width = 10, pointsize = 10)
 tcplPlotFits(dat = l5, agg = l4_agg)
 graphics.off()
-}
 
 ## While it is most likely the user will want to just save all of the plots 
 ## to view in a PDF, the 'browse' parameter can be used to quickly view 
@@ -82,13 +75,9 @@ graphics.off()
 ## a subset of the data. This browse function is admittedly clunky. 
 bpa <- tcplLoadChem(field = "chnm", val = "Bisphenol A")[ , spid]
 l5_sub <- l5[spid \%in\% bpa] 
-\dontrun{
 tcplPlotFits(dat = l5_sub, 
              agg = l4_agg[m4id \%in\% l5_sub$m4id], 
              browse = TRUE)
 }
-
-## Reset configuration
-options(conf_store)
  
 }

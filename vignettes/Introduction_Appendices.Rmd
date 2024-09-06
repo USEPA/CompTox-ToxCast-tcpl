@@ -783,15 +783,22 @@ Thus, users should be advised that while assay naming is used to infer informati
 
 With the minimal assay information registered, the next step is to register the necessary chemical and sample information with <font face="CMTT10">**tcplRegister**</font>. The <font face="CMTT10">**tcplLoadChem**</font> function returns all chemical information or can be filtered for user specified parameters, e.g. the chemical name (chnm) and chemical id (chid).
 
-The "chdat" dataset included in the package contains the sample and chemical information for the data that will be loaded. The following shows an example of how to load chemical information. Similar to the order in registering assay information, the user must first register chemicals, then register the samples that map to the corresponding chemical.
+The "chdat" example below contains the sample and chemical information for the data that will be loaded. The following shows an example of how to load chemical information. Similar to the order in registering assay information, the user must first register chemicals, then register the samples that map to the corresponding chemical.
 
-```{r eval = FALSE, echo=FALSE}
-## Obtain the Data ##
-# Load the 'chdat' data from the package.
-data(chdat, package = "tcpl")
-# Convert 'chdat' object to a data.table.
-setDT(chdat)
+```{r echo=FALSE}
+# example set of chemical/sample information
+chdat <- data.table(
+  spid = c("Tox21_400088","Tox21_303655","Tox21_110011","Tox21_400081","DMSO","Tox21_400037"),
+  casn = c("80-05-7","521-18-6","150-30-1","22224-92-6","67-68-5","95-83-0"),
+  chnm = c("Bisphenol A","5alpha-Dihydrotestosterone","Phenylalanine","Fenamiphos","Dimethyl sulfoxide","4-Chloro-1,2-diaminobenzene"),
+  dsstox_substance_id = c("DTXSID7020182","DTXSID9022364","DTXSID9023463","DTXSID3024102","DTXSID2021735","DTXSID5020283"),
+  code = c("C80057","C521186","C150301","C22224926","C67685","C95830"),
+  chid = c("20182","22364","23463","24102","21735","20283")
+)
+chdat
+```
 
+```{r eval = FALSE}
 ## Register the Chemicals ##
 # Obtain chemicals already registered in the database.
 cmap <- tcplLoadChem()
@@ -802,6 +809,7 @@ tcplRegister(what = "chid", flds = chdat.register[,unique(.SD), .SDcols = c("cas
 ```
 
 The "chdat" dataset contains a map of sample to chemical information, but chemical and sample information have to be registered separately because a chemical could potentially have multiple samples. Registering chemicals only takes a chemical CAS registry number ($\mathit{casn}$) and name ($\mathit{chnm}$). In the above example, only the unique chemicals were loaded. The casn and chnm fields have unique constraints; trying to register multiple chemicals with the same name or CAS registry number is not possible and will result in an error. With the chemicals registered and loaded, the samples can be registered by mapping the sample ID ($\mathit{spid}$) to the chemical ID. Note, the user needs to load the chemical information to get the chemical IDs then merge the new chemical IDs with the sample IDs from the original file by chemical name or CASRN.
+
 ```{r eval = FALSE, message = FALSE}
 tcplRegister(what = "spid",
              flds = merge(chdat[ , list(spid, casn)],

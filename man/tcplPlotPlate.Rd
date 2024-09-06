@@ -41,17 +41,8 @@ For the optimal output size, use width = 10, height = 10*(2/3),
 pointsize = 10, units = "in"
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-tcplConfDefault()
- 
-d1 <- tcplLoadData(lvl = 1, fld = "acid", val = 1)
 \dontrun{
+d1 <- tcplLoadData(lvl = 1, fld = "acid", val = 1)
 tcplPlotPlate(dat = d1, apid = "09Apr2014.Plate.17")
 }
-
-## Reset configuration
-options(conf_store)
- 
 }
