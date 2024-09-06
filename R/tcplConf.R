@@ -3,17 +3,12 @@
 #-------------------------------------------------------------------------------
 
 #' @rdname config_funcs
-#' @importFrom ccdR register_ccdr
+#' @importFrom ctxR register_ctx_api_key
 #' @export
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 
                       db = NULL,...) {
   #tcplConf(user='_dataminer', pass='pass', host='au.epa.gov', drvr = 'MySQL',db = 'invitrodb')
-  
-  # Notes for tcplLite
-  # ==================
-  # Allow drvr='tcplLite' for writing flat files for each level of analysis
-  # db=<local dir for writing files>
   
   # Notes for example
   # ==================
@@ -47,9 +42,9 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
   
   if (!is.null(drvr)) {
     
-    if (!drvr %in% c( "MySQL", "tcplLite", "example", "API")) {
+    if (!drvr %in% c( "MySQL", "example", "API")) {
       stop(drvr, " is not a supported database driver. Must be ",
-           "'MySQL', 'tcplLite', 'API' or 'example'.")
+           "'MySQL', 'API', or 'example'.")
     }
     
     if (drvr == "example"){
@@ -67,18 +62,13 @@ tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL,
       }
     }
     
-    if (drvr == "tcplLite") {
-      tcplLiteInit()
-      options("TCPL_DRVR" = "tcplLite")
-    } 
-    
     if (drvr == "API") {
       options("TCPL_DRVR" = "API")
-      if (is.null(pass)) stop("'API' driver requires an API-key, supply it to 
-                              the 'pass' parameter. To request a key, send an
-                              email to ccte_api@epa.gov.")
+      if (is.null(pass)) stop("'API' driver requires an API-key, supply it to ", 
+                              "the 'pass' parameter. To request a key, send an ",
+                              "email to ccte_api@epa.gov.")
       if (is.null(host)) options("TCPL_HOST" = "https://api-ccte.epa.gov/bioactivity")
-      register_ccdr(key = pass)
+      register_ctx_api_key(key = pass)
     }
     
   }

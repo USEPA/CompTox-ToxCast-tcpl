@@ -25,6 +25,11 @@ tcplPlot(
 )
 }
 \arguments{
+\item{dat}{data.table containing plot-prepared data, used for stand-alone 
+(non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
+(generating comparison plots across multiple database configurations) and not
+required. See \code{tcplPlotLoadData}.}
+
 \item{type}{Character of length 1, the data type, "sc" or "mc".}
 
 \item{fld}{Character, the field(s) to query on.}
@@ -39,8 +44,9 @@ NULL}
 
 \item{by}{Parameter to divide files into e.g. "aeid".}
 
-\item{output}{How should the plot be presented. To view the plot in application,
-use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".}
+\item{output}{How should the plot be presented. To work with the plot in 
+environment, use "ggplot"; to interact with the plot in application, use 
+"console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".}
 
 \item{fileprefix}{Prefix of file when saving.}
 
@@ -67,11 +73,11 @@ y axis scaling, automatically determined.}
 c(<min>,<max>). By default, c(NA,NA).}
 }
 \description{
-\code{tcplLoadData} queries the tcpl databases and returns a plot
+\code{tcplPlot} queries the tcpl databases and returns a plot
 for the given level and data type.
 }
 \details{
-The data type can be either 'mc' for mutliple concentration data, or 'sc'
+The data type can be either 'mc' for multiple concentration data, or 'sc'
 for single concentration data. Multiple concentration data will be loaded
 into the 'mc' tables, whereas the single concentration will be loaded into
 the 'sc' tables.
@@ -79,13 +85,7 @@ the 'sc' tables.
 Leaving \code{fld} NULL will return all data.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end
-## of the examples
-conf_store <- tcplConfList()
-tcplConfExample()
-
+\dontrun{
 tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
-
-## Reset configuration
-options(conf_store)
+}
 }

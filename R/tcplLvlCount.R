@@ -20,16 +20,10 @@
 #' 
 #' 
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
-#'  
+#' \dontrun{
 #' ## Get all counts for level 1 for multiple-concentration
 #' tcplLvlCount(lvls = 1)
 #' 
-#' \dontrun{
 #' ## Get all counts for levels 4 through 7 for multiple-concentration
 #' tcplLvlCount(lvls = 4:7)
 #' 
@@ -37,9 +31,6 @@
 #' ## default value for type
 #' tcplLvlCount()
 #' }
-#' 
-#' ## Reset configuration
-#' options(conf_store)
 #'
 #' @return A data.table containing data for the given fields.
 #'

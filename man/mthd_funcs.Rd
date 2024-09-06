@@ -51,11 +51,7 @@ multiple-concentration processing. More information about method assignments
 and the delete cascade are available in the package vignette.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-tcplConfDefault()
-
+\dontrun{
 ## tcplListMthd allows the user to display the available methods for 
 ## a given level and data type
 head(tcplMthdList(lvl = 2, type = "mc"))
@@ -66,7 +62,6 @@ head(tcplMthdList(lvl = 2, type = "mc"))
 ## whether an ID exists before assigning/clearing methods. 
 tcplMthdLoad(lvl = 2, id = 55, type = "mc")
 
-\dontrun{
 ## ACID 55 does not have any methods. Assign methods from the list above. 
 tcplMthdAssign(lvl = 2, 
                id = 55, 
@@ -83,6 +78,4 @@ tcplMthdAssign(lvl = 2,
 ## Cleanup example method assigments
 tcplMthdClear(lvl = 2, id = 53:55, type = "mc")
 }
-## Reset configuration
-options(conf_store)
 }

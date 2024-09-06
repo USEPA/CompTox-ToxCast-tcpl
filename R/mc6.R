@@ -76,11 +76,7 @@ mc6 <- function(ae, wr = FALSE) {
   ## Load assay information to check for cell viability. Fill with 0 if unavailable.
   tbl <- "assay_component_endpoint"
   drvr = getOption("TCPL_DRVR")
-  if (drvr == "MySQL") {
-    flds <- tcplQuery(paste0("DESCRIBE ", tbl, ";"))$Field 
-  } else if (drvr == "tcplLite") {
-    flds <- tcplQuery(paste0("PRAGMA table_info(", tbl, ");"),tbl=c(tbl))$name
-  }
+  flds <- tcplQuery(paste0("DESCRIBE ", tbl, ";"))$Field
   
   if("cell_viability_assay" %in% flds){
     cell_viability <- tcplLoadAeid(fld = "aeid",val = ae,add.fld = "cell_viability_assay")

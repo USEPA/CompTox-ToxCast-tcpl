@@ -25,11 +25,7 @@
 #' the string in 'val' to an RLIKE statement within the MySQL query.  
 #' 
 #' @examples 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#' 
+#' \dontrun{
 #' ## Passing no parameters gives all of the registered chemicals with their
 #' ## sample IDs
 #' tcplLoadChem()
@@ -43,9 +39,7 @@
 #' ## Other examples:
 #' tcplLoadChem(field = "chnm", val = "Bisphenol A")
 #' tcplLoadChem(field = "chid", val = 20182)
-#' 
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #' 
 #' @return A data.table with the chemical information for the given parameters
 #' 
@@ -59,6 +53,9 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
     if (tolower(field) != "spid") stop("When drvr option is set to 'API', only 'spid' is a valid 'field' value.")
     if (!exact) exact <- TRUE
     dat <- tcplQueryAPI(resource = "data", fld = "spid", val = val, return_flds = c("spid", "chid", "casn", "chnm", "dsstox_substance_id"))
+    if (!length(colnames(dat))) {
+      return(dat)
+    } 
     setorder(dat, "spid")
   } else {
     tbl <- c("chemical", "sample")

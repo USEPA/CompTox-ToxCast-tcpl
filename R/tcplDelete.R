@@ -26,14 +26,9 @@ tcplDelete <- function(tbl, fld, val, db) {
   if (length(tbl) != 1 || !is(tbl,"character")) {
     stop("The input 'tbl' must be a character of length one.")
   }
-  
-  if (getOption("TCPL_DRVR") == "tcplLite") {
-    qformat <- paste("SELECT * FROM", tbl, "WHERE NOT ")
-    qformat <- paste0(qformat, "(  ", paste( fld, "IN (%s)", collapse = " AND "), ")")
-  } else {
-    qformat <- paste("DELETE FROM", tbl, "WHERE")
-    qformat <- paste0(qformat, "  ", paste(fld, "IN (%s)", collapse = " AND "))
-  }
+
+  qformat <- paste("DELETE FROM", tbl, "WHERE")
+  qformat <- paste0(qformat, "  ", paste(fld, "IN (%s)", collapse = " AND "))
   
   qformat <- paste0(qformat, ";")
   

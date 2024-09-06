@@ -1,0 +1,165 @@
+@media screen and (max-width: 1000px) {
+  .tablet-hide {
+    display: none;
+  }
+
+  #content {
+    margin-left: 0;
+    padding: 1em;
+  }
+
+  #content.shift {
+    position: relative;
+    min-width: 100%;
+    left: 300px;
+    top: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #sidebar {
+    font-size: 120%;
+    left: -300px;
+    width: 300px;
+  }
+
+  #content.shift #sidebar {
+    font-size: 120%;
+    left: 0;
+    width: 300px; /* was  75% */
+  }
+  #nav-top {
+    display: inline-block;
+  }
+  #postamble {
+    left: -300px;
+  }
+  #postamble.shift {
+    font-size: 90%; /* was 110%*/
+    left: 0;
+    width: 100%; /* was 75%*/
+  }
+  #main .nav-pills {
+    margin-left: 0px;
+  }
+  #main .nav-pills li {
+    margin-left: 10px !important;
+  }
+  #main .nav-pills > li > a {
+    padding: 2px 8px !important;
+    margin-right: 0px !important;
+  }
+}
+
+#content {
+  max-width: 850px;
+}
+
+@media (min-width: 1450px) {
+  #content {
+    width: 1150px;
+    margin: 0 auto;
+  }
+
+  #sidebar {
+    position: fixed;
+    left: 50%;
+    width: 300px;
+    transform: translateX(-725px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  img {
+    max-width: 100%;
+    width: auto;
+  }
+}
+
+/* colors */
+
+:root {
+  --light-tone: #a6b5c6;
+  --pale-tone: #5a7b9c;
+  --strong-tone: #003366;
+  --brighter-tone: #303f9f;
+  --light-gray: #f6f6f6;
+}
+div.sourceCode::before {
+  content: "Code [" counter(counter-rchunks) "]: ";
+  display: inline;
+  position: absolute;
+  left: -5em;
+  font-size: 0.7em;
+  color: var(--brighter-tone);
+}
+#nav-top span.glyphicon {
+  color: var(--pale-tone);
+}
+#postamble {
+  background: var(--pale-tone);
+  border-top: solid 10px var(--pale-tone);
+}
+#postamble .date {
+  color: white;
+}
+.title {
+  text-align: center;
+  color: var(--strong-tone);
+}
+.subtitle {
+  color: var(--strong-tone);
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+legend {
+  color: var(--pale-tone);
+}
+#main :not(.leaflet-control) > a {
+  color: var(--pale-tone);
+  background-image: var(--pale-tone);
+}
+#sidebar h2 {
+  background-color: var(--pale-tone);
+}
+#main .nav-pills > li.active > a,
+#main .nav-pills > li.active > a:hover,
+#main .nav-pills > li.active > a:focus {
+  background-color: var(--pale-tone);
+}
+#sidebar #toc,
+#sidebar {
+  background-color: var(--light-gray);
+  color: black;
+}
+#sidebar #toc ul li a:hover {
+  background-color: var(--light-tone);
+  color: white;
+}
+# toc ul.nav li.active ul li.active a {
+  background-color: var(--light-tone);
+}
+code {
+  color: var(--strong-tone);
+}
+#sidebar a {
+  color: black;
+}
+
+.scroll-100 {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.noticebox {
+  padding: 1em;
+  background: lightgray;
+  color: blue;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+

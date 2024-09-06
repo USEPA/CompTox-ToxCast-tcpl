@@ -19,12 +19,7 @@
 #' return the assay source ID (asid) and assay source name (asnm). 
 #' 
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-#' tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
-#' 
+#' \dontrun{
 #' ## The load assay functions can be used without any parameters to list the 
 #' ## full list of registered assay elements:
 #' tcplLoadAsid()
@@ -43,9 +38,7 @@
 #' a1 <- tcplLoadAeid(fld = "anm", val = "Steroidogenesis")
 #' a2 <- tcplLoadAeid(fld = "assay_name", val = "Steroidogenesis")
 #' identical(a1, a2)
-#' 
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #' 
 #' @return A data.table containing the ID, name, and any additional fields.
 NULL

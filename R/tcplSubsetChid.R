@@ -23,7 +23,7 @@
 #' To select a single sample, first a "consensus hit-call" is made by majority
 #' rule, with ties defaulting to active. After the chemical-wise hit call is
 #' made, the samples corresponding to to chemical-wise hit call are logically
-#' ordered using the fit category, the number of the flags, and the modl_ga,
+#' ordered using the fit category, the number of the flags, and AC50 (or modl_ga),
 #' then the first sample for every chemical is selected.
 #'
 #' The \code{flag} param can be used to specify a subset of flags to be used in
@@ -32,11 +32,7 @@
 #' considering any flags.
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' ## Load the example level 5 data
 #' d1 <- tcplLoadData(lvl = 5, fld = "aeid", val = 797)
 #' d1 <- tcplPrepOtpt(d1)
@@ -49,9 +45,7 @@
 #' ## all equal. Therefore, if the flags are ignored, the selected sample will
 #' ## be the sample with the lowest modl_ga.
 #' tcplSubsetChid(dat = d2, flag = FALSE)[, list(m4id, modl_ga)]
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #'
 #' @return A data.table with a single sample for every given chemical-assay
 #' pair.
