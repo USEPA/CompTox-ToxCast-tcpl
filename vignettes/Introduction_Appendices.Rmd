@@ -2383,31 +2383,42 @@ Field <- c("dtxsid", "chnm", "spid", "qc_level", "pass_or_caution", "t0", "t4",
 
 Description <- c("Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database", 
                  "Chemical name", "Sample ID", "Level of analytical QC: substance or sample", 
-                 "Indication of analytical QC pass or caution. Considered caution unless T0 or T4 is A, B or T0 and T4 are I with S call", 
-                 "Grade at T0. Grade options include: </br> </br>
-                 A: Molecular Weight (MW) Confirmed, Purity >90% </br> 
-                 B: MW Confirmed, Purity 75-90% </br> 
-                 C: MW Confirmed, Purity 50-75% </br> 
-                 D: CAUTION Purity <50% </br> 
-                 Ac: Purity > 90% CAUTION Low Conc. 5-30% of expected value </br> 
-                 Bc: Purity 75-90% CAUTION, Low Conc. 5-30% of expected value </br>
-                 Cc: Purity 50-75% CAUTION, Low Conc. 5-30% of expected value</br>
-                 Fc: CAUTION Very Low Conc. <5% of expected value. Biological Activity Unreliable</br>
-                 Z: MW Confirmed, No Purity Info </br> 
-                 I: ISOMERS Two or more isomers detected </br>
-                 M: DEFINED MIXTURE Two or more components </br> 
-                 F: CAUTION Incorrect MW. Biological Activity Unreliable</br>
-                 Fns: CAUTION No Sample Detected. Biological Activity Unreliable</br>
-                 U: Unknown/Inconclusive</br>
-                 ND: Not Determined,W:Sample Withdrawn",
-                 "Grade at T4. Same options at T0.", 
-                 "Call options include:</br> </br>
-                 S: Stable</br>
-                 T: CAUTION Chemical transformation </br>
-                 L: CAUTION Physical loss</br>
-                 X: CAUTION Unstable, reason undetermined", 
+                 "Indication of analytical QC pass or caution. Considered caution unless T0 or T4 in (A, B), or T0 and T4 are I with S call", 
+                 "Grade at T0 (Time zero: Compounds freshly taken out of freezer). Grade options include: </br>
+                 **A**: Molecular Weight (MW) Confirmed, Purity >90% </br> 
+                 **B**: MW Confirmed, Purity 75-90% </br> 
+                 **C**: MW Confirmed, Purity 50-75% </br> 
+                 **D**: CAUTION Purity <50% </br> 
+                 **Ac**: Purity > 90% CAUTION Low Conc. 5-30% of expected value </br> 
+                 **Bc**: Purity 75-90% CAUTION, Low Conc. 5-30% of expected value </br>
+                 **Cc**: Purity 50-75% CAUTION, Low Conc. 5-30% of expected value</br>
+                 **Fc**: CAUTION Very Low Conc. <5% of expected value. Biological Activity Unreliable</br>
+                 **Z**: MW Confirmed, No Purity Info </br> 
+                 **I**: ISOMERS Two or more isomers detected </br>
+                 **M**: DEFINED MIXTURE Two or more components </br> 
+                 **F**: CAUTION Incorrect MW. Biological Activity Unreliable</br>
+                 **Fns**: CAUTION No Sample Detected. Biological Activity Unreliable</br>
+                 **U**: Unknown/Inconclusive</br>
+                 **ND**: Not Determined</br>
+                 **W**: Sample Withdrawn",
+                 "Grade at T4 (Time 4 months: Compounds kept at room temperature for 4 months). Same options at T0.", 
+                 "Call options include:</br> 
+                 **S**: Stable</br>
+                 **T**: CAUTION Chemical transformation </br>
+                 **L**: CAUTION Physical loss</br>
+                 **X**: CAUTION Unstable, reason undetermined", 
 "Annotation note from analytical QC manual curation",
-"Interpretative flags set based on observed substance or sample level QC (T0, T4, calls) or physicochemical properties", 
+"Interpretative flags set based on observed substance or sample level QC (T0, T4, calls) or physicochemical properties. Flag options incude: </br>
+**Room temperature stability decreases over time**: T0 in (A, B, C) *AND* call is in (T,L,X)) </br>
+**Low concentration possible**: T0 *OR* T4 in (Ac,Bc,Cc). Call may be pass or caution depending on T0</br>
+**Extreme loss at room temperature over time**: T0 in (A, B, C) *AND* t4 in (Fc, Fns)</br>
+**Missing data for room temperature stability**: T4 in (U,ND,NA,Z,W)</br>
+**Initial purity between 75-90%**: T0 in (B, Bc)</br>
+**Initial purity between 50-75%**: T0 in (C,Cc)</br>
+**Likely fail**: t0 in (D, F, Fns, W) OR T0 in (Z) & T4 in (D, F,Fc,Fns)</br>
+**Examine physicochemical properties**: Predicted log10-VP >= 1 *OR* logKow >= 6.5</br>
+**Confirmed isomer or mixture**: T0 in (M,I) *AND* T4 in (M,ND,I)</br>
+**Missing purity information**: T0 in (Z) *AND* T4 in (A,Ac,B,C)", 
 "Mass",
 "OPERA predicted log10 vapor pressure", 
 "OPERA predicted Octanol-water partition coefficient")
