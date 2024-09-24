@@ -15,7 +15,6 @@
 #' @param odir The directory to save the .pdf file in
 #' @param clib Character, the chemical library to subset on, see
 #' @param cnst Constant hline to draw on plot
-#' \code{\link{tcplLoadClib}} for more information. 
 #' @inheritParams tcplPlotFits
 #' 
 #' @details 
