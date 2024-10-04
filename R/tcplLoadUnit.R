@@ -16,6 +16,7 @@
 #' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #' 
 #' @import data.table
+#' @export
 
 tcplLoadUnit <- function(aeid) {
   
