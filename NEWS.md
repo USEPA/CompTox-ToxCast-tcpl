@@ -1,6 +1,12 @@
 # tcpl 3.2.0
 
 * Added a `NEWS.md` file to track changes to the package.
+* updated vignettes
+* Updated plotting including standalone and comparisons
+* Added bidirectional summary stats and updated functions to work with newest version of invitrodb
+* Added level 6 flags
+* Implemented API functionality
+* Removed tcplLite
 
 # tcpl 3.1.0
 
