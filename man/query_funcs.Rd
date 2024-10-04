@@ -34,6 +34,14 @@ tcplSendQuery(
 
 \item{tbl}{Tables to be read queried}
 
+\item{resource}{must be either data or assay to determine which api endpoint to hit}
+
+\item{fld}{field that should be used to query the api}
+
+\item{val}{value for specified field to query on}
+
+\item{return_flds}{optional list of fields that should be returned}
+
 \item{delete}{Logical of length 1, execute delete on queried table}
 }
 \description{

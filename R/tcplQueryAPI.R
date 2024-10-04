@@ -4,6 +4,10 @@
 
 #' @rdname query_funcs
 #' 
+#' @param resource must be either data or assay to determine which api endpoint to hit
+#' @param fld field that should be used to query the api
+#' @param val value for specified field to query on
+#' @param return_flds optional list of fields that should be returned
 #' @import data.table
 #' @importFrom ctxR get_bioactivity_details_batch get_all_assays
 #' @importFrom tidyr unnest
