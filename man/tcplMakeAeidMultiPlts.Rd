@@ -22,8 +22,7 @@ tcplMakeAeidMultiPlts(
 
 \item{odir}{The directory to save the .pdf file in}
 
-\item{clib}{Character, the chemical library to subset on, see 
-\code{\link{tcplLoadClib}} for more information.}
+\item{clib}{Character, the chemical library to subset on}
 
 \item{hitc.all}{If FALSE, only plots with hitc==1 will be displayed}
 }

@@ -11,8 +11,7 @@
 #' @param lvl Integer of length 1, the data level to use (4-7)
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
-#' @param clib Character, the chemical library to subset on, see 
-#' \code{\link{tcplLoadClib}} for more information. 
+#' @param clib Character, the chemical library to subset on
 #' @param hitc.all If FALSE, only plots with hitc==1 will be displayed
 #' 
 #' @details 
