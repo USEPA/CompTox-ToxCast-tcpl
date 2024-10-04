@@ -15,6 +15,8 @@
 
 
 tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds = NULL) {
+  #variable binding
+  Server <- NULL
   
   if (getOption("TCPL_DRVR") != "API") stop("TCPL_DRVR must be set to 'API'. See ?tcplConf.")
   

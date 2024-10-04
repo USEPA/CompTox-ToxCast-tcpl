@@ -46,7 +46,7 @@ tcplPrepOtpt <- function(dat, ids = NULL) {
   
   ## Variable-binding to pass R CMD Check
   acnm <- acid <- aenm <- resp_unit <- aeid <- spid <- chid <- NULL
-  code <- chnm <- casn <- NULL
+  code <- chnm <- casn <- dsstox_substance_id <- NULL
   
   if (!"data.table" %in% class(dat)) {
     stop("'dat' must be a data.table.")

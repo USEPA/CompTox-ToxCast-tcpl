@@ -59,7 +59,7 @@
 #' }
 tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
-  conc_unit <- bmd <- resp <- compare.dat <- NULL
+  conc_unit <- bmd <- resp <- compare.dat <- lvl <- compare <- NULL
   
   # Validate vars based on some assumed properties
   validated_vars <- tcplPlotValidate(type = type,flags = flags,output = output,multi = multi,verbose = verbose)
@@ -184,7 +184,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   #library(dplyr)
   
   #variable binding
-  model_stats <- model <- param <- value <- ac50 <- hitc <- NULL
+  model_stats <- model <- param <- value <- ac50 <- hitc <- compare <- NULL
   
   compare.dat <- dat[compare == TRUE]
   dat <- dat[compare == FALSE]
@@ -1114,7 +1114,7 @@ tcplggplot <- function(dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(
 tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags = FALSE, yrange = c(NA,NA)) {
   # variable binding
   conc <- resp <- xpos <- ypos <- hjustvar <- vjustvar <- NULL
-  annotateText <- name <- aic <- NULL
+  annotateText <- name <- aic <- l3 <- NULL
   l3_dat_main <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med, l3 = "main")
   l3_dat_compare <- tibble(conc = unlist(compare.dat$conc), resp = unlist(compare.dat$resp), max_med = compare.dat$max_med, l3 = "compare")
   l3_dat_both <- rbind(l3_dat_main, l3_dat_compare)

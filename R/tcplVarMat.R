@@ -87,13 +87,15 @@
 #' 
 #' @import data.table
 #' @importFrom tidyr pivot_wider
-#' @importFrom dplyr full_join
+#' @importFrom dplyr full_join summarise across all_of group_by filter %>% 
 #' @export
 
 tcplVarMat <- function(dsstox_substance_id = NULL,
                        aeid = NULL,
                        add.vars = NULL,
                        flag = TRUE) {
+  #variable binding
+  hitc <- aenm <- chnm <- NULL
   
   # check input
   if (!is.null(aeid) & !is.vector(aeid)) stop("'aeid' must be a vector.")
