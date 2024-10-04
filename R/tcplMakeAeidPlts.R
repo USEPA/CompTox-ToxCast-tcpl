@@ -13,7 +13,6 @@
 #' @param lvl Integer of length 1, the data level to use (4-7). Only level 5-6 valid for compare aeids.
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
-#' @param clib Character, the chemical library to subset on, see
 #' @param cnst Constant hline to draw on plot
 #' @inheritParams tcplPlotFits
 #' 
@@ -46,7 +45,7 @@
 #' @export
 
 tcplMakeAeidPlts <- function(aeid, compare=F, lvl = 4L, fname = NULL, odir = getwd(), 
-                             ordr.fitc = TRUE, clib = NULL, cnst=NULL) {
+                             ordr.fitc = TRUE, cnst=NULL) {
   
   ## Variable-binding to pass R CMD Check
   spid <- m4id <- NULL
@@ -69,10 +68,6 @@ tcplMakeAeidPlts <- function(aeid, compare=F, lvl = 4L, fname = NULL, odir = get
   
   if (nrow(dat) == 0) stop("No data for AEID", aeid)
   
-  if (!is.null(clib)) {
-    csub <- tcplLoadClib(field = "clib", val = clib)
-    dat <- dat[spid %in% tcplLoadChem(field = "chid", val = csub$chid)$spid]
-  }
   
   prs <- list(type = "mc", fld = "m4id", val = dat[ , unique(m4id)])
   

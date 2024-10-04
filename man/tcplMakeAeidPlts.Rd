@@ -11,7 +11,6 @@ tcplMakeAeidPlts(
   fname = NULL,
   odir = getwd(),
   ordr.fitc = TRUE,
-  clib = NULL,
   cnst = NULL
 )
 }
@@ -27,8 +26,6 @@ tcplMakeAeidPlts(
 \item{odir}{The directory to save the .pdf file in}
 
 \item{ordr.fitc}{Logical, should the fits be ordered by fit category?}
-
-\item{clib}{Character, the chemical library to subset on, see}
 
 \item{cnst}{Constant hline to draw on plot}
 }
