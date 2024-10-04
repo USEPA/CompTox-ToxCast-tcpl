@@ -30,8 +30,7 @@ tcplMakeAeidPlts(
 
 \item{clib}{Character, the chemical library to subset on, see}
 
-\item{cnst}{Constant hline to draw on plot
-\code{\link{tcplLoadClib}} for more information.}
+\item{cnst}{Constant hline to draw on plot}
 }
 \description{
 \code{tcplMakeAeidPlts} creates a .pdf file with the dose-response plots for 

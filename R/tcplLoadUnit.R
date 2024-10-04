@@ -13,7 +13,7 @@
 #' @return A data.table containing level 3 correction methods for the given
 #' aeids.
 #' 
-#' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
+#' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #' 
 #' @import data.table
 

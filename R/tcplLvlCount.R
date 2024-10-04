@@ -34,7 +34,7 @@
 #'
 #' @return A data.table containing data for the given fields.
 #'
-#' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
+#' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #'
 #' @import data.table
 #' @export

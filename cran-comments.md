@@ -1,4 +1,5 @@
-3.1.0 Release integrates package tcplfit2 bidirectional fitting a major update that impacts resulting invitrodb database
+* added package anchors to links NOTEd in current cran check results
+
 
 ## Test environments
 
