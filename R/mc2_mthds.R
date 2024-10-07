@@ -48,8 +48,7 @@
 #'   100; \eqn{100-cval}{100-cval}. Typically used if data was pre-normalized around 100 with responses 
 #'   decreasing to 0.}
 #'   \item{zscore.npwlls}{Convert the corrected response value (cval) to an absolute Z-Score based 
-#'   on the neutral and positive control wells (wllts = n and p), by assay plate ID (apid); eqn{cval=|(cval-mean(cval~for~wllt~=~n~and~p)/sd(cval~for~wllt~=~n~and~p)|}{cval=
-#'    |(cval-mean(cval for wllt = n and p)/sd(cval for wllt = n and p)|}.}
+#'   on the neutral and positive control wells (wllts = n and p), by assay plate ID (apid); eqn{cval=|(cval-mean(cval~for~wllt~=~n~and~p)/sd(cval~for~wllt~=~n~and~p)|}{cval=|(cval-mean(cval for wllt = n and p)/sd(cval for wllt = n and p)|}.}
 #'   \item{sub1}{Center data around zero by subtracting the corrected response value (cval) from 1; 
 #'    \eqn{1-cval}{1-cval}. Typically used if data was pre-normalized around 1 with responses decreasing to 0.}
 #'   }
