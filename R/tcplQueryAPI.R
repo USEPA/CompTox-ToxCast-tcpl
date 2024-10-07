@@ -83,6 +83,6 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
   if (is.null(return_flds)) return(dat)
   else {
     return_flds <- intersect(c(tolower(fld), return_flds), colnames(dat))
-    return(dat %>% select(return_flds))
+    return(dat |> select(return_flds))
   }
 }
