@@ -730,3 +730,17 @@
 #' }
 #' @source CTX Bioactivity API
 "test_api"
+
+#' Lists of data frames returned from tcplMthdList invitrodb v4.2
+#' @format A list with 7 items:
+#' \describe{
+#'   \item{mc2}{displays the available methods for mc lvl 2 data}
+#'   \item{mc3}{displays the available methods for mc lvl 3 data}
+#'   \item{mc4}{displays the available methods for mc lvl 4 data}
+#'   \item{mc5}{displays the available methods for mc lvl 5 data}
+#'   \item{mc6}{displays the available methods for mc lvl 6 data}
+#'   \item{sc1}{displays the available methods for sc lvl 1 data}
+#'   \item{sc2}{displays the available methods for sc lvl 2 data}
+#' }
+#' @source ToxCast database
+"mthd_list_defaults"

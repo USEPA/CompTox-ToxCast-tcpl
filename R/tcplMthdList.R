@@ -7,6 +7,10 @@
 
 tcplMthdList <- function(lvl, type = "mc") {
   
+  if(getOption("TCPL_DRVR") == "API"){
+    return(mthd_list_defaults[grep(paste0(type,lvl), names(mthd_list_defaults))][[1]])
+  }
+  
   tbl <- paste0(type, lvl, "_methods")
   qstring <- paste0("SELECT * FROM ", tbl, ";")
   
