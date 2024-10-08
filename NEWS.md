@@ -1,36 +1,50 @@
-tcpl v3.1.0
-==============
-*updated vignettes for tcplfit2 fitting
-*bidirectional fitting by default
-*this is the version used to create invitrodb v4.1
+# tcpl 3.2.0
 
-tcpl v3.0.1
-==============
-*fixes error from ggplot2
-*minor bug fixes
+* Added a `NEWS.md` file to track changes to the package.
+* updated vignettes
+* Updated plotting including standalone and comparisons
+* Added bidirectional summary stats and updated functions to work with newest version of invitrodb
+* Added level 6 flags
+* Implemented API functionality
+* Removed tcplLite
 
-tcpl v3.0.0
-==============
-*add functionality for additional model fitting with tcplfit2
-*updated vignettes for new fitting
-*created updated plotting function
+# tcpl 3.1.0
 
-tcpl v2.1.0
-==============
-*updated for release with toxcast invitrodb data
-*added option to allow change in single conc bmad calculation
+* updated vignettes for tcplfit2 fitting
+* bidirectional fitting by default
+* this is the version used to create invitrodb v4.1
 
-tcpl v2.0.3
-==============
-*Created tcplPlot a generic plotting function with call similar to tcplLoadData
-*added option for concentration units to be different during plotting.
-*fixed tcpllite bug for schema change
-*filtered gnls from tcplCytopt
-*updated to Rmariadb
-*various bugfixes
+# tcpl 3.0.1
 
-tcpl v2.0.2
-==============
+* fixes error from ggplot2
+
+* minor bug fixes
+
+# tcpl 3.0.0
+
+* add functionality for additional model fitting with tcplfit2
+
+* updated vignettes for new fitting
+
+* created updated plotting function
+
+# tcpl 2.1.0
+
+* updated for release with toxcast invitrodb data
+
+* added option to allow change in single conc bmad calculation
+
+# tcpl 2.0.3
+
+* Created tcplPlot a generic plotting function with call similar to tcplLoadData
+* added option for concentration units to be different during plotting.
+* fixed tcpllite bug for schema change
+* filtered gnls from tcplCytopt
+* updated to Rmariadb
+* various bugfixes
+
+# tcpl 2.0.2
+
 * Updated tcplLoadChem to return dsstox substance ids
 * Moved data.table to imports instead of depends
 * Added new level 6 method for flagging viability gnls winners
@@ -39,21 +53,24 @@ tcpl v2.0.2
 * Added ability to determine lowest effective concentration (loec) as level 5 method
 * Added new AEID plot functionality to visualize 2 aeids on same plot through tcplMakeAeidPlts
 
-tcpl v2.0.1
-==============
-Updated vignettes to use tempdir and thus not write to install folder.
+# tcpl 2.0.1
+
+* Updated vignettes to use tempdir and thus not write to install folder.
 
 
-tcpl v2.0
-==============
+# tcpl 2.0
+
 
 Major change for tcpl v2.0:
+
 * Incorporation of tcplLite into the package, a functionality that allows the user to work from local files formatted like invitrodb tables, rather than a MySQL database.
-	* Using tcplLite is ideal for handling smaller datasets. 
-	* The SQLite driver was removed from the package.
-	* tcplConf() default is now for tcplLite, which uses .csv files rather than tables in a MySQL database. 
-	* The MySQL driver is available and recommended for interacting with the entire dataset as a database. 
-	* The package vignettes run using tcplLite.
+
+* Using tcplLite is ideal for handling smaller datasets. 
+
+* The SQLite driver was removed from the package.
+* tcplConf() default is now for tcplLite, which uses .csv files rather than tables in a MySQL database. 
+* The MySQL driver is available and recommended for interacting with the entire dataset as a database. 
+* The package vignettes run using tcplLite.
 Additional updates for tcpl v2.0
 * tcplLvlCount: function added to count the samples at each level of processing for each aeid.
 * Addition of mc4 methods: the baseline median absolute deviation can now be calculated based on the lowest two concentrations or on the neutral control wells. An mc4 method must now be assigned for analysis.
@@ -63,8 +80,8 @@ Additional updates for tcpl v2.0
 * Vignettes are now posted as html from RMarkdown files for Introduction and appendices, data retrieval, and data processing.
 * Various bug fixes and additions to the methods tables.
 
-tcpl v1.4.0
-==============
+# tcpl 1.4.0
+
 
 Changes from v1.2.2
   
@@ -93,8 +110,8 @@ Changes from v1.2.2
 
 
 
-tcpl v1.2.3
-==============
+# tcpl 1.2.3
+
 
 Changes from v1.2.2
   
@@ -120,8 +137,8 @@ Changes from v1.2.2
   imports were removed to simplify the package, as they were found unnecessary.
   (PR#29)
 
-tcpl v1.2.2
-==============
+# tcpl 1.2.2
+
 
 Changes from v1.2
 
@@ -130,8 +147,8 @@ Changes from v1.2
   running the checks for the package. 
 
 
-tcpl v1.2 
-==============
+# tcpl 1.2 
+
 
 Changes from beta versions:
 

@@ -11,6 +11,7 @@ tcplFit2 <- function(dat,
                      bmed = NULL) {
   #variable binding
   resp  <-bmad  <-aeid  <-osd  <-m3id <- concentration_unlogged  <-response <- NULL
+  conc <- max_med <- min_med <- max_med_conc <- min_med_conc <- NULL
   # do all the regular fitting things that still need to be done
   res <- dat[, `:=`(c("rmns", "rmds", "nconcs", "med_rmds_pos", "med_rmds_neg"), {
     rmns <- mean(resp)
@@ -59,7 +60,7 @@ tcplFit2 <- function(dat,
 #' 
 #'
 #' @return Data.table with key value pairs of hitcalling parameters
-#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull ungroup
+#' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull ungroup matches
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyr separate_wider_delim
 #' @importFrom tcplfit2 tcplhit2_core
@@ -185,6 +186,8 @@ tcplFit2_unnest <- function(output) {
 #'
 #' @return a list of fitting parameters that can be consumed by tcplfit2
 tcplFit2_nest <- function(dat) {
+  #variable binding
+  model <- NULL
   # get errfun and filter it out
   errfun <- filter(dat, model == "errfun")$model_param
   dat <- filter(dat, model != "errfun")

@@ -73,8 +73,8 @@
 #' 
 #' ## Other changes can be made
 #' aeids <- c(80)
-#' dtxsid <- c("DTXSID80379721", "DTXSID10379991", "DTXSID7021106", 
-#' "DTXSID1026081", "DTXSID9032589")
+#' dtxsid <- c("DTXSID4034653", "DTXSID2032683", "DTXSID6032358", 
+#' "DTXSID0032651", "DTXSID8034401")
 #' varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
 #' varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
 #' 
@@ -87,13 +87,15 @@
 #' 
 #' @import data.table
 #' @importFrom tidyr pivot_wider
-#' @importFrom dplyr full_join
+#' @importFrom dplyr full_join summarise across all_of group_by filter
 #' @export
 
 tcplVarMat <- function(dsstox_substance_id = NULL,
                        aeid = NULL,
                        add.vars = NULL,
                        flag = TRUE) {
+  #variable binding
+  hitc <- aenm <- chnm <- NULL
   
   # check input
   if (!is.null(aeid) & !is.vector(aeid)) stop("'aeid' must be a vector.")
@@ -157,18 +159,20 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   
   # build matrices
   mc5 <- mc5[hitc %in% c(0,-1), c("ac50", "acc") := 1e6]
-  long_sc2 <- sc2 %>% group_by(dsstox_substance_id,aenm,chnm) %>%
-    summarise(hitc = max(hitc)) %>% filter(!is.na(dsstox_substance_id))
+  long_sc2 <- sc2 |> group_by(dsstox_substance_id,aenm,chnm)
+  if (nrow(long_sc2) > 0) {
+    long_sc2 <- long_sc2 |> summarise(hitc = max(hitc)) |> filter(!is.na(dsstox_substance_id))
+  }
   
   build_matrix <- function(var, verbose = FALSE) {
     if (grepl("_verbose", var, fixed = TRUE)) {
       var <- sub("_verbose", "", var)
       verbose = TRUE
     }
-    long_mc5 <- mc5 %>% group_by(dsstox_substance_id,aenm,chnm) %>% 
-      summarise(across(all_of(sub("\\.y", "", var)), mean)) %>% filter(!is.na(dsstox_substance_id))
-    long_all <- long_mc5 %>% full_join(long_sc2, by = c("dsstox_substance_id","aenm", "chnm"))
-    long_res <- if (substr(var, 1, 2) == "ac") long_all %>% 
+    long_mc5 <- mc5 |> group_by(dsstox_substance_id,aenm,chnm) |> 
+      summarise(across(all_of(sub("\\.y", "", var)), mean)) |> filter(!is.na(dsstox_substance_id))
+    long_all <- long_mc5 |> full_join(long_sc2, by = c("dsstox_substance_id","aenm", "chnm"))
+    long_res <- if (substr(var, 1, 2) == "ac") long_all |> 
       mutate("{var}" := case_when(is.na(get(var)) && hitc == 0 ~ 1e8, 
                                   is.na(get(var)) && hitc == 1 ~ 1e7, 
                                   TRUE ~ get(var)),
@@ -178,8 +182,8 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
                                   TRUE ~ toString(get(var)))) else long_all
     colnames(long_res) = sub("\\.x", "", colnames(long_res))
     if (verbose) var <- paste0(var, "_verbose")
-    long_res[ , c("dsstox_substance_id", "chnm", "aenm", var)] %>% 
-      pivot_wider(names_from = aenm, values_from = var) %>% as.data.table()
+    long_res[ , c("dsstox_substance_id", "chnm", "aenm", var)] |> 
+      pivot_wider(names_from = aenm, values_from = var) |> as.data.table()
   }
   
   mat_list <- lapply(vars, build_matrix)

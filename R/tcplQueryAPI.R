@@ -4,13 +4,20 @@
 
 #' @rdname query_funcs
 #' 
+#' @param resource must be either data or assay to determine which api endpoint to hit
+#' @param fld field that should be used to query the api
+#' @param val value for specified field to query on
+#' @param return_flds optional list of fields that should be returned
 #' @import data.table
 #' @importFrom ctxR get_bioactivity_details_batch get_all_assays
 #' @importFrom tidyr unnest
+#' @importFrom dplyr select all_of
 #' @export
 
 
 tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds = NULL) {
+  #variable binding
+  Server <- NULL
   
   if (getOption("TCPL_DRVR") != "API") stop("TCPL_DRVR must be set to 'API'. See ?tcplConf.")
   
@@ -76,6 +83,6 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
   if (is.null(return_flds)) return(dat)
   else {
     return_flds <- intersect(c(tolower(fld), return_flds), colnames(dat))
-    return(dat[, ..return_flds])
+    return(dat |> select(all_of(return_flds)))
   }
 }

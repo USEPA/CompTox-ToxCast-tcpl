@@ -84,5 +84,5 @@ tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
 }
 }
 \seealso{
-\code{\link{tcplQuery}}, \code{\link{data.table}}
+\code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 }

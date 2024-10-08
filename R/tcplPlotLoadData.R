@@ -61,6 +61,8 @@
 #' @import data.table
 #' @export
 tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
+  #variable binding
+  lvl <- m4id <- conc <- resp <- conc_unit <- NULL
   
   # Validate vars based on some assumed properties
   validated_vars <- tcplPlotValidate(type = type,flags = flags)

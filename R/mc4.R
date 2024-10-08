@@ -25,7 +25,7 @@
 mc4 <- function(ae, wr = FALSE) {
 
   ## Variable-binding to pass R CMD Check
-  bmad <- resp <- cndx <- wllt <- logc <- spid <- cnst_aic <- hill_aic <- NULL
+  bmad <- resp <- cndx <- wllt <- logc <- conc <- spid <- cnst_aic <- hill_aic <- NULL
   gnls_aic <- NULL
 
   owarn <- getOption("warn")

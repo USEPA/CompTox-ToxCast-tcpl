@@ -74,7 +74,7 @@
 #' }
 #' @return A data.table containing data for the given fields.
 #'
-#' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
+#' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #'
 #' @import data.table
 #' @importFrom tidyr pivot_wider unnest_longer
@@ -86,6 +86,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
   #variable binding
   model <- model_param <- model_val <- NULL
   hit_param <- hit_val <- sc_vignette <- mc_vignette <- NULL
+  conc <- resp <- flag <- tbls <- NULL
   
   if (length(lvl) > 1 | length(type) > 1) {
     stop("'lvl' & 'type' must be of length 1.")
@@ -197,7 +198,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     cols <- NULL
     if (!add.fld) {
       # load default columns returned regular connection to DB
-      data("load_data_columns", envir = environment())
+      load_data_columns <- tcpl::load_data_columns
       # combine type and lvl into string, like "mc5"
       table <- paste0(type, lvl)
       # pull regular columns for given table

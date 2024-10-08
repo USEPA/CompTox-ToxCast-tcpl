@@ -40,5 +40,5 @@ tcplLvlCount()
 
 }
 \seealso{
-\code{\link{tcplQuery}}, \code{\link{data.table}}
+\code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 }

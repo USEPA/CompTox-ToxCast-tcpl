@@ -18,5 +18,5 @@ spids.
 with the concentration units for the given assay endpoint ids (spid).
 }
 \seealso{
-\code{\link{tcplQuery}}, \code{\link{data.table}}
+\code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 }
