@@ -85,8 +85,8 @@ varmat <- tcplVarMat()
 
 ## Other changes can be made
 aeids <- c(80)
-dtxsid <- c("DTXSID80379721", "DTXSID10379991", "DTXSID7021106", 
-"DTXSID1026081", "DTXSID9032589")
+dtxsid <- c("DTXSID4034653", "DTXSID2032683", "DTXSID6032358", 
+"DTXSID0032651", "DTXSID8034401")
 varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
 varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
 
