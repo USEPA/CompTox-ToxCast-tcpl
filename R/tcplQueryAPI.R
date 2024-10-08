@@ -11,7 +11,7 @@
 #' @import data.table
 #' @importFrom ctxR get_bioactivity_details_batch get_all_assays
 #' @importFrom tidyr unnest
-#' @importFrom dplyr select
+#' @importFrom dplyr select all_of
 #' @export
 
 
@@ -83,6 +83,6 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
   if (is.null(return_flds)) return(dat)
   else {
     return_flds <- intersect(c(tolower(fld), return_flds), colnames(dat))
-    return(dat |> select(return_flds))
+    return(dat |> select(all_of(return_flds)))
   }
 }
