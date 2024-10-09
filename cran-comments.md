@@ -13,21 +13,11 @@
 * R Under development (unstable) (2024-10-04 r87208 ucrt)
 
 ## winbuilder check results
-* The note below references misspelled words and invalid file URIs but the words are correctly spelled and the URIs point to the correct location within the respective documents.
+Installation time in seconds: 13
+Check time in seconds: 183
+Status: OK
+R Under development (unstable) (2024-10-08 r87214 ucrt)
 
-NOTE
-Maintainer: 'Jason Brown <brown.jason@epa.gov>'
-
-Possibly misspelled words in DESCRIPTION:
-  invitrodb (21:168)
-  tcpl (21:50, 21:304)
-
-Found the following (possibly) invalid file URIs:
-  URI: aeds
-    From: inst/doc/Introduction_Appendices.html
-  URI: CONTRIBUTING.md
-    From: README.md
-    
     
 ## local R CMD check results
 
