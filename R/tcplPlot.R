@@ -51,6 +51,7 @@
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom ggplot2 ggsave
 #' @importFrom dplyr %>% all_of pull
+#' @importFrom grDevices pdf.options
 #' @export
 #'
 #' @examples
@@ -60,6 +61,11 @@
 tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
   #variable binding
   conc_unit <- bmd <- resp <- compare.dat <- lvl <- compare <- NULL
+  
+  #set pdf options
+  enc <- pdf.options()$encoding
+  pdf.options(encoding="CP1253.enc")
+  on.exit(pdf.options(encoding = enc))
   
   # Validate vars based on some assumed properties
   validated_vars <- tcplPlotValidate(type = type,flags = flags,output = output,multi = multi,verbose = verbose)
