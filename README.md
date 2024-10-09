@@ -26,7 +26,8 @@ tcpl can be used to support diverse chemical screening efforts.
 
 If you are interested in contributing or want to report a bug, please
 submit a issue or start a discussion. See
-[CONTRIBUTING](CONTRIBUTING.md) for more information.
+[CONTRIBUTING](https://github.com/USEPA/CompTox-ToxCast-tcpl/blob/dev/CONTRIBUTING.md)
+for more information.
 
 To install the current development version, run the following command:
 

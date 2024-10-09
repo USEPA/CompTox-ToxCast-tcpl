@@ -18,7 +18,7 @@ Authors@R: c(
     person("Matthew T", "Martin", role = c("ctb", "ths")),
     person("Katie", "Paul Friedman", role=c("ctb"), email = "paul-friedman.katie@epa.gov", comment = c(ORCID = "0000-0002-2710-1691"))
     )
-Description: The ToxCast Data Analysis Pipeline (tcpl) is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, invitrodb. The package was developed for the chemical screening data curated by the US EPA's Toxicity Forecaster (ToxCast) program, but tcpl can be used to support diverse chemical screening efforts.
+Description: The ToxCast Data Analysis Pipeline ('tcpl') is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, 'invitrodb'. The package was developed for the chemical screening data curated by the US EPA's Toxicity Forecaster (ToxCast) program, but 'tcpl' can be used to support diverse chemical screening efforts.
 URL: https://github.com/USEPA/CompTox-ToxCast-tcpl, https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast
 Depends:
     R (>= 3.5.0)

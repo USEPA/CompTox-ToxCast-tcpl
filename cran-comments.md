@@ -1,3 +1,6 @@
+* added single quotes to invitrodb and tcpl in DESCRIPTION
+* fixed aeds URI
+
 ## Changes from last version
 * To resolve current cran check results: added package anchors to links
 * Updated docs and vignette
