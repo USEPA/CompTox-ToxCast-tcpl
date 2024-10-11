@@ -5,8 +5,7 @@
 #       Please do not jump around when running this script.
 #==============================================================================#
 ## r packages
-library(tcplfit2)
-library(tcpl)
+devtools::load_all()
 
 library(here)
 library(data.table)
@@ -43,8 +42,8 @@ atg.acid.sc <- atg.acid %>% filter(.,acid%in%atg.sc.ids) %>% as.data.table()
 # print the data.table of acid's
 atg.acid.sc
 # obtain the aeid's for the atg single concentration data
-atg.aeid.sc <- tcplLoadAeid(fld = 'acid',val = atg.acid.sc) %>% 
-  filter(.,grepl(aenm,pattern = "up$"))
+atg.aeid.sc <- tcplLoadAeid(fld = 'acid',val = atg.acid.sc) #%>% 
+  #filter(.,grepl(aenm,pattern = "up$"))
 # obtain the level 2 sc data
 tictoc::tic()
 atg.sc2 <- tcplPrepOtpt(
@@ -110,9 +109,9 @@ tictoc::toc()
 tictoc::tic()
 atg.sc1.ss <- atg.sc1 %>% 
   # keep only those observations that are related to the level 2 spids
-  dplyr::filter(spid %in% atg.sc2.ss[,spid]) %>% 
+  dplyr::filter(spid %in% atg.sc2.ss[,spid]) #%>% 
   # keep only those observations that are related to the 'up' endpoints
-  dplyr::filter(.,grepl(aenm,pattern = "up$"))
+  #dplyr::filter(.,grepl(aenm,pattern = "up$"))
 tictoc::toc()
 
 # collate the data into a single object 'sc_vignette'

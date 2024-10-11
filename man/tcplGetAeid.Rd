@@ -15,16 +15,10 @@ aeids associated with those names.The function performs a regular expression lik
 assay component endpoint name column in the assay component endpoint table.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples 
-conf_store <- tcplConfList()
-tcplConfExample()
-
+\dontrun{
 ## Search for aenm (assay name) case insensitive
 tcplGetAeid("TOX21")
 tcplGetAeid("tox21")
-
-## Reset configuration
-options(conf_store)
+}
 
 }

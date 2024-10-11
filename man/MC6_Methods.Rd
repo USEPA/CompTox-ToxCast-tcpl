@@ -68,8 +68,9 @@ available in the package vignette, "Data_processing."
   viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl = "gnls" and 
   cell_viability_assay = 1, then flag.}
   \item{no.med.gt.3bmad}{Flag series where no median response values are greater than baseline as 
-  defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
-  nmed_gtbl is the number of medians greater than 3 * bmad.}
+  defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl_pos and
+  nmed_gtbl_neg both = 0, where nmed_gtbl_pos/_neg is the number of medians greater than 3 * 
+  bmad/less than -3 * bmad.}
 }
 }
 

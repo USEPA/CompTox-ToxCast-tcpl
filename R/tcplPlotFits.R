@@ -31,12 +31,7 @@
 #' endpoint ID.
 #' 
 #' @examples 
-#' 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfDefault()
-#' 
+#' \dontrun{
 #' ## tcplPlotFits needs data.tables supplying the concentration/response
 #' ## data stored in mc4_agg, as well as the fit information from mc4 or mc5.
 #' ## Additionally, tcplPlotFits can take level 6 data from mc6 and add the
@@ -47,11 +42,9 @@
 #' l5 <- tcplLoadData(lvl = 5, fld = "m4id", val = 18609966)
 #' l4_agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = 18609966)
 #' 
-#' \dontrun{
 #' pdf(file = "tcplPlotFits.pdf", height = 6, width = 10, pointsize = 10)
 #' tcplPlotFits(dat = l5, agg = l4_agg)
 #' graphics.off()
-#' }
 #' 
 #' ## While it is most likely the user will want to just save all of the plots 
 #' ## to view in a PDF, the 'browse' parameter can be used to quickly view 
@@ -61,14 +54,10 @@
 #' ## a subset of the data. This browse function is admittedly clunky. 
 #' bpa <- tcplLoadChem(field = "chnm", val = "Bisphenol A")[ , spid]
 #' l5_sub <- l5[spid %in% bpa] 
-#' \dontrun{
 #' tcplPlotFits(dat = l5_sub, 
 #'              agg = l4_agg[m4id %in% l5_sub$m4id], 
 #'              browse = TRUE)
 #' }
-#' 
-#' ## Reset configuration
-#' options(conf_store)
 #'  
 #' @import data.table
 #' @export
@@ -79,6 +68,9 @@ tcplPlotFits <- function(dat, agg, flg = NULL, boot = NULL, ordr.fitc = FALSE,
   ## Variable-binding to pass R CMD Check
   chid <- chnm <- spid <- aenm <- aeid <- m4id <- fitc <- fval <- NULL
   flgo <- mc6_mthd_id <- J <- NULL
+  
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
   
   if (!is.null(flg) & !"m5id" %in% names(dat)) {
     stop("Must supply level 5 data with a non-null 'flg' input.")

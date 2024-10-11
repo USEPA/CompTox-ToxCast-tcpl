@@ -45,6 +45,8 @@
 #'     \item{bval.apid.tn.med}{Calculate the baseline value (bval) as the plate-wise median,
 #'      by assay plate ID (apid), of the raw values (rval) for test compound wells (wllt = t)
 #'       and neutral control wells (wllt = n).}
+#'     \item{bval.nwlls.med}{Calculate the baseline value (bval) as the median of the raw values 
+#'      (rval) for neutral control wells (wllt = n) by assay endpoint id (aeid).}
 #'   }
 #' } 
 #' 
@@ -131,6 +133,14 @@ sc1_mthds <- function() {
                        by = list(aeid, apid)])
       list(e1)
       
+    },
+    bval.nwlls.med = function(aeids) {
+
+      e1 <- bquote(dat[J(.(aeids)),
+                       bval := median(rval[wllt == "n"], na.rm = TRUE),
+                       by = list(aeid)])
+      list(e1)
+
     },
     
     pval.apid.pwlls.med = function(aeids) {

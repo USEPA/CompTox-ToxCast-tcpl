@@ -22,7 +22,9 @@ This function can be particularly useful in defining the 'fld' param in the
 tcplLoad- functions.
 }
 \examples{
+\dontrun{
 ## Gives the fields in the mc1 table
 tcplListFlds("mc1")
+}
 
 }

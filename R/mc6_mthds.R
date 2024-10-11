@@ -64,8 +64,9 @@
 #'   viability assay with winning model is gain-loss (gnls); if hitc >= 0.9, modl = "gnls" and 
 #'   cell_viability_assay = 1, then flag.}
 #'   \item{no.med.gt.3bmad}{Flag series where no median response values are greater than baseline as 
-#'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl = 0, where 
-#'   nmed_gtbl is the number of medians greater than 3 * bmad.}
+#'   defined by 3 times the baseline median absolute deviation (bmad); nmed_gtbl_pos and
+#'   nmed_gtbl_neg both = 0, where nmed_gtbl_pos/_neg is the number of medians greater than 3 * 
+#'   bmad/less than -3 * bmad.}
 #' }
 #' 
 #' @note
@@ -99,7 +100,7 @@ mc6_mthds <- function() {
     
     low.nrep = function(mthd) { 
       
-      flag <- "Average number of replicates per conc is less than 2"
+      flag <- "Average number of replicates per conc < 2"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -114,7 +115,7 @@ mc6_mthds <- function() {
     
     low.nconc = function(mthd) { 
       
-      flag <- "Number of concentrations tested is less than 4"
+      flag <- "Number of concentrations tested < 4"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
@@ -144,13 +145,16 @@ mc6_mthds <- function() {
     
     singlept.hit.high = function(mthd) {
       
-      flag <- "Only highest conc above baseline, active"
+      flag <- "Active with only highest conc above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , lstc := max_med_conc == logc_max])
-      e3 <- bquote(ft[ , test := nmed_gtbl == 1 & hitc >= 0.9 & lstc])
+      e2 <- bquote(ft[ , lstc := max_med_diff_conc == conc_max])
+      e3 <- bquote(ft[ , test := ((nmed_gtbl_pos == 1 & model_type == 2 & top >= 0) |
+                                  (nmed_gtbl_neg == 1 & model_type == 2 & top <= 0) | 
+                                  (nmed_gtbl_pos == 1 & model_type == 3) | 
+                                  (nmed_gtbl_neg == 1 & model_type == 4)) & hitc >= 0.9 & lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test", "lstc")
       e5 <- bquote(ft[ , .(cr) := NULL])
@@ -160,13 +164,16 @@ mc6_mthds <- function() {
     
     singlept.hit.mid = function(mthd) {
       
-      flag <- "Only one conc above baseline, active"
+      flag <- "Active with one conc (not highest) above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , lstc := max_med_conc == logc_max])
-      e3 <- bquote(ft[ , test := nmed_gtbl == 1 & hitc >= 0.9 & !lstc])
+      e2 <- bquote(ft[ , lstc := max_med_diff_conc == conc_max])
+      e3 <- bquote(ft[ , test := ((nmed_gtbl_pos == 1 & model_type == 2 & top >= 0) |
+                                  (nmed_gtbl_neg == 1 & model_type == 2 & top <= 0) | 
+                                  (nmed_gtbl_pos == 1 & model_type == 3) | 
+                                  (nmed_gtbl_neg == 1 & model_type == 4)) & hitc >= 0.9 & !lstc])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test", "lstc")
       e5 <- bquote(ft[ , .(cr) := NULL])
@@ -176,12 +183,15 @@ mc6_mthds <- function() {
     
     multipoint.neg = function(mthd) {
       
-      flag <- "Multiple points above baseline, inactive"
+      flag <- "Inactive with multiple concs above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := nmed_gtbl > 1 & hitc < 0.9])
+      e2 <- bquote(ft[ , test := ((nmed_gtbl_pos > 1 & model_type == 2 & top >= 0) |
+                                  (nmed_gtbl_neg > 1 & model_type == 2 & top <= 0) | 
+                                  (nmed_gtbl_pos > 1 & model_type == 3) | 
+                                  (nmed_gtbl_neg > 1 & model_type == 4)) & hitc < 0.9 & hitc >= 0])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
@@ -196,8 +206,8 @@ mc6_mthds <- function() {
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , c_min := 10^logc_min])
-      e3 <- bquote(ft[ , c_max := 10^logc_max])
+      e2 <- bquote(ft[ , c_min := conc_min])
+      e3 <- bquote(ft[ , c_max := conc_max])
       conc_cols <- c("c_min", "c_max")
       e4 <- bquote(ft[ , cmen := rowMeans(.SD), .SDcols = .(conc_cols)])
       e5 <- bquote(ifelse("ac50_loss" %in% names(ft), ft[ , test := modl == "gnls" & ac50 < c_min & ac50_loss < cmen], ft))
@@ -271,15 +281,15 @@ mc6_mthds <- function() {
     
     efficacy.50 = function(mthd) {
       
-      flag <- "Less than 50% efficacy"
+      flag <- "Efficacy < 50%"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
       e2 <- bquote(ft[hitc >= 0.9 & coff >= 5,
-                      test := top < 50 | max_med < 50])
+                      test := abs(top) < 50 | abs(max_med_diff) < 50])
       e3 <- bquote(ft[hitc >= 0.9 & coff < 5,
-                      test := top < log2(1.5) | max_med < log2(1.5)])
+                      test := abs(top) < log2(1.5) | abs(max_med_diff) < log2(1.5)])
       e4 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e5 <- bquote(ft[ , .(cr) := NULL])
@@ -289,12 +299,12 @@ mc6_mthds <- function() {
     
     ac50.lowconc = function(mthd) {
       
-      flag <- "AC50 less than lowest concentration tested"
+      flag <- "AC50 < lowest concentration tested"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[hitc >= 0.9, test := ac50 < 10^logc_min]) 
+      e2 <- bquote(ft[hitc >= 0.9, test := ac50 < conc_min]) 
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])
@@ -319,12 +329,15 @@ mc6_mthds <- function() {
     
     no.med.gt.3bmad = function(mthd) {
       
-      flag <- "Flag series where no median response values are greater than baseline as defined by 3 times the baseline median absolute deviation (bmad)"
+      flag <- "No median responses above baseline (3*bmad)"
       out  <- c("m5id", "m4id", "aeid", "mc6_mthd_id", 
                 "flag")
       init <- bquote(list(.(mthd), .(flag), FALSE))
       e1 <- bquote(ft[ , .(c(out[4:5], "test")) := .(init)])
-      e2 <- bquote(ft[ , test := nmed_gtbl == 0])
+      e2 <- bquote(ft[ , test := (model_type == 2 & top > 0 & nmed_gtbl_pos == 0) | 
+                                 (model_type == 2 & top < 0 & nmed_gtbl_neg == 0) | 
+                                 (model_type == 3 & nmed_gtbl_pos == 0) | 
+                                 (model_type == 4 & nmed_gtbl_neg == 0)])
       e3 <- bquote(f[[.(mthd)]] <- ft[which(test), .SD, .SDcols = .(out)])
       cr <- c("mc6_mthd_id", "flag", "test")
       e4 <- bquote(ft[ , .(cr) := NULL])

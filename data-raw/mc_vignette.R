@@ -28,19 +28,15 @@ tcplConf(user = userid,
          db = ivtdb,
          drvr = "MySQL")
 # obtain the attagene (atg) aeid's (Assay Endpoint ID's) from the DB
-atg.aeid <- tcplGetAeid("ATG") %>% 
-  # keep only the 'up' assay endpoints
-  filter(.,grepl(aenm,pattern = "up")) %>% 
+atg.aeid <- tcplGetAeid("ATG") %>%
   # convert to a data.table object
   as.data.table()
 # print the data.table of aeid's
 atg.aeid
 # number of BioSeek endpoints
 nrow(atg.aeid)
-# choose a random 'aeid' to utilize as an example dataset
-set.seed(8011)
-atg.aeid.ss <- sample(1:nrow(atg.aeid),size = 1,replace = FALSE) %>% 
-  atg.aeid[.,]
+# choose a 'aeid' to utilize as an example dataset
+atg.aeid.ss <- atg.aeid[aenm == "ATG_GLI_CIS",]
 # obtain the 'acid' for the endpoints in the example dataset
 atg.acid.ss <- tcplLoadAcid(fld = 'aeid',val = atg.aeid.ss[,aeid])
 # obtain level 0 mc data
@@ -92,38 +88,40 @@ atg.mc5.ss <- atg.mc5 %>%
   dplyr::filter(.,nrep >=2) %>%
   # keep only the observations that have a hitcall >= 0.95
   dplyr::filter(.,hitc >= 0.95) %>%
-  # re-arrange the observations by hicall in descending order
-  dplyr::arrange(desc(hitc)) %>% 
+  # keep only the observations with a DTXSID
+  dplyr::filter(.,!is.na(dsstox_substance_id)) %>%
+  # re-arrange the observations by hitcall in descending order
+  dplyr::arrange(desc(hitc)) %>%
   # keep the top 5 observations in the data.table
   .[1:5,]
 tictoc::toc()
 # subset levels 0 through 4 data based on spids in the level 5 subset
 tictoc::tic()
-atg.mc0.ss <- atg.mc0 %>% 
+atg.mc0.ss <- atg.mc0 %>%
   # keep only those observations that are related to the level 5 spids
   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 tictoc::toc()
 
 tictoc::tic()
-atg.mc1.ss <- atg.mc1 %>% 
+atg.mc1.ss <- atg.mc1 %>%
   # keep only those observations that are related to the level 5 spids
   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 tictoc::toc()
 
 tictoc::tic()
-atg.mc2.ss <- atg.mc2 %>% 
+atg.mc2.ss <- atg.mc2 %>%
   # keep only those observations that are related to the level 5 spids
   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 tictoc::toc()
 
 tictoc::tic()
-atg.mc3.ss <- atg.mc3 %>% 
+atg.mc3.ss <- atg.mc3 %>%
   # keep only those observations that are related to the level 5 spids
   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 tictoc::toc()
 
 tictoc::tic()
-atg.mc4.ss <- atg.mc4 %>% 
+atg.mc4.ss <- atg.mc4 %>%
   # keep only those observations that are related to the level 5 spids
   dplyr::filter(spid %in% atg.mc5.ss[,spid])
 tictoc::toc()

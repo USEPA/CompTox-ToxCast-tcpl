@@ -39,13 +39,7 @@
 #' the registration process and all of the fields is available in the vignette. 
 #' 
 #' @examples
-#' 
 #' \dontrun{
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfDefault()
-#' 
 #' ## Load current ASID information
 #' tcplLoadAsid()
 #' 
@@ -66,17 +60,6 @@
 #' 
 #' ## Remove the created ASID. Note: Manually deleting primary keys can cause
 #' ## serious database problems and should not generally be done. 
-#' 
-#' ## If using the tcplLite DRVR, must specify table name
-#' if (conf_store$TCPL_DRVR == 'MySQL') {
-#'   tcplSendQuery(paste0("DELETE FROM assay_source WHERE asid = ", i1, ";"))
-#' } else {
-#'   qy <- paste0("SELECT * FROM assay_source WHERE NOT asid = ", i1, ";")
-#'   tcplSendQuery(qy, tbl='assay_source', delete=TRUE)
-#' }
-#' 
-#' ## Reset configuration
-#' options(conf_store)
 #' }
 #' 
 NULL

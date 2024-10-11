@@ -11,8 +11,6 @@
 #' @param lvl Integer of length 1, the data level to use (4-7)
 #' @param fname Character, the filename
 #' @param odir The directory to save the .pdf file in
-#' @param clib Character, the chemical library to subset on, see 
-#' \code{\link{tcplLoadClib}} for more information. 
 #' @param hitc.all If FALSE, only plots with hitc==1 will be displayed
 #' 
 #' @details 
@@ -25,7 +23,9 @@
 #' @import data.table
 #' @importFrom grDevices graphics.off pdf
 #' @export 
-tcplMakeAeidMultiPlts <- function (aeid, lvl = 4L, fname = NULL, odir = getwd(), clib = NULL, hitc.all = TRUE) {
+tcplMakeAeidMultiPlts <- function (aeid, lvl = 4L, fname = NULL, odir = getwd(), hitc.all = TRUE) {
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
   spid <- m4id <- NULL
   on.exit(graphics.off())
   if (length(aeid) > 1) 
@@ -40,10 +40,6 @@ tcplMakeAeidMultiPlts <- function (aeid, lvl = 4L, fname = NULL, odir = getwd(),
   }
   if (nrow(dat) == 0) 
     stop("No data for AEID", aeid)
-  if (!is.null(clib)) {
-    csub <- tcplLoadClib(field = "clib", val = clib)
-    dat <- dat[spid %in% tcplLoadChem(field = "chid", val = csub$chid)$spid]
-  }
   prs <- list(type = "mc", fld = "m4id", val = dat[, unique(m4id)])
   agg <- do.call(tcplLoadData, args = c(lvl = "agg", prs))
   flg <- if (lvl < 6L) {

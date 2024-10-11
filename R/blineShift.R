@@ -10,7 +10,7 @@
 #' to 0 based on the window. 
 #' 
 #' @param resp Numeric, the response values
-#' @param logc Numeric, the log10 concentration values
+#' @param conc Numeric, the concentration values
 #' @param wndw Numeric, the threshold window 
 #' 
 #' @note
@@ -22,22 +22,22 @@
 #' 
 #' @importFrom stats median lm 
 
-blineShift <- function(resp, logc, wndw) {
+blineShift <- function(resp, conc, wndw) {
   
   if (any(is.na(resp))) return(resp)
-  if (length(unique(logc)) < 4) return(resp)
+  if (length(unique(conc)) < 4) return(resp)
   
   wndw <- unique(wndw)[1]
-  ordr <- order(logc)
+  ordr <- order(conc)
   resp <- resp[ordr]
-  logc <- logc[ordr]
+  conc <- conc[ordr]
   
-  uconc <- unique(logc)
+  uconc <- unique(conc)
   nconc <- length(uconc)
 
   low <- 1:max(ceiling(nconc/4), 2)
-  rsub <- resp[which(logc %in% uconc[low])]
-  csub <- logc[which(logc %in% uconc[low])]
+  rsub <- resp[which(conc %in% uconc[low])]
+  csub <- log10(conc[which(conc %in% uconc[low])])
   low_med <- median(rsub)
   m <- lm(rsub ~ csub)$coefficients["csub"]
   if (is.na(m)) m <- 0

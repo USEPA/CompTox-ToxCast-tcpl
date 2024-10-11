@@ -13,11 +13,19 @@
 #' @return A data.table containing level 3 correction methods for the given
 #' aeids.
 #' 
-#' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
+#' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #' 
 #' @import data.table
+#' @export
 
 tcplLoadUnit <- function(aeid) {
+  
+  if (getOption("TCPL_DRVR") == "API") {
+    dat <- tcplQueryAPI(resource = "assay", fld = "aeid", val = aeid, return_flds = c("aeid", "normalized_data_type"))
+    setnames(dat, "normalized_data_type", "resp_unit")
+    setorder(dat, "aeid")
+    return(dat)
+  }
   
   qformat <- 
     "

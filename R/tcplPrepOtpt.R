@@ -21,12 +21,7 @@
 #' function will only attempt to map the ID fields given by 'ids.'
 #' 
 #' @examples
-#' 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#' 
+#' \dontrun{
 #' ## Load some example data
 #' d1 <- tcplLoadData(1)
 #' 
@@ -42,10 +37,7 @@
 #' d3 <- tcplPrepOtpt(d1, ids = "spid")
 #' "chnm" %in% names(d3) ## TRUE
 #' "acnm" %in% names(d3) ## FALSE
-#' 
-#' ## Reset configuration
-#' options(conf_store)
-#' 
+#' }
 #' 
 #' @return The given data.table with chemical and assay information mapped
 #' @export
@@ -54,7 +46,7 @@ tcplPrepOtpt <- function(dat, ids = NULL) {
   
   ## Variable-binding to pass R CMD Check
   acnm <- acid <- aenm <- resp_unit <- aeid <- spid <- chid <- NULL
-  code <- chnm <- casn <- NULL
+  code <- chnm <- casn <- dsstox_substance_id <- NULL
   
   if (!"data.table" %in% class(dat)) {
     stop("'dat' must be a data.table.")
@@ -98,6 +90,7 @@ tcplPrepOtpt <- function(dat, ids = NULL) {
       if ("casn" %in% dnames) dat[ , casn := NULL]
       if ("chnm" %in% dnames) dat[ , chnm := NULL]
       if ("code" %in% dnames) dat[ , code := NULL]
+      if ("dsstox_substance_id" %in% dnames) dat[ , dsstox_substance_id := NULL]
       cmap <- suppressWarnings(tcplLoadChem("spid", dat[ , unique(spid)]))
       dat <- merge(cmap, dat, by = "spid", all.y = TRUE)
       #add conc units

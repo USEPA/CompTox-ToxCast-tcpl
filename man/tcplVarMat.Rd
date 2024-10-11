@@ -5,45 +5,27 @@
 \title{Create chemical by assay matrices}
 \usage{
 tcplVarMat(
-  chid = NULL,
+  dsstox_substance_id = NULL,
   aeid = NULL,
   add.vars = NULL,
-  row.id = "code",
-  flag = TRUE,
-  cyto.pars = list(),
-  include.na.chid = FALSE,
-  odir = NULL,
-  file.prefix = NULL
+  flag = TRUE
 )
 }
 \arguments{
-\item{chid}{Integer, chemical ID values to subset on}
+\item{dsstox_substance_id}{Integer, chemical ID values to subset on}
 
 \item{aeid}{Integer, assay endpoint ID values to subset on}
 
 \item{add.vars}{Character, mc4 or mc5 field(s) not included in the standard
 list to add additional matrices}
 
-\item{row.id}{Character, the chemical identifier to use in the output}
-
 \item{flag}{Integer or Logical of length 1, passed to 
 \code{\link{tcplSubsetChid}}}
-
-\item{cyto.pars}{List, named list of arguments passed to 
-\code{\link{tcplCytoPt}}}
-
-\item{include.na.chid}{Logical of length 1, whether to include the chemicals
-not listed in the tcpl databases (ie. controls)}
-
-\item{odir}{Directory to write comma separated file(s)}
-
-\item{file.prefix}{Character of length 1, prefix to the file name when odir
-is not NULL}
 }
 \value{
-A list of chemical by assay matrices where the rownames are given by
-the 'row.id' parameter, and the colnames are given by assay endpoint name 
-(aenm).
+A list of chemical by assay matrices (data.tables) where the 
+rows are given by the dsstox_substance_id and corresponding chnm (chemical
+name) columns and the colnames are given by assay endpoint name (aenm).
 }
 \description{
 \code{tcplVarMat} creates chemical by assay matrices.
@@ -53,72 +35,65 @@ The \code{tcplVarMat} function is used to create chemical by assay matrices
 for different parameters. The standard list of matrices returned includes:
 
 \enumerate{
- \item "modl_ga" -- The logAC50 (in the gain direction) for the winning 
- model. 
- \item "hitc" -- The hit-call for the winning model.
- \item "m4id" -- The m4id, listing the concentration series selected by 
- \code{tcplSubsetChid}.
- \item "zscore" -- The z-score based on the output from \code{tcplCytoPt}. 
- The formula used for calculating the z-score is 
- \eqn{-(\mathit{modl\_ga} - \mathit{cyto\_pt})/\mathit{global\_mad}}
- \item "tested" -- 1 or 0, 1 indicating the chemical/assay pair
- was tested in either the single- or multiple-concentration format
- \item "tested_sc" -- 1 or 0, 1 indicating the chemical/assay pair
- was tested in the single-concentration format
- \item "tested_mc" -- 1 or 0, 1 indicating the chemical/assay pair
- was tested in the multiple-concentration format
- \item "ac50" -- a modified AC50 table (in non-log units) where 
- assay/chemical pairs that were not tested, or tested and had a hitcall of 0
- or -1 have the value 1e6. 
- \item "neglogac50" -- -log(AC50/1e6) where assay/chemical pairs that were 
- not tested, or tested and had a hitcall of 0 or -1 have the value 0. 
+ \item "ac50" -- The active concentration at 50% maximal response (ac50) for 
+ the winning model.
+ \item "ac50_verbose" -- The AC50 for the winning model, with text describing
+ some situations.
+ \item "acc" -- The active concentration at user-defined cutoff for the 
+ winning model.
+ \item "acc_verbose" -- The ACC for the winning model, with text describing
+ some situations.
+ \item "mc_hitc" -- The hit-call for the winning model in 
+ multiple-concentration (mc) screening.
+ \item "sc_hitc" -- The hit-call in single concentration (sc) screening.
 }
+
+\code{tcplVarMat} produces matrices of combined sc-mc output. For the ac50
+and acc matrices specifically, values are inserted in place to show complete
+views of what was tested and what the results were. ac50 and acc values are:
+\itemize{
+ \item set to 1e6 when the chemical is tested but negative in mc. In _verbose 
+ matrices, these are indicated as "MC neg".
+ \item set to 1e7 when the chemical is not tested in mc but was screened in 
+ sc with a positive hitcall for the same aeid. In _verbose matrices, these 
+ are indicated as "SC pos, No MC".
+ \item set to 1e8 when the chemical is not tested in mc but was screened in 
+ sc with a negative hitcall for the same aeid. In _verbose matrices, these 
+ are indicated as "SC neg, No MC"
+ \item not changed when chemical is tested in mc and positive, or not tested in
+either mc or sc
+} 
+
+sc and mc data both are currently required to be included for these 
+calculations. As a result, the "API" driver is not currently supported since
+it does not return sc data.
 
 To add additional matrices, the 'add.vars' parameter can be used to specify
 the fields from the mc4 or mc5 tables to create matrices for.
 
 When more than one sample is included for a chemical/assay pair, 
 \code{tcplVarMat} aggregates multiple samples to a chemical level call 
-utilizing \code{\link{tcplSubsetChid}}. 
-
-By setting \code{odir} the function will write out a csv with, naming the 
-file with the convention: "var_Matrix_date.csv" where 'var' is the name 
-of the matrix. A prefix can be added to the output files using the 
-'file.prefix' parameter. 
-
-When a concentration series has a sample id not listed in the \code{tcpl} 
-database, and 'include.na.chid' is TRUE, the rowname for that series will 
-be the concatenation of "SPID_" and the spid. Note, if the user gives a 
-subset of chid values to the 'chid' parameter, 'include.na.chid' will be 
-set to FALSE with a warning.
-
-The tcplVarMat function calls both \code{tcplSubsetChid} and 
-\code{tcplCytoPt} (which separately calls \code{tcplSubsetChid}). The input
+utilizing \code{\link{tcplSubsetChid}}. The input
 for the \code{tcplVarMat} 'flag' parameter is passed to the 
-\code{tcplSubsetChid} call used to parse down the data to create the 
-matrices. The \code{tcplSubsetChid} called within \code{tcplCytoPt} (to 
-parse down the cytotoxicity data used to define the "zscore" matrix) can 
-be modified by passing a separate 'flag' element in the list defined by the 
-'cyto.pars' parameter.
+\code{tcplSubsetChid} call and used to parse down the data to create the 
+matrices.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end 
-## of the examples
-conf_store <- tcplConfList()
-TCPLlite <- file.path(system.file(package = "tcpl"), "example")
-tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
 \dontrun{
-## Demonstrate the returned values. Note with no "burst" assays defined in
-## the example database, the user must provide which aeid values to use 
-## in calculating the cytotoxicity distributions for the 'zscore' matrix.
-tcplVarMat(chid = 1:5, cyto.pars = list(aeid = 1:2))
+## Demonstrate the returned values.
+varmat <- tcplVarMat()
 
 ## Other changes can be made
-tcplVarMat(chid = 1:5, row.id = "chnm", cyto.pars = list(aeid = 1:2))
-tcplVarMat(chid = 1:5, add.vars = "max_med", cyto.pars = list(aeid = 1:2))
+aeids <- c(80)
+dtxsid <- c("DTXSID4034653", "DTXSID2032683", "DTXSID6032358", 
+"DTXSID0032651", "DTXSID8034401")
+varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
+varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
+
+## To save output to file
+library(writexl)
+write_xlsx(varmat, path = "varmat_output.xlsx")
 }
-## Reset configuration
-options(conf_store)
 
 }
 \seealso{

@@ -532,11 +532,11 @@ mc3_mthds <- function() {
     resp.blineshift.3bmad.repi = function(aeids) {
       
       e1 <- bquote(dat[J(.(aeids)), 
-                       wndw := mad(resp[cndx %in% 1:2 & wllt == "t"], 
+                       wndw := mad(resp[cndx %in% 1:2], 
                                    na.rm = TRUE) * 3,
                        by = aeid])
-      e2 <- bquote(dat[aeid %in% .(aeids) & wllt %in% c("t", "c", "o"), 
-                       resp := blineShift(resp, logc, wndw), 
+      e2 <- bquote(dat[aeid %in% .(aeids), 
+                       resp := blineShift(resp, conc, wndw), 
                        by = list(aeid, spid, repi)])
       e3 <- bquote(dat[ , wndw := NULL])
       list(e1, e2, e3)
@@ -545,8 +545,8 @@ mc3_mthds <- function() {
     
     resp.blineshift.50.repi = function(aeids) {
       
-      e1 <- bquote(dat[aeid %in% .(aeids) & wllt %in% c("t", "c", "o"), 
-                       resp := blineShift(resp, logc, wndw = 50), 
+      e1 <- bquote(dat[aeid %in% .(aeids), 
+                       resp := blineShift(resp, conc, wndw = 50), 
                        by = list(aeid, spid, repi)])
       list(e1)
       
@@ -555,11 +555,11 @@ mc3_mthds <- function() {
     resp.blineshift.3bmad.spid = function(aeids) {
       
       e1 <- bquote(dat[J(.(aeids)), 
-                       wndw := mad(resp[cndx %in% 1:2 & wllt == "t"], 
+                       wndw := mad(resp[cndx %in% 1:2], 
                                    na.rm = TRUE) * 3,
                        by = aeid])
-      e2 <- bquote(dat[aeid %in% .(aeids) & wllt %in% c("t", "c", "o"), 
-                       resp := blineShift(resp, logc, wndw), 
+      e2 <- bquote(dat[aeid %in% .(aeids), 
+                       resp := blineShift(resp, conc, wndw), 
                        by = list(aeid, spid)])
       e3 <- bquote(dat[ , wndw := NULL])
       list(e1, e2, e3)
@@ -568,8 +568,8 @@ mc3_mthds <- function() {
     
     resp.blineshift.50.spid = function(aeids) {
       
-      e1 <- bquote(dat[aeid %in% .(aeids) & wllt %in% c("t", "c", "o"), 
-                       resp := blineShift(resp, logc, wndw = 50), 
+      e1 <- bquote(dat[aeid %in% .(aeids), 
+                       resp := blineShift(resp, conc, wndw = 50), 
                        by = list(aeid, spid)])
       list(e1)
       

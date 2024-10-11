@@ -27,17 +27,11 @@
 #' the AC50 confidence interval and hit percentage information from bootstrapping.
 #' 
 #' @examples 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#' 
+#' \dontrun{
 #' tcplPlotM4ID(m4id = 18609966, lvl = 4) ## Create a level 4 plot
 #' tcplPlotM4ID(m4id = 18609966, lvl = 5) ## Create a level 5 plot
 #' tcplPlotM4ID(m4id = 18609966, lvl = 6) ## Create a level 6 plot
-#' 
-#' #' ## Reset configuration
-#' options(conf_store)
+#' }
 #' 
 #' @seealso \code{\link{tcplPlotFits}}, \code{\link{tcplMakeAeidPlts}}
 #' @import data.table
@@ -45,6 +39,9 @@
 
 
 tcplPlotM4ID <- function(m4id, lvl = 4L) {
+  
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
   
   if (length(lvl) > 1 | !lvl %in% 4:7) stop("invalid lvl input.")
   

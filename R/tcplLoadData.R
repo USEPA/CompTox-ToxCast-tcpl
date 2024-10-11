@@ -25,6 +25,15 @@
 #' Setting 'lvl' to "agg" will return an aggregate table containing the m4id
 #' with the concentration-response data and m3id to map back to well-level
 #' information.
+#' 
+#' If \code{tcplConf()} was set with "API" as the driver, then \code{tcplLoadData} 
+#' will return data from the CCTE Bioactivity API. API data is available for
+#' \code{type = 'mc'} and lvl = c(3,4,5,6) and 'agg'. Only fields relating to the
+#' requested level are returned, but not all fields that usually return from
+#' invitrodb are available from the API. To have all fields available from the
+#' API return, regardless of what lvl is set to, set \code{add.fld} to 
+#' \code{TRUE}. API query-able fields include "aeid", "spid", "m4id", and 
+#' "dtxsid".
 #'
 #' Leaving \code{fld} NULL will return all data.
 #'
@@ -47,11 +56,7 @@
 #' }
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' ## Load all of level 0 for multiple-concentration data, note 'mc' is the
 #' ## default value for type
 #' tcplLoadData(lvl = 0)
@@ -66,28 +71,26 @@
 #' ## Load level 0 data where the well type is "t" and the concentration
 #' ## index is 3 or 4
 #' tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #' @return A data.table containing data for the given fields.
 #'
-#' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
+#' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #'
 #' @import data.table
-#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_wider unnest_longer
 #' @importFrom utils data
+#' @importFrom rlang exec sym
 #' @export
 
 tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE) {
   #variable binding
   model <- model_param <- model_val <- NULL
   hit_param <- hit_val <- sc_vignette <- mc_vignette <- NULL
+  conc <- resp <- flag <- tbls <- NULL
   
   if (length(lvl) > 1 | length(type) > 1) {
     stop("'lvl' & 'type' must be of length 1.")
   }
-  
-  tbls <- NULL
   
   drvr <- getOption("TCPL_DRVR")
   if (drvr == "example"){
@@ -100,7 +103,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       }
       else if (lvl == 1L) {
         sc1 <- sc_vignette[["sc1"]]
-        sc1 <- sc1[,c("s0id","s1id","spid","acid","aeid","apid","rowi","coli","wllt","logc","resp")]
+        sc1 <- sc1[,c("s0id","s1id","spid","acid","aeid","apid","rowi","coli","wllt","conc","resp")]
         return(sc1)
       }
       
@@ -113,7 +116,7 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         sc1 <- sc_vignette[["sc1"]]
         sc2 <- sc_vignette[["sc2"]]
         agg <- sc1[sc2, on = c("spid","aeid")]
-        agg <- agg[,c("aeid","s2id","s1id","s0id","logc","resp")]
+        agg <- agg[,c("aeid","s2id","s1id","s0id","conc","resp")]
         return(agg)
       }
       else stop("example tables for sc0, sc1, sc2, agg available.")
@@ -138,14 +141,17 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       } 
       else if (lvl == 3L) {
         mc3 <- mc_vignette[["mc3"]]
-        mc3 <- mc3[,c("m0id","m1id","m2id","m3id","spid","aeid","logc","resp","cndx","wllt","apid","rowi","coli","repi")]
+        mc3 <- mc3[,c("m0id","m1id","m2id","m3id","spid","aeid","conc","resp","cndx","wllt","apid","rowi","coli","repi")]
         return(mc3)
       } 
       else if (lvl == 4L) {
         mc4 <- mc_vignette[["mc4"]]
         if (!add.fld) {
-          mc4 <- mc4[,c("m4id","aeid","spid","bmad","resp_max","resp_min","max_mean","max_mean_conc","max_med","max_med_conc",
-                        "logc_max","logc_min","nconc","npts","nrep","nmed_gtbl")]
+          mc4 <- mc4[,c("m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", 
+                        "max_mean", "max_mean_conc", "min_mean", "min_mean_conc", 
+                        "max_med", "max_med_conc", "min_med", "min_med_conc", 
+                        "max_med_diff", "max_med_diff_conc", "conc_max", "conc_min", 
+                        "nconc", "npts", "nrep", "nmed_gtbl_pos", "nmed_gtbl_neg")]
         } else {
           mc4 <- mc4[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm","resp_unit","conc_unit")]
           setcolorder(mc4, c("m4id", "aeid", "spid"))
@@ -155,10 +161,15 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
       else if (lvl == 5L) {
         mc5 <- mc_vignette[["mc5"]]
         if (!add.fld){
-          mc5 <- mc5[,c("m5id","m4id","aeid","spid","bmad","resp_max","resp_min","max_mean","max_mean_conc","max_med",
-                        "max_med_conc","logc_max","logc_min","nconc","npts","nrep","nmed_gtbl","hitc","modl","fitc","coff")]
+          mc5 <- mc5[,c("m5id","m4id", "aeid", "spid", "bmad", "resp_max", "resp_min", 
+                        "max_mean", "max_mean_conc", "min_mean", "min_mean_conc", 
+                        "max_med", "max_med_conc", "min_med", "min_med_conc", 
+                        "max_med_diff", "max_med_diff_conc", "conc_max", "conc_min", 
+                        "nconc", "npts", "nrep", "nmed_gtbl_pos", "nmed_gtbl_neg",
+                        "hitc", "modl", "fitc", "coff")]
         } else {
-          mc5 <- mc5[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm","resp_unit","conc_unit","tp","ga","q","la","ac50_loss")]
+          mc5 <- mc5[,!c("chid","casn","chnm","dsstox_substance_id","code","aenm",
+                         "resp_unit","conc_unit","tp","ga","q","la","ac50_loss")]
           setcolorder(mc5, c("m5id", "m4id","aeid", "spid"))
         }
         return(mc5)
@@ -167,7 +178,8 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
         mc3 <- mc_vignette[["mc3"]]
         mc4 <- mc_vignette[["mc4"]]
         agg <- mc3[mc4, on = c("spid","aeid")]
-        agg <- agg[, c("aeid", "m4id", "m3id", "m2id", "m1id", "m0id", "spid", "logc", "resp")]
+        agg <- agg[, c("aeid", "m4id", "m3id", "m2id", "m1id", "m0id", "spid", 
+                       "conc", "resp")]
         return(agg)
 
       }
@@ -176,549 +188,90 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     else stop("Invalid 'lvl' and 'type' combination.")
   }
-  
-  if (drvr != "example"){
+  else if (drvr == "API") {
     
-    if (lvl == 0L && type == "mc") {
-      tbls <- c("mc0")
-      cols <- c(
-        "m0id",
-        "spid",
-        "acid",
-        "apid",
-        "rowi",
-        "coli",
-        "wllt",
-        "wllq",
-        "conc",
-        "rval",
-        "srcf"
-      )
-      
-      if (check_tcpl_db_schema()) {
-        cols <- c(cols, "clowder_uid", "git_hash")
+    # check type and lvl
+    if (type != "mc") stop("Only type = 'mc' is supported using API data as source.")
+    # if lvl is outside of 3-6 while not agg either
+    if ((lvl < 3 | lvl > 6) & lvl != "agg") stop("Only lvl = c(3,4,5,6) and 'agg' are supported using API data as source.")
+    
+    cols <- NULL
+    if (!add.fld) {
+      # load default columns returned regular connection to DB
+      load_data_columns <- tcpl::load_data_columns
+      # combine type and lvl into string, like "mc5"
+      table <- paste0(type, lvl)
+      # pull regular columns for given table
+      cols <- unlist(load_data_columns[table])
+    }
+    
+    # query the API 
+    dat <- tcplQueryAPI(fld = fld, val = val, return_flds = cols)
+    
+    if (length(colnames(dat))) {
+      if (lvl == 3 | lvl == "agg") {
+        dat$resp <- lapply(dat$resp, unlist)
+        dat$logc <- lapply(dat$logc, unlist)
+        if (lvl == 3) dat <- unnest_longer(dat, c(conc, logc, resp)) %>% as.data.table() 
+        else dat <- unnest_longer(dat, c(logc, resp)) %>% as.data.table() 
       }
       
-      col_str <- paste0(cols, collapse = ",")
-      qformat <- paste0("SELECT ", col_str, " FROM mc0 ")
-    }
-    
-    if (lvl == 0L && type == "sc") {
-      tbls <- c("sc0")
-      
-      cols <- c(
-        "s0id",
-        "spid",
-        "acid",
-        "apid",
-        "rowi",
-        "coli",
-        "wllt",
-        "wllq",
-        "conc",
-        "rval",
-        "srcf"
-      )
-      
-      if (check_tcpl_db_schema()) {
-        cols <- c(cols, "clowder_uid", "git_hash")
+      if (lvl == 6) {
+        dat$flag <- lapply(dat$flag, unlist)
+        dat <- unnest_longer(dat, flag) %>% filter(flag != "NULL") %>% as.data.table()
       }
-      
-      col_str <- paste0(cols, collapse = ",")
-      qformat <- paste0("SELECT ", col_str, " FROM sc0 ")
     }
+
+    return(dat)
+
+  }
+  else {
     
-    if (lvl == 1L && type == "mc") {
-      tbls <- c("mc0", "mc1")
-      
-      qformat <-
-        "
-      SELECT
-        mc1.m0id,
-        m1id,
-        spid,
-        mc1.acid,
-        apid,
-        rowi,
-        coli,
-        wllt,
-        wllq,
-        conc,
-        rval,
-        cndx,
-        repi,
-        srcf
-      FROM
-        mc0,
-        mc1
-      WHERE
-        mc0.m0id = mc1.m0id
-      "
-    }
+    # add.fld is not possible if invitrodb version less than 4
+    if (!check_tcpl_db_schema()) add.fld <- FALSE
     
-    if (lvl == 1L && type == "sc") {
-      tbls <- c("sc0", "sc1")
-      
-      qformat <-
-        "
-      SELECT
-        sc1.s0id,
-        s1id,
-        spid,
-        sc1.acid,
-        aeid,
-        apid,
-        rowi,
-        coli,
-        wllt,
-        logc,
-        resp
-      FROM
-        sc0,
-        sc1
-      WHERE
-        sc0.s0id = sc1.s0id
-      "
-    }
+    table <- paste0(type, lvl)
+    tbls_joins <- case_when(
+      table == "sc0" ~ list(tbls = "sc0", 
+                            joins = NULL),
+      table == "sc1" ~ list(tbls = "sc0,sc1", 
+                            joins = "sc0.s0id = sc1.s0id"),
+      table == "sc2" ~ list(tbls = "sc2", 
+                            joins = NULL),
+      table == "scagg" ~ list(tbls = "sc1,sc2_agg", 
+                              joins = "sc1.s1id = sc2_agg.s1id"),
+      table == "mc0" ~ list(tbls = "mc0", 
+                            joins = NULL),
+      table == "mc1" ~ list(tbls = "mc0,mc1", 
+                            joins = "mc0.m0id = mc1.m0id"),
+      table == "mc2" ~ list(tbls = "mc0,mc1,mc2", 
+                            joins = "mc0.m0id = mc1.m0id AND mc1.m0id = mc2.m0id"),
+      table == "mc3" ~ list(tbls = "mc0,mc1,mc3", 
+                            joins = "mc0.m0id = mc1.m0id AND mc1.m0id = mc3.m0id"),
+      table == "mcagg" ~ list(tbls = "mc3,mc4,mc4_agg", 
+                              joins = "mc3.m3id = mc4_agg.m3id AND mc4.m4id = mc4_agg.m4id"),
+      table == "mc4" && add.fld == FALSE ~ list(tbls = "mc4", 
+                                                joins = NULL),
+      table == "mc4" && add.fld == TRUE ~ list(tbls = "mc4,mc4_param", 
+                                               joins = "mc4.m4id = mc4_param.m4id"),
+      table == "mc5" && add.fld == FALSE ~ list(tbls = "mc4,mc5", 
+                                                joins = "mc4.m4id = mc5.m4id"),
+      table == "mc5" && add.fld == TRUE ~ list(tbls = "mc4,mc5,mc5_param", 
+                                               joins = "mc4.m4id = mc5.m4id AND mc5.m5id = mc5_param.m5id"),
+      table == "mc6" ~ list(tbls = "mc4,mc6", 
+                            joins = "mc6.m4id = mc4.m4id"),
+      table == "mc7" ~ list(tbls = "mc4,mc7", 
+                            joins = "mc7.m4id = mc4.m4id"),
+      TRUE ~ list(tbls = NULL, joins = NULL))
+
+    if (is.null(tbls_joins$tbls)) stop("Invalid 'lvl' and 'type' combination.")
     
-    if (lvl == 2L && type == "mc") {
-      tbls <- c("mc0", "mc1", "mc2")
-      
-      qformat <-
-        "
-      SELECT
-        mc2.m0id,
-        mc2.m1id,
-        m2id,
-        spid,
-        mc2.acid,
-        apid,
-        rowi,
-        coli,
-        wllt,
-        conc,
-        cval,
-        cndx,
-        repi
-      FROM
-        mc0,
-        mc1,
-        mc2
-      WHERE
-        mc0.m0id = mc1.m0id
-        AND
-        mc1.m0id = mc2.m0id
-      "
-    }
-    
-    if (lvl == 2L && type == "sc") {
-      tbls <- c("sc2")
-      
-      qformat <-
-        "
-      SELECT
-        s2id,
-        spid,
-        aeid,
-        bmad,
-        max_med,
-        hitc,
-        coff
-      FROM
-        sc2
-      "
-    }
-    
-    if (lvl == "agg" && type == "sc") {
-      tbls <- c("sc1", "sc2_agg")
-      
-      qformat <-
-        "
-      SELECT
-        sc2_agg.aeid,
-        sc2_agg.s2id,
-        sc2_agg.s1id,
-        sc2_agg.s0id,
-        logc,
-        resp
-      FROM
-        sc1,
-        sc2_agg
-      WHERE
-        sc1.s1id = sc2_agg.s1id
-      "
-    }
-    
-    if (lvl == 3L && type == "mc") {
-      tbls <- c("mc0", "mc1", "mc3")
-      
-      qformat <-
-        "
-      SELECT
-        mc3.m0id,
-        mc3.m1id,
-        mc3.m2id,
-        m3id,
-        spid,
-        aeid,
-        logc,
-        resp,
-        cndx,
-        wllt,
-        apid,
-        rowi,
-        coli,
-        repi
-      FROM
-        mc0,
-        mc1,
-        mc3
-      WHERE
-        mc0.m0id = mc1.m0id
-        AND
-        mc1.m0id = mc3.m0id
-      "
-    }
-    
-    if (lvl == "agg" && type == "mc") {
-      tbls <- c("mc3", "mc4_agg", "mc4")
-      
-      qformat <-
-        "
-      SELECT
-        mc4_agg.aeid,
-        mc4_agg.m4id,
-        mc4_agg.m3id,
-        mc4_agg.m2id,
-        mc4_agg.m1id,
-        mc4_agg.m0id,
-        mc4.spid,
-        logc,
-        resp
-      FROM
-        mc3,
-        mc4_agg,
-        mc4
-      WHERE
-        mc3.m3id = mc4_agg.m3id 
-        AND
-        mc4.m4id = mc4_agg.m4id
-      "
-    }
-    if (lvl == 4L && type == "mc" && check_tcpl_db_schema()) {
-      tbls <- c("mc4")
-      if (!add.fld) {
-        qformat <-
-          "
-      SELECT
-        m4id,
-        aeid,
-        spid,
-        bmad,
-        resp_max,
-        resp_min,
-        max_mean,
-        max_mean_conc,
-        max_med,
-        max_med_conc,
-        logc_max,
-        logc_min,
-        nconc,
-        npts,
-        nrep,
-        nmed_gtbl
-        FROM
-        mc4
-        "
-      } else {
-        tbls <- c("mc4", "mc4_param")
-        qformat <-
-          "
-      SELECT
-        mc4.m4id,
-        mc4.aeid,
-        spid,
-        bmad,
-        resp_max,
-        resp_min,
-        max_mean,
-        max_mean_conc,
-        max_med,
-        max_med_conc,
-        logc_max,
-        logc_min,
-        nconc,
-        npts,
-        nrep,
-        nmed_gtbl,
-        model,
-        model_param,
-        model_val
-        FROM
-        mc4_param,
-        mc4
-      WHERE
-        mc4.m4id = mc4_param.m4id 
-        "
-      }
-    } else if (lvl == 4L && type == "mc") {
-      tbls <- c("mc4")
-      
-      qformat <-
-        "
-      SELECT
-        m4id,
-        aeid,
-        spid,
-        bmad,
-        resp_max,
-        resp_min,
-        max_mean,
-        max_mean_conc,
-        max_med,
-        max_med_conc,
-        logc_max,
-        logc_min,
-        cnst,
-        hill,
-        hcov,
-        gnls,
-        gcov,
-        cnst_er,
-        cnst_aic,
-        cnst_rmse,
-        cnst_prob,
-        hill_tp,
-        hill_tp_sd,
-        hill_ga,
-        hill_ga_sd,
-        hill_gw,
-        hill_gw_sd,
-        hill_er,
-        hill_er_sd,
-        hill_aic,
-        hill_rmse,
-        hill_prob,
-        gnls_tp,
-        gnls_tp_sd,
-        gnls_ga,
-        gnls_ga_sd,
-        gnls_gw,
-        gnls_gw_sd,
-        gnls_la,
-        gnls_la_sd,
-        gnls_lw,
-        gnls_lw_sd,
-        gnls_er,
-        gnls_er_sd,
-        gnls_aic,
-        gnls_rmse,
-        gnls_prob,
-        nconc,
-        npts,
-        nrep,
-        nmed_gtbl
-      FROM
-        mc4
-      "
-    }
-    
-    if (lvl == 5L && type == "mc" && check_tcpl_db_schema()) {
-      if (!add.fld) {
-        tbls <- c("mc4", "mc5")
-        
-        qformat <-
-          "
-      SELECT
-        m5id,
-        mc5.m4id,
-        mc5.aeid,
-        spid,
-        bmad,
-        resp_max,
-        resp_min,
-        max_mean,
-        max_mean_conc,
-        max_med,
-        max_med_conc,
-        logc_max,
-        logc_min,
-        nconc,
-        npts,
-        nrep,
-        nmed_gtbl,
-        hitc,
-        modl,
-        fitc,
-        coff
-      FROM
-        mc4,
-        mc5
-      WHERE
-        mc4.m4id = mc5.m4id
-      "
-      } else {
-        tbls <- c("mc4", "mc5", "mc5_param")
-        qformat <-
-          "
-      SELECT
-        mc5.m5id,
-        mc5.m4id,
-        mc5.aeid,
-        spid,
-        bmad,
-        resp_max,
-        resp_min,
-        max_mean,
-        max_mean_conc,
-        max_med,
-        max_med_conc,
-        logc_max,
-        logc_min,
-        nconc,
-        npts,
-        nrep,
-        nmed_gtbl,
-        hitc,
-        modl,
-        fitc,
-        coff,
-        hit_param,
-        hit_val
-      FROM
-        mc4,
-        mc5,
-        mc5_param
-      WHERE
-        mc4.m4id = mc5.m4id
-      AND
-        mc5.m5id = mc5_param.m5id
-        "
-      }
-    } else if (lvl == 5L && type == "mc") {
-      tbls <- c("mc4", "mc5")
-      
-      qformat <-
-        "
-      SELECT
-        m5id,
-        mc5.m4id,
-        mc5.aeid,
-        spid,
-        bmad,
-        resp_max,
-        resp_min,
-        max_mean,
-        max_mean_conc,
-        max_med,
-        max_med_conc,
-        logc_max,
-        logc_min,
-        cnst,
-        hill,
-        hcov,
-        gnls,
-        gcov,
-        cnst_er,
-        cnst_aic,
-        cnst_rmse,
-        cnst_prob,
-        hill_tp,
-        hill_tp_sd,
-        hill_ga,
-        hill_ga_sd,
-        hill_gw,
-        hill_gw_sd,
-        hill_er,
-        hill_er_sd,
-        hill_aic,
-        hill_rmse,
-        hill_prob,
-        gnls_tp,
-        gnls_tp_sd,
-        gnls_ga,
-        gnls_ga_sd,
-        gnls_gw,
-        gnls_gw_sd,
-        gnls_la,
-        gnls_la_sd,
-        gnls_lw,
-        gnls_lw_sd,
-        gnls_er,
-        gnls_er_sd,
-        gnls_aic,
-        gnls_rmse,
-        gnls_prob,
-        nconc,
-        npts,
-        nrep,
-        nmed_gtbl,
-        hitc,
-        modl,
-        fitc,
-        coff,
-        actp,
-        modl_er,
-        modl_tp,
-        modl_ga,
-        modl_gw,
-        modl_la,
-        modl_lw,
-        modl_rmse,
-        modl_prob,
-        modl_acc,
-        modl_acb,
-        modl_ac10
-      FROM
-        mc4,
-        mc5
-      WHERE
-        mc4.m4id = mc5.m4id
-      "
-    }
-    
-    if (lvl == 6L && type == "mc") {
-      tbls <- c("mc4", "mc6")
-      
-      qformat <-
-        "
-      SELECT
-        mc6.aeid,
-        m6id,
-        mc6.m4id,
-        m5id,
-        spid,
-        mc6_mthd_id,
-        flag
-      FROM
-        mc4,
-        mc6
-      WHERE
-        mc6.m4id = mc4.m4id
-      "
-    }
-    
-    if (lvl == 7L && type == "mc") {
-      tbls <- c("mc7")
-      
-      qformat <-
-        "
-    SELECT
-    mc7.*
-    FROM
-      mc4,
-      mc7
-    WHERE
-      mc7.m4id = mc4.m4id
-    "
-    }
-    
-    if (is.null(tbls)) stop("Invalid 'lvl' and 'type' combination.")
-    
+    qformat <- paste0("SELECT * FROM ", tbls_joins$tbls, ifelse(is.null(tbls_joins$joins), "", paste(" WHERE", tbls_joins$joins)))
+
     if (!is.null(fld)) {
       if (is.null(val)) stop("'val' cannot be NULL check that a valid value was provided for the specified field")
       
-      fld <- .prepField(fld = fld, tbl = tbls, db = getOption("TCPL_DB"))
+      fld <- .prepField(fld = fld, tbl = unlist(strsplit(tbls_joins$tbls, ",")), db = getOption("TCPL_DB"))
       
       if(add.fld) wtest <- FALSE
       wtest <- lvl %in% c(0) | (lvl == 2 & type == "sc")
@@ -744,6 +297,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     }
     
     dat <- suppressWarnings(tcplQuery(query = qstring, db = getOption("TCPL_DB"), tbl = tbls))
+    
+    # remove duplicate columns as a result of joins
+    dat <- dat[, which(duplicated(names(dat))) := NULL]
+    # remove unnecessary columns from output
+    dat <- dat %>% select(-contains(c("created_date", "modified_date", "modified_by", "actp", "tmpi", "bval", "pval", "..")))
     
     # pivot table so 1 id per return and only return added fields
     if(add.fld & check_tcpl_db_schema()){

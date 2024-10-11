@@ -35,19 +35,10 @@
 #' pointsize = 10, units = "in"
 #' 
 #' @examples 
-#' ## Store the current config settings, so they can be reloaded at the end 
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfDefault()
-#'  
-#' d1 <- tcplLoadData(lvl = 1, fld = "acid", val = 1)
 #' \dontrun{
+#' d1 <- tcplLoadData(lvl = 1, fld = "acid", val = 1)
 #' tcplPlotPlate(dat = d1, apid = "09Apr2014.Plate.17")
 #' }
-#' 
-#' ## Reset configuration
-#' options(conf_store)
-#'  
 #' @import data.table
 #' @importFrom stats quantile
 #' @export
@@ -58,6 +49,9 @@ tcplPlotPlate <- function(dat, apid, id = NULL, quant = c(0.001, 0.999)) {
   ## Variable-binding to pass R CMD Check
   wllq <- aid <- wllt <- cndx <- nwll <- rown <- rowi <- coln <- NULL
   coli <- anm <- NULL
+  
+  if (check_tcpl_db_schema()) stop("This function is no longer supported in this
+                                   version of invitrodb. Consider tcplPlot() instead.")
   
   if (length(apid) != 1) stop("'apid' must be of length 1.")
   ap <- apid

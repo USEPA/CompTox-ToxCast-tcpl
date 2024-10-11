@@ -7,6 +7,15 @@
 
 tcplMthdList <- function(lvl, type = "mc") {
   
+  if (length(lvl) > 1) stop("'lvl' must be an integer of length 1.")
+  if (!type %in% c("mc", "sc")) stop("Invalid 'type' value.")
+  if (type == "mc" & !lvl %in% c(2, 3,4, 5, 6)) stop("Invalid 'lvl' value.")
+  if (type == "sc" & !lvl %in% 1:2) stop("Invalid 'lvl' value.")
+  
+  if(getOption("TCPL_DRVR") == "API"){
+    return(tcpl::mthd_list_defaults[grep(paste0(type,lvl), names(tcpl::mthd_list_defaults))][[1]])
+  }
+  
   tbl <- paste0(type, lvl, "_methods")
   qstring <- paste0("SELECT * FROM ", tbl, ";")
   

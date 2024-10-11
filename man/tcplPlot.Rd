@@ -6,10 +6,11 @@
  Generic Plotting Function for tcpl}
 \usage{
 tcplPlot(
-  lvl = 5,
+  dat = NULL,
+  type = "mc",
   fld = "m4id",
   val = NULL,
-  type = "mc",
+  compare.val = NULL,
   by = NULL,
   output = c("console", "pdf", "png", "jpg", "svg", "tiff"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
@@ -17,23 +18,35 @@ tcplPlot(
   verbose = FALSE,
   nrow = NULL,
   ncol = NULL,
-  dpi = 600
+  dpi = 600,
+  flags = FALSE,
+  yuniform = FALSE,
+  yrange = c(NA, NA)
 )
 }
 \arguments{
-\item{lvl}{Integer of length 1, the level of data to load.}
+\item{dat}{data.table containing plot-prepared data, used for stand-alone 
+(non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
+(generating comparison plots across multiple database configurations) and not
+required. See \code{tcplPlotLoadData}.}
+
+\item{type}{Character of length 1, the data type, "sc" or "mc".}
 
 \item{fld}{Character, the field(s) to query on.}
 
 \item{val}{List, vectors of values for each field to query on. Must be in
 the same order as 'fld'.}
 
-\item{type}{Character of length 1, the data type, "sc" or "mc".}
+\item{compare.val}{List, vectors of values for each field to query on to 
+compare with val. Must be in the same order as 'fld'. Must have the same
+length as val (1:1 comparison). Must be set to compare plots; otherwise leave
+NULL}
 
 \item{by}{Parameter to divide files into e.g. "aeid".}
 
-\item{output}{How should the plot be presented. To view the plot in application,
-use "console", or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".}
+\item{output}{How should the plot be presented. To work with the plot in 
+environment, use "ggplot"; to interact with the plot in application, use 
+"console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".}
 
 \item{fileprefix}{Prefix of file when saving.}
 
@@ -49,31 +62,30 @@ is included with the plot.}
 \item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose.}
 
 \item{dpi}{Integer, image print resolution. By default 600.}
+
+\item{flags}{Boolean, by default FALSE. If TRUE, level 6 flags are displayed
+below annotations on plot}
+
+\item{yuniform}{Boolean, by default FALSE. If TRUE, all plots will have uniform
+y axis scaling, automatically determined.}
+
+\item{yrange}{Integer of length 2, for directly setting the y-axis range, 
+c(<min>,<max>). By default, c(NA,NA).}
 }
 \description{
-\code{tcplLoadData} queries the tcpl databases and returns a plot
+\code{tcplPlot} queries the tcpl databases and returns a plot
 for the given level and data type.
 }
 \details{
-The data type can be either 'mc' for mutliple concentration data, or 'sc'
+The data type can be either 'mc' for multiple concentration data, or 'sc'
 for single concentration data. Multiple concentration data will be loaded
 into the 'mc' tables, whereas the single concentration will be loaded into
 the 'sc' tables.
 
-Setting 'lvl' to "agg" will return an aggregate table containing the m4id
-with the concentration-response data and m3id to map back to well-level
-information.
-
 Leaving \code{fld} NULL will return all data.
 }
 \examples{
-## Store the current config settings, so they can be reloaded at the end
-## of the examples
-conf_store <- tcplConfList()
-tcplConfExample()
-
-tcplPlot(lvl = 4, fld = "m4id", val = c(18609966)) ## Create a level 4 plot
-
-## Reset configuration
-options(conf_store)
+\dontrun{
+tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
+}
 }

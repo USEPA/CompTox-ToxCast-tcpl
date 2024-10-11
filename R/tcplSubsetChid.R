@@ -14,7 +14,7 @@
 #' @param flag Integer, the mc6_mthd_id values to go into the flag count, see
 #' details for more information
 #' @param type Character of length 1, the data type, "sc" or "mc"
-#' @param export_ready Boolean, default TRUE, should only export ready 1 values be included in calculation
+#' @param export_ready Boolean, default FALSE, should only export ready 1 values be included in calculation
 #'
 #' @details
 #' \code{tcplSubsetChid} is intended to work with level 5 data that has
@@ -23,7 +23,7 @@
 #' To select a single sample, first a "consensus hit-call" is made by majority
 #' rule, with ties defaulting to active. After the chemical-wise hit call is
 #' made, the samples corresponding to to chemical-wise hit call are logically
-#' ordered using the fit category, the number of the flags, and the modl_ga,
+#' ordered using the fit category, the number of the flags, and AC50 (or modl_ga),
 #' then the first sample for every chemical is selected.
 #'
 #' The \code{flag} param can be used to specify a subset of flags to be used in
@@ -32,11 +32,7 @@
 #' considering any flags.
 #'
 #' @examples
-#' ## Store the current config settings, so they can be reloaded at the end
-#' ## of the examples
-#' conf_store <- tcplConfList()
-#' tcplConfExample()
-#'
+#' \dontrun{
 #' ## Load the example level 5 data
 #' d1 <- tcplLoadData(lvl = 5, fld = "aeid", val = 797)
 #' d1 <- tcplPrepOtpt(d1)
@@ -49,9 +45,7 @@
 #' ## all equal. Therefore, if the flags are ignored, the selected sample will
 #' ## be the sample with the lowest modl_ga.
 #' tcplSubsetChid(dat = d2, flag = FALSE)[, list(m4id, modl_ga)]
-#'
-#' ## Reset configuration
-#' options(conf_store)
+#' }
 #'
 #' @return A data.table with a single sample for every given chemical-assay
 #' pair.
@@ -61,10 +55,10 @@
 #' @import data.table
 #' @export
 
-tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = TRUE) {
+tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = FALSE) {
   ## Variable-binding to pass R CMD Check
   chit <- hitc <- aeid <- casn <- fitc <- fitc.ordr <- m4id <- nflg <- NULL
-  chid <- logc <- minc <- NULL
+  chid <- conc <- minc <- NULL
 
   if (!type %in% c("mc", "sc")) {
     stop("type must be sc (single concentration) or mc (multi-concentration)")
@@ -152,9 +146,10 @@ tcplSubsetChid <- function(dat, flag = TRUE, type = "mc", export_ready = TRUE) {
     setkey(dat, "s2id")
     dat <- dat[dat1]
 
-    setkeyv(dat, c("aeid", "chid", "logc"))
-    dat[, minc := min(logc), by = list(aeid, chid)]
-    dat <- dat[logc == minc]
+    concvar <- if ("conc" %in% colnames(dat)) "conc" else "logc"
+    setkeyv(dat, c("aeid", "chid", concvar))
+    dat[, minc := min(get(concvar)), by = list(aeid, chid)]
+    dat <- dat[get(concvar) == minc]
     dat <- unique(dat[, c("spid", "chid", "casn", "chnm", "dsstox_substance_id", "code", "aeid", "aenm", "s2id", "bmad", "max_med", "hitc", "coff", "resp_unit")])
     setkeyv(dat, c("aeid", "chid", "max_med"))
 

@@ -18,6 +18,9 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
                           drvr = getOption("TCPL_DRVR"), tbl=NULL, delete=F) {
   
   #Check for valid inputs
+  if (getOption("TCPL_DRVR") == "API") {
+    stop("'API' driver not supported in tcplSendQuery.")
+  }
   if (length(query) != 1 || !is(query,"character")) {
     stop("The input 'query' must be a character of length one.")
   }
@@ -47,28 +50,6 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
     
   }
   
-  if (getOption("TCPL_DRVR") == "tcplLite") {
-    db_pars <- "Just running tcplLite, we're OK"
-    
-    for (t in tbl) {
-      fpath <- paste(db, t, sep='/')
-      fpath <- paste(fpath, 'csv', sep='.')
-      assign(t, read.table(fpath, header=T, sep=','))
-    }
-
-    temp <- as.data.table(sqldf(query, stringsAsFactors=F))
-    
-    if (delete == T) {
-      if (length(tbl) > 1) {
-        stop("Can't execute delete on more that one table")
-      }
-      db_pars <- db
-      fpath <- paste(db, tbl, sep='/')
-      fpath <- paste(fpath, 'csv', sep='.')
-      write.table(temp, file=fpath, append=F, row.names=F, sep=',', col.names=T) # Need to rewrite whole table
-    }
-  }
-  
   if (is.null(db_pars)) {
     
     stop(getOption("TCPL_DRVR"), " is not a supported database system. See ",
@@ -77,6 +58,10 @@ tcplSendQuery <- function(query, db = getOption("TCPL_DB"),
   }
   
   if (drvr == 'MySQL') {
+    if("RMySQL" %in% loadedNamespaces()){
+      unloadNamespace("RMySQL")
+      warning("'RMySQL' package is not supported with tcpl and has been detached.")
+    }
     dbcon <- do.call(dbConnect, db_pars)
     temp <- try(dbSendQuery(dbcon, query), silent = TRUE)
     if (!is(temp, "try-error")) dbClearResult(temp)

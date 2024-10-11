@@ -25,7 +25,7 @@
 mc4 <- function(ae, wr = FALSE) {
 
   ## Variable-binding to pass R CMD Check
-  bmad <- resp <- cndx <- wllt <- logc <- spid <- cnst_aic <- hill_aic <- NULL
+  bmad <- resp <- cndx <- wllt <- logc <- conc <- spid <- cnst_aic <- hill_aic <- NULL
   gnls_aic <- NULL
 
   owarn <- getOption("warn")
@@ -50,7 +50,12 @@ mc4 <- function(ae, wr = FALSE) {
 
   ## Load level 3 data
   dat <- tcplLoadData(lvl = 3L, type = "mc", fld = "aeid", val = ae)
-  dat <- dat[wllt %in% c("t", "c", "o", "n","z")]
+  
+  ## filter out na concentration data
+  if (nrow(dat[is.na(conc)]>0)){
+    warning("SPID(s): ",unique(dat[is.na(conc)]$spid)," removed from further processing due to null concentration data")
+  }
+  dat <- dat[!is.na(conc)]
 
   ## Check if any level 3 data was loaded
   if (nrow(dat) == 0) {
@@ -99,19 +104,15 @@ mc4 <- function(ae, wr = FALSE) {
   if (check_tcpl_db_schema()) {
     # if we're using v3 schema we want to tcplfit2
 
-    # check to see if we specified fit models or bidirectional for tcplfit2
+    # check to see if we specified fit models for tcplfit2
     fitmodels <- c("cnst", "hill", "gnls", "poly1", "poly2", "pow", "exp2", "exp3", "exp4", "exp5")
-    bidirectional <- TRUE
     if ("fitmodels" %in% names(dat)) {
       #extract the fitmodels from dat and pass to fitting
       fitmodels <- unique(dat$fitmodels)[[1]]
 
     }
-    if("bidirectional" %in% names(dat)){
-      bidirectional <- unique(dat$bidirectional)[[1]]
-    }
     
-    dat <- tcplFit2(dat, fitmodels = fitmodels,bidirectional = bidirectional )
+    dat <- tcplFit2(dat, fitmodels = fitmodels)
     
     
     

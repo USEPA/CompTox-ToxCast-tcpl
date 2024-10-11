@@ -13,11 +13,21 @@
 #' @return A data.table containing level 3 correction methods for the given
 #' spids.
 #' 
-#' @seealso \code{\link{tcplQuery}}, \code{\link{data.table}}
+#' @seealso \code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 #' 
 #' @import data.table
+#' @export
 
 tcplLoadConcUnit <- function(spid) {
+  
+  if (getOption("TCPL_DRVR") == "API") {
+    dat <- tcplQueryAPI(resource = "data", fld = "spid", val = spid, return_flds = c("spid", "tested_conc_unit"))
+    if (length(colnames(dat))) {
+      setnames(dat, "tested_conc_unit", "conc_unit")
+      setorder(dat, "spid")
+    }
+    return(unique(dat, by = c("spid", "conc_unit")))
+  }
   
   qformat <- 
     '

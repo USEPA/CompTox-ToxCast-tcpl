@@ -61,6 +61,7 @@
 #' \subsection{Percent of Control Methods}{
 #'  \describe{
 #'   \item{pc0.88}{Add a cutoff value of 0.88. Typically for percent of control data.}
+#'   \item{pc16}{Add a cutoff value of 16. Typically for percent of control data.}
 #'   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
 #'   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
 #'   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
@@ -96,8 +97,12 @@
 #'  \describe{
 #'   \item{ow_bmad_nwells}{Overwrite the default baseline median absolute value (bmad) with a bmad 
 #'   calculated using neutral control wells (wllt = n).}
-#'   \item{ow_bidirectional_false}{Overwrite the max_med and max_tmp values, which were calculated 
-#'   using absolute value, to a calculation not using absolute value for non-bidirectional data.}
+#'   \item{ow_bidirectional_gain}{Where responses only in the positive direction are biologically 
+#'   relevant, overwrite the max_med and max_tmp values, which were calculated using absolute 
+#'   value, to a calculation using a true maximum for uni-directional data.}
+#'   \item{ow_bidirectional_loss}{Where responses only in the negative direction are biologically 
+#'   relevant, overwrite the max_med and max_tmp values, which were calculated using absolute 
+#'   value, to a calculation using a true minimum for uni-directional data.}
 #'  }
 #' }
 #' 
@@ -193,12 +198,19 @@ sc2_mthds <- function() {
       
     },
     
-    ow_bidirectional_false = function() {
+    ow_bidirectional_gain = function() {
       
       e1 <- bquote(dat[ , c("max_med","max_tmp") := list(max(tmp), tmp[which.max(tmp)]), by = spid])
       list(e1)
       
     },
+    
+    ow_bidirectional_loss = function() {
+      
+      e1 <- bquote(dat[ , c("max_med","max_tmp") := list(abs(min(tmp)), tmp[which.min(tmp)]), by = spid])
+      list(e1)
+      
+    }, 
     
     bmad2 = function() {
       
@@ -232,8 +244,14 @@ sc2_mthds <- function() {
       e1 <- bquote(coff <- c(coff, dat[ , unique(bmad)*1.5]))
       list(e1)
       
+     },
+    
+    pc16 = function() {
+      
+      e1 <- bquote(coff <- c(coff, 16))
+      list(e1)
+      
     }
-
   )
 }
 

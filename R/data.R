@@ -1,7 +1,7 @@
 #' A subset of ToxCast data showing changes in transcription factor activity for multiple targets.
 #'
 #' The example dataset is used to illustrate how the user can pipeline single-concentration
-#' data from chemical screening using tcplLite.
+#' data from chemical screening using tcpl.
 #'
 #' @format A data frame with 320 rows and 10 variables:
 #' \describe{
@@ -22,7 +22,7 @@
 #' A subset of ToxCast data showing changes in the activity of the intracellular estrogen receptor.
 #'
 #' The example dataset is used to illustrate how the user can pipeline multiple-concentration
-#' data from chemical screening using tcplLite.
+#' data from chemical screening using tcpl.
 #'
 #' @format A data frame with 14183 rows and 10 variables:
 #' \describe{
@@ -39,21 +39,6 @@
 #' }
 #' @source ToxCast database
 "mcdat"
-#' Chemical library of tested chemicals in the example datasets with the corresponding sample IDs.
-#'
-#'
-#' @format A data frame with 6 rows and 6 variables:
-#' \describe{
-#'  \item{spid}{sample ID}
-#'   \item{casn}{Chemical Abstract Service(CAS) number}
-#'    \item{chnm}{chemical name}
-#'     \item{dsstox_substance_id}{chemical-specific DTXSID}
-#'      \item{code}{CAS number compressed into numeric string}
-#'       \item{chid}{unique chemical ID number for tcpl}
-#'
-#' }
-#' @source ToxCast database
-"chdat"
 
 
 #' List with multi-concentration data for the vignette
@@ -470,3 +455,292 @@
 #' }
 #' @source ToxCast database
 "invitrodb_dd"
+
+
+#' Lists of column names returned from tcplLoadData invitrodb v4.1 (same as CCTE
+#' Bioactivity API version).
+#' @format A list with 12 items:
+#' \describe{
+#'   \item{mc0}{Column names returned requesting mc lvl 0 data}
+#'   \item{mc1}{Column names returned requesting mc lvl 1 data}
+#'   \item{mc2}{Column names returned requesting mc lvl 2 data}
+#'   \item{mc3}{Column names returned requesting mc lvl 3 data}
+#'   \item{mc4}{Column names returned requesting mc lvl 4 data}
+#'   \item{mc5}{Column names returned requesting mc lvl 5 data}
+#'   \item{mc6}{Column names returned requesting mc lvl 6 data}
+#'   \item{mcagg}{Column names returned requesting mc lvl "agg" data}
+#'   \item{sc0}{Column names returned requesting sc lvl 0 data}
+#'   \item{sc1}{Column names returned requesting sc lvl 1 data}
+#'   \item{sc2}{Column names returned requesting sc lvl 2 data}
+#'   \item{scagg}{Column names returned requesting sc lvl "agg" data}
+#' }
+#' @source ToxCast database
+"load_data_columns"
+
+
+#' List of lists containing queries sent to tcplQuery associated with each test
+#' case. Each list also contains the associated ids with each case. Only meant
+#' to be used with automated testing with mocking for mc data.
+#' @format A list with 30 items:
+#' \describe{
+#'   \item{tcplConfQuery}{Data table with 1 row and 2 columns used for each test
+#'   case for establishing connection using tcplConf. This data table mocks the
+#'   response one would get from connecting with invitrodb.}
+#'   \item{mc0_by_m0id}{List containing the queries used for loading mc0 data by
+#'   m0id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm0id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc0_by_acid}{List containing the queries used for loading mc0 data by
+#'   acid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'acid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc1_by_m1id}{List containing the queries used for loading mc1 data by
+#'   m1id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm1id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc1_by_acid}{List containing the queries used for loading mc1 data by
+#'   acid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'acid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc2_by_m2id}{List containing the queries used for loading mc2 data by
+#'   m2id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm2id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc2_by_acid}{List containing the queries used for loading mc2 data by
+#'   acid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'acid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc3_by_m3id}{List containing the queries used for loading mc3 data by
+#'   m3id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm3id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc3_by_aeid}{List containing the queries used for loading mc3 data by
+#'   aeid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'aeid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc4_by_m4id}{List containing the queries used for loading mc4 data by
+#'   m4id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm4id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc4_by_aeid}{List containing the queries used for loading mc4 data by
+#'   aeid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'aeid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc5_by_m5id}{List containing the queries used for loading mc5 data by
+#'   m5id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm5id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc5_by_aeid}{List containing the queries used for loading mc5 data by
+#'   aeid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'aeid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc6_by_m6id}{List containing the queries used for loading mc6 data by
+#'   m6id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm6id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc6_by_aeid}{List containing the queries used for loading mc6 data by
+#'   aeid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'aeid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc7_by_m7id}{List containing the queries used for loading mc7 data by
+#'   m7id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'm7id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mc7_by_aeid}{List containing the queries used for loading mc7 data by
+#'   aeid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'aeid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{mcagg_by_aeid}{List containing the queries used for loading mc 'agg'
+#'   data by aeid via tcplLoadData. Each query has an associated data table 
+#'   response for mocking an actual connection. Contains one 'aeid' labeled item
+#'   storing the id used to load the data, for use in tests.}
+#'   \item{plot_single_m4id}{List containing the queries used for loading and
+#'   plotting mc data by m4id via tcplPlot. Each query has an associated data
+#'   table response for mocking an actual connection. Contains one 'm4id'
+#'   labeled item storing the id used to load the data, for use in tests.}
+#'   \item{plot_multiple_m4id}{List containing the queries used for loading and
+#'   plotting mc data by multiple m4ids via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains
+#'   one 'm4id' labeled item storing the ids used to load the data, for use in
+#'   tests.}
+#'   \item{plot_single_aeid}{List containing the queries used for loading and
+#'   plotting mc data by aeid via tcplPlot. Each query has an associated data
+#'   table response for mocking an actual connection. Contains one 'aeid'
+#'   labeled item storing the id used to load the data, for use in tests.}
+#'   \item{plot_multiple_aeid}{List containing the queries used for loading and
+#'   plotting mc data by multiple aeids via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains
+#'   one 'aeid' labeled item storing the ids used to load the data, for use in
+#'   tests.}
+#'   \item{plot_single_spid}{List containing the queries used for loading and
+#'   plotting mc data by spid/aeid via tcplPlot. Each query has an associated
+#'   data table response for mocking an actual connection. Contains 'spid' and
+#'   'aeid' labeled items storing the ids used to load the data, for use in
+#'   tests.}
+#'   \item{plot_multiple_spid}{List containing the queries used for loading and
+#'   plotting mc data by multiple spids/aeid via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains
+#'   'spid' and 'aeid' labeled items storing the ids used to load the data, for
+#'   use in tests.}
+#'   \item{plot_single_m4id_compare}{List containing the queries used for 
+#'   loading and plotting compared mc data by m4id via tcplPlot. Each query has
+#'   an associated data table response for mocking an actual connection.
+#'   Contains 'm4id' and 'compare.m4id' labeled items storing the ids used to
+#'   load the data, for use in tests.}
+#'   \item{plot_multiple_m4id_compare}{List containing the queries used for loading and
+#'   plotting compared mc data by multiple m4ids via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains 
+#'   'm4id' and 'compare.m4id' labeled items storing the ids used to load the 
+#'   data, for use in tests.}
+#'   \item{plot_single_aeid_compare}{List containing the queries used for
+#'   loading and plotting compared mc data by aeid via tcplPlot. Each query has
+#'   an associated data table response for mocking an actual connection.
+#'   Contains 'aeid' and 'compare.aeid' labeled items storing the ids used to
+#'   load the data, for use in tests.}
+#'   \item{plot_multiple_aeid_compare}{List containing the queries used for
+#'   loading and plotting compared mc data by multiple aeids via tcplPlot. Each
+#'   query has an associated data table response for mocking an actual
+#'   connection. Contains 'aeid' and 'compare.aeid' labeled items storing the
+#'   ids used to load the data, for use in tests.}
+#'   \item{plot_single_spid_compare}{List containing the queries used for
+#'   loading and plotting compared mc data by spid/aeid via tcplPlot. Each query
+#'   has an associated data table response for mocking an actual connection.
+#'   Contains 'spid', 'compare.spid', 'aeid', and 'compare.aeid' labeled items
+#'   storing the ids used to load the data, for use in tests.}
+#'   \item{plot_multiple_spid_compare}{List containing the queries used for
+#'   loading and plotting compared mc data by multiple spids/aeid via tcplPlot.
+#'   Each query has an associated data table response for mocking an actual
+#'   connection. Contains 'spid', 'compare.spid', 'aeid', and 'compare.aeid'
+#'   labeled items storing the ids used to load the data, for use in tests.}
+#' }
+#' @source ToxCast database
+"mc_test"
+
+
+#' List of lists containing queries sent to tcplQuery associated with each test
+#' case. Each list also contains the associated ids with each case. Only meant
+#' to be used with automated testing with mocking for sc data.
+#' @format A list with 20 items:
+#' \describe{
+#'   \item{tcplConfQuery}{Data table with 1 row and 2 columns used for each test
+#'   case for establishing connection using tcplConf. This data table mocks the
+#'   response one would get from connecting with invitrodb.}
+#'   \item{sc0_by_s0id}{List containing the queries used for loading sc0 data by
+#'   s0id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 's0id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{sc0_by_acid}{List containing the queries used for loading sc0 data by
+#'   acid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'acid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{sc1_by_s1id}{List containing the queries used for loading sc1 data by
+#'   s1id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 's1id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{sc1_by_acid}{List containing the queries used for loading sc1 data by
+#'   acid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'acid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{sc2_by_s2id}{List containing the queries used for loading sc2 data by
+#'   s2id via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 's2id' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{sc2_by_aeid}{List containing the queries used for loading sc2 data by
+#'   aeid via tcplLoadData. Each query has an associated data table response for
+#'   mocking an actual connection. Contains one 'aeid' labeled item storing the
+#'   id used to load the data, for use in tests.}
+#'   \item{scagg_by_aeid}{List containing the queries used for loading sc 'agg'
+#'   data by aeid via tcplLoadData. Each query has an associated data table 
+#'   response for mocking an actual connection. Contains one 'aeid' labeled item
+#'   storing the id used to load the data, for use in tests.}
+#'   \item{plot_single_s2id}{List containing the queries used for loading and
+#'   plotting sc data by s2id via tcplPlot. Each query has an associated data
+#'   table response for mocking an actual connection. Contains one 's2id'
+#'   labeled item storing the id used to load the data, for use in tests.}
+#'   \item{plot_multiple_s2id}{List containing the queries used for loading and
+#'   plotting sc data by multiple s2ids via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains
+#'   one 's2id' labeled item storing the ids used to load the data, for use in
+#'   tests.}
+#'   \item{plot_single_aeid}{List containing the queries used for loading and
+#'   plotting sc data by aeid via tcplPlot. Each query has an associated data
+#'   table response for mocking an actual connection. Contains one 'aeid'
+#'   labeled item storing the id used to load the data, for use in tests.}
+#'   \item{plot_multiple_aeid}{List containing the queries used for loading and
+#'   plotting sc data by multiple aeids via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains
+#'   one 'aeid' labeled item storing the ids used to load the data, for use in
+#'   tests.}
+#'   \item{plot_single_spid}{List containing the queries used for loading and
+#'   plotting sc data by spid/aeid via tcplPlot. Each query has an associated
+#'   data table response for mocking an actual connection. Contains 'spid' and
+#'   'aeid' labeled items storing the ids used to load the data, for use in
+#'   tests.}
+#'   \item{plot_multiple_spid}{List containing the queries used for loading and
+#'   plotting sc data by multiple spids/aeid via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains
+#'   'spid' and 'aeid' labeled items storing the ids used to load the data, for
+#'   use in tests.}
+#'   \item{plot_single_s2id_compare}{List containing the queries used for 
+#'   loading and plotting compared sc data by s2id via tcplPlot. Each query has
+#'   an associated data table response for mocking an actual connection.
+#'   Contains 's2id' and 'compare.s2id' labeled items storing the ids used to
+#'   load the data, for use in tests.}
+#'   \item{plot_multiple_s2id_compare}{List containing the queries used for loading and
+#'   plotting compared sc data by multiple s2ids via tcplPlot. Each query has an
+#'   associated data table response for mocking an actual connection. Contains 
+#'   's2id' and 'compare.s2id' labeled items storing the ids used to load the 
+#'   data, for use in tests.}
+#'   \item{plot_single_aeid_compare}{List containing the queries used for
+#'   loading and plotting compared sc data by aeid via tcplPlot. Each query has
+#'   an associated data table response for mocking an actual connection.
+#'   Contains 'aeid' and 'compare.aeid' labeled items storing the ids used to
+#'   load the data, for use in tests.}
+#'   \item{plot_multiple_aeid_compare}{List containing the queries used for
+#'   loading and plotting compared sc data by multiple aeids via tcplPlot. Each
+#'   query has an associated data table response for mocking an actual
+#'   connection. Contains 'aeid' and 'compare.aeid' labeled items storing the
+#'   ids used to load the data, for use in tests.}
+#'   \item{plot_single_spid_compare}{List containing the queries used for
+#'   loading and plotting compared sc data by spid/aeid via tcplPlot. Each query
+#'   has an associated data table response for mocking an actual connection.
+#'   Contains 'spid', 'compare.spid', 'aeid', and 'compare.aeid' labeled items
+#'   storing the ids used to load the data, for use in tests.}
+#'   \item{plot_multiple_spid_compare}{List containing the queries used for
+#'   loading and plotting compared sc data by multiple spids/aeid via tcplPlot.
+#'   Each query has an associated data table response for mocking an actual
+#'   connection. Contains 'spid', 'compare.spid', 'aeid', and 'compare.aeid'
+#'   labeled items storing the ids used to load the data, for use in tests.}
+#' }
+#' @source ToxCast database
+"sc_test"
+
+
+#' List containing ids used for different automated tests of tcpl integration
+#' with the CTX APIs, randomly selected from what is available via API.
+#' @format A list with 7 items:
+#' \describe{
+#'   \item{aeid}{Randomly selected assay component endpoint id}
+#'   \item{acid}{Assay component id associated with the above aeid}
+#'   \item{aid}{Assay id associated with the above aeid}
+#'   \item{asid}{Assay source id associated with the above aeid}
+#'   \item{dtxsid}{dsstox substance id of one sample from the above aeid}
+#'   \item{spid}{Sample id of one (the same) sample from the above aeid}
+#'   \item{m4id}{Level 4 id of one (the same) sample from the above aeid}
+#' }
+#' @source CTX Bioactivity API
+"test_api"
+
+#' Lists of data frames returned from tcplMthdList invitrodb v4.2
+#' @format A list with 7 items:
+#' \describe{
+#'   \item{mc2}{displays the available methods for mc lvl 2 data}
+#'   \item{mc3}{displays the available methods for mc lvl 3 data}
+#'   \item{mc4}{displays the available methods for mc lvl 4 data}
+#'   \item{mc5}{displays the available methods for mc lvl 5 data}
+#'   \item{mc6}{displays the available methods for mc lvl 6 data}
+#'   \item{sc1}{displays the available methods for sc lvl 1 data}
+#'   \item{sc2}{displays the available methods for sc lvl 2 data}
+#' }
+#' @source ToxCast database
+"mthd_list_defaults"

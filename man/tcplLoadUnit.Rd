@@ -18,5 +18,5 @@ aeids.
 with the response units for the given assay endpoint ids (aeid).
 }
 \seealso{
-\code{\link{tcplQuery}}, \code{\link{data.table}}
+\code{\link{tcplQuery}}, \code{\link[data.table]{data.table}}
 }

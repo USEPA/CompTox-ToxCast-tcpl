@@ -7,8 +7,8 @@
 
 tcplConfDefault <- function () {
   
-  TCPLlite <- file.path(system.file(package = "tcpl"), "csv")
-  tcplConf(db = TCPLlite, user = NA, host = NA, drvr = "tcplLite")
+  tcpl_key <- "01cbaf22-904f-11ee-954e-325096b39f47"
+  tcplConf(db = NA, user = NA, pass = tcpl_key, host = NULL, drvr = "API")
   
 }
 
