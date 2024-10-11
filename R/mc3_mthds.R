@@ -692,7 +692,15 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)), pval := -100,
                        by=list(aeid)])
       list(e1)
-      }
+      },
+    
+    resp.censormed.neg25 = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), med := median(resp), by=list(aeid,spid,conc)])
+      e2 <- bquote(dat <- dat[med >= -25])
+      e3 <- bquote(dat[ , med := NULL])
+      list(e1,e2,e3)
+    }
     
   
     
