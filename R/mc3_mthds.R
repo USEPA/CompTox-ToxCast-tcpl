@@ -185,6 +185,8 @@
 #'      \eqn{resp=cval/bval-1}{resp = cval/bval - 1}. Typically used for increasing responses.}
 #'     \item{resp.mult100}{Multiply the normalized response value (resp) by 100; 
 #'      \eqn{100*resp}{100*resp}.}
+#'    `\item{resp.censormed.neg25}{Censor (remove) response values from 
+#'      concentrations which median falls below -25.}
 #'   }
 #' }
 #'
@@ -692,7 +694,15 @@ mc3_mthds <- function() {
       e1 <- bquote(dat[J(.(aeids)), pval := -100,
                        by=list(aeid)])
       list(e1)
-      }
+      },
+    
+    resp.censormed.neg25 = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), med := median(resp), by=list(aeid,spid,conc)])
+      e2 <- bquote(dat <- dat[med >= -25])
+      e3 <- bquote(dat[ , med := NULL])
+      list(e1,e2,e3)
+    }
     
   
     
