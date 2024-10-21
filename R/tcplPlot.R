@@ -126,8 +126,15 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       ncol <- ifelse(!verbose | type == "sc",3,2)
     }
     
-    
-    
+    # Add a condition to check if compare.val is set and the number of plots is greater than 1
+    if (!is.null(compare.val) && nrow(dat) > 1) {
+      if (output == "console") {
+        stop("More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat))
+      }
+      if (output == "pdf" && multi == FALSE) {
+        nrow = ncol = 1
+      }
+    }
     
     if (nrow(dat[compare == FALSE]) == 1) {
       # plot single graph
@@ -1206,7 +1213,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     yrange[1] <- min(dat$resp_min, dat$coff, yrange[1], unlist(dat$resp), 
                      compare.dat$resp_min, compare.dat$coff, unlist(compare.dat$resp))
     yrange[2] <- max(dat$resp_max, dat$coff, yrange[2], unlist(dat$resp), 
-                     compare.dat$resp_max, compare.dat$coff, unlist(compare.dat$resp))
+                     compare.dat$resp_max, dat$coff, unlist(compare.dat$resp))
   }
   
   check_wllt <- function(data) {
