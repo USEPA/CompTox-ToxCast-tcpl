@@ -122,13 +122,31 @@ mc5 <- function(ae, wr = FALSE) {
       invisible(rapply(exprs, eval, envir = fenv))
     }
     
-    # if we're using v3 schema we want to tcplfit2
-    dat <- tcplHit2(dat, coff = cutoff)
+    ## Complete the loec calculations
+    if (loec.mthd) {
+      
+      all_resp_gt_conc <-function(resp) {
+        # all resp > coff
+        return(as.integer(all(abs(resp) > cutoff))) # All responses must be greater than coff
+      }
+      
+      mc3 <- tcplLoadData(3L, fld='aeid', val=ae, type='mc')
+      
+      mc3[, loec_coff := lapply(.SD, all_resp_gt_conc), by=.(spid, conc), .SDcols = c("resp")]
+      suppressWarnings(mc3[, loec := min(conc[loec_coff == 1]), by = spid]) # Define the loec for each SPID
+      mc3[is.infinite(loec), loec := NA] #convert Inf to NA
+      mc3[, loec_hitc := max(loec_coff), by = spid] # is there a loec? used for hitc
+      mc3 <- mc3[dat, mult='first', on='spid', nomatch=0L]
+      
+      dat <- dat[mc3[,c("spid","loec", "loec_hitc")],on = "spid"]
+      
+    } else {
+      # if we're using v3 schema and not loec method we want to tcplfit2
+      dat <- tcplHit2(dat, coff = cutoff)
+    }
   } else {
     # Legacy fitting
-  
-  
-  
+
   ## Apply the model type
   dat[ , model_type := model_type]
   
@@ -367,6 +385,13 @@ mc5 <- function(ae, wr = FALSE) {
   # apply overwrite methods
   if (nrow(ms_overwrite) > 0) {
     exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
+    fenv <- environment()
+    invisible(rapply(exprs, eval, envir = fenv))
+  }
+  
+  # apply loec.coff 
+  if (loec.mthd) {
+    exprs <- lapply(mthd_funcs[c("loec.coff")], do.call, args = list())
     fenv <- environment()
     invisible(rapply(exprs, eval, envir = fenv))
   }
