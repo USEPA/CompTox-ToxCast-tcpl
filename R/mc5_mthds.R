@@ -355,8 +355,9 @@ mc5_mthds <- function(ae) {
     loec.coff = function() {
       
       e1 <- bquote(dat[, c("modl", "fitc", "model_type", "hitc") := list("loec", 100L, 1, loec_hitc)])
-      e2 <- bquote(dat <- dat[,-c("loec","loec_hitc")])
-      list(e1, e2)
+      e2 <- bquote(dat <- dat |> melt(measure.vars = c("loec"), variable.name = "hit_param", value.name = "hit_val"))
+      e3 <- bquote(dat <- dat[,c("m4id", "aeid", "modl", "hitc", "fitc", "coff", "model_type", "hit_param", "hit_val")])
+      list(e1, e2, e3)
       
     }
 
