@@ -69,6 +69,7 @@ vignette, "Data_processing."
   \item{pc20}{Add a cutoff value of 20. Typically for percent of control data.}
   \item{pc25}{Add a cutoff value of 25. Typically for percent of control data.}
   \item{pc30}{Add a cutoff value of 30. Typically for percent of control data.}
+  \item{pc40}{Add a cutoff value of 40. Typically for percent of control data.}
  }
 }
 

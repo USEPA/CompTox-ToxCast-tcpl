@@ -2212,8 +2212,7 @@ FlagDescription <- c("Flag series if model directionality is questionable, i.e. 
                      square error $(rmse)$ for the series is greater than the cutoff $(coff)$; 
                      $rmse > coff$",
                      "Flag series if borderline activity is suspected based on modeled top 
-                     parameter $(top)$ relative to cutoff $(coff)$; $|top| <= 1.2 * coff$ or 
-                     $|top|>= 0.8 * coff$.",
+                     parameter $(top)$ relative to cutoff $(coff)$; $0.8 * coff <= |top| <= 1.2 * coff$",
                      "Flag series if the average number of replicates per concentration is less than
                      2; $nrep < 2$.",
                      "Flag series if 4 concentrations or less were tested; $nconc <= 4$.",
