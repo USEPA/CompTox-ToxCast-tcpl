@@ -111,8 +111,8 @@ Log Base 2
   \item{maxmed20pct}{Add a cutoff value of 20 percent of the maximum of all endpoint maximal 
   average response values (max_med).}
   \item{coff_2.32}{Add a cutoff value of 2.32.}
-  \item{loec.coff}{Method not yet updated for tcpl implementation. Identify the lowest observed 
-  effective concentration (loec) compared to baseline.}
+  \item{loec.coff}{Set modl to "loec", fitc to 100, model_type to 1, and hitc to loec_hitc -- 
+  if there exists a loec, set to 1, otherwise 0. Reshapes loec into hit_param and hit_val.}
   \item{ow_bidirectional_loss}{Multiply winning model hitcall (hitc) by -1 for models fit in the 
   positive analysis direction. Typically used for endpoints where only negative responses are 
   biologically relevant.}
