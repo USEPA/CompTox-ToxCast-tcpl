@@ -118,7 +118,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
       nrow = ncol = 1
     }
     # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(dat[compare == FALSE]) != 1 && output %in% c("ggplot", "console") && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination.  Set output to pdf or reduce the number of curves to 1. Current number of curves: ", nrow(dat[compare == FALSE]))
+    if(nrow(dat[compare == FALSE]) != 1 && output %in% c("ggplot", "console") && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: ", nrow(dat[compare == FALSE]))
     if(is.null(nrow)){
       nrow <- ifelse(verbose,2,2)
     }
@@ -1392,7 +1392,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
           stringr::str_trunc(paste0(
             ifelse(dat$spid != compare.dat$spid, paste0("SPID:", dat$spid, "  "), ""),
             ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", dat$aeid, "  "), ""),
-            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", dat$aenm, "\n"), "")), 70),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", dat$aenm), "")), 70), "\n",
           "M4ID:", dat$m4id, "  ",
           ifelse(verbose, "", paste0(
             "\nHITC:", paste0(trimws(format(round(dat$hitc, 3), nsmall = 3)))
@@ -1406,7 +1406,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
           stringr::str_trunc(paste0(
             ifelse(dat$spid != compare.dat$spid, paste0("SPID:", compare.dat$spid, "  "), ""),
             ifelse(dat$aeid != compare.dat$aeid, paste0("AEID:", compare.dat$aeid, "  "), ""),
-            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", compare.dat$aenm, "\n"), "")), 70),
+            ifelse(dat$aenm != compare.dat$aenm, paste0("AENM:", compare.dat$aenm), "")), 70), "\n",
           "M4ID:", compare.dat$m4id, "  ",
           ifelse(verbose, "", paste0(
             "\nHITC:", paste0(trimws(format(round(compare.dat$hitc, 3), nsmall = 3)))
@@ -1453,7 +1453,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     t <- tableGrob(details, rows = c("A", "B"))
     ifelse(verbose,
            return(arrangeGrob(gg, t, nrow = 1, widths = 2:1)),
-           return(gg)
+           return(arrangeGrob(gg))
     )
   } else {
     details <- tibble(Hitcall = c(dat$hitc, compare.dat$hitc))
@@ -1461,7 +1461,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     t <- tableGrob(details, rows = c("A", "B"))
     ifelse(verbose,
            return(arrangeGrob(gg, t, ncol = 1, heights = c(4,1))),
-           return(gg)
+           return(arrangeGrob(gg))
     )
   }
 }
