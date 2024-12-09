@@ -154,7 +154,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
         if (is.null(compare.val)) {
           plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
         } else {
-          plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1), MoreArgs = list(verbose = verbose, lvl = lvl, flags = flags, yrange = yrange))
+          plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1), SIMPLIFY = FALSE, MoreArgs = list(verbose = verbose, lvl = lvl, flags = flags, yrange = yrange))
         }
         m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
         if(output=="pdf"){
@@ -1453,7 +1453,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     t <- tableGrob(details, rows = c("A", "B"))
     ifelse(verbose,
            return(arrangeGrob(gg, t, nrow = 1, widths = 2:1)),
-           return(arrangeGrob(gg))
+           return(gg)
     )
   } else {
     details <- tibble(Hitcall = c(dat$hitc, compare.dat$hitc))
@@ -1461,7 +1461,7 @@ tcplggplotCompare <- function(dat, compare.dat, lvl = 5, verbose = FALSE, flags 
     t <- tableGrob(details, rows = c("A", "B"))
     ifelse(verbose,
            return(arrangeGrob(gg, t, ncol = 1, heights = c(4,1))),
-           return(arrangeGrob(gg))
+           return(gg)
     )
   }
 }
