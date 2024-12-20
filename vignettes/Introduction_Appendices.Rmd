@@ -1360,7 +1360,7 @@ mc3 <- tcplPrepOtpt(mc3)
 
 For demonstration purposes, the <font face="CMTT10"> mc_vignette </font> R data object is provided in the package since the vignette is not directly connected to such a database.  The <font face="CMTT10"> mc_vignette </font> object contains a subset of data from levels 3 through 5 from invitrodb  v4.2.  The following code loads the example mc3 data object, then plots the concentration-response series for an example spid with the summary estimates indicated.
 
-```{r fig.align='center',message=FALSE,message=FALSE,fig.dim=c(8,10),eval = FALSE}
+```{r fig.align='center',message=FALSE,message=FALSE,fig.dim=c(8,10),eval = TRUE}
 # Load the example data from the `tcpl` package.
 data(mc_vignette, package = 'tcpl')
 # Allocate the level 3 example data to `mc3`.
