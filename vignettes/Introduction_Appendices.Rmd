@@ -72,7 +72,7 @@ Check out the following publications for additional information on the overall [
 * [Feshuk et al., 2023](https://www.frontiersin.org/journals/toxicology/articles/10.3389/ftox.2023.1275980): The ToxCast pipeline: updates to curve-fitting approaches and database structure
 * [Filer et al.,2017](https://pubmed.ncbi.nlm.nih.gov/27797781/): tcpl: the ToxCast pipeline for high-throughput screening data
 * [Sheffield et al., 2021](https://doi.org/10.1093/bioinformatics/btab779): tcplfit2: an R-language general purpose concentration–response modeling package
-* [Judson et al., 2016](https://doi.org/10.1093/toxsci/kfw148):  Analysis of the Effects of Cell Stress and Cytotoxicity on In Vitro Assay Activity Across a Diverse Chemical and Assay Space
+* [Judson et al., 2016](https://doi.org/10.1093/toxsci/kfw092):  Analysis of the Effects of Cell Stress and Cytotoxicity on In Vitro Assay Activity Across a Diverse Chemical and Assay Space
 
 # Connection Configuration 
 
