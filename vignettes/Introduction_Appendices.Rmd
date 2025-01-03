@@ -1370,6 +1370,9 @@ mc3_example[, logc := log10(conc)]
 # Obtain the MC4 example data.
 mc4_example <- mc_vignette[["mc4"]]
 # Obtain the minimum response observed and the 'logc' group - 'resp_min'.
+
+
+
 level3_min <- mc3_example %>%
   dplyr::group_by(spid, chnm) %>% 
   dplyr::filter(resp == min(resp)) %>% 
@@ -1423,11 +1426,12 @@ B <- mc3_example %>%
   theme(legend.position = 'bottom')
 # Plot the maximum mean & median responses at the related log-concentration -
 #   'max_mean' & 'max_mean_conc'.
+
 C <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc, resp)) +
   geom_point(pch = 1, size = 2) +
-  geom_point(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_point(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(x = log10(max_mean_conc), y = max_mean,
                  col = 'maximum mean response'),
              alpha = 0.75, size = 2)+
@@ -1441,11 +1445,11 @@ C <- mc3_example %>%
   theme(legend.position = 'bottom')
 # Plot the maximum mean & median responses at the related log-concentration -
 #   'max_med' & 'max_med_conc'.
-D <- example %>%
+D <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = ., aes(logc, resp)) +
   geom_point(pch = 1, size = 2) +
-  geom_point(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_point(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(x = log10(max_med_conc), y = max_med,
                  col = "maximum median response"),
              alpha = 0.75, size = 2)+
@@ -1484,11 +1488,11 @@ G <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = ., aes(logc, resp)) +
   geom_point(pch = 1, size = 2) +
-  geom_vline(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_vline(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(xintercept = log10(conc_min),
                  col = 'minimum concentration'),
              lty = "dashed") +
-  geom_vline(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_vline(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(xintercept = log10(conc_max),
                  col = 'maximum concentration'),
              lty = "dashed") +
@@ -1501,10 +1505,20 @@ G <- mc3_example %>%
   theme_bw() +
   theme(legend.position = 'bottom')
 ## Compile Summary Plots in One Figure ##
+# 
+# gridExtra::grid.arrange(
+#   A,
+#   nrow = 3, ncol = 2,
+#   top = mc3[which(mc4[,spid] == "01504209"), aenm]
+# )
+
+# 
+aenm = "TOX21_ERa_BLA_Agonist_ratio"
+spid = "01504209"
 gridExtra::grid.arrange(
   A,B,C,D,E,G,
   nrow = 3, ncol = 2,
-  top = mc3[which(mc4[,spid] == "01504209"), aenm]
+  top = mc3[which(mc4_example[,spid] == "01504209"), aenm]
 )
 ```
 
