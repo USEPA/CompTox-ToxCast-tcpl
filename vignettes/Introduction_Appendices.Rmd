@@ -4,6 +4,7 @@ author: US EPA's Center for Computational Toxicology and Exposure ccte@epa.gov
 output:
   rmdformats::readthedown:
     fig_retina: false
+    code_folding: hide
 params:
   my_css: css/rmdformats.css
 vignette: >
@@ -1505,14 +1506,7 @@ G <- mc3_example %>%
   theme_bw() +
   theme(legend.position = 'bottom')
 ## Compile Summary Plots in One Figure ##
-# 
-# gridExtra::grid.arrange(
-#   A,
-#   nrow = 3, ncol = 2,
-#   top = mc3[which(mc4[,spid] == "01504209"), aenm]
-# )
 
-# 
 aenm = "TOX21_ERa_BLA_Agonist_ratio"
 spid = "01504209"
 gridExtra::grid.arrange(
