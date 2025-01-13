@@ -8,48 +8,63 @@
 #' \code{tcplPlot} queries the tcpl databases and returns a plot
 #' for the given level and data type.
 #'
-#' @param dat data.table containing plot-prepared data, used for stand-alone 
-#' (non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
-#' (generating comparison plots across multiple database configurations) and not
-#' required. See \code{tcplPlotLoadData}.
+#' @param dat data.table or list of data.tables containing plot-prepared data, not
+#' required. Used for stand-alone (ToxCast or other tcplfit2-fit data) plotting or 
+#' advanced plotting (generating comparison plots across multiple database configurations). 
+#' Pass a data.table for default behavior, which will split data by 'compare'. Pass 
+#' a list of data.tables to directly specify the groupings for comparison plots 
+#' where each list item (data.table) will be printed on a single plot. See \code{tcplPlotLoadData}.
 #' @param type Character of length 1, the data type, "sc" or "mc".
-#' @param fld Character, the field(s) to query on.
-#' @param val List, vectors of values for each field to query on. Must be in
-#' the same order as 'fld'.
-#' @param compare.val List, vectors of values for each field to query on to 
-#' compare with val. Must be in the same order as 'fld'. Must have the same
-#' length as val (1:1 comparison). Must be set to compare plots; otherwise leave
-#' NULL
+#' @param fld Character vector, the field(s) to query on.
+#' @param val List containing vectors of values for each field to query on. Must 
+#' be in the same order as 'fld'.
+#' @param compare Character vector, the field(s) to join samples on to create comparison
+#' plots. By default 'm4id'. As every endpoint-sample will always have its own m4id,
+#' this will create individual plots. To create a comparison plot across the same
+#' chemicals, use a chemical identifier like "dsstox_substance_id". Likewise, to 
+#' create a comparison plot across the same sample ids, use "spid". Use "aeid" to
+#' create a comparison plot across the same assay component endpoints, which will 
+#' likely trigger the large compare plot style; for more info see 'group.threshold'. 
+#' To use a custom field to create comparison, 'dat' should be supplied as a data.table 
+#' generated from tcplPlotLoadData with the custom column added. If 'dat' is instead 
+#' a list of data.tables, setting 'compare' will be ignored in favor of the list 
+#' groups.
 #' @param output How should the plot be presented. To work with the plot in 
 #' environment, use "ggplot"; to interact with the plot in application, use 
 #' "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
-#' @param multi Boolean, by default TRUE for "pdf". If multi is TRUE, output
-#' by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
-#' 'verbose' = FALSE.
+#' @param multi Boolean, by default TRUE for "pdf". Prints variable number of plots
+#' per page depending on 'verbose' and 'type' settings.
 #' @param fileprefix Prefix of file when saving.
 #' @param by Parameter to divide files into e.g. "aeid".
-#' @param verbose Boolean, by default FALSE. If TRUE, a table with fitting parameters
-#'  is included with the plot.
+#' @param verbose Boolean, by default TRUE. If TRUE, a table with fitting parameters
+#' is included with the plot. To return or save simple plot, set to FALSE. In comparison
+#' plotting, verbose as TRUE will also return annotation information in a table,
+#' which is hidden using verbose = FALSE. 
 #' @param nrow Integer, number of rows in multiplot. By default 2.
-#' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose.
+#' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose, 
+#' 1 for verbose compare plots.
 #' @param dpi Integer, image print resolution. By default 600.
 #' @param flags Boolean, by default FALSE. If TRUE, level 6 flags are displayed
-#' below annotations on plot
+#' within output.
 #' @param yuniform Boolean, by default FALSE. If TRUE, all plots will have uniform
 #' y axis scaling, automatically determined.
 #' @param yrange Integer of length 2, for directly setting the y-axis range, 
-#' c(<min>,<max>). By default, c(NA,NA).
+#' c(<min>,<max>). By default, c(NA,NA). Plots containing points or curves outside
+#' this range will be expanded to fit.
+#' @param group.fld string column name to group curves by when number of comparison 
+#' curves exceeds group.threshold, default being 'modl' for MC and 'hitc' for SC
+#' @param group.threshold integer of length 1, number of curves where comparison 
+#' plot style should change to instead group by a given group.fld, default of 9 
+#' -- greater than 8 curves
 #'
 #' @details
 #' The data type can be either 'mc' for multiple concentration data, or 'sc'
-#' for single concentration data. Multiple concentration data will be loaded
-#' into the 'mc' tables, whereas the single concentration will be loaded into
-#' the 'sc' tables.
+#' for single concentration data. 
 #'
 #' Leaving \code{fld} NULL will return all data.
 #' @import data.table
 #' @importFrom gridExtra marrangeGrob
-#' @importFrom ggplot2 ggsave
+#' @importFrom ggplot2 ggsave is.ggplot
 #' @importFrom dplyr %>% all_of pull
 #' @importFrom grDevices pdf.options
 #' @export
