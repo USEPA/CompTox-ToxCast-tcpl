@@ -85,6 +85,51 @@ tcplPlotSetYRange <- function(dat, yuniform, yrange, type) {
   yrange
 }
 
+#' tcplPlotCalcAspectRatio
+#'
+#' @param type string of mc or sc indicating if it is single or multi conc
+#' @param verbose should the plot return a table with parameters
+#' @param multi Boolean, by default TRUE for "pdf". Prints variable number of plots
+#' per page depending on 'verbose' and 'type' settings.
+#' @param nrows number of rows each compare plot uses
+#' @param output How should the plot be presented. To work with the plot in 
+#' environment, use "ggplot"; to interact with the plot in application, use 
+#' "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
+#' @param group.threshold integer of length 1, number of curves where plot style
+#' should change to instead group by a given group.fld, default of 9 -- greater 
+#' than 8 curves
+#' @param nrow Integer, number of rows in multiplot. By default 2.
+#' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose, 
+#' 1 for compare plots.
+#' @param flags Boolean, by default FALSE. If TRUE, level 6 flags are displayed
+#' within output.
+#'
+#' @return a list of validated parameters for plotting
+tcplPlotCalcAspectRatio <- function(type = "mc", verbose = FALSE, multi = FALSE, nrows = 0, 
+                                    output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"), 
+                                    group.threshold = 9, nrow = NULL, ncol = NULL, flags = FALSE) {
+  
+  # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
+  if(output == "pdf" && multi == FALSE)
+    nrow <- ncol <- 1
+  w <- 7
+  h <- 5
+  if (verbose && any(nrows > 1 & nrows < group.threshold)) 
+    w <- 12
+  if (type == "sc" && any(!verbose, all(nrows == 1 | nrows >= group.threshold))) 
+    w <- 5
+  if (type == "sc")
+    h <- 6
+  if (verbose && any(nrows > 1 & nrows < group.threshold)) 
+    h <- max(2 + max(nrows[nrows > 1 & nrows < group.threshold]), 6)
+  if (any(nrows > group.threshold) && flags)
+    h <- max(h, 8)
+  if(is.null(nrow))
+    nrow <- max(round(10/h), 1)
+  if(is.null(ncol))
+    ncol <- max(round(14/w), 1)
+  list(w=w,h=h,nrow=nrow,ncol=ncol)
+}
 
 #' tcplPlotValidate
 #'
