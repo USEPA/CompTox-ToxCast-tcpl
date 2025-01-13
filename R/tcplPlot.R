@@ -58,9 +58,11 @@
 #' \dontrun{
 #' tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
 #' }
-tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.val = NULL, by = NULL, output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"), fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, verbose = FALSE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, yuniform = FALSE, yrange=c(NA,NA)) {
-  #variable binding
-  conc_unit <- bmd <- resp <- compare.dat <- lvl <- compare <- NULL
+tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare = "m4id", 
+                     by = NULL, output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"), 
+                     fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, 
+                     verbose = TRUE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, 
+                     yuniform = FALSE, yrange=c(NA,NA), group.fld = NULL, group.threshold = 9) {
   
   #set pdf options
   enc <- pdf.options()$encoding
@@ -68,7 +70,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
   on.exit(pdf.options(encoding = enc))
   
   # Validate vars based on some assumed properties
-  validated_vars <- tcplPlotValidate(type = type,flags = flags,output = output,multi = multi,verbose = verbose)
+  validated_vars <- tcplPlotValidate(dat = dat,type = type,compare = compare,by=by,flags = flags,output = output,multi = multi,verbose = verbose)
   # take list of validated vars and add them to the function's environment
   list2env(validated_vars, envir = environment())
 
@@ -77,97 +79,73 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare.
     # check if user supplied data.  If not, load from db connection
     if(is.null(dat)){
       dat <- tcplPlotLoadData(type = type, fld = fld, val = val, flags = flags) #code defined in tcplPlotUtils.R
-    } 
-    # if user supplies dat we still need to add compare indicator
-    dat <- dat[,compare := FALSE]
-    if(!is.null(compare.val)){
-      compare.dat <- tcplPlotLoadData(type = type,fld = fld, val = compare.val, flags = flags)[,compare := TRUE] #code defined in tcplPlotUtils.R
-      if (nrow(compare.dat) == 0) stop("No compare data for fld/val provided")
+    } else if (!is.data.table(dat)) {
+      dat <- rbindlist(lapply(seq_along(dat), function(i) dat[[i]][,group_from_list_dat := i]))
+      compare <- "group_from_list_dat"
     }
-    
-    # join with given val/compare.val if lengths don't match
-    if (!is.null(compare.val) && nrow(dat) + nrow(compare.dat) != length(val) + length(compare.val)) {
-      val_dt <- as.data.table(val)
-      colnames(val_dt) <- fld
-      compare.val_dt <- as.data.table(compare.val)
-      colnames(compare.val_dt) <- fld
-      dat <- val_dt %>% inner_join(dat, by = fld)
-      compare.dat <- compare.val_dt %>% inner_join(compare.dat, by = fld)
-    } 
-    
-    # if you have compare data, join it back to main datatable
-    if(!is.null(compare.dat)){
-      # check that dat and compare.dat are the same length 
-      if (nrow(dat) != nrow(compare.dat)) stop("'compare.val' must be of equal length to 'val'")
-      dat <- rbind(dat,compare.dat, fill = TRUE)
-    }
-    
-    # preserve user-given order
-    setorder(dat, order)
     
     # set yrange from tcplPlotUtils.R
     yrange <- tcplPlotSetYRange(dat,yuniform,yrange,type)
     
-    # check for null bmd in dat table
-    if (verbose){
-      dat <- dat[is.null(dat$bmd), bmd:=NA]
+    # validate 'by' and 'compare' against available cols from dat
+    if (!is.null(by) && !by %in% colnames(dat)) stop("'by' must be a valid field contained in dat.")
+    if (any(!compare %in% colnames(dat))) stop("'compare' must all be valid field(s) contained in dat.")
+
+    if (is.null(by) || output %in% c("ggplot", "console")) { # split data into tables for plots
+      split_dat <- list(split(dat, by = compare))
+    } else { # split data into lists for files and then tables for plots
+      split_dat <- split(dat, by = c(by,compare), flatten = FALSE)
+      if (length(compare) > 1) { # collapse nested lists 
+        unnest_list <- function(nested_list) {
+          unnested_list <- list()
+          for (element in nested_list) { # if element is still a list, recurse further
+            unnested_list <- c(unnested_list, ifelse(!is.data.table(element),
+                                                     unnest_list(element),
+                                                     list(element)))
+          }
+          return(unnested_list)
+        }
+        split_dat <- lapply(split_dat, function(i) unnest_list(i))
+      }
     }
     
-    # assign nrow = ncol = 1 for output="pdf" and multi=FALSE to plot one plot per page
-    if(nrow(dat) > 1 && output == "pdf" && multi == FALSE) {
-      nrow = ncol = 1
+    n <- 0 # the number of individual plots
+    nrows <- NULL # the number of rows across every plot
+    for (f in split_dat) {
+      n <- n + length(f)
+      for (p in f) {
+        nrows <- c(nrows, nrow(p))
+      }
     }
+    
     # error message for output="console" and multi=FALSE to avoid multiple plots in console
-    if(nrow(dat[compare == FALSE]) != 1 && output %in% c("ggplot", "console") && multi == FALSE) stop("More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: ", nrow(dat[compare == FALSE]))
-    if(is.null(nrow)){
-      nrow <- ifelse(verbose,2,2)
+    if(n > 1 && output %in% c("ggplot", "console")) 
+      stop("More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: ", n)
+    
+    if (output == "console") {
+      # tcplPlotlyplot is the user-defined function used to connect tcpl and plotly packages
+      return(tcplPlotlyPlot(split_dat[[1]][[1]], lvl))
     }
-    if(is.null(ncol)){
-      ncol <- ifelse(!verbose | type == "sc",3,2)
-    }
     
+    aspect_ratio_vars <- tcplPlotCalcAspectRatio(type=type, verbose=verbose, multi = multi, 
+                                                 nrows = nrows, nrow=nrow, ncol=ncol, flags=flags,
+                                                 group.threshold=group.threshold, output = output)
+    list2env(aspect_ratio_vars, envir = environment())
     
-    
-    
-    if (nrow(dat[compare == FALSE]) == 1) {
-      if (output[1] == "console") {
-        # tcplPlotlyplot is the user-defined function found in tcplPlot.R file used to connect tcpl and plotly packages
-        return(tcplPlotlyPlot(dat, lvl))
+    for (f in split_dat) {
+      plot_list <- lapply(f, tcplggplot2, type = type, compare = compare, verbose = verbose, flags = flags, 
+                          yrange = yrange, group.fld = group.fld, group.threshold = group.threshold)
+      if (output == "ggplot") {
+        if (!is.ggplot(plot_list[[1]])) message("ggplot and verbose table arranged into one grob. To work with a simple ggplot object, set `verbose = FALSE` and 'flags = FALSE'.")
+        return(plot_list[[1]])
+      }
+      m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
+      if(output=="pdf"){
+        ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",unique(rbindlist(f)[[by]]))), ".pdf"), m1, width = w*ncol, height = h*nrow)
       } else {
-        # tcplggplot is the user-defined function found in tcplPlot.R file used to connect tcpl and ggplot2 packages
-        ggplot <- if(is.null(compare.val)) tcplggplot(dat,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange) else 
-          tcplggplotCompare(dat[compare == FALSE],dat[compare == TRUE],verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
-        if (output[1] == "ggplot") {
-          if (verbose) message("ggplot object and verbose table arranged into gtable object. To work with a simple ggplot object, set `verbose = FALSE`.")
-          return(ggplot)
-        } 
-        ggsave(filename = paste0(fileprefix, "_", paste0(ifelse(type=="mc", dat$m4id, dat$s2id), collapse = "_"), ".", output),
-               plot = ggplot, width = 7, height = 5, dpi=dpi)
-        return(ggplot)
-      }
-    } else {
-      split_dat <- list(dat)
-      if(!is.null(by)){
-        split_dat <- split(dat,f = factor(dat %>% pull(all_of(by))))
-      }
-      for(d in split_dat){
-        if (is.null(compare.val)) {
-          plot_list <- by(d,seq(nrow(d)),tcplggplot,verbose = verbose, lvl = lvl, flags = flags, yrange = yrange)
-        } else {
-          plot_list <- mapply(tcplggplotCompare, asplit(d[compare == FALSE],1), asplit(d[compare == TRUE],1), SIMPLIFY = FALSE, MoreArgs = list(verbose = verbose, lvl = lvl, flags = flags, yrange = yrange))
-        }
-        m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
-        if(output=="pdf"){
-          w <- ifelse(type == "mc", ncol*7, ncol*5)
-          h <- ifelse(type == "mc", nrow*5, nrow*6)
-          ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",d %>% pull(all_of(by)) %>% unique())), ".pdf"), m1,width = w, height = h)
-        } else {
-          names(plot_list) <- d$m4id
-          w <- ifelse(type == "mc", 7, 4)
-          h <- ifelse(type == "mc", 5, 6)
-          lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
-                                                     plot=arrangeGrob(grobs=plot_list[x]), width = 7, height = 5, dpi=dpi))
-        }
+        names(plot_list) <- lapply(seq_along(f), function(i) paste(f[[i]]$m4id, collapse = "_"))
+        lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
+                                                   plot=arrangeGrob(grobs=plot_list[x]), width = w, height = h, dpi=dpi))
       }
     }
 
