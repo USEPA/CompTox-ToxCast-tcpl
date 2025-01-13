@@ -117,10 +117,14 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
     
     #determine if we're single conc or multiconc based on dat
     join_condition <- c("m4id","s2id")[c("m4id","s2id") %in% colnames(dat)]
-    conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
+    conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarize(conc = list(conc), resp = list(resp)) %>% as.data.table()
     dat <- dat[conc_resp_table, on = join_condition]
     
+    # get chemical and sample information
     dat <- tcplPrepOtpt(dat)
+    
+    # determine missing chem info and replace with string description of well type(s)
+    dat <- tcplPlotLoadWllt(dat, type)
     
   } else {
     # fix flags from API for plotting
