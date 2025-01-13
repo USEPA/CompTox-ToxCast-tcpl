@@ -146,5 +146,28 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
   
+  # replace null bmd in dat table
+  dat <- dat[is.null(dat$bmd), bmd:=NA]
+  
+  #replace null top with 0
+  dat[is.null(dat$top), top := 0]
+  dat[is.na(top), top := 0]
+  
+  # correct bmr and coff direction
+  if (type == "mc") {
+    # if top if less than 0, flip bmr no matter what
+    dat[top < 0, bmr := bmr * -1]
+    # if model type is loss, flip cut off
+    dat[model_type == 4, coff := coff * -1]
+    # if model type is bidirectional, flip cut off if top is less than 0
+    dat[model_type == 2 & top < 0, coff := coff * -1]
+  } else { # sc
+    # if max median is less than 0, flip cut off to align with it
+    dat[max_med < 0, coff := coff * -1]
+    # if hitc is less than 0, max median is in the opposite of intended direction, 
+    # so flip cut off (possibly again)
+    dat[max_med < 0, coff := coff * -1]
+  }
+  
   dat
 }
