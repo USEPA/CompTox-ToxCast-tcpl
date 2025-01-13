@@ -88,14 +88,20 @@ tcplPlotSetYRange <- function(dat, yuniform, yrange, type) {
 
 #' tcplPlotValidate
 #'
+#' @param dat data.table containing plot-prepared data
 #' @param type string of mc or sc indicating if it is single or multi conc
+#' @param compare Character vector, the field(s) to join samples on to create comparison
+#' plots
+#' @param by Parameter to divide files into e.g. "aeid".
 #' @param flags bool - should we return flags
 #' @param output how should the plot be formatted
 #' @param multi are there multiple plots
 #' @param verbose should the plot return a table with parameters
 #'
 #' @return a list of validated parameters for plotting
-tcplPlotValidate <- function(type = "mc", flags = NULL, output = "none", multi = NULL, verbose = FALSE) {
+tcplPlotValidate <- function(dat = NULL, type = "mc", compare = "m4id", by = NULL, 
+                             flags = NULL, output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"), 
+                             multi = NULL, verbose = FALSE) {
   # set lvl based on type
   lvl <- 5
   if (type == "sc") {
@@ -104,21 +110,33 @@ tcplPlotValidate <- function(type = "mc", flags = NULL, output = "none", multi =
       warning("'flags' was set to TRUE - no flags exist for plotting single concentration")
       flags <- FALSE
     }
+    if (compare == "m4id") compare <- "s2id"
   }
-
+  
+  if (!is.null(by) && length(by) > 1) stop("'by' must be of length 1.")
+  if (length(output) > 1) output <- output[1]
+  
+  if (!is.null(dat) && !is.data.table(dat)) {
+    if (!is.list(dat) || !is.data.table(dat[[1]])) {
+      stop("'dat' must be a data.table or a list of data.tables.")
+    }
+    if (!compare %in% c("m4id", "s2id")) {
+      warning("'dat' provided as list of list of data tables, meaning compare plots are already subdivided. 'compare' field will be ignored and have no effect.")
+    }
+    if (!is.null(by)) {
+      warning("Using 'by' can have unintended consequences when 'dat' is provided as a list of data.tables. Instead, consider adding a custom field to group comparison plots, and specify using the 'compare' parameter. Then, use 'by' to split plots into files.")
+    }
+  }
+  
   # default assign multi=TRUE for output="pdf"
-  if (output == "pdf" && is.null(multi)) {
-    multi <- TRUE
-  }
+  if (output == "pdf" && is.null(multi)) multi <- TRUE
   # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
   if (output != "pdf") {
     multi <- FALSE
-    if (output == "console") {
-      verbose <- FALSE
-    }
+    if (output == "console") verbose <- FALSE
   }
 
-  list(lvl = lvl, type = type, flags = flags, output = output, multi = multi, verbose = verbose)
+  list(dat = dat, lvl = lvl, type = type, compare = compare, by = by, flags = flags, output = output, multi = multi, verbose = verbose)
 }
 
 
