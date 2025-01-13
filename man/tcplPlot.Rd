@@ -10,37 +10,48 @@ tcplPlot(
   type = "mc",
   fld = "m4id",
   val = NULL,
-  compare.val = NULL,
+  compare = "m4id",
   by = NULL,
-  output = c("console", "pdf", "png", "jpg", "svg", "tiff"),
+  output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
   multi = NULL,
-  verbose = FALSE,
+  verbose = TRUE,
   nrow = NULL,
   ncol = NULL,
   dpi = 600,
   flags = FALSE,
   yuniform = FALSE,
-  yrange = c(NA, NA)
+  yrange = c(NA, NA),
+  group.fld = NULL,
+  group.threshold = 9
 )
 }
 \arguments{
-\item{dat}{data.table containing plot-prepared data, used for stand-alone 
-(non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
-(generating comparison plots across multiple database configurations) and not
-required. See \code{tcplPlotLoadData}.}
+\item{dat}{data.table or list of data.tables containing plot-prepared data, not
+required. Used for stand-alone (ToxCast or other tcplfit2-fit data) plotting or 
+advanced plotting (generating comparison plots across multiple database configurations). 
+Pass a data.table for default behavior, which will split data by 'compare'. Pass 
+a list of data.tables to directly specify the groupings for comparison plots 
+where each list item (data.table) will be printed on a single plot. See \code{tcplPlotLoadData}.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc".}
 
-\item{fld}{Character, the field(s) to query on.}
+\item{fld}{Character vector, the field(s) to query on.}
 
-\item{val}{List, vectors of values for each field to query on. Must be in
-the same order as 'fld'.}
+\item{val}{List containing vectors of values for each field to query on. Must 
+be in the same order as 'fld'.}
 
-\item{compare.val}{List, vectors of values for each field to query on to 
-compare with val. Must be in the same order as 'fld'. Must have the same
-length as val (1:1 comparison). Must be set to compare plots; otherwise leave
-NULL}
+\item{compare}{Character vector, the field(s) to join samples on to create comparison
+plots. By default 'm4id'. As every endpoint-sample will always have its own m4id,
+this will create individual plots. To create a comparison plot across the same
+chemicals, use a chemical identifier like "dsstox_substance_id". Likewise, to 
+create a comparison plot across the same sample ids, use "spid". Use "aeid" to
+create a comparison plot across the same assay component endpoints, which will 
+likely trigger the large compare plot style; for more info see 'group.threshold'. 
+To use a custom field to create comparison, 'dat' should be supplied as a data.table 
+generated from tcplPlotLoadData with the custom column added. If 'dat' is instead 
+a list of data.tables, setting 'compare' will be ignored in favor of the list 
+groups.}
 
 \item{by}{Parameter to divide files into e.g. "aeid".}
 
@@ -50,27 +61,37 @@ environment, use "ggplot"; to interact with the plot in application, use
 
 \item{fileprefix}{Prefix of file when saving.}
 
-\item{multi}{Boolean, by default TRUE for "pdf". If multi is TRUE, output
-by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
-'verbose' = FALSE.}
+\item{multi}{Boolean, by default TRUE for "pdf". Prints variable number of plots
+per page depending on 'verbose' and 'type' settings.}
 
-\item{verbose}{Boolean, by default FALSE. If TRUE, a table with fitting parameters
-is included with the plot.}
+\item{verbose}{Boolean, by default TRUE. If TRUE, a table with fitting parameters
+is included with the plot. To return or save simple plot, set to FALSE. In comparison
+plotting, verbose as TRUE will also return annotation information in a table,
+which is hidden using verbose = FALSE.}
 
 \item{nrow}{Integer, number of rows in multiplot. By default 2.}
 
-\item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose.}
+\item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose, 
+1 for verbose compare plots.}
 
 \item{dpi}{Integer, image print resolution. By default 600.}
 
 \item{flags}{Boolean, by default FALSE. If TRUE, level 6 flags are displayed
-below annotations on plot}
+within output.}
 
 \item{yuniform}{Boolean, by default FALSE. If TRUE, all plots will have uniform
 y axis scaling, automatically determined.}
 
 \item{yrange}{Integer of length 2, for directly setting the y-axis range, 
-c(<min>,<max>). By default, c(NA,NA).}
+c(<min>,<max>). By default, c(NA,NA). Plots containing points or curves outside
+this range will be expanded to fit.}
+
+\item{group.fld}{string column name to group curves by when number of comparison 
+curves exceeds group.threshold, default being 'modl' for MC and 'hitc' for SC}
+
+\item{group.threshold}{integer of length 1, number of curves where comparison 
+plot style should change to instead group by a given group.fld, default of 9 
+-- greater than 8 curves}
 }
 \description{
 \code{tcplPlot} queries the tcpl databases and returns a plot
@@ -78,9 +99,7 @@ for the given level and data type.
 }
 \details{
 The data type can be either 'mc' for multiple concentration data, or 'sc'
-for single concentration data. Multiple concentration data will be loaded
-into the 'mc' tables, whereas the single concentration will be loaded into
-the 'sc' tables.
+for single concentration data. 
 
 Leaving \code{fld} NULL will return all data.
 }
