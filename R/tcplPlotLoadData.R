@@ -59,6 +59,8 @@
 #' @seealso \code{\link{tcplPlot}}
 #'
 #' @import data.table
+#' @importFrom dplyr mutate group_by summarize rowwise
+#' @importFrom stringr str_count
 #' @export
 tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   #variable binding
@@ -95,6 +97,8 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
         l6 <- data.table(m4id, "flag" = "None")
       }
       dat <- dat[l6, on = "m4id"]
+      dat$flag_count <- 0
+      dat[flag != "None", flag_count := stringr::str_count(flag, "\n") + 1]
     }
     dat
   }
