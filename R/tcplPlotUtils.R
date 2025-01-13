@@ -189,6 +189,7 @@ tcplPlotValidate <- function(dat = NULL, type = "mc", compare = "m4id", by = NUL
 #'
 #' @return a ggplot based on old plotting methodology
 tcplLegacyPlot <- function() {
+  stop("Legacy plotting is currently unsupported.")
   # VARIABLE BINDING
   fld <- val <- lvl <- multi <- fileprefix <- NULL
   if (length(output) > 1) output <- output[1]
