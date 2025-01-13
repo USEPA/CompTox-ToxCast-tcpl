@@ -1,3 +1,41 @@
+#' tcplPlotLoadWllt
+#' Replaces NA dtxsid and chnm with a string description of the sample's well type(s)
+#'
+#' @param dat dataset
+#' @param type mc or sc
+#'
+#' @return dat with updated dtxsid/chnm if they are NA
+#' @importFrom dplyr group_by summarize select left_join case_when 
+tcplPlotLoadWllt <- function(dat = NULL, type = "mc") {
+  
+  # determine missing chemical info
+  missing <- dat[is.na(dsstox_substance_id) | is.na(chnm), .(spid, aeid)]
+  acid_map <- tcplLoadAcid(fld = "aeid", val = missing$aeid)[,.(aeid,acid)]
+  missing <- missing[acid_map, on="aeid"]
+  l0_dat <- tcplLoadData(type = type, lvl = 0, fld = list("spid","acid"), 
+                         list(missing$spid, missing$acid))
+  
+  # replace with string describing the well type(s)
+  wllts <- l0_dat |> select(acid, spid, wllt) |> group_by(acid, spid) |> 
+    summarize(wllt_desc = dplyr::case_when(
+      all(unique(wllt) %in% c('c', 'p')) ~ "Gain-of-signal control",
+      all(unique(wllt) %in% c('m', 'o')) ~ "Loss-of-signal control",
+      all(unique(wllt) == 'n') ~ "Neutral/negative control",
+      all(unique(wllt) == 'b') ~ "Blank",
+      all(unique(wllt) == 'v') ~ "Viability control",
+      all(!is.na(unique(wllt))) && all(!is.null(unique(wllt))) ~ paste0("Well type: ", paste(unique(wllt), collapse = ", ")),
+      .default = NA
+    ), .groups="drop") |> left_join(acid_map, by = "acid") |> as.data.table()
+  no_wllt <- wllts[is.na(wllt_desc), spid]
+  if (length(no_wllt)) warning(paste0("wllt for SPID(s): ", paste(no_wllt, collapse = ", "), " missing. Leaving dsstox_substance_id and chnm as NA."))
+  dat <- left_join(dat, wllts, by = c("aeid", "spid"))
+  dat[is.na(dsstox_substance_id) | is.na(chnm), c("dsstox_substance_id", "chnm") := wllt_desc]
+  
+  dat
+  
+}
+
+
 #' tcplPlotSetYRange
 #'
 #' @param dat dataset
