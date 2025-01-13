@@ -176,8 +176,13 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
   #variable binding
   model_stats <- model <- param <- value <- ac50 <- hitc <- compare <- NULL
   
-  compare.dat <- dat[compare == TRUE]
-  dat <- dat[compare == FALSE]
+  compare.dat <- dat[0]
+  if (nrow(dat) > 2) {
+    stop("tcplPlotlyPlot currently supports only comparisons up to 2 curves.")
+  } else if (nrow(dat) == 2) {
+    compare.dat <- dat[2]
+  }
+  dat <- dat[1]
   
   l3_dat_main <- tibble(conc = unlist(dat$conc), resp = unlist(dat$resp), max_med = dat$max_med, l3 = "response A")
   l3_dat_compare <- tibble(conc = unlist(compare.dat$conc), resp = unlist(compare.dat$resp), max_med = compare.dat$max_med, l3 = "response B")
