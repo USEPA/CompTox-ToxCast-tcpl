@@ -128,18 +128,18 @@ test_that("tcplPlotLoadData errors if type is not 'mc' or 'sc'", {
 
 # Test tcplPlotValidate
 test_that("tcplPlotValidate warns user if flags = TRUE and type = 'sc'", {
-  expect_warning(validated_params <- tcplPlotValidate(type = "sc",flags = TRUE,output = "pdf",multi = NULL,verbose = FALSE))
-  expect_equal(validated_params, list(lvl = 2, type = "sc", flags = FALSE, output = "pdf", multi = TRUE, verbose = FALSE))
+  expect_warning(validated_params <- tcplPlotValidate(dat = NULL,type = "sc",compare = "m4id",by = NULL,flags = TRUE,output = "pdf",multi = NULL,verbose = FALSE))
+  expect_equal(validated_params, list(dat = NULL, lvl = 2, type = "sc", compare = "s2id", by = NULL, flags = FALSE, output = "pdf", multi = TRUE, verbose = FALSE))
 })
 
 test_that("tcplPlotValidate force assigns multi = FALSE and verbose = FALSE if output != pdf", {
-  validated_params <- tcplPlotValidate(type = "mc",flags = TRUE,output = "console",multi = TRUE,verbose = TRUE)
-  expect_equal(validated_params, list(lvl = 5, type = "mc", flags = TRUE, output = "console", multi = FALSE, verbose = FALSE))
+  validated_params <- tcplPlotValidate(dat = NULL,type = "mc",compare = "m4id",by = NULL,flags = TRUE,output = "console",multi = TRUE,verbose = TRUE)
+  expect_equal(validated_params, list(dat = NULL,lvl = 5,type = "mc",compare = "m4id",by = NULL, flags = TRUE, output = "console", multi = FALSE, verbose = FALSE))
 })
 
 test_that("tcplPlotValidate doesn't change correctly assigned parameters", {
-  validated_params <- tcplPlotValidate(type = "mc",flags = TRUE,output = "pdf",multi = TRUE,verbose = TRUE)
-  expect_equal(validated_params, list(lvl = 5, type = "mc", flags = TRUE, output = "pdf", multi = TRUE, verbose = TRUE))
+  validated_params <- tcplPlotValidate(dat = NULL,type = "mc",compare = "m4id",by = NULL,flags = TRUE,output = "pdf",multi = TRUE,verbose = TRUE)
+  expect_equal(validated_params, list(dat = NULL,lvl = 5,type = "mc",compare = "m4id",by = NULL, flags = TRUE, output = "pdf", multi = TRUE, verbose = TRUE))
 })
 
 # Test tcplPlotSetYRange
@@ -220,7 +220,7 @@ test_that("tcplPlot works for single m4id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE)))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -238,7 +238,7 @@ test_that("tcplPlot works for multiple m4id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
@@ -258,7 +258,7 @@ test_that("tcplPlot works for single aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")  
@@ -279,8 +279,8 @@ test_that("tcplPlot works for multiple aeid", {
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", by = "aeid", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", flags = TRUE, by = "aeid", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = FALSE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = FALSE, flags = TRUE, by = "aeid", multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 4")
@@ -300,7 +300,7 @@ test_that("tcplPlot works for single spid/aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "console", verbose = TRUE, flags = TRUE, multi = TRUE)))  
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -318,7 +318,7 @@ test_that("tcplPlot works for multiple spid/aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
@@ -337,9 +337,9 @@ test_that("tcplPlot works for single m4id compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE)))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE)))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -355,10 +355,10 @@ test_that("tcplPlot works for multiple m4id compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "pdf", flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", output = "pdf", verbose = FALSE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
+  expect_error(tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -375,10 +375,10 @@ test_that("tcplPlot works for single aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
+  expect_error(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")  
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -395,11 +395,11 @@ test_that("tcplPlot works for multiple aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "pdf", verbose = FALSE, multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
-               "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 4")
+  expect_error(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
+               "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -415,9 +415,9 @@ test_that("tcplPlot works for single spid/aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "console", verbose = TRUE, flags = TRUE, multi = TRUE)))  
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "chnm", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE)))  
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -433,10 +433,10 @@ test_that("tcplPlot works for multiple spid/aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "chnm", output = "pdf", verbose = FALSE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
+  expect_error(tcplPlot(type = "mc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -455,7 +455,7 @@ test_that("tcplPlot works for single s2id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "console", verbose = TRUE, multi = TRUE)))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -473,7 +473,7 @@ test_that("tcplPlot works for multiple s2id", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
@@ -493,7 +493,7 @@ test_that("tcplPlot works for single aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 7")  
@@ -513,7 +513,7 @@ test_that("tcplPlot works for multiple aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, by = "aeid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, output = "console", verbose = TRUE, multi = TRUE), 
@@ -534,7 +534,7 @@ test_that("tcplPlot works for single spid/aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "console", verbose = TRUE, multi = TRUE)))  
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -552,7 +552,7 @@ test_that("tcplPlot works for multiple spid/aeid", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
   expect_error(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
@@ -571,9 +571,9 @@ test_that("tcplPlot works for single s2id compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "console", verbose = TRUE, multi = TRUE)))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "console", verbose = TRUE, multi = TRUE)))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -589,10 +589,10 @@ test_that("tcplPlot works for multiple s2id compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "console", verbose = TRUE, multi = TRUE), 
+  expect_error(tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -609,10 +609,10 @@ test_that("tcplPlot works for single aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "spid", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "console", verbose = TRUE, multi = TRUE), 
+  expect_error(tcplPlot(type = "sc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "spid", output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 7")  
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -629,11 +629,11 @@ test_that("tcplPlot works for multiple aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "spid", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare.val = mocked$compare.aeid, output = "console", verbose = TRUE, multi = TRUE), 
-               "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 14")
+  expect_error(tcplPlot(type = "sc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "spid", output = "console", verbose = TRUE, multi = TRUE), 
+               "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 7")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -649,9 +649,9 @@ test_that("tcplPlot works for single spid/aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "console", verbose = TRUE, multi = TRUE)))  
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "spid", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "spid", output = "console", verbose = TRUE, multi = TRUE)))  
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -667,10 +667,10 @@ test_that("tcplPlot works for multiple spid/aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "pdf", multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "spid", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(mocked$spid, mocked$aeid), compare.val = list(mocked$compare.spid, mocked$compare.aeid), output = "console", verbose = TRUE, multi = TRUE), 
+  expect_error(tcplPlot(type = "sc", fld = c("spid", "aeid"), val = list(c(mocked$spid, mocked$compare.spid), c(mocked$aeid, mocked$compare.aeid)), compare = "spid", output = "console", verbose = TRUE, multi = TRUE), 
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
@@ -706,7 +706,7 @@ test_that("standalone advanced comparison plotting works in mc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
-  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id , output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "spid", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -740,7 +740,7 @@ test_that("standalone advanced comparison plotting works in sc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplPlotLoadData(type = "sc", fld = "s2id", val = mocked$s2id)
-  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id , output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -757,15 +757,10 @@ test_that("ggplot output works in mc", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "ggplot", flags = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot")))
   expect_true(ggplot2::is.ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", flags = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_true(ggplot2::is.ggplot(otpt)) # single outputs now return ggplot as well
-  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
-  expect_length(fn, 1) # exactly one file created
-  file.remove(fn) # clean up
 })
 
 test_that("ggplot output comparison plotting works in mc", {
@@ -778,15 +773,10 @@ test_that("ggplot output comparison plotting works in mc", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "ggplot", flags = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "chnm", verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot")))
   expect_true(ggplot2::is.ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare.val = mocked$compare.m4id, output = "pdf", flags = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_true(ggplot2::is.ggplot(otpt)) # single outputs now return ggplot as well
-  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
-  expect_length(fn, 1) # exactly one file created
-  file.remove(fn) # clean up
 })
 
 test_that("ggplot output works in sc", {
@@ -799,15 +789,10 @@ test_that("ggplot output works in sc", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "ggplot", fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot")))
   expect_true(ggplot2::is.ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, output = "pdf", fileprefix = "temp_tcplPlot")))
-  expect_true(ggplot2::is.ggplot(otpt)) # single outputs now return ggplot as well
-  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
-  expect_length(fn, 1) # exactly one file created
-  file.remove(fn) # clean up
 })
 
 test_that("ggplot output comparison plotting works in sc", {
@@ -820,15 +805,10 @@ test_that("ggplot output comparison plotting works in sc", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "ggplot", fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot")))
   expect_true(ggplot2::is.ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
-  expect_no_error(suppressWarnings(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare.val = mocked$compare.s2id, output = "pdf", fileprefix = "temp_tcplPlot")))
-  expect_true(ggplot2::is.ggplot(otpt)) # single outputs now return ggplot as well
-  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
-  expect_length(fn, 1) # exactly one file created
-  file.remove(fn) # clean up
 })
 
 test_that("ggplot output returns specific warnings and errors", {
@@ -845,7 +825,7 @@ test_that("ggplot output returns specific warnings and errors", {
                "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
   mocked <- mc_test$plot_single_m4id
   expect_message(suppressWarnings(tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, output = "ggplot", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")),
-                 "ggplot object and verbose table arranged into gtable object. To work with a simple ggplot object, set `verbose = FALSE`.")
+                 "ggplot and verbose table arranged into one grob. To work with a simple ggplot object, set `verbose = FALSE` and 'flags = FALSE'.")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
 })
