@@ -15,6 +15,7 @@ devtools::load_all()
 library(here)
 library(dplyr)
 library(stringr)
+library(data.table)
 #---------------------------#
 ## code to prepare `mc_test` dataset goes here
 # source the user ID, password, host, and database information for connection
@@ -37,32 +38,38 @@ mc5_counts <- tcplQuery("SELECT DISTINCT aeid,
 # filter to only include where at least one sample is active and n < 10
 mc5_counts <- mc5_counts %>% filter(max_hitc > 0.9 & n == 2)
 # pick one aeid
-aeid <- selected <- mc5_counts[sample(1:nrow(mc5_counts),size = 1,replace = FALSE),aeid]
+selected <- mc5_counts[sample(1:nrow(mc5_counts),size = 1,replace = FALSE),aeid]
 # obtain the acid for the example dataset
-acid <- tcplLoadAcid(fld = 'aeid',val = aeid)$acid
+acid <- tcplLoadAcid(fld = 'aeid',val = selected)$acid
 # pick one sample/row from each level (lvl 3 contains ids back to lvl 0 and lvl 6 does back to lvl 4)
 l3 <- tcplLoadData(lvl = 3, fld = "acid", val = acid)
 l3_sample1 <- l3[sample(1:nrow(l3),size = 1,replace = FALSE)]
 l3_sample2 <- l3[sample(1:nrow(l3),size = 2,replace = FALSE)]
-l5 <- tcplLoadData(lvl = 5, fld = "aeid", val = aeid, add.fld = FALSE)
+l5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = "aeid", val = selected, add.fld = FALSE))
 l5_sample1 <- l5[sample(1:nrow(l5),size = 1,replace = FALSE)]
 l5_sample2 <- l5[sample(1:nrow(l5),size = 2,replace = FALSE)]
-l6 <- tcplLoadData(lvl = 6, fld = "aeid", val = aeid, add.fld = FALSE)
+l6 <- tcplLoadData(lvl = 6, fld = "aeid", val = selected, add.fld = FALSE)
 l6_sample1 <- l6[sample(1:nrow(l6),size = 1,replace = FALSE)]
 l6_sample2 <- l6[sample(1:nrow(l6),size = 2,replace = FALSE)]
-l7 <- tcplLoadData(lvl = 7, fld = "aeid", val = aeid, add.fld = FALSE)
+l7 <- tcplLoadData(lvl = 7, fld = "aeid", val = selected, add.fld = FALSE)
 l7_sample1 <- l7[sample(1:nrow(l7),size = 1,replace = FALSE)]
 l7_sample2 <- l7[sample(1:nrow(l7),size = 2,replace = FALSE)]
-# pick compare.val endpoints and ids
-# be sure to only allow to choose from endpoints with the same number of samples
-mc5_counts <- filter(mc5_counts, n == mc5_counts[aeid == selected]$n & aeid != selected)
-compare.aeid <- mc5_counts[sample(1:nrow(mc5_counts),size = 1,replace = FALSE),aeid]
-compare.l5 <- tcplLoadData(lvl = 5, fld = "aeid", val = compare.aeid)
-compare.l5_sample1 <- compare.l5[sample(1:nrow(compare.l5),size = 1,replace = FALSE)]
+# pick compare endpoints and ids
+# first determine which aeids have the same chnms tested as the selected aeid
+all_mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = "aeid", val = mc5_counts$aeid))
+all_mc5 <- all_mc5 |> mutate(match = chnm %in% all_mc5[aeid == selected,chnm]) |> 
+  group_by(aeid) |> filter(all(match) & aeid != selected) |> as.data.table()
+if(nrow(all_mc5) >= 0) stop("No endpoints which test the exact same set of chemicals. Try picking a new original aeid ('selected' var above)")
+compare.aeid <- all_mc5[sample(1:nrow(all_mc5),size = 1,replace = FALSE),aeid]
+compare.l5 <- all_mc5[aeid == compare.aeid,]
+compare.l5_sample1 <- compare.l5[chnm %in% l5_sample1$chnm]
 compare.l5_sample2 <- compare.l5[sample(1:nrow(compare.l5),size = 2,replace = FALSE)]
+# pick extra endpoints
+all_mc5 <- all_mc5[aeid != compare.aeid]
+extra.aeids <- all_mc5[sample(1:nrow(mc5_counts),size = 2,replace = FALSE),aeid]
+aeid <- selected
 
-
-get_query_data <- function(lvl, fld, val, compare.val = NULL, add.fld = TRUE, func = "tcplLoadData") {
+get_query_data <- function(lvl, fld, val, compare = "m4id", add.fld = TRUE, func = "tcplLoadData") {
   message(compare.val)
   if (func == "tcplLoadData") {
     # IMPORTANT || MUST ADD TEMPORARY LINE TO TCPLQUERY --------------------------
@@ -70,7 +77,7 @@ get_query_data <- function(lvl, fld, val, compare.val = NULL, add.fld = TRUE, fu
     query_strings <- capture.output(result<-tcplLoadData(lvl = lvl, fld = fld, val = val, add.fld = add.fld))
   } else if (func == "tcplPlot") {
     query_strings <- capture.output(result<-tcplPlot(type = "mc", fld = fld, 
-                                                     val = val, compare.val = compare.val, 
+                                                     val = val, compare = compare, 
                                                      output = "pdf", multi = TRUE, flags = TRUE, 
                                                      fileprefix = "temp_tcplPlot"))
     file.remove(stringr::str_subset(list.files(), "^temp_tcplPlot")) # clean up
@@ -86,7 +93,6 @@ get_query_data <- function(lvl, fld, val, compare.val = NULL, add.fld = TRUE, fu
   
   # also store fld and val in list object for use in test case
   dat[fld] <- val
-  if (!is.null(compare.val)) dat[sprintf("compare.%s", fld)] <- compare.val
   return(dat)
   
 }
@@ -131,28 +137,28 @@ mc_test <- list(
                                       val = list(l5_sample2$spid, aeid), 
                                       func = "tcplPlot"),
   plot_single_m4id_compare = get_query_data(fld = "m4id", 
-                                            val = l5_sample1$m4id, 
-                                            compare.val = compare.l5_sample1$m4id, 
+                                            val = list(c(l5_sample1$m4id, compare.l5_sample1$m4id)), 
+                                            compare = "chnm",
                                             func = "tcplPlot"),
   plot_multiple_m4id_compare = get_query_data(fld = "m4id", 
-                                              val = list(l5_sample2$m4id), 
-                                              compare.val = list(compare.l5_sample2$m4id), 
+                                              val = list(c(l5_sample2$m4id, compare.l5_sample2$m4id)), 
+                                              compare = "chnm",
                                               func = "tcplPlot"),
   plot_single_aeid_compare = get_query_data(fld = "aeid", 
-                                            val = aeid, 
-                                            compare.val = compare.aeid, 
+                                            val = list(c(aeid, compare.aeid)), 
+                                            compare = "chnm",
                                             func = "tcplPlot"),
   plot_multiple_aeid_compare = get_query_data(fld = "aeid", 
-                                              val = list(c(aeid, compare.aeid)), 
-                                              compare.val = list(c(compare.aeid, aeid)), 
+                                              val = list(c(aeid, compare.aeid, extra.aeids)), 
+                                              compare = "chnm",
                                               func = "tcplPlot"),
   plot_single_spid_compare = get_query_data(fld = c("spid", "aeid"), 
-                                            val = list(l5_sample1$spid, aeid), 
-                                            compare.val = list(compare.l5_sample1$spid, compare.aeid), 
+                                            val = list(c(l5_sample1$spid, compare.l5_sample1$spid), c(aeid, compare.aeid)), 
+                                            compare = "chnm",
                                             func = "tcplPlot"),
   plot_multiple_spid_compare = get_query_data(fld = c("spid", "aeid"), 
-                                              val = list(l5_sample2$spid, aeid), 
-                                              compare.val = list(compare.l5_sample2$spid, compare.aeid), 
+                                              val = list(c(l5_sample2$spid, compare.l5_sample2$spid), c(aeid, compare.aeid)), 
+                                              compare = "chnm",
                                               func = "tcplPlot")
 )
 #---------------------------#
