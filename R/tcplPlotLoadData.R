@@ -166,7 +166,7 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
     dat[max_med < 0, coff := coff * -1]
     # if hitc is less than 0, max median is in the opposite of intended direction, 
     # so flip cut off (possibly again)
-    dat[max_med < 0, coff := coff * -1]
+    dat[hitc < 0, coff := coff * -1]
   }
   
   dat
