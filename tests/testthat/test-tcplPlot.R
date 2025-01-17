@@ -264,11 +264,11 @@ test_that("tcplPlot works for multiple aeid compared", {
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
-  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "pdf", verbose = FALSE, multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = c("chnm", "model_type"), output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = c("chnm", "model_type"), output = "pdf", verbose = FALSE, multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot")))
   # console does not work with length(val) > 1
-  expect_error(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = "chnm", output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
-               "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 2")
+  expect_error(tcplPlot(type = "mc", fld = "aeid", val = c(mocked$aeid, mocked$compare.aeid), compare = c("chnm", "model_type"), output = "console", verbose = TRUE, flags = TRUE, multi = TRUE), 
+               "More than 1 concentration series returned for given field/val combination. Set output to pdf or reduce the number of plots to 1. Current number of individual plots: 4")
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
