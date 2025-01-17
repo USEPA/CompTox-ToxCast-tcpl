@@ -312,7 +312,25 @@ test_that("tcplPlot works for multiple spid/aeid compared", {
   file.remove(fn) # clean up
 })
 
+test_that("tcplPlot errors if 'compare' or 'by' are not fields in 'dat'", {
+  data("mc_test")
+  mocked <- mc_test$plot_single_m4id_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  expect_error(tcplPlot(val = mocked$m4id, compare = "chnm", by = "aid", output = "pdf", fileprefix = "temp_tcplPlot"),
+               "'by' must be a valid field contained in dat.")
+  expect_error(tcplPlot(val = mocked$m4id, compare = "dtxsid", by = "aeid", output = "pdf", fileprefix = "temp_tcplPlot"),
+               "'compare' must all be valid field\\(s\\) contained in dat.")
+})
+
+#-------------------------------------------------------------------------------
 # Test tcplPlot - sc
+#-------------------------------------------------------------------------------
 test_that("tcplPlot works for single s2id", {
   data("sc_test")
   mocked <- sc_test$plot_single_s2id
