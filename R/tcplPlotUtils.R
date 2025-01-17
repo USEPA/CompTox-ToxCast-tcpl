@@ -161,7 +161,7 @@ tcplPlotValidate <- function(dat = NULL, type = "mc", compare = "m4id", by = NUL
   }
   
   if (!is.null(by) && length(by) > 1) stop("'by' must be of length 1.")
-  if (length(output) > 1) output <- output[1]
+  if (length(output) > 1) output <- output[1] else if (length(output) == 0) stop("'output' cannot be NULL")
   
   if (!is.null(dat) && !is.data.table(dat)) {
     if (!is.list(dat) || !is.data.table(dat[[1]])) {
