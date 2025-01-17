@@ -546,7 +546,9 @@ test_that("tcplPlot works for multiple spid/aeid compared", {
   file.remove(fn) # clean up
 })
 
+#-------------------------------------------------------------------------------
 # Stand-alone plotting
+#-------------------------------------------------------------------------------
 test_that("standalone plotting works in mc", {
   data("mc_test")
   mocked <- mc_test$plot_single_m4id
@@ -558,7 +560,7 @@ test_that("standalone plotting works in mc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
-  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "mc", fld = "m4id", val = mocked$m4id, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -575,7 +577,9 @@ test_that("standalone advanced comparison plotting works in mc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
-  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "mc", fld = "m4id", val = c(mocked$m4id, mocked$compare.m4id), compare = "spid", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  dat <- split(dat, by = "chnm")
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -609,13 +613,17 @@ test_that("standalone advanced comparison plotting works in sc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   dat <- tcplPlotLoadData(type = "sc", fld = "s2id", val = mocked$s2id)
-  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", fld = "s2id", val = c(mocked$s2id, mocked$compare.s2id), compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", compare = "spid", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
+  dat <- split(dat, by = "spid")
+  expect_no_error(suppressWarnings(tcplPlot(dat = dat, type = "sc", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot")))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
 })
 
+#-------------------------------------------------------------------------------
 # "ggplot" output tests
+#-------------------------------------------------------------------------------
 test_that("ggplot output works in mc", {
   data("mc_test")
   mocked <- mc_test$plot_single_m4id
