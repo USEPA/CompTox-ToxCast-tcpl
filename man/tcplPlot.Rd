@@ -42,12 +42,12 @@ where each list item (data.table) will be printed on a single plot. See \code{tc
 be in the same order as 'fld'.}
 
 \item{compare}{Character vector, the field(s) to join samples on to create comparison
-plots. By default 'm4id'. As every endpoint-sample will always have its own m4id,
-this will create individual plots. To create a comparison plot across the same
-chemicals, use a chemical identifier like "dsstox_substance_id". Likewise, to 
-create a comparison plot across the same sample ids, use "spid". Use "aeid" to
-create a comparison plot across the same assay component endpoints, which will 
-likely trigger the large compare plot style; for more info see 'group.threshold'. 
+plots. By default "m4id", "s2id" if 'type' = "sc". As every endpoint-sample will 
+always have its own m4id, this will create individual plots. To create a comparison 
+plot across the same chemicals, use a chemical identifier like "dsstox_substance_id". 
+Likewise, to create a comparison plot across the same sample ids, use "spid". 
+Use "aeid" to create a comparison plot across the same assay component endpoints, 
+which will likely trigger the large compare plot style; for more info see 'group.threshold'. 
 To use a custom field to create comparison, 'dat' should be supplied as a data.table 
 generated from tcplPlotLoadData with the custom column added. If 'dat' is instead 
 a list of data.tables, setting 'compare' will be ignored in favor of the list 
