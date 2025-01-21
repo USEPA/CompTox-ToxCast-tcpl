@@ -183,7 +183,7 @@ tcplPlotValidate <- function(dat = NULL, type = "mc", compare = "m4id", by = NUL
     if (output == "console") verbose <- FALSE
   }
 
-  list(dat = dat, lvl = lvl, type = type, compare = compare, by = by, flags = flags, output = output, multi = multi, verbose = verbose)
+  list(lvl = lvl, compare = compare, flags = flags, output = output, multi = multi, verbose = verbose)
 }
 
 
