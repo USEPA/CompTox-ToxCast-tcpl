@@ -83,18 +83,19 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, fla
     dat$color <- viridis::viridis(nrow(dat), begin = 0.1, end = 0.9, option = "turbo")
   }
   
-  # function to return a formatted l3_dat table
+  # function to return a formatted conc_resp table
   process_row <- function(row) {
     return(data.table(
-      conc = unlist(row$conc[[1]]), 
+      conc = replace(unlist(row$conc[[1]]), is.na(unlist(row$conc[[1]])), 0), 
       resp = unlist(row$resp[[1]]),
       model = if (type == "mc" && row$modl != "none") tcplfit2_fun(row, row$modl, unlist(row$conc[[1]])) else row$max_med
     ))
   }
   
-  l3_dat <- lapply(1:nrow(dat), function(i) na.omit(process_row(dat[i])))
-  l3_range <- range(rbindlist(l3_dat)$conc)
-  model_range <- range(rbindlist(l3_dat)$model)
+  conc_resp <- lapply(1:nrow(dat), function(i) process_row(dat[i]))
+  conc_resp_bound <- rbindlist(conc_resp)
+  conc_range <- if (nrow(conc_resp_bound) > 0) range(conc_resp_bound$conc) else c(NA,NA)
+  model_range <- if (nrow(conc_resp_bound) > 0) range(conc_resp_bound$model) else c(NA,NA)
   
   # check if data is outside bounds of yrange. If so, expand yrange bounds
   if (!all(is.na(yrange))) {
@@ -104,7 +105,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, fla
   
   # applies to comparison and single plots, sc and mc
   gg <- ggplot() +
-    scale_x_continuous(limits = l3_range, trans = ifelse(0 %in% rbindlist(l3_dat)$conc,"identity","log10")) +
+    scale_x_continuous(limits = conc_range, trans = ifelse(0 %in% conc_resp_bound$conc,"identity","log10")) +
     scale_y_continuous(limits = yrange) +
     xlab(paste0("Concentration ", "(", dat$conc_unit[1], ")")) +
     ylab(stringr::str_to_title(gsub("_", " ", dat$normalized_data_type[1]))) +
@@ -121,7 +122,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, fla
   if (nrow(dat) == 1) { # add points and cutoff lines for single plot
     
     gg <- gg + 
-      geom_point(data = l3_dat[[1]], aes(conc, resp), show.legend = FALSE) + 
+      geom_point(data = conc_resp[[1]], aes(conc, resp), show.legend = FALSE) + 
       geom_hline(data = dat, aes(yintercept = coff, color = dat$cutoff_string, linetype = dat$cutoff_string)) +
       labs(title = get_plot_title(dat, type, compare, verbose),
            caption = ifelse(flags, get_plot_caption(dat), ""))
@@ -131,7 +132,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, fla
     gg <- gg + 
       lapply(1:nrow(dat), function(i) {
         row <- dat[i]
-        geom_point(data = l3_dat[[i]], aes(conc, resp), color = row$color, alpha = 0.5, show.legend = FALSE)
+        geom_point(data = conc_resp[[i]], aes(conc, resp), color = row$color, alpha = 0.5, show.legend = FALSE)
       }) +
       geom_hline(data = dat, aes(yintercept = coff, linetype = cutoff_string, color = cutoff_string))
     
@@ -144,7 +145,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, fla
   } else {
     
     gg <- gg + 
-      geom_point(data = rbindlist(l3_dat), aes(conc, resp), alpha = 0.25) + 
+      geom_point(data = conc_resp_bound, aes(conc, resp), alpha = 0.25) + 
       labs(title = get_plot_title(dat, type, compare, verbose))
     
   }
