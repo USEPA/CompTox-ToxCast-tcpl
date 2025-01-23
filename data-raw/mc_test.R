@@ -35,7 +35,7 @@ mc5_counts <- tcplQuery("SELECT DISTINCT aeid,
                         COUNT( aeid ) as n, 
                         max(hitc) as max_hitc
                         FROM invitrodb.mc5 GROUP BY aeid")
-# filter to only include where at least one sample is active and n < 10
+# filter to only include where at least one sample is active and number of samples == 2
 mc5_counts <- mc5_counts %>% filter(max_hitc > 0.9 & n == 2)
 # pick one aeid
 selected <- mc5_counts[sample(1:nrow(mc5_counts),size = 1,replace = FALSE),aeid]
@@ -54,12 +54,16 @@ l6_sample2 <- l6[sample(1:nrow(l6),size = 2,replace = FALSE)]
 l7 <- tcplLoadData(lvl = 7, fld = "aeid", val = selected, add.fld = FALSE)
 l7_sample1 <- l7[sample(1:nrow(l7),size = 1,replace = FALSE)]
 l7_sample2 <- l7[sample(1:nrow(l7),size = 2,replace = FALSE)]
+# load level 5 data for aeids which were filtered above
+all_mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = "aeid", val = mc5_counts$aeid))
+wllt_example_aeid <- unique(all_mc5[is.na(chnm) | is.na(dsstox_substance_id)]$aeid)
+if(length(wllt_example_aeid) == 0) stop("Endpoint with missing chnm/dtxsid not found for wllt test in dataset. Try broadening which aeids are loaded above in 'all_mc5' line.")
+wllt_example_aeid <- wllt_example_aeid[sample(1:length(wllt_example_aeid), size = 1,replace = FALSE)]
 # pick compare endpoints and ids
 # first determine which aeids have the same chnms tested as the selected aeid
-all_mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = "aeid", val = mc5_counts$aeid))
 all_mc5 <- all_mc5 |> mutate(match = chnm %in% all_mc5[aeid == selected,chnm]) |> 
   group_by(aeid) |> filter(all(match) & aeid != selected) |> as.data.table()
-if(nrow(all_mc5) >= 0) stop("No endpoints which test the exact same set of chemicals. Try picking a new original aeid ('selected' var above)")
+if(nrow(all_mc5) < 3) stop("Not enough endpoints which test the exact same set of chemicals. Try picking a new original aeid ('selected' var above)")
 compare.aeid <- all_mc5[sample(1:nrow(all_mc5),size = 1,replace = FALSE),aeid]
 compare.l5 <- all_mc5[aeid == compare.aeid,]
 compare.l5_sample1 <- compare.l5[chnm %in% l5_sample1$chnm]
@@ -69,6 +73,8 @@ all_mc5 <- all_mc5[aeid != compare.aeid]
 extra.aeids <- all_mc5[sample(1:nrow(mc5_counts),size = 2,replace = FALSE),aeid]
 aeid <- selected
 
+
+#to add more functions which load some data from invitro, add more else if conditionals
 get_query_data <- function(lvl, fld, val, compare = "m4id", add.fld = TRUE, func = "tcplLoadData") {
   message(compare.val)
   if (func == "tcplLoadData") {
@@ -98,7 +104,7 @@ get_query_data <- function(lvl, fld, val, compare = "m4id", add.fld = TRUE, func
 }
 
 
-# to add more tests with new/different data to test-tcplLoadData.R, add lines below and run script
+# to add more tests with new/different data for existing or new functions, add lines below and run script
 mc_test <- list(
   tcplConfQuery = tcplQuery("SHOW VARIABLES LIKE 'max_allowed_packet'"),
   mc0_by_m0id = get_query_data(lvl = 0, fld = "m0id", val = l3_sample1$m0id),
@@ -127,6 +133,9 @@ mc_test <- list(
   plot_single_aeid = get_query_data(fld = "aeid", 
                                     val = aeid, 
                                     func = "tcplPlot"),
+  plot_single_aeid_missing_chem = get_query_data(fld = "aeid",
+                                                 val = wllt_example_aeid,
+                                                 func = "tcplPlot"),
   plot_multiple_aeid = get_query_data(fld = "aeid", 
                                       val = list(c(aeid, compare.aeid)), 
                                       func = "tcplPlot"),
