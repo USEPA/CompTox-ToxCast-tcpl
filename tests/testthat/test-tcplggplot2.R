@@ -15,6 +15,7 @@
 # })
 
 pdf(NULL) # prevent automatic RPlots.pdf output due to not storing tcplggplot2 in object
+
 #-------------------------------------------------------------------------------
 # Test tcplggplot2 function - mc
 #-------------------------------------------------------------------------------
@@ -120,7 +121,7 @@ test_that("tcplggplot2 works for verbose (flags table) mc large comparison plot"
 
 
 #-------------------------------------------------------------------------------
-# Test tcplggplot2 function - mc
+# Test tcplggplot2 function - Sc
 #-------------------------------------------------------------------------------
 test_that("tcplggplot2 works for sc single plot", {
   data("sc_test")
