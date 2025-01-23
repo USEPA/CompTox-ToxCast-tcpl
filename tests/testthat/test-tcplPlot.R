@@ -312,6 +312,40 @@ test_that("tcplPlot works for multiple spid/aeid compared mc", {
   file.remove(fn) # clean up
 })
 
+test_that("tcplPlot works for large comparisons greater than group.threshold mc", {
+  data("mc_test")
+  mocked <- mc_test$plot_multiple_aeid_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  expect_no_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
+  expect_no_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = FALSE, multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8, group.fld = "model_type"))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+test_that("tcplPlot works for large comparisons greater than group.threshold sc", {
+  data("sc_test")
+  mocked <- sc_test$plot_multiple_aeid_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  expect_no_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 12))
+  expect_no_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 12, group.fld = "coff"))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
 test_that("tcplPlot errors if 'compare' or 'by' are not fields in 'dat'", {
   data("mc_test")
   mocked <- mc_test$plot_single_m4id_compare

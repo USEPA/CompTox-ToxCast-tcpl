@@ -288,9 +288,9 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, fla
     } else {
       
       gg <- gg +
-        geom_hline(data = dat, aes(yintercept = max_med, color = as.character(hitc)), alpha = 0.5) +
+        geom_hline(data = dat, aes(yintercept = max_med, color = as.character(!!sym(group.fld))), alpha = 0.5) +
         geom_hline(data = dat, aes(yintercept = coff), linetype = "dashed") +
-        scale_color_viridis_d("hitc", begin = 0.1, end = 0.9, option = "turbo")
+        scale_color_viridis_d(group.fld, begin = 0.1, end = 0.9, option = "turbo")
       
     }
     
