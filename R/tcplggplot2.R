@@ -25,24 +25,28 @@
 #' @importFrom viridis viridis
 #' @import gridExtra
 #' @import stringr
-tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = FALSE, flags = FALSE, 
+tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flags = FALSE, 
                         yrange = c(NA,NA), group.fld = NULL, group.threshold = 9) {
   
   # checks
+  if (is.null(dat)) 
+    stop("'dat' must not be NULL.")
   if (nrow(dat) == 0)
     stop("'dat' contains 0 rows.")
   if (!type %in% c("mc", "sc")) 
     stop("'type' must be 'mc' or 'sc'.")
   if (type == "sc" && flags == TRUE)
     flags <- FALSE
-  if (lu(dat$conc_unit) != 1 || lu(dat$normalized_data_type) != 1)
-    stop("Concentration or normalized data type units do not match.")
+  if (!verbose && flags && nrow(dat) > 1 && nrow(dat) < group.threshold)
+    warning("'verbose' = FALSE and 'flags' = TRUE. Flags will not be included in comparison plots unless 'verbose' = TRUE.")
   if (is.null(group.fld)) # set default group.fld for large comparisons
     group.fld = ifelse(type == "mc", "modl", "hitc")
   if (length(group.fld) > 1)
     stop("'group.fld' must be of length 1.")
   if (!group.fld %in% colnames(dat))
     stop("'group.fld' must be a column name of 'dat': ", paste(colnames(dat), collapse = ", "))
+  if (lu(dat$conc_unit) != 1 || lu(dat$normalized_data_type) != 1)
+    stop("Concentration or normalized data type units do not match.")
   
   
   # add winning model/max median string for legend
