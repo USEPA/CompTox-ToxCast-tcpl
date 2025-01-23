@@ -124,7 +124,7 @@ tcplPlotCalcAspectRatio <- function(type = "mc", verbose = FALSE, multi = FALSE,
     h <- 6
   if (verbose && any(nrows > 1 & nrows < group.threshold)) 
     h <- max(2 + max(nrows[nrows > 1 & nrows < group.threshold]), 6)
-  if (any(nrows > group.threshold) && flags)
+  if (any(nrows >= group.threshold) && flags)
     h <- max(h, 8)
   if(is.null(nrow))
     nrow <- max(round(10/h), 1)
