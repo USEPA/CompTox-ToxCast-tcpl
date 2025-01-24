@@ -28,6 +28,10 @@
 tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flags = FALSE, 
                         yrange = c(NA,NA), group.fld = NULL, group.threshold = 9) {
   
+  # variable binding for R CMD check
+  N <- coff <- conc <- resp <- cutoff_string <- ac50 <- name <- aic <- NULL
+  flag <- max_med <- max_med_string <- winning_model_string <- NULL
+  
   # checks
   if (is.null(dat)) 
     stop("'dat' must not be NULL.")

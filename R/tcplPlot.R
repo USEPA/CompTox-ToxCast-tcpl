@@ -79,6 +79,9 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
                      verbose = TRUE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, 
                      yuniform = FALSE, yrange=c(NA,NA), group.fld = NULL, group.threshold = 9) {
   
+  # variable binding for R CMD check
+  group_from_list_dat <- lvl <- w <- h <- NULL
+  
   #set pdf options
   enc <- pdf.options()$encoding
   pdf.options(encoding="CP1253.enc")

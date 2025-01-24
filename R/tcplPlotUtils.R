@@ -9,6 +9,9 @@
 #' @importFrom dplyr group_by summarize select left_join case_when 
 tcplPlotLoadWllt <- function(dat = NULL, type = "mc") {
   
+  # variable binding for R CMD check
+  dsstox_substance_id <- chnm <- aeid <- acid <- wllt <- wllt_desc <- NULL
+  
   # determine missing chemical info
   missing <- dat[is.na(dsstox_substance_id) | is.na(chnm), .(spid, aeid)]
   if (nrow(missing) > 0) {

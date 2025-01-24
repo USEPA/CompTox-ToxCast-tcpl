@@ -14,6 +14,7 @@
 # tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
 # })
 
+pdf(NULL) # prevent automatic RPlots.pdf output due to not storing gtable in object
 
 #-------------------------------------------------------------------------------
 # Test MORELETTERS
@@ -151,6 +152,11 @@ test_that("get_plot_title creates full title for other compare plot mc", {
   expect_equal(title, expected_title)
   title <- get_plot_title(dat = dat, compare = "normalized_data_type", verbose = TRUE)
   expect_equal(title, expected_title)
+  # length of 2 compare
+  title <- get_plot_title(dat = dat, compare = c("normalized_data_type", "conc_unit"), verbose = FALSE)
+  expected_title <- trimws(paste0("normalized_data_type: ", unique(dat$normalized_data_type),
+                                  "; conc_unit: ", unique(dat$conc_unit)))
+  expect_equal(title, expected_title)
 })
 
 test_that("get_plot_title creates full title for single plot sc", {
@@ -231,6 +237,11 @@ test_that("get_plot_title creates full title for other compare plot sc", {
   expected_title <- trimws(paste0("normalized_data_type: ", unique(dat$normalized_data_type)))
   expect_equal(title, expected_title)
   title <- get_plot_title(dat = dat, type = "sc", compare = "normalized_data_type", verbose = TRUE)
+  expect_equal(title, expected_title)
+  # length of 2 compare
+  title <- get_plot_title(dat = dat, compare = c("normalized_data_type", "conc_unit"), verbose = FALSE)
+  expected_title <- trimws(paste0("normalized_data_type: ", unique(dat$normalized_data_type),
+                                  "; conc_unit: ", unique(dat$conc_unit)))
   expect_equal(title, expected_title)
 })
 
