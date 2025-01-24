@@ -58,7 +58,7 @@ tcplfit2_fun <- function(row, model, x) {
 #'
 #' @return a string title for the individual plot
 #' @importFrom stringr str_trunc
-get_plot_title <- function(dat = NULL, type = "mc", compare = "m4id", verbose = FALSE) {
+get_plot_title <- function(dat = NULL, type = "mc", compare = "m4id", verbose = TRUE) {
   # identify matching elements of the title across all compared samples
   title <- trimws(paste0(
     stringr::str_trunc(
