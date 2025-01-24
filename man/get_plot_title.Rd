@@ -5,7 +5,7 @@
 \title{get_plot_title
 Generate plot title given number of rows and length of unique elements}
 \usage{
-get_plot_title(dat = NULL, type = "mc", compare = "m4id", verbose = FALSE)
+get_plot_title(dat = NULL, type = "mc", compare = "m4id", verbose = TRUE)
 }
 \arguments{
 \item{dat}{data table with all required conc/resp data; each row will extend comparison}

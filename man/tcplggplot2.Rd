@@ -8,7 +8,7 @@ tcplggplot2(
   dat,
   type = "mc",
   compare = "m4id",
-  verbose = FALSE,
+  verbose = TRUE,
   flags = FALSE,
   yrange = c(NA, NA),
   group.fld = NULL,
