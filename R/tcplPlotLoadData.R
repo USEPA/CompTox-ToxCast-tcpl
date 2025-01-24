@@ -63,8 +63,10 @@
 #' @importFrom stringr str_count
 #' @export
 tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
-  #variable binding
-  lvl <- m4id <- conc <- resp <- conc_unit <- NULL
+  
+  # variable binding for R CMD check
+  lvl <- m4id <- conc <- resp <- conc_unit <- flag_count <- NULL
+  bmd <- top <- bmr <- model_type <- coff <- max_med <- hitc <- NULL
   
   # Validate vars based on some assumed properties
   validated_vars <- tcplPlotValidate(type = type,flags = flags)

@@ -82,7 +82,7 @@ get_plot_title <- function(dat = NULL, type = "mc", compare = "m4id", verbose = 
     if (all(compare == "group_from_list_dat")) {
       return(paste0("User defined group: ", unique(dat$group_from_list_dat)))
     }
-    return(paste0(compare, ": ", unique(dat[,..compare]), collapse = "; "))
+    return(paste0(compare, ": ", unique(dat[,compare,with=FALSE]), collapse = "; "))
   }
   title
 }
@@ -190,12 +190,15 @@ dynamic_table_trunc <- function(tbl = NULL, all_cols) {
 #' @importFrom dplyr select all_of mutate_if
 get_verbose_tables <- function(dat = NULL, type = "mc", compare = "m4id", flags = FALSE) {
   
+  # variable binding for R CMD check
+  index <- hitc <- bmd <- ac50 <- color <- INDEX <- NULL
+  
   # potential annotation columns for table
   all_cols <- c("index",ifelse(type == "mc", "m4id", "s2id"),
                 "dsstox_substance_id","chnm","spid","aeid","aenm","color")
   # bool vector if the column's length of unique values is greater than 1
   lu_gt_one <- sapply(all_cols, function(col) {
-    lu(dat[,..col][[1]]) > 1
+    lu(dat[,col,with=FALSE][[1]]) > 1
   })
   tbl_cols <- all_cols[lu_gt_one]
   # select columns which the length of unique is greater than 1

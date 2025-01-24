@@ -42,7 +42,9 @@ Imports:
     gridExtra,
     stringr,
     rlang,
-    ctxR
+    ctxR,
+    viridis,
+    gt
 Suggests:
     roxygen2,
     knitr,
@@ -51,13 +53,13 @@ Suggests:
     htmlTable,
     testthat (>= 3.0.0),
     reshape2,
-    viridis,
     kableExtra,
     colorspace,
     magrittr,
     vdiffr,
     httptest,
-    rmdformats
+    rmdformats,
+    gtable
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.3.1
