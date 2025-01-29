@@ -30,7 +30,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
   
   # variable binding for R CMD check
   N <- coff <- conc <- resp <- cutoff_string <- ac50 <- name <- aic <- NULL
-  flag <- max_med <- max_med_string <- winning_model_string <- NULL
+  flag <- max_med <- max_med_string <- winning_model_string <- modl <- index <- NULL
   
   # checks
   if (is.null(dat)) 
@@ -54,9 +54,12 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
   
   
   # add winning model/max median string for legend
-  if (type == "mc")
-    dat$winning_model_string <- paste0("Winning Model\n(", dat$modl[1], ")") else
-      dat$max_med_string <- "Max Median"
+  if (type == "mc") {
+    dat$winning_model_string <- paste0("Winning Model\n(", dat$modl[1], ")")
+    dat[modl == "loec", winning_model_string := "LOEC"]
+  } else {
+    dat$max_med_string <- "Max Median"
+  }
   # add cutoff string and linetype for legend
   dat$cutoff_string <- "Cutoff"
   dat$cutoff_linetype <- "dashed"
@@ -66,9 +69,12 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
   if (nrow(dat) > 1) {
     # assign index to each row (comparison A, B, C...)
     dat$index <- MORELETTERS(1:nrow(dat))
-    if (type == "mc")
-      dat$winning_model_string <- paste0("Model ", dat$index, "(", dat$modl, ")") else
-        dat$max_med_string <- paste0("Max Median ", dat$index)
+    if (type == "mc") {
+      dat$winning_model_string <- paste0("Model ", dat$index, "(", dat$modl, ")")
+      dat[modl == "loec", winning_model_string := paste("LOEC", index)]
+    } else {
+      dat$max_med_string <- paste0("Max Median ", dat$index)
+    }
     dat$cutoff_string <- paste0("Cutoff ", dat$index)
     # get cutoffs which have a frequency greater than 1 (need special linetypes)
     repeated_coff <- data.table(table(dat$coff))[N > 1]
@@ -96,7 +102,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
     return(data.table(
       conc = replace(unlist(row$conc[[1]]), is.na(unlist(row$conc[[1]])), 0), 
       resp = unlist(row$resp[[1]]),
-      model = if (type == "mc" && row$modl != "none") tcplfit2_fun(row, row$modl, unlist(row$conc[[1]])) else row$max_med
+      model = if (type == "mc" && row$modl != "none" && row$modl != "loec") tcplfit2_fun(row, row$modl, unlist(row$conc[[1]])) else row$max_med
     ))
   }
   
@@ -162,22 +168,32 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
     
     if (nrow(dat) == 1) { # add winning/losing models with aesthetic overrides
       
-      # add ac50 as NA if missing
-      dat[is.null(dat$ac50), ac50 := NA]
+      vals <- c(1,1,3,2,2,2)
+      brks <- c("LOEC", dat$winning_model_string, "Losing Models", dat$cutoff_string, "BMD", "AC50")
+      names(vals) <- brks
       models <- dat |> select(contains("aic")) |> colnames() |> stringr::str_extract("[:alnum:]+")
       losing_models <- models[!models %in% dat$modl]
-      gg <- gg +
-        geom_function(data = dat, aes(linetype = winning_model_string, color = winning_model_string),
-                      fun = function(x) tcplfit2_fun(dat, dat$modl, x), na.rm=TRUE) +
+      
+      if (dat$modl == "loec") {
+        gg <- gg + geom_vline(aes(xintercept = dat$loec, color = "LOEC", linetype = "LOEC"), na.rm=TRUE)
+      } else {
+        # add ac50 as NA if missing
+        dat[is.null(dat$ac50), ac50 := NA]
+        gg <- gg + 
+          geom_function(data = dat, aes(linetype = winning_model_string, color = winning_model_string),
+                        fun = function(x) tcplfit2_fun(dat, dat$modl, x), na.rm=TRUE) +
+          geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50"), na.rm=TRUE)
+      }
+      
+      gg <- gg + 
         lapply(losing_models, function(model) {
           geom_function(aes(linetype = "Losing Models", color = "Losing Models"), 
                         fun = function(x) tcplfit2_fun(dat, model, x), na.rm=TRUE)
         }) +
-        geom_vline(aes(xintercept = dat$ac50, color = "AC50", linetype = "AC50"), na.rm=TRUE) +
-        scale_color_viridis_d("", direction = -1, guide = guide_legend(reverse = TRUE, order = 2), end = 0.9) + 
-        scale_linetype_manual("", guide = guide_legend(reverse = TRUE, order = 2), values = c(2, 2, 2, 3, 1))
+        scale_color_viridis_d("", direction = -1, breaks = brks, end = 0.85) + 
+        scale_linetype_manual("", breaks = brks, values = vals)
       
-      if (!is.null(dat$bmd) && !is.null(dat$bmr)){ # add bmd segments
+      if (!is.null(dat$bmd) && !is.null(dat$bmr) && !is.na(dat$bmd) && !is.na(dat$bmr)){ # add bmd segments
         gg <- gg + 
           geom_segment(aes(x=dat$bmd, xend=dat$bmd, y=-Inf, yend=dat$bmr, color = "BMD", linetype = "BMD"), na.rm=TRUE) + 
           geom_segment(x=-Inf, aes(xend=dat$bmd, y = dat$bmr, yend=dat$bmr, color = "BMD", linetype = "BMD"), na.rm=TRUE)
@@ -214,14 +230,18 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
       gg <- gg + 
         lapply(1:nrow(dat), function(i) {
           row <- dat[i]
-          geom_function(data = row, aes(linetype = winning_model_string, color = winning_model_string), 
-                        fun = function(x) tcplfit2_fun(row, row$modl, x), xlim = c(log10(min(row$conc[[1]])),log10(max(row$conc[[1]]))), na.rm=TRUE)
+          if (row$modl == "loec") {
+            return(geom_vline(data = row, aes(xintercept = loec, color = winning_model_string, linetype = winning_model_string), na.rm=TRUE))
+          } else {
+            return(geom_function(data = row, aes(linetype = winning_model_string, color = winning_model_string), 
+                                 fun = function(x) tcplfit2_fun(row, row$modl, x), xlim = c(log10(min(row$conc[[1]])),log10(max(row$conc[[1]]))), na.rm=TRUE))
+          }
         }) +
-        scale_color_manual("", breaks = c(dat$cutoff_string, dat$winning_model_string), 
+        scale_color_manual("", breaks = c(dat$winning_model_string, dat$cutoff_string), 
                            values = c(dat$color, dat$color)) +
-        scale_linetype_manual("", breaks = c(dat$cutoff_string, dat$winning_model_string),
-                              values = c(dat$cutoff_linetype, rep("solid", nrow(dat))),
-                              guide = guide_legend(override.aes = list(linetype = c(rep("dashed", nrow(dat)), rep("solid", nrow(dat))))))
+        scale_linetype_manual("", breaks = c(dat$winning_model_string, dat$cutoff_string),
+                              values = c(rep("solid", nrow(dat)), dat$cutoff_linetype),
+                              guide = guide_legend(override.aes = list(linetype = c(rep("solid", nrow(dat)), rep("dashed", nrow(dat))))))
       
       if (verbose) {
         
@@ -238,8 +258,13 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
       gg <- gg + 
         lapply(1:nrow(dat), function(i) {
           row <- dat[i]
-          geom_function(data = row, aes(color = as.character(!!sym(group.fld))), alpha = 0.5, 
-                        fun = function(x) tcplfit2_fun(row, row$modl, x), xlim = c(log10(min(row$conc[[1]])),log10(max(row$conc[[1]]))), na.rm=TRUE)
+          if (row$modl == "loec") {
+            return(geom_vline(data = row, aes(xintercept = loec, color = as.character(!!sym(group.fld))), alpha = 0.5, na.rm=TRUE))
+          } else {
+            return(geom_function(data = row, aes(color = as.character(!!sym(group.fld))), 
+                                 alpha = 0.5, fun = function(x) tcplfit2_fun(row, row$modl, x), 
+                                 xlim = c(log10(min(row$conc[[1]])),log10(max(row$conc[[1]]))), na.rm=TRUE))
+          }
         }) +
         geom_hline(data = dat, aes(yintercept = coff), linetype = "dashed") +
         scale_color_viridis_d(group.fld, begin = 0.1, end = 0.9, option = "turbo")
