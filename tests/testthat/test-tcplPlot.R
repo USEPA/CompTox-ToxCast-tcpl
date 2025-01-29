@@ -761,6 +761,73 @@ test_that("ggplot output returns specific warnings and errors", {
 
 
 #-------------------------------------------------------------------------------
+# loec plotting tests
+#-------------------------------------------------------------------------------
+test_that("loec plotting works for single plot", {
+  data("mc_test")
+  mocked <- mc_test$plot_single_m4id
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
+  dat[, c("modl", "fitc", "model_type", "hitc", "bmr", "bmd", "ac50") := list("loec", 100L, 1, 1, NA, NA, NA)]
+  dat$loec <- sort(unlist(dat$conc), decreasing = TRUE)[1] # set loec to highest tested conc
+  expect_no_error(tcplPlot(dat = dat, output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot"))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+test_that("loec plotting works for small comparison plot", {
+  data("mc_test")
+  mocked <- mc_test$plot_single_m4id_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat <- tcplPlotLoadData(val = mocked$m4id, flags = TRUE)
+  dat[, c("modl", "fitc", "model_type", "hitc", "bmr", "bmd", "ac50") := list("loec", 100L, 1, 1, NA, NA, NA)]
+  dat$loec <- sort(unlist(dat$conc), decreasing = TRUE)[1:2] # set loec to highest tested concs
+  expect_no_error(tcplPlot(dat = dat, compare = "chnm", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot"))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+test_that("loec plotting works for large comparison plot", {
+  data("mc_test")
+  mocked <- mc_test$plot_multiple_aeid_compare
+  local_mocked_bindings(
+    tcplQuery = function(query, db, tbl) {
+      if (query == "SHOW VARIABLES LIKE 'max_allowed_packet'") mc_test$tcplConfQuery
+      else mocked[query][[1]]
+    }
+  )
+  tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
+  dat_copy <- dat <- tcplPlotLoadData(fld = "aeid", val = mocked$aeid, flags = TRUE)
+  dat <- dat[1:4]
+  dat[, c("modl", "fitc", "model_type", "hitc", "bmr", "bmd", "ac50") := list("loec", 100L, 1, 1, NA, NA, NA)]
+  dat$loec <- c(sort(unlist(dat$conc), decreasing = TRUE)[1:4], rep(NA, nrow(dat) - 4)) 
+  expect_no_error(tcplPlot(dat = dat, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
+  expect_no_error(tcplPlot(dat = dat, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot"))
+  dat <- dat_copy
+  dat[, c("modl", "fitc", "model_type", "hitc", "bmr", "bmd", "ac50") := list("loec", 100L, 1, 1, NA, NA, NA)]
+  dat$loec <- c(sort(unlist(dat$conc), decreasing = TRUE)[1:4], rep(NA, nrow(dat) - 4)) 
+  expect_no_error(tcplPlot(dat = dat, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
+  fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
+  expect_length(fn, 1) # exactly one file created
+  file.remove(fn) # clean up
+})
+
+
+#-------------------------------------------------------------------------------
 # Covers testing tcplLoadData with "API" driver
 # Using httptest mocking to automatically save json responses from http requests
 # NOTE -- updates to the CTX API may mean stored json files are out of date. In 
