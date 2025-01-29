@@ -322,8 +322,8 @@ test_that("tcplPlot works for large comparisons greater than group.threshold mc"
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
-  expect_no_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = FALSE, multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8, group.fld = "model_type"))
+  expect_no_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare = "normalized_data_type", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
+  expect_no_error(tcplPlot(type = "mc", fld = "aeid", val = mocked$aeid, compare = "normalized_data_type", output = "pdf", verbose = FALSE, multi = TRUE, flags = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8, group.fld = "model_type"))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -339,8 +339,8 @@ test_that("tcplPlot works for large comparisons greater than group.threshold sc"
     }
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
-  expect_no_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 12))
-  expect_no_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare = "conc_unit", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 12, group.fld = "coff"))
+  expect_no_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare = "normalized_data_type", output = "pdf", verbose = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 12))
+  expect_no_error(tcplPlot(type = "sc", fld = "aeid", val = mocked$aeid, compare = "normalized_data_type", output = "pdf", verbose = FALSE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 12, group.fld = "coff"))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
@@ -815,12 +815,13 @@ test_that("loec plotting works for large comparison plot", {
   dat <- dat[1:4]
   dat[, c("modl", "fitc", "model_type", "hitc", "bmr", "bmd", "ac50") := list("loec", 100L, 1, 1, NA, NA, NA)]
   dat$loec <- c(sort(unlist(dat$conc), decreasing = TRUE)[1:4], rep(NA, nrow(dat) - 4)) 
-  expect_no_error(tcplPlot(dat = dat, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
-  expect_no_error(tcplPlot(dat = dat, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot"))
+  dat <- rbind(dat, dat_copy[5:nrow(dat_copy)], fill = TRUE)
+  expect_no_error(tcplPlot(dat = dat, compare = "normalized_data_type", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
+  expect_no_error(tcplPlot(dat = dat, compare = "normalized_data_type", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot"))
   dat <- dat_copy
   dat[, c("modl", "fitc", "model_type", "hitc", "bmr", "bmd", "ac50") := list("loec", 100L, 1, 1, NA, NA, NA)]
   dat$loec <- c(sort(unlist(dat$conc), decreasing = TRUE)[1:4], rep(NA, nrow(dat) - 4)) 
-  expect_no_error(tcplPlot(dat = dat, compare = "conc_unit", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
+  expect_no_error(tcplPlot(dat = dat, compare = "normalized_data_type", output = "pdf", verbose = TRUE, flags = TRUE, multi = TRUE, fileprefix = "temp_tcplPlot", group.threshold = 8))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 1) # exactly one file created
   file.remove(fn) # clean up
