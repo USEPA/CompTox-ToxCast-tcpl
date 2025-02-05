@@ -159,11 +159,11 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
       }
       m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
       if(output=="pdf"){
-        ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",unique(rbindlist(f)[[by]]))), ".pdf"), m1, width = w*ncol, height = h*nrow)
+        ggsave(paste0(fileprefix,ifelse(is.null(by),"",paste0("_",by,"_",unique(rbindlist(f)[[by]]))), ".pdf"), m1, width = w*ncol, height = h*nrow, limitsize = FALSE)
       } else {
         names(plot_list) <- lapply(seq_along(f), function(i) paste(f[[i]]$m4id, collapse = "_"))
         lapply(names(plot_list), function(x)ggsave(filename=paste0(fileprefix,"_",x,".",output),
-                                                   plot=arrangeGrob(grobs=plot_list[x]), width = w, height = h, dpi=dpi))
+                                                   plot=arrangeGrob(grobs=plot_list[x]), width = w, height = h, dpi=dpi, limitsize = FALSE))
       }
     }
 
