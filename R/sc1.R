@@ -59,10 +59,6 @@ sc1 <- function(ac, wr = FALSE) {
   ## Remove data with well quality of 0
   dat <- dat[wllq == 1]
   
-  ## Force all concentrations to 1 significant figure
-  dat[ , conc := signif(conc, 1)]
-  
-  
   ## Load aeid mapping information.
   aeid_info <- tcplLoadAeid("acid", ac)[ , list(acid, aeid)]
   setkey(aeid_info, acid)
