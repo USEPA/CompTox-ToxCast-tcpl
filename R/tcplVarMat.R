@@ -13,6 +13,8 @@
 #' list to add additional matrices 
 #' @param flag Integer or Logical of length 1, passed to 
 #' \code{\link{tcplSubsetChid}}
+#' @param cyto.pars List, named list of arguments passed to 
+#' \code{\link{tcplCytoPt}} for z-score matrix
 #' 
 #' @details
 #' The \code{tcplVarMat} function is used to create chemical by assay matrices
@@ -30,6 +32,9 @@
 #'  \item "mc_hitc" -- The hit-call for the winning model in 
 #'  multiple-concentration (mc) screening.
 #'  \item "sc_hitc" -- The hit-call in single concentration (sc) screening.
+#'  \item "zscore" -- The z-score based on the output from \code{tcplCytoPt}. 
+#'  The formula used for calculating the z-score is 
+#'  \eqn{-(\mathit{ac50} - \mathit{cyto\_pt})/\mathit{global\_mad}}
 #' }
 #' 
 #' \code{tcplVarMat} produces matrices of combined sc-mc output. For the ac50
@@ -57,10 +62,14 @@
 #' 
 #' When more than one sample is included for a chemical/assay pair, 
 #' \code{tcplVarMat} aggregates multiple samples to a chemical level call 
-#' utilizing \code{\link{tcplSubsetChid}}. The input
-#' for the \code{tcplVarMat} 'flag' parameter is passed to the 
-#' \code{tcplSubsetChid} call and used to parse down the data to create the 
-#' matrices.
+#' utilizing \code{\link{tcplSubsetChid}}. The tcplVarMat function calls both 
+#' \code{tcplSubsetChid} and \code{tcplCytoPt} (which separately calls 
+#' \code{tcplSubsetChid}). The input for the \code{tcplVarMat} 'flag' parameter
+#' is passed to the \code{tcplSubsetChid} call and used to parse down the data 
+#' to create the matrices. The \code{tcplSubsetChid} called within \code{tcplCytoPt}
+#' (to parse down the cytotoxicity data used to define the "zscore" matrix) can 
+#' be modified by passing a separate 'flag' element in the list defined by the 
+#' 'cyto.pars' parameter.
 #' 
 #' @return A list of chemical by assay matrices (data.tables) where the 
 #' rows are given by the dsstox_substance_id and corresponding chnm (chemical
@@ -93,9 +102,10 @@
 tcplVarMat <- function(dsstox_substance_id = NULL,
                        aeid = NULL,
                        add.vars = NULL,
-                       flag = TRUE) {
+                       flag = TRUE,
+                       cyto.pars = list()) {
   #variable binding
-  hitc <- aenm <- chnm <- NULL
+  hitc <- aenm <- chnm <- zscore <- NULL
   
   # check input
   if (!is.null(aeid) & !is.vector(aeid)) stop("'aeid' must be a vector.")
@@ -109,7 +119,7 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   
   ac50str = ifelse(check_tcpl_db_schema(),"ac50","modl_ga")
   
-  std.vars <- c(ac50str, paste0(ac50str, "_verbose"), "acc", "acc_verbose", "hitc", "hitc.y")
+  std.vars <- c(ac50str, paste0(ac50str, "_verbose"), "acc", "acc_verbose", "hitc", "hitc.y", "zscore")
   vars <- c(std.vars, add.vars)
   
   ## Load all possibilities to create matrix dimensions
@@ -157,8 +167,15 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   # subset to one sample per chemical
   mc5 <- tcplSubsetChid(dat = mc5, flag = flag)    
   
+  # run tcplCytoPt
+  if (is.null(cyto.pars)) cyto.pars <- list()
+  zdst <- do.call(what = tcplCytoPt, args = cyto.pars)
+  mc5 <- merge(zdst[, list(chid,cyto_pt,global_mad)], mc5, by = "chid")
+  mc5[actc == TRUE, zscore := -(log10(ac50) - cyto_pt)/global_mad]
+  mc5[actc == FALSE, zscore := NA]
+  
   # build matrices
-  mc5 <- mc5[hitc %in% c(0,-1), c("ac50", "acc") := 1e6]
+  mc5 <- mc5[actc == FALSE, c("ac50", "acc") := 1e6]
   long_sc2 <- sc2 |> group_by(dsstox_substance_id,aenm,chnm)
   if (nrow(long_sc2) > 0) {
     long_sc2 <- long_sc2 |> summarise(hitc = max(hitc)) |> filter(!is.na(dsstox_substance_id))
@@ -188,7 +205,7 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
   
   mat_list <- lapply(vars, build_matrix)
 
-  names(mat_list) = c("ac50", "ac50_verbose", "acc", "acc_verbose", "mc_hitc", "sc_hitc", add.vars)
+  names(mat_list) = c("ac50", "ac50_verbose", "acc", "acc_verbose", "mc_hitc", "sc_hitc", "zscore", add.vars)
   
   mat_list
   
