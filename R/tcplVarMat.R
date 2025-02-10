@@ -105,7 +105,7 @@ tcplVarMat <- function(dsstox_substance_id = NULL,
                        flag = TRUE,
                        cyto.pars = list()) {
   #variable binding
-  hitc <- aenm <- chnm <- zscore <- NULL
+  hitc <- aenm <- chnm <- zscore <- chid <- cyto_pt <- global_mad <- actc <- ac50 <- NULL
   
   # check input
   if (!is.null(aeid) & !is.vector(aeid)) stop("'aeid' must be a vector.")
