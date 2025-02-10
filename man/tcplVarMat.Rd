@@ -8,7 +8,8 @@ tcplVarMat(
   dsstox_substance_id = NULL,
   aeid = NULL,
   add.vars = NULL,
-  flag = TRUE
+  flag = TRUE,
+  cyto.pars = list()
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ list to add additional matrices}
 
 \item{flag}{Integer or Logical of length 1, passed to 
 \code{\link{tcplSubsetChid}}}
+
+\item{cyto.pars}{List, named list of arguments passed to 
+\code{\link{tcplCytoPt}} for z-score matrix}
 }
 \value{
 A list of chemical by assay matrices (data.tables) where the 
@@ -46,6 +50,9 @@ for different parameters. The standard list of matrices returned includes:
  \item "mc_hitc" -- The hit-call for the winning model in 
  multiple-concentration (mc) screening.
  \item "sc_hitc" -- The hit-call in single concentration (sc) screening.
+ \item "zscore" -- The z-score based on the output from \code{tcplCytoPt}. 
+ The formula used for calculating the z-score is 
+ \eqn{-(\mathit{ac50} - \mathit{cyto\_pt})/\mathit{global\_mad}}
 }
 
 \code{tcplVarMat} produces matrices of combined sc-mc output. For the ac50
@@ -73,10 +80,14 @@ the fields from the mc4 or mc5 tables to create matrices for.
 
 When more than one sample is included for a chemical/assay pair, 
 \code{tcplVarMat} aggregates multiple samples to a chemical level call 
-utilizing \code{\link{tcplSubsetChid}}. The input
-for the \code{tcplVarMat} 'flag' parameter is passed to the 
-\code{tcplSubsetChid} call and used to parse down the data to create the 
-matrices.
+utilizing \code{\link{tcplSubsetChid}}. The tcplVarMat function calls both 
+\code{tcplSubsetChid} and \code{tcplCytoPt} (which separately calls 
+\code{tcplSubsetChid}). The input for the \code{tcplVarMat} 'flag' parameter
+is passed to the \code{tcplSubsetChid} call and used to parse down the data 
+to create the matrices. The \code{tcplSubsetChid} called within \code{tcplCytoPt}
+(to parse down the cytotoxicity data used to define the "zscore" matrix) can 
+be modified by passing a separate 'flag' element in the list defined by the 
+'cyto.pars' parameter.
 }
 \examples{
 \dontrun{
