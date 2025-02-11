@@ -99,12 +99,96 @@ for the given level and data type.
 }
 \details{
 The data type can be either 'mc' for multiple concentration data, or 'sc'
-for single concentration data. 
-
-Leaving \code{fld} NULL will return all data.
+for single concentration data.
 }
 \examples{
 \dontrun{
-tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
+# Requires a database or API connection
+tcplConfDefault()
+
+# Simple plot returned as ggplot object for viewing or manipulating
+tcplPlot(fld = "m4id", val = 10000000)
+
+# Simple single conc plot returned as ggplot object for viewing or manipulating
+# Every example below works for single conc, as long as type = "sc" and any use 
+# of "m4id" is replaced with "s2id". Single conc not supported under API connection.
+tcplPlot(type = "sc", fld = "s2id", val = 6500000)
+
+# Simple plot returned to console using plotly package
+tcplPlot(fld = "m4id", val = 10000000, output = "console")
+
+# Simple plot saved to image file
+tcplPlot(fld = "m4id", val = 10000000, output = "png")
+
+# Simple plot saved to pdf
+tcplPlot(fld = "m4id", val = 10000000, output = "pdf", multi = FALSE)
+
+# Multiple plots saved to pdf, by assay endpoint
+tcplPlot(fld = "aeid", val = 1750, output = "pdf")
+
+# Multiple plots by assay endpoint saved to pdf, specifying a file name prefix
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", fileprefix = "example")
+
+# Multiple plots by assay endpoint saved to pdf, adjusting the number of rows and columns
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", nrow = 3, ncol = 4)
+
+# Multiple plots saved to pdf, split into files by aeid
+tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), by = "aeid", output = "pdf")
+
+# To use more than one field, be sure 'val' is given as a list with an element for each 'fld'.
+# Note - using more than one field is not supported under an API connection.
+tcplPlot(fld = c("aeid", "spid"), val = list(1750, c("WaterSample3", "WaterSample20")), output = "pdf")
+
+# Simple plot saved to image file, without verbose table
+tcplPlot(fld = "m4id", val = 10000000, output = "png", verbose = FALSE)
+
+# Simple plot saved to image file, with level 6 cautionary flags
+tcplPlot(fld = "m4id", val = 10000000, output = "png", flags = TRUE)
+
+# Simple plot saved to image file, with decreased dpi
+tcplPlot(fld = "m4id", val = 10000000, output = "png", dpi = 200)
+
+# Multiple plots by assay endpoint saved to pdf, with uniform y-range across all plots
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", yuniform = TRUE)
+
+# Multiple plots by assay endpoint saved to pdf, with specific uniform y-range across 
+# all plots. Any plots with elements outside this range will be expanded to fit.
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", yrange = c(-1,2))
+
+# Two plots created by comparing all curves across one assay endpoint saved to pdf.
+# "conc_unit" included since this endpoint contains multiple ("μM" and "CF"), so we should split them up.
+tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf")
+
+# Change group.fld to alter the binning field for curve color in this large comparison plot
+tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", group.fld = "fitc")
+
+# If you'd rather not have curves binned by 'group.fld', set group.threshold to a 
+# value greater than the greatest number of curves contained on one plot.
+# NOTE - it is not recommended to do this for plots with more than 10-12 curves.
+tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", group.threshold = 25)
+
+# Multiple plots created by comparing all spids across five assay endpoints saved to pdf
+tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", output = "pdf")
+
+# Multiple plots created by comparing all spids across five assay endpoints saved to pdf,
+# split into files by "conc_unit"
+tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", by = "conc_unit", output = "pdf")
+
+# Multiple plots created by using a custom field to compare across five assay 
+# endpoints saved to pdf. 
+dat <- tcplPlotLoadData(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), flags = TRUE)
+dat$cmp.fld <- rep("",nrow(dat)) # some logic for setting column data
+tcplPlot(dat = dat, compare = "cmp.fld", output = "pdf")
+
+# Multiple plots created by using a custom binning field to compare across five 
+# assay endpoints saved to pdf. 
+dat <- tcplPlotLoadData(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), flags = TRUE)
+dat$grp.fld <- rep("",nrow(dat)) # some logic for setting column data
+tcplPlot(dat = dat, compare = c("aeid", "conc_unit"), output = "pdf", group.fld = "grp.fld")
+
+# Multiple plots created by supplying dat as a list of data.tables.
+dat <- tcplPlotLoadData(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), flags = TRUE)
+dat <- split(dat, by = "conc_unit") # or likely some more complex logic for splitting
+tcplPlot(dat = dat, output = "pdf")
 }
 }
