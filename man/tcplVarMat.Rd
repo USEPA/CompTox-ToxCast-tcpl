@@ -7,6 +7,8 @@
 tcplVarMat(
   dsstox_substance_id = NULL,
   aeid = NULL,
+  std.vars = c("ac50", "ac50_verbose", "acc", "acc_verbose", "hitc_mc", "hitc_sc",
+    "zscore"),
   add.vars = NULL,
   flag = TRUE,
   cyto.pars = list()
@@ -16,6 +18,9 @@ tcplVarMat(
 \item{dsstox_substance_id}{Integer, chemical ID values to subset on}
 
 \item{aeid}{Integer, assay endpoint ID values to subset on}
+
+\item{std.vars}{Character, standard set of matrices; use this parameter to 
+subset this list}
 
 \item{add.vars}{Character, mc4 or mc5 field(s) not included in the standard
 list to add additional matrices}
@@ -47,9 +52,9 @@ for different parameters. The standard list of matrices returned includes:
  winning model.
  \item "acc_verbose" -- The ACC for the winning model, with text describing
  some situations.
- \item "mc_hitc" -- The hit-call for the winning model in 
+ \item "hitc_mc" -- The hit-call for the winning model in 
  multiple-concentration (mc) screening.
- \item "sc_hitc" -- The hit-call in single concentration (sc) screening.
+ \item "hitc_sc" -- The hit-call in single concentration (sc) screening.
  \item "zscore" -- The z-score based on the output from \code{tcplCytoPt}. 
  The formula used for calculating the z-score is 
  \eqn{-(\mathit{ac50} - \mathit{cyto\_pt})/\mathit{global\_mad}}
@@ -99,6 +104,7 @@ aeids <- c(80)
 dtxsid <- c("DTXSID4034653", "DTXSID2032683", "DTXSID6032358", 
 "DTXSID0032651", "DTXSID8034401")
 varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
+varmat <- tcplVarMat(aeid = aeids, std.vars = c("ac50", "zscore"))
 varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
 
 ## To save output to file
