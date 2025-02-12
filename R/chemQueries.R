@@ -29,11 +29,11 @@
       if (exact) {
         qformat <- paste(qformat, "chnm IN (%s);")
         val <- paste0("\"", val, "\"", collapse = ",")
-        qstring <- sprintf(qformat, val, val)
+        qstring <- sprintf(qformat, val)
       } else {
         qformat <- paste(qformat, "chnm RLIKE %s;")
         val <- paste0("\"", paste(val, collapse = "|"), "\"")
-        qstring <- sprintf(qformat, val, val)
+        qstring <- sprintf(qformat, val)
       }
     } else if (nfld == 'chem.only') {
       qstring <- "
