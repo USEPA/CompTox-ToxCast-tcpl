@@ -104,7 +104,8 @@
 #' 
 #' # To use more than one field, be sure 'val' is given as a list with an element for each 'fld'.
 #' # Note - using more than one field is not supported under an API connection.
-#' tcplPlot(fld = c("aeid", "spid"), val = list(1750, c("WaterSample3", "WaterSample20")), output = "pdf")
+#' tcplPlot(fld = c("aeid", "spid"), val = list(1750, c("WaterSample3", "WaterSample20")), 
+#'          output = "pdf")
 #' 
 #' # Simple plot saved to image file, without verbose table
 #' tcplPlot(fld = "m4id", val = 10000000, output = "png", verbose = FALSE)
@@ -123,23 +124,27 @@
 #' tcplPlot(fld = "aeid", val = 1750, output = "pdf", yrange = c(-1,2))
 #' 
 #' # Two plots created by comparing all curves across one assay endpoint saved to pdf.
-#' # "conc_unit" included since this endpoint contains multiple ("μM" and "CF"), so we should split them up.
+#' # "conc_unit" included since this endpoint contains multiple ("μM" and "CF"), so we 
+#' # should split them up.
 #' tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf")
 #' 
 #' # Change group.fld to alter the binning field for curve color in this large comparison plot
-#' tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", group.fld = "fitc")
+#' tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", 
+#'          group.fld = "fitc")
 #' 
 #' # If you'd rather not have curves binned by 'group.fld', set group.threshold to a 
 #' # value greater than the greatest number of curves contained on one plot.
 #' # NOTE - it is not recommended to do this for plots with more than 10-12 curves.
-#' tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", group.threshold = 25)
+#' tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", 
+#'          group.threshold = 25)
 #' 
 #' # Multiple plots created by comparing all spids across five assay endpoints saved to pdf
 #' tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", output = "pdf")
 #' 
 #' # Multiple plots created by comparing all spids across five assay endpoints saved to pdf,
 #' # split into files by "conc_unit"
-#' tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", by = "conc_unit", output = "pdf")
+#' tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", 
+#'          by = "conc_unit", output = "pdf")
 #' 
 #' # Multiple plots created by using a custom field to compare across five assay 
 #' # endpoints saved to pdf. 
