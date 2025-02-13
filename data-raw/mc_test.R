@@ -63,20 +63,22 @@ wllt_example_aeid <- wllt_example_aeid[sample(1:length(wllt_example_aeid), size 
 # first determine which aeids have the same chnms tested as the selected aeid
 all_mc5 <- all_mc5 |> mutate(match = chnm %in% all_mc5[aeid == selected,chnm]) |> 
   group_by(aeid) |> filter(all(match) & aeid != selected) |> as.data.table()
-if(nrow(all_mc5) < 3) stop("Not enough endpoints which test the exact same set of chemicals. Try picking a new original aeid ('selected' var above)")
-compare.aeid <- all_mc5[sample(1:nrow(all_mc5),size = 1,replace = FALSE),aeid]
+mc5_counts <- mc5_counts[aeid %in% unique(all_mc5$aeid)]
+if(nrow(mc5_counts) < 3) stop("Not enough endpoints which test the exact same set of chemicals. Try picking a new original aeid ('selected' var above)")
+compare.aeid <- mc5_counts[sample(1:nrow(mc5_counts),size = 1,replace = FALSE),aeid]
 compare.l5 <- all_mc5[aeid == compare.aeid,]
 compare.l5_sample1 <- compare.l5[chnm %in% l5_sample1$chnm]
 compare.l5_sample2 <- compare.l5[sample(1:nrow(compare.l5),size = 2,replace = FALSE)]
 # pick extra endpoints
-all_mc5 <- all_mc5[aeid != compare.aeid]
-extra.aeids <- all_mc5[sample(1:nrow(mc5_counts),size = 2,replace = FALSE),aeid]
+mc5_counts <- mc5_counts[aeid != compare.aeid]
+extra.aeids <- mc5_counts[sample(1:nrow(mc5_counts),size = 2,replace = FALSE),aeid]
+if (any(is.na(extra.aeids))) stop("extra.aeids contain NA aeid.")
 aeid <- selected
 
 
 #to add more functions which load some data from invitro, add more else if conditionals
 get_query_data <- function(lvl, fld, val, compare = "m4id", add.fld = TRUE, func = "tcplLoadData") {
-  message(compare.val)
+  
   if (func == "tcplLoadData") {
     # IMPORTANT || MUST ADD TEMPORARY LINE TO TCPLQUERY --------------------------
     # add temporary line to top of tcplQuery to get the query string: print(query)

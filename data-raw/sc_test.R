@@ -50,6 +50,7 @@ l2_sample2 <- l2[sample(1:nrow(l2),size = 2,replace = FALSE)]
 # pick compare endpoints and ids
 # be sure to only allow to choose from endpoints with the same number of samples
 sc2_counts <- filter(sc2_counts, n == sc2_counts[aeid == selected]$n & aeid != selected)
+if(nrow(sc2_counts) < 3) stop("Not enough endpoints which test the exact same set of chemicals. Try picking a new original aeid ('selected' var above)")
 compare.aeid <- sc2_counts[sample(1:nrow(sc2_counts),size = 1,replace = FALSE),aeid]
 selected <- c(selected, compare.aeid)
 compare.l2 <- tcplLoadData(type = "sc", lvl = 2, fld = "aeid", val = compare.aeid)
@@ -58,6 +59,7 @@ compare.l2_sample2 <- compare.l2[spid %in% l2_sample2$spid]
 # pick extra aeids for multiple plot
 sc2_counts <- filter(sc2_counts, n == unique(sc2_counts[aeid %in% selected]$n) & !aeid %in% selected)
 extra.aeids <- sc2_counts[sample(1:nrow(sc2_counts),size = 2,replace = FALSE),aeid]
+if (any(is.na(extra.aeids))) stop("extra.aeids contain NA aeid.")
 
 
 get_query_data <- function(lvl, fld, val, compare = "m4id", add.fld = TRUE, func = "tcplLoadData") {

@@ -65,7 +65,7 @@
 tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   
   # variable binding for R CMD check
-  lvl <- m4id <- conc <- resp <- conc_unit <- flag_count <- NULL
+  lvl <- m4id <- s2id <- conc <- resp <- conc_unit <- flag_count <- NULL
   bmd <- top <- bmr <- model_type <- coff <- max_med <- hitc <- NULL
   
   # Validate vars based on some assumed properties
@@ -76,13 +76,6 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   # check that input combination is unique
   dat <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
   if (nrow(dat) == 0) stop("No data for fld/val provided")
-  
-  # set order to given order
-  dat <- dat[order(match(get(fld[1]), if(is.list(val)) val[[1]] else val))]
-  if (getOption("TCPL_DRVR") == "API" && tolower(fld) == "aeid") {
-    dat <- dat %>% arrange(m4id)
-  }
-  dat$order <- 1:nrow(dat)
   
   mcLoadDat <- function(m4id = NULL,flags) {
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
@@ -109,8 +102,10 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   if (getOption("TCPL_DRVR") != "API") {
     if (type == "mc") {
       dat <- mcLoadDat(dat$m4id,flags = flags)
+      setorder(dat, m4id)
       agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = dat$m4id)
     } else { # type == 'sc'
+      setorder(dat, s2id)
       agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = dat$s2id, type = "sc")
     }
     
