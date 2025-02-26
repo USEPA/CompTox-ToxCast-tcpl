@@ -2253,6 +2253,9 @@ htmlTable(output,
           rnames = FALSE  ,
           css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em '          )
 ```
+Below is a figure with examples of various flags with annotations on the plots to highlight the cause of the flag.
+
+![<font style="font-size:15px"><i>Example of Plots with Various Flags</i></font>](img/flags_example_plots.png)
 
 ## Representative Samples {#chid}
 
