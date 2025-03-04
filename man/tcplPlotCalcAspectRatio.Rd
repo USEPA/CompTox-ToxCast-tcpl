@@ -24,15 +24,15 @@ tcplPlotCalcAspectRatio(
 \item{multi}{Boolean, by default TRUE for "pdf". Prints variable number of plots
 per page depending on 'verbose' and 'type' settings.}
 
-\item{nrows}{number of rows each compare plot uses}
+\item{nrows}{Integer, number of rows each compare plot uses}
 
 \item{output}{How should the plot be presented. To work with the plot in 
 environment, use "ggplot"; to interact with the plot in application, use 
 "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".}
 
-\item{group.threshold}{integer of length 1, number of curves where plot style
-should change to instead group by a given group.fld, default of 9 -- greater 
-than 8 curves}
+\item{group.threshold}{Integer of length 1, minimum number of samples in a 
+given plot where comparison plots, instead of coloring models by sample, should
+delineate curve color by a given group.fld. By default 9.}
 
 \item{nrow}{Integer, number of rows in multiplot. By default 2.}
 

@@ -1,12 +1,12 @@
-#' #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # tcplPlot: plot tcpl data
 #-------------------------------------------------------------------------------
 
 #'  Generic Plotting Function for tcpl
 #'
 #' @description
-#' \code{tcplPlot} queries the tcpl databases and returns a plot
-#' for the given level and data type.
+#' \code{tcplPlot} queries the tcpl databases and returns or saves customizable 
+#' plots for the given data type, field(s), and value(s).
 #'
 #' @param dat data.table or list of data.tables containing plot-prepared data, not
 #' required. Used for stand-alone (ToxCast or other tcplfit2-fit data) plotting or 
@@ -51,20 +51,46 @@
 #' @param yrange Integer of length 2, for directly setting the y-axis range, 
 #' c(<min>,<max>). By default, c(NA,NA). Plots containing points or curves outside
 #' this range will be expanded to fit.
-#' @param group.fld string column name to group curves by when number of comparison 
-#' curves exceeds group.threshold, default being 'modl' for MC and 'hitc' for SC
-#' @param group.threshold integer of length 1, number of curves where comparison 
-#' plot style should change to instead group by a given group.fld, default of 9 
-#' -- greater than 8 curves
+#' @param group.fld Character, column name to group curves by when number of comparison 
+#' curves exceeds group.threshold. By default 'modl' for MC and 'hitc' for SC.
+#' @param group.threshold Integer of length 1, minimum number of samples in a 
+#' given plot where comparison plots, instead of coloring models by sample, should
+#' delineate curve color by a given group.fld. By default 9.
 #'
 #' @details
-#' The data type can be either 'mc' for multiple concentration data, or 'sc'
-#' for single concentration data. 
+#' The data 'type' can be either "mc" for multiple concentration data, or "sc"
+#' for single concentration data. 'fld' can be any field(s) available at or before
+#' level 5 for 'mc' or level 2 for 'sc'. 'val' must be contain values for each
+#' 'fld'. If 'fld' is just length 1, 'val' can be a regular number or character
+#' vector of any length. If 'fld' is greater than length 1, 'val' must be a list
+#' where each item matches each 'fld'.
+#' 
+#' Use 'dat' to supply custom \code{tcplfit2} data or pre-loaded (and manipulated) 
+#' tcpl pipe-lined data from \code{tcplPlotLoadData} for more flexibility. 'dat'
+#' must contain all columns required by \code{tcplPlot} by the specified type, 
+#' such as sample info, chemical info, assay endpoint info, all conc/resp data, 
+#' all level 4 model fitting parameters, all level 5 hitcall and potency values, 
+#' and level 6 cautionary flags if 'flags' = TRUE. 'dat' can be used to add custom 
+#' columns for use with the 'compare', 'by', or 'group.fld' parameters.
+#' 
+#' There are three plotting styles \code{tcplPlot} provides. First, individual 
+#' concentration response plots, by sample (more specifically, the distinct "m4id"), 
+#' which contain response points, winning and losing models, cut-off lines, AC50
+#' lines, BMD/BMR lines, and a potency table. Second are traditional compare plots, 
+#' by default generated when the number of samples on one plot is between 2 and 
+#' 8 inclusive. These plots contain response points, winning models, and cut-offs, 
+#' all color-delineated by sample ("m4id"). It also contains tables for viewing
+#' similar and differing annotation info as well as hit-calls, BMDs, and AC50s.
+#' Finally are \code{tcplPlot}'s comparison plots for large comparisons, greater
+#' than 8 curves by default. These plots strip the annotation tables, response 
+#' points, and curve color grouping by sample in favor of a more holistic view
+#' which emphasizes the winning models altogether grouped for color by 'group.fld'.
+#' Setting 'flags' = TRUE here provides a view of the flag counts across the entire
+#' plot's samples.
 #'
 #' @import data.table
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom ggplot2 ggsave is.ggplot
-#' @importFrom dplyr %>% all_of pull
 #' @importFrom grDevices pdf.options
 #' @export
 #'

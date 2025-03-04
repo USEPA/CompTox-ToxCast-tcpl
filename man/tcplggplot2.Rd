@@ -31,12 +31,12 @@ tcplggplot2(
 \item{yrange}{Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
 By default, c(NA,NA).}
 
-\item{group.fld}{string column name to group curves by when number of curves 
-exceeds group.threshold, default being 'modl' for MC and 'hitc' for SC}
+\item{group.fld}{Character, column name to group curves by when number of comparison 
+curves exceeds group.threshold. By default 'modl' for MC and 'hitc' for SC.}
 
-\item{group.threshold}{integer of length 1, number of curves where plot style
-should change to instead group by a given group.fld, default of 9 -- greater 
-than 8 curves}
+\item{group.threshold}{Integer of length 1, minimum number of samples in a 
+given plot where comparison plots, instead of coloring models by sample, should
+delineate curve color by a given group.fld. By default 9.}
 }
 \value{
 A ggplot object or grob with accompanied table depending on verbose option

@@ -96,13 +96,13 @@ tcplPlotSetYRange <- function(dat, yuniform, yrange, type) {
 #' @param verbose should the plot return a table with parameters
 #' @param multi Boolean, by default TRUE for "pdf". Prints variable number of plots
 #' per page depending on 'verbose' and 'type' settings.
-#' @param nrows number of rows each compare plot uses
+#' @param nrows Integer, number of rows each compare plot uses
 #' @param output How should the plot be presented. To work with the plot in 
 #' environment, use "ggplot"; to interact with the plot in application, use 
 #' "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
-#' @param group.threshold integer of length 1, number of curves where plot style
-#' should change to instead group by a given group.fld, default of 9 -- greater 
-#' than 8 curves
+#' @param group.threshold Integer of length 1, minimum number of samples in a 
+#' given plot where comparison plots, instead of coloring models by sample, should
+#' delineate curve color by a given group.fld. By default 9.
 #' @param nrow Integer, number of rows in multiplot. By default 2.
 #' @param ncol Integer, number of columns in multiplot. By default 3, 2 if verbose, 
 #' 1 for compare plots.

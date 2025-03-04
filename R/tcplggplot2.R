@@ -9,11 +9,11 @@
 #' @param flags boolean should plotting include level 6 flags in plot caption
 #' @param yrange Integer of length 2, for overriding the y-axis range, c(<min>,<max>). 
 #' By default, c(NA,NA).
-#' @param group.fld string column name to group curves by when number of curves 
-#' exceeds group.threshold, default being 'modl' for MC and 'hitc' for SC
-#' @param group.threshold integer of length 1, number of curves where plot style
-#' should change to instead group by a given group.fld, default of 9 -- greater 
-#' than 8 curves
+#' @param group.fld Character, column name to group curves by when number of comparison 
+#' curves exceeds group.threshold. By default 'modl' for MC and 'hitc' for SC.
+#' @param group.threshold Integer of length 1, minimum number of samples in a 
+#' given plot where comparison plots, instead of coloring models by sample, should
+#' delineate curve color by a given group.fld. By default 9.
 #'
 #' @return A ggplot object or grob with accompanied table depending on verbose option
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if case_when
