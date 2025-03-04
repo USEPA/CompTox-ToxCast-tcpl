@@ -2252,7 +2252,7 @@ Below is a diagram with various example graphs for some of the above flags. The 
 
 <center>
 
-![<font style="font-size:15px"><i>Representative Graphs of Flags</i></font>](img/flag_examples.png){width=650px}
+![<font style="font-size:15px"><i>Representative Graphs of Flags</i></font>](img/example_flag_plots.png){width=650px}
 
 
 
