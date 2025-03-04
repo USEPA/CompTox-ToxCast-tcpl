@@ -29,8 +29,8 @@ tcplFit2 <- function(dat,
     min_med = min(rmds), min_med_conc = conc[which.min(rmds)],
     conc_max = max(conc), conc_min = min(conc), nconc = length(unique(conc)),
     npts = .N, nrep = median(as.numeric(nconcs)), 
-    nmed_gtbl_pos = sum(med_rmds_pos) / first(nconcs), 
-    nmed_gtbl_neg = sum(med_rmds_neg) / first(nconcs),
+    nmed_gtbl_pos = lu(conc[med_rmds_pos]), 
+    nmed_gtbl_neg = lu(conc[med_rmds_neg]),
     concentration_unlogged = list(conc), response = list(resp), m3ids = list(m3id)
   ),
   keyby = .(aeid, spid)
