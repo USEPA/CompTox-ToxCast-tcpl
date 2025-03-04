@@ -159,7 +159,6 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
   } else {
     
     gg <- gg + 
-      geom_point(data = conc_resp_bound, aes(conc, resp), alpha = 0.25) + 
       labs(title = get_plot_title(dat, type, compare, verbose))
     
   }
