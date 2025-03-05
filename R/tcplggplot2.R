@@ -14,6 +14,8 @@
 #' @param group.threshold Integer of length 1, minimum number of samples in a 
 #' given plot where comparison plots, instead of coloring models by sample, should
 #' delineate curve color by a given group.fld. By default 9.
+#' @param hide_losing_models Boolean, by default FALSE. For individual mc plots
+#' only, should the losing models be hidden?
 #'
 #' @return A ggplot object or grob with accompanied table depending on verbose option
 #' @importFrom dplyr %>% filter group_by summarise left_join inner_join select rowwise mutate pull mutate_if case_when
@@ -25,8 +27,9 @@
 #' @importFrom viridis viridis
 #' @import gridExtra
 #' @import stringr
-tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flags = FALSE, 
-                        yrange = c(NA,NA), group.fld = NULL, group.threshold = 9) {
+tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, 
+                        flags = FALSE, yrange = c(NA,NA), group.fld = NULL, 
+                        group.threshold = 9, hide_losing_models = FALSE) {
   
   # variable binding for R CMD check
   N <- coff <- conc <- resp <- cutoff_string <- ac50 <- name <- aic <- NULL
@@ -185,12 +188,15 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE, flag
       }
       
       gg <- gg + 
-        lapply(losing_models, function(model) {
-          geom_function(aes(linetype = "Losing Models", color = "Losing Models"), 
-                        fun = function(x) tcplfit2_fun(dat, model, x), na.rm=TRUE)
-        }) +
         scale_color_viridis_d("", direction = -1, breaks = brks, end = 0.85) + 
         scale_linetype_manual("", breaks = brks, values = vals)
+      
+      if (!hide_losing_models) {
+        gg <- gg + lapply(losing_models, function(model) {
+          geom_function(aes(linetype = "Losing Models", color = "Losing Models"),
+                        fun = function(x) tcplfit2_fun(dat, model, x), na.rm=TRUE)
+        })
+      }
       
       if (!is.null(dat$bmd) && !is.null(dat$bmr) && !is.na(dat$bmd) && !is.na(dat$bmr)){ # add bmd segments
         gg <- gg + 

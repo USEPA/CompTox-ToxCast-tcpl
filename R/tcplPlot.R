@@ -56,6 +56,8 @@
 #' @param group.threshold Integer of length 1, minimum number of samples in a 
 #' given plot where comparison plots, instead of coloring models by sample, should
 #' delineate curve color by a given group.fld. By default 9.
+#' @param hide_losing_models Boolean, by default FALSE. For individual mc plots 
+#' only, should the losing models be hidden?
 #'
 #' @details
 #' The data 'type' can be either "mc" for multiple concentration data, or "sc"
@@ -193,7 +195,8 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
                      by = NULL, output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"), 
                      fileprefix = paste0("tcplPlot_", Sys.Date()), multi = NULL, 
                      verbose = TRUE, nrow = NULL, ncol = NULL, dpi = 600, flags = FALSE, 
-                     yuniform = FALSE, yrange=c(NA,NA), group.fld = NULL, group.threshold = 9) {
+                     yuniform = FALSE, yrange=c(NA,NA), group.fld = NULL, 
+                     group.threshold = 9, hide_losing_models = FALSE) {
   
   # variable binding for R CMD check
   group_from_list_dat <- lvl <- w <- h <- NULL
@@ -258,7 +261,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
     
     if (output == "console") {
       # tcplPlotlyplot is the user-defined function used to connect tcpl and plotly packages
-      return(tcplPlotlyPlot(split_dat[[1]][[1]], lvl))
+      return(tcplPlotlyPlot(split_dat[[1]][[1]], lvl, hide_losing_models))
     }
     
     aspect_ratio_vars <- tcplPlotCalcAspectRatio(type=type, verbose=verbose, multi = multi, 
@@ -267,8 +270,10 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
     list2env(aspect_ratio_vars, envir = environment())
     
     for (f in split_dat) {
-      plot_list <- lapply(f, tcplggplot2, type = type, compare = compare, verbose = verbose, flags = flags, 
-                          yrange = yrange, group.fld = group.fld, group.threshold = group.threshold)
+      plot_list <- lapply(f, tcplggplot2, type = type, compare = compare, 
+                          verbose = verbose, flags = flags, yrange = yrange, 
+                          group.fld = group.fld, group.threshold = group.threshold, 
+                          hide_losing_models = hide_losing_models)
       if (output == "ggplot") {
         if (!is.ggplot(plot_list[[1]])) message("ggplot and verbose table arranged into one grob. To work with a simple ggplot object, set `verbose = FALSE` and 'flags = FALSE'.")
         return(plot_list[[1]])
@@ -293,6 +298,8 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
 #'
 #' @param dat data table with all required conc/resp data
 #' @param lvl integer level of data that should be plotted
+#' @param hide_losing_models Boolean, by default FALSE. For individual mc plots 
+#' only, should the losing models be hidden?
 #' level 2 - for 'sc' plotting
 #' level 5 - for 'mc' plotting, all fit models and winning model with hitcall
 #'
@@ -302,7 +309,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
 #' @importFrom plotly plot_ly add_trace add_annotations
 #' @importFrom dplyr .data
 #'
-tcplPlotlyPlot <- function(dat, lvl = 5){
+tcplPlotlyPlot <- function(dat, lvl = 5, hide_losing_models = FALSE){
   
   #library(plotly)
   #library(dplyr)
@@ -771,29 +778,31 @@ tcplPlotlyPlot <- function(dat, lvl = 5){
     
     if (!lvl == 2 && !dat$modl == "none"){
       if (nrow(compare.dat) == 0) {
-        # add all non-winning models
-        fig <- fig %>% add_trace(
-          data = m %>% filter(.data$model != dat$modl),
-          x = ~x,
-          y = ~y,
-          type = "scatter",
-          mode = "lines",
-          split = ~model,
-          opacity = ~opacity,
-          line = list(dash = ~dash, width = 1.5, color = NULL),
-          inherit = FALSE,
-          hoverinfo = "text",
-          text = ~ paste(
-            "</br>", model,
-            "</br> ac50: ", specify_decimal(ac50, 2),
-            "</br> Concentration: ", specify_decimal(x,2),
-            "</br> Response: ", specify_decimal(y, 2),
-            "</br> AIC: ", specify_decimal(aic, 2),
-            "</br> RME: ", specify_decimal(rme, 2),
-            "</br> TOP: ", specify_decimal(top, 2),
-            "</br> SLOPE: ", specify_decimal(p, 2)
+        if (!hide_losing_models) {
+          # add all non-winning models
+          fig <- fig %>% add_trace(
+            data = m %>% filter(.data$model != dat$modl),
+            x = ~x,
+            y = ~y,
+            type = "scatter",
+            mode = "lines",
+            split = ~model,
+            opacity = ~opacity,
+            line = list(dash = ~dash, width = 1.5, color = NULL),
+            inherit = FALSE,
+            hoverinfo = "text",
+            text = ~ paste(
+              "</br>", model,
+              "</br> ac50: ", specify_decimal(ac50, 2),
+              "</br> Concentration: ", specify_decimal(x,2),
+              "</br> Response: ", specify_decimal(y, 2),
+              "</br> AIC: ", specify_decimal(aic, 2),
+              "</br> RME: ", specify_decimal(rme, 2),
+              "</br> TOP: ", specify_decimal(top, 2),
+              "</br> SLOPE: ", specify_decimal(p, 2)
+            )
           )
-        )
+        }
         # add line for winning model
         fig <- fig %>% add_trace(
           data = m %>% filter(.data$model == dat$modl),

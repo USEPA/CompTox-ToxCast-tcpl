@@ -22,7 +22,8 @@ tcplPlot(
   yuniform = FALSE,
   yrange = c(NA, NA),
   group.fld = NULL,
-  group.threshold = 9
+  group.threshold = 9,
+  hide_losing_models = FALSE
 )
 }
 \arguments{
@@ -91,6 +92,9 @@ curves exceeds group.threshold. By default 'modl' for MC and 'hitc' for SC.}
 \item{group.threshold}{Integer of length 1, minimum number of samples in a 
 given plot where comparison plots, instead of coloring models by sample, should
 delineate curve color by a given group.fld. By default 9.}
+
+\item{hide_losing_models}{Boolean, by default FALSE. For individual mc plots 
+only, should the losing models be hidden?}
 }
 \description{
 \code{tcplPlot} queries the tcpl databases and returns or saves customizable 
