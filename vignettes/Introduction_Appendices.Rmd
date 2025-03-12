@@ -2195,10 +2195,10 @@ For example, a curve may be considered a single point hit with activity not at t
 Method <- c(5:11, 13:15, 17:20)
 
 # Second column - Level 6 Flag Names
-FlagNames <- c("modl.directionality.fail", "singlept.hit.high", "singlept.hit.mid",
-               "multipoint.neg", "bmd.high", "noise", "border", "low.nrep", 
-               "low.nconc", "gnls.lowconc", "efficacy.50", "ac50.lowconc", 
-               "viability.gnls", "no.med.gt.3bmad")
+FlagNames <- c("Model directionality questionable", "Active with only highest conc above baseline (3*bmad)", "Active with one conc (not highest) above baseline (3*bmad)",
+               "Inactive with multiple concs above baseline (3*bmad)", "Bmd > ac50, indication of high baseline bariability", "Noisy data", "Borderline", "Average number of replicates per conc < 2", 
+               "Number of concentrations tested < 4", "Gain AC50 < lowest concn & loss AC50 < mean conc", "Efficacy < 50%", "AC50 < lowest concentration tested", 
+               "Cell viability assay fit with gnls winning model", "No median responses above baseline")
 # Third column - Level 6 Flag Descriptions
 FlagDescription <- c("Flag series if model directionality is questionable, i.e. if the winning model
                      direction was opposite, more responses $(resp)$ would have exceeded the cutoff 
@@ -2244,15 +2244,28 @@ FlagDescription <- c("Flag series if model directionality is questionable, i.e. 
                      "Flag series where no median response values are greater than baseline as 
                      defined by 3 times the baseline median absolute deviation $(bmad)$ or less than baseline as defined by -3 times $bmad$; both $nmed\\_gtbl\\_pos$ and $nmed\\_gtbl\\_neg = 0$, where $nmed\\_gtbl\\_pos$ is the number of median response values $> 3 * bmad$ and $nmed\\_gtbl\\_neg$ is the number of median response values $< -3 * bmad$.")
 
+
 # Consolidate all columns into a table.
-output <- data.frame(Method, FlagNames, FlagDescription)
+output <- data.frame(Method, FlagNames, FlagDescription) 
+colnames(output)<- c("Method", "Flag Name", "Flag Description")
 
 htmlTable(output,
           align = 'l',
           align.header = 'l',
           rnames = FALSE  ,
-          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em '          )
+          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ')
+
+
 ```
+### Example of Flags
+
+Below is a diagram with various example graphs for some of the above flags. The annotations highlight the part(s) of the graph that are concerning and caused that specific flag to be assigned to the data. 
+
+<center>
+
+![<font style="font-size:15px"><i>Representative Graphs of Flags</i></font>](img/example_flag_plots.png){width=650px}
+
+
 
 ## Representative Samples {#chid}
 
