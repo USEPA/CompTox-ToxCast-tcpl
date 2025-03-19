@@ -2,6 +2,18 @@
 # .ChemQ: Create tcplLoadChem query string 
 #-------------------------------------------------------------------------------
 
+#' @title Function to support queries by chemical
+#' @note This function is not exported and not intended to be used by the user.
+#' 
+#' @param field Character, the field to query on
+#' @param val Vector of values to subset on
+#' @param exact Logical, should chemical names be considered exact?
+#' 
+#' @description
+#' \code{.ChemQ} creates tcplLoadChem query string
+#' 
+#' @seealso \code{\link{tcplLoadData}}
+#' @seealso \code{\link{tcplLoadChem}}
 .ChemQ <- function(field, val, exact) {
   
   qformat <- 
@@ -29,11 +41,11 @@
       if (exact) {
         qformat <- paste(qformat, "chnm IN (%s);")
         val <- paste0("\"", val, "\"", collapse = ",")
-        qstring <- sprintf(qformat, val, val)
+        qstring <- sprintf(qformat, val)
       } else {
         qformat <- paste(qformat, "chnm RLIKE %s;")
         val <- paste0("\"", paste(val, collapse = "|"), "\"")
-        qstring <- sprintf(qformat, val, val)
+        qstring <- sprintf(qformat, val)
       }
     } else if (nfld == 'chem.only') {
       qstring <- "
@@ -64,6 +76,16 @@
 # .ChemListQ: Create tcplLoadChemList query string 
 #-------------------------------------------------------------------------------
 
+#' @title Function to support queries by chemical
+#' @note This function is not exported and not intended to be used by the user.
+#' 
+#' @param field Character, the field to query on
+#' @param val Vector of values to subset on
+#' 
+#' @description
+#' \code{.ChemListQ} creates tcplLoadChemList query string
+#' 
+#' @seealso \code{\link{tcplLoadChemList}}
 .ChemListQ <- function(field, val) {
   
   qformat <- "SELECT * FROM chemical_lists"
@@ -91,4 +113,3 @@
 #-------------------------------------------------------------------------------
 # END .ChemListQ
 #-------------------------------------------------------------------------------
-

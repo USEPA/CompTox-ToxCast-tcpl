@@ -89,7 +89,7 @@ mc6_mthds <- function() {
       e6 <- bquote(dr[ , ltcoff := resp < coffsign])
       e7 <- bquote(dr[ , nrsp_gtcoff := sum(gtcoff), by = m4id])
       e8 <- bquote(dr[ , nrsp_ltcoff := sum(ltcoff), by = m4id])
-      e9 <- bquote(dr[ , test := ifelse(coffsign > 0, nrsp_gtabscoff > 2*nrsp_gtcoff, nrsp_gtabscoff > 2*nrsp_ltcoff)])
+      e9 <- bquote(dr[ , test := (hitc >= 0.9) & ifelse(coffsign > 0, nrsp_gtcoff > 1, nrsp_ltcoff > 1) & ifelse(coffsign > 0, nrsp_gtabscoff > 2*nrsp_gtcoff, nrsp_gtabscoff > 2*nrsp_ltcoff)])
       e10 <- bquote(f[[.(mthd)]] <- unique(dr[which(test), .SD, .SDcols = .(out)], by = NULL))
       cr <- c("mc6_mthd_id", "flag", "test", "coffsign", "gtabscoff", "nrsp_gtabscoff", "gtcoff", "ltcoff", "nrsp_gtcoff", "nrsp_ltcoff")
       e11 <- bquote(dr[ , .(cr) := NULL])

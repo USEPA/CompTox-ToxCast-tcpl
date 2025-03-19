@@ -49,6 +49,8 @@
 tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
                          include.spid = TRUE) {
   
+  if (length(field) > 1) stop("'field' must be of length 1.")
+  
   if (getOption("TCPL_DRVR") == "API") {
     if (is.null(field) || tolower(field) != "spid") stop("When drvr option is set to 'API', only 'spid' is a valid 'field' value.")
     if (!exact) exact <- TRUE
