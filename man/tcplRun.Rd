@@ -12,7 +12,8 @@ tcplRun(
   type = "mc",
   mc.cores = NULL,
   outfile = NULL,
-  runname = NULL
+  runname = NULL,
+  ready_only = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ when using Windows operating system}
 
 \item{runname}{Character of length 1, the name of the run to be used in the 
 outfile (optional)}
+
+\item{ready_only}{Boolean, whether to only process endpoints marked as 
+export_ready = 1.}
 }
 \value{
 A list containing the results from each level of processing. Each 
