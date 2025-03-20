@@ -150,6 +150,8 @@ dynamic_table_trunc <- function(tbl = NULL, all_cols) {
   trunc_cols <- c("chnm", "spid", "aenm")
   # subset trunc cols by available cols in tbl
   trunc_cols <- trunc_cols[trunc_cols %in% colnames(tbl)]
+  # exit early if there are no trunc-cols
+  if (length(trunc_cols) == 0) return(tbl)
   # define default width for each column (index, m4id, dtxsid, chnm, spid, aeid, aenm, color)
   all_lens <- c(2, 9, 13, 30, 20, 5, 40, 9)
   names(all_lens) <- all_cols
@@ -188,6 +190,7 @@ dynamic_table_trunc <- function(tbl = NULL, all_cols) {
 #' @return list of 2 GT tables
 #' @import gt
 #' @importFrom dplyr select all_of mutate_if
+#' @importFrom stringr str_trunc
 get_verbose_tables <- function(dat = NULL, type = "mc", compare = "m4id", flags = FALSE) {
   
   # variable binding for R CMD check
@@ -251,7 +254,7 @@ get_verbose_tables <- function(dat = NULL, type = "mc", compare = "m4id", flags 
       opt_row_striping()
   }
   
-  title <- get_plot_title(dat, type, compare, TRUE)
+  title <- stringr::str_trunc(get_plot_title(dat, type, compare, TRUE),105)
   
   anno_tbl <- gt(tbl) |>
     gt_style()
