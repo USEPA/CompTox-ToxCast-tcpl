@@ -92,8 +92,6 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
         l6 <- data.table(m4id, "flag" = "None")
       }
       dat <- dat[l6, on = "m4id"]
-      dat$flag_count <- 0
-      dat[flag != "None", flag_count := stringr::str_count(flag, "\n") + 1]
     }
     dat
   }
@@ -132,6 +130,12 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
       dat <- dat %>% rowwise() %>% mutate(flag = ifelse(is.na(flag[1]) || flag[1] == "NULL" || is.null(flag[1]), "None", paste(flag, collapse = ';\n'))) %>% ungroup() %>% as.data.table()
     }
     dat$conc_unit <- dat$tested_conc_unit
+  }
+  
+  # add flag_count
+  if (flags == TRUE) {
+    dat$flag_count <- 0
+    dat[flag != "None", flag_count := stringr::str_count(flag, "\n") + 1]
   }
   
   # add normalized data type for y axis
