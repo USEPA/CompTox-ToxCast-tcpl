@@ -3188,8 +3188,6 @@ plot_data <- plot_data[aeid == 80]
 tcplPlot(dat = plot_data, flags = TRUE, output = "jpg", fileprefix = "output_jpg")
 ```
 
-<center>![<font style="font-size:15px"><i>API-sourced plot with parameters: output = "jpg" and flags = TRUE for spid "01504209" and aeid 80</i></font>](img/output_jpg.jpg){width=80%}</center>
-
 ### - Output PDF of Multiple Comparison Plots per Page, By AEID and Compared by Chemical
 
 Comparison plots are still valid under an API configuration, as long as data is only loaded by one of the four valid fields. In the example below, plots are generated across 5 endpoints and grouped for comparison by chemical id ($chnm$). The `compare` parameter here is not required to be one of the four API supported fields -- it can be any field that is present after loading from API -- which is why we use $chnm$ here instead of $dsstox\_substance\_id$.
@@ -3199,8 +3197,6 @@ Comparison plots are still valid under an API configuration, as long as data is 
 tcplPlot(fld = "aeid", val = 2642:2646, compare = "chnm", output = "pdf", 
          multi = TRUE, flags = TRUE, fileprefix = "api_compare") 
 ```
-
-<center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", multi = TRUE, and flags = TRUE for a chemical comparison across five different endpoints (aeids 2642-2646)</i></font>](img/medium_plot_compare.jpg){width=80%}</center>
 
 ## Additional Examples
 
@@ -3470,7 +3466,7 @@ kable(Table)%>%
 ```
 These summary POD-NAM values are calculated using all ToxCast endpoints. Additional inspection of individual endpoints and annotations may be warranted. Utilize the SeqAPASS column to filter to endpoints annotated with SeqAPASS protein targets, i.e. enter “NP_” into SeqAPASS search box.
 
-<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets</i></font>](img/ccd_seqapass_filter.png)</center>
+<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets</i></font>](img/ccd_seqapass_filter.jpg)</center>
 
 ### Consider SeqAPASS
 The [SeqAPASS](https://seqapass.epa.gov/seqapass/) tool has been developed to predict a species relative intrinsic susceptibility to chemicals with known molecular targets (e.g., pharmaceuticals, pesticides) as well as evaluate conservation of molecular targets in high-throughput screening assays (i.e., ToxCast), molecular initiating events (MIEs), and early key events in the adverse outcome pathway (AOP) framework as a means to extrapolate such knowledge across species. After copying the NCBI protein Accession numbers for ToxCast endpoints of interest, visit the SeqAPASS web interface to understand potential for cross-species comparison. Note that new users will need to request a free log-in to access this resource and should review the [SeqAPASS User Guide](https://www.epa.gov/comptox-tools/seqapass-user-guide) for example workflows.
