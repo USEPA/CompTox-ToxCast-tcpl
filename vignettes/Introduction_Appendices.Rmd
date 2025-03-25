@@ -59,7 +59,7 @@ The <font face="CMTT10"> tcpl </font> package is a flexible analysis pipeline is
 
 <center>
 
-![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline</i></font>](img/Fig1_tcpl_overview.png){width=100%}
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1618dafe-4a50-4b72-bff5-de3194053899">view in full resolution</a>)</i></font>](img/Fig1_tcpl_overview.png){width=100%}
 
 </center>
 
@@ -137,7 +137,7 @@ The following contains reference tables that describe the structure and fields f
 
 <center>
 
-![<font style="font-size:15px"><i>General representation of the invitrodb Schema</i></font>](img/schema.png){width=100%}
+![<font style="font-size:15px"><i>General representation of the invitrodb Schema (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b8705ac2-e1e0-4299-afad-f288a7fe1e47">view in full resolution</a>)</i></font>](img/schema.png){width=100%}
 
 </center>
 
@@ -1217,7 +1217,7 @@ The package also contains a function, <font face="CMTT10"> **tcplPlotPlate** </f
 tcplPlotPlate(dat = m1dat, apid = "4009721")
 ``` 
 
-![<font style="font-size:15px"><i>Design of Assay Plate 4009721</i></font>](img/plotplate.png)
+![<font style="font-size:15px"><i>Design of Assay Plate 4009721 (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6a4250a3-8386-4ee5-a7b6-88c4ccf6adf9">view in full resolution</a>)</i></font>](img/plotplate.png)
 
 *In the generated figure, the row and column indices are printed along the respective edges of the plate, with the raw observed values in each well represented by color. While the plate does not give sample ID information, the letter/number codes in the wells indicate the well type and concentration index, respectively. Wells with poor well quality (`wllq==0` in Level 0) will display with an "X." The title of the plate display lists the assay component/assay endpoint and the assay plate ID ($\mathit{apid}$).*
 
@@ -2172,7 +2172,7 @@ A 90% confidence interval around the BMD, bounded by the benchmark dose lower bo
 
 ## Fit Categories {#fitc}
 
-<center>![<font style="font-size:15px"><i>Fit Category Tree</i></font>](img/Fig5_fitc_tree_10jul2023.png)</center>
+<center>![<font style="font-size:15px"><i>Fit Category Tree (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/d60cecc2-2aa2-4198-b692-33c611195d71">view in full resolution</a>)</i></font>](img/Fig5_fitc_tree_10jul2023.png)</center>
 
 A hierarchical fit category ($\mathit{fitc}$) decision tree is used to bin each fit as shown in Figure 2. Each fit falls into one leaf of the tree using the described logic with the final $\mathit{fitc}$ indicated with gray boxes. Abbreviations are defined as: $\mathit{conc}$ = concentration; $\mathit{hitc}$ = hit call; $\mathit{|top|}$ = absolute value of the modeled curve top; $\mathit{coff}$ = cutoff; $log_c(min)$ = minimum log~10~ concentration tested; $log_c(max)$ = maximum log~10~ concentration tested; AC~50~ = $50 \%$ activity concentration; AC~95~ = $95 \%$ activity concentration.
 
@@ -2263,7 +2263,7 @@ Below is a diagram with various example graphs for some of the above flags. The 
 
 <center>
 
-![<font style="font-size:15px"><i>Representative Graphs of Flags</i></font>](img/example_flag_plots.jpg){width=650px}
+![<font style="font-size:15px"><i>Representative Graphs of Flags (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/15419b36-7bfc-45da-98ce-e08fe0526d4f">view in full resolution</a>)</i></font>](img/example_flag_plots.jpg){width=650px}
 
 
 
@@ -2335,7 +2335,7 @@ These estimated concentration threshold values have been released in the “cyto
 <center>
 
 ![<font style="font-size:15px">](img/CCD_BPA_Bioactivity_ToxCast_TOP.png)
-![<font style="font-size:15px"><i>Figure 3: ToxCast Summary Plot of BPA on CCD</i></font>](img/CCD_BPA_Bioactivity_ToxCast_BOTTOM.png)
+![<font style="font-size:15px"><i>Figure 3: ToxCast Summary Plot of BPA on CCD (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c249a3f2-3391-4f2a-80ce-c0e01c4d0729">view in full resolution</a>) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cecacf20-f0d8-4d87-82ed-0e371237cbe7">view in full resolution</a>)</i></font>](img/CCD_BPA_Bioactivity_ToxCast_BOTTOM.png)
 
 </center
 
@@ -3032,7 +3032,7 @@ tcplPlot(fld = c("aeid", "spid"),        # field to query on
          by = "aeid", multi = TRUE, flags = TRUE,  yrange = c(-0.5, 1.5), 
          output = "pdf", fileprefix = "output_pdf") 
 ```
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", and multi = TRUE for aeid 80 and spids "TP0001652B01", "01504209", "TP0001652D01", "TP0001652A01", and "1210314466"</i></font>](img/output_pdf.png){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", and multi = TRUE for aeid 80 and spids "TP0001652B01", "01504209", "TP0001652D01", "TP0001652A01", and "1210314466" (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5501cb92-d810-49dc-a4b3-a19906b2d3f2">view in full resolution</a>)</i></font>](img/output_pdf.png){width=80%}</center>
 
 ### - Output Image File (JPG) of Single Verbose Plot, by AEID and SPID
 
@@ -3045,7 +3045,7 @@ tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80,'01504209'), multi =
          flags = TRUE, output = "jpg", fileprefix = "output_jpg")
 ```
 
-<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "jpg" for aeid 80 and spid 01504209</i></font>](img/output_jpg.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "jpg" for aeid 80 and spid 01504209 (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dee1be8c-5f55-4510-b6b0-7dcd039565c1">view in full resolution</a>)</i></font>](img/output_jpg.jpg){width=80%}</center>
 
 ### - Output to Console, by M4ID or AEID and SPID
 
@@ -3062,7 +3062,7 @@ tcplPlot(type = "mc", fld = "m4id", val = 482273,
 tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80, '01504209'), 
          multi = FALSE, verbose = FALSE, output = "console") 
 ```
-<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209</i></font>](img/output_console.png){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209 (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6d3a1f92-745a-42c1-95b0-81964b5d75b6">view in full resolution</a>)</i></font>](img/output_console.png){width=80%}</center>
 
 ### - Output PDF of Single Concentration Plots, Multiple Plots per Page, by AEID
 
@@ -3073,7 +3073,8 @@ Single concentration plotting is enabled by setting `type = "sc"`. The example b
 tcplPlot(type = "sc", fld = "aeid", val = 704, multi = TRUE,  
          output = "pdf", fileprefix = "sc_output")
 ```
-<center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", multi = TRUE, and verbose = TRUE for aeid 704  </i></font>](img/sc_output.png){width=80%}</center>
+
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/da8a4fd7-d2bf-40d2-b84a-afbed3cd3ad2">View Example Output</a></center>
 
 ## Comparison Plotting
 
@@ -3091,7 +3092,7 @@ tcplPlot(fld = c("spid", "aeid"),         # field(s) to query on
          yuniform = TRUE, fileprefix = "plot_compare") 
 ```
 
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, flags = TRUE, and yuniform = TRUE for spids "EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20" across two different endpoints (aeids 3074 and 3076)</i></font>](img/plot_compare.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, flags = TRUE, and yuniform = TRUE for spids "EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20" across two different endpoints (aeids 3074 and 3076) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e8790713-a5bd-4b41-a924-849c795ed69f">view in full resolution</a>)</i></font>](img/plot_compare.jpg){width=80%}</center>
 
 ### - Output PDF of Multiple Single Concentration Comparison Plots per Page, by AEID and Compared by SPID
 
@@ -3104,7 +3105,7 @@ tcplPlot(type = "sc", fld = c("spid","aeid"), val = list(spids, c(3017,3018)),
           compare = "spid", output = "pdf", multi = TRUE, fileprefix = "sc_plot_compare")
 ```
 
-<center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", and multi = TRUE for spids "MLS", "DMSO", "Tox21_400088", "Tox21_200265", "Tox21_200001", "Tox21_200266" across two different endpoints (aeids 3017 and 3018)</i></font>](img/sc_plot_compare.jpg){width=80%}</center>
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9680ad18-ebf8-44f2-8439-fa2730058538">View Example Output</a></center>
 
 ### - Output PDF of Multiple Comparison Plots per Page, By AEID and Compared by Chemical
 
@@ -3119,7 +3120,7 @@ tcplPlot(fld = "aeid",
          fileprefix = "medium_plot_compare") 
 ```
 
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and flags = TRUE for a chemical comparison across five different endpoints (aeids 2642-2646)</i></font>](img/medium_plot_compare.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and flags = TRUE for a chemical comparison across five different endpoints (aeids 2642-2646) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e99e23b6-4953-4214-8377-0110a7f65789">view in full resolution</a>)</i></font>](img/medium_plot_compare.jpg){width=80%}</center>
 
 ### - Output Image File (JPG) of Single Large Comparison Plot, by AEID and Compared By AEID
 
@@ -3134,7 +3135,7 @@ tcplPlot(fld = "aeid",
          fileprefix = "large_plot_compare") 
 ```
 
-<center>![<font style="font-size:15px"><i>Plot with parameters: output = "jpg", dpi= 100, and flags = TRUE for a endpoint level comparison across 24 samples (aeid 3168)</i></font>](img/large_plot_compare_3168.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plot with parameters: output = "jpg", dpi= 100, and flags = TRUE for a endpoint level comparison across 24 samples (aeid 3168) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/78bacc18-1a90-4186-8e29-cec60af70e76">view in full resolution</a>)</i></font>](img/large_plot_compare_3168.jpg){width=80%}</center>
 
 ## Advanced Comparison Plotting
 
@@ -3160,7 +3161,7 @@ tcplPlot(dat = plot_data, compare = c("aeid", "spid"),
          output = "pdf", multi = TRUE, flags = TRUE, fileprefix = "version_compare")
 ```
 
-<center>![<font style="font-size:15px"><i>Comparison plots with parameters: dat = plot_data from tcplPlotLoadData(), output = "pdf", multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/version_compare.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Comparison plots with parameters: dat = plot_data from tcplPlotLoadData(), output = "pdf", multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7b40447b-8db1-4286-ac5b-a1b72964c727">view in full resolution</a>)</i></font>](img/version_compare.jpg){width=80%}</center>
 
 ## API Configuration
 
@@ -3188,6 +3189,8 @@ plot_data <- plot_data[aeid == 80]
 tcplPlot(dat = plot_data, flags = TRUE, output = "jpg", fileprefix = "output_jpg")
 ```
 
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dee1be8c-5f55-4510-b6b0-7dcd039565c1">View Example Output</a></center>
+
 ### - Output PDF of Multiple Comparison Plots per Page, By AEID and Compared by Chemical
 
 Comparison plots are still valid under an API configuration, as long as data is only loaded by one of the four valid fields. In the example below, plots are generated across 5 endpoints and grouped for comparison by chemical id ($chnm$). The `compare` parameter here is not required to be one of the four API supported fields -- it can be any field that is present after loading from API -- which is why we use $chnm$ here instead of $dsstox\_substance\_id$.
@@ -3197,6 +3200,8 @@ Comparison plots are still valid under an API configuration, as long as data is 
 tcplPlot(fld = "aeid", val = 2642:2646, compare = "chnm", output = "pdf", 
          multi = TRUE, flags = TRUE, fileprefix = "api_compare") 
 ```
+
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e99e23b6-4953-4214-8377-0110a7f65789">View Example Output</a></center>
 
 ## Additional Examples
 
@@ -3252,7 +3257,7 @@ tcplPlot(fld = "aeid", val = 3211, verbose = FALSE,
          output = "pdf", multi = TRUE, fileprefix = "loec") 
 ```
 
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf" and multi = TRUE for LOEC hit-called-data</i></font>](img/loec_plot.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf" and multi = TRUE for LOEC hit-called-data (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5f4016b9-6d30-4f47-a56c-ce0f29bc164e">view in full resolution</a>)</i></font>](img/loec_plot.jpg){width=80%}</center>
 
 # Example Integrations with Other Computational Toxicology Tools
 
@@ -3466,7 +3471,7 @@ kable(Table)%>%
 ```
 These summary POD-NAM values are calculated using all ToxCast endpoints. Additional inspection of individual endpoints and annotations may be warranted. Utilize the SeqAPASS column to filter to endpoints annotated with SeqAPASS protein targets, i.e. enter “NP_” into SeqAPASS search box.
 
-<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets</i></font>](img/ccd_seqapass_filter.jpg)</center>
+<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e99e23b6-4953-4214-8377-0110a7f65789">view in full resolution</a>)</i></font>](img/ccd_seqapass_filter.jpg)</center>
 
 ### Consider SeqAPASS
 The [SeqAPASS](https://seqapass.epa.gov/seqapass/) tool has been developed to predict a species relative intrinsic susceptibility to chemicals with known molecular targets (e.g., pharmaceuticals, pesticides) as well as evaluate conservation of molecular targets in high-throughput screening assays (i.e., ToxCast), molecular initiating events (MIEs), and early key events in the adverse outcome pathway (AOP) framework as a means to extrapolate such knowledge across species. After copying the NCBI protein Accession numbers for ToxCast endpoints of interest, visit the SeqAPASS web interface to understand potential for cross-species comparison. Note that new users will need to request a free log-in to access this resource and should review the [SeqAPASS User Guide](https://www.epa.gov/comptox-tools/seqapass-user-guide) for example workflows.
