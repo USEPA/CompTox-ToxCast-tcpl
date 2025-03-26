@@ -21,16 +21,16 @@
 test_that("tcplPlotValidate warns user if flags = TRUE and type = 'sc'", {
   expect_warning(validated_params <- tcplPlotValidate(dat = NULL,type = "sc",compare = "m4id",by = NULL,flags = TRUE,output = "pdf",multi = NULL,verbose = FALSE),
                  "'flags' was set to TRUE - no flags exist for plotting single concentration")
-  expect_equal(validated_params, list(lvl = 2, compare = "s2id", flags = FALSE, output = "pdf", multi = TRUE, verbose = FALSE))
+  expect_equal(validated_params, list(lvl = 2, compare = "s2id", flags = FALSE, output = "pdf", multi = NULL, verbose = FALSE))
 })
 
 test_that("tcplPlotValidate only updates compare to 's2id' when compare = 'm4id' and type = 'sc'", {
   validated_params <- tcplPlotValidate(dat = NULL,type = "sc",compare = "m4id",by = NULL,flags = FALSE,output = "pdf",multi = NULL,verbose = FALSE)
-  expect_equal(validated_params, list(lvl = 2, compare = "s2id", flags = FALSE, output = "pdf", multi = TRUE, verbose = FALSE))
+  expect_equal(validated_params, list(lvl = 2, compare = "s2id", flags = FALSE, output = "pdf", multi = NULL, verbose = FALSE))
   validated_params <- tcplPlotValidate(dat = NULL,type = "sc",compare = "s2id",by = NULL,flags = FALSE,output = "pdf",multi = NULL,verbose = FALSE)
-  expect_equal(validated_params, list(lvl = 2, compare = "s2id", flags = FALSE, output = "pdf", multi = TRUE, verbose = FALSE))
+  expect_equal(validated_params, list(lvl = 2, compare = "s2id", flags = FALSE, output = "pdf", multi = NULL, verbose = FALSE))
   validated_params <- tcplPlotValidate(dat = NULL,type = "sc",compare = "chnm",by = NULL,flags = FALSE,output = "pdf",multi = NULL,verbose = FALSE)
-  expect_equal(validated_params, list(lvl = 2, compare = "chnm", flags = FALSE, output = "pdf", multi = TRUE, verbose = FALSE))
+  expect_equal(validated_params, list(lvl = 2, compare = "chnm", flags = FALSE, output = "pdf", multi = NULL, verbose = FALSE))
 })
 
 test_that("tcplPlotValidate force assigns multi = FALSE and verbose = FALSE if output == 'console'", {
@@ -59,7 +59,7 @@ test_that("tcplPlotValidate properly validates 'by'", {
   expect_warning(validated_params <- tcplPlotValidate(dat = dat, by = "model_type", output = "pdf"), 
                  "Using 'by' can have unintended consequences when 'dat' is provided as a list of data.tables. Instead, consider adding a custom field to group comparison plots, and specify using the 'compare' parameter. Then, use 'by' to split plots into files.")
   expect_equal(validated_params, list(lvl = 5, compare = "m4id", flags = NULL, 
-                                      output = "pdf", multi = TRUE, verbose = FALSE))
+                                      output = "pdf", multi = NULL, verbose = FALSE))
 })
 
 test_that("tcplPlotValidate properly validates 'dat' as a list or a data.table", {
@@ -85,10 +85,10 @@ test_that("tcplPlotValidate properly validates 'dat' as a list or a data.table",
   expect_warning(validated_params <- tcplPlotValidate(dat = dat, compare = "model_type", output = "pdf"), 
                  "'dat' provided as list of list of data tables, meaning compare plots are already subdivided. 'compare' field will be ignored and have no effect.")
   expect_equal(validated_params, list(lvl = 5, compare = "model_type", flags = NULL, 
-                                      output = "pdf", multi = TRUE, verbose = FALSE))
+                                      output = "pdf", multi = NULL, verbose = FALSE))
   validated_params <- tcplPlotValidate(dat = dat, output = "pdf")
   expect_equal(validated_params, list(lvl = 5, compare = "m4id", flags = NULL, 
-                                      output = "pdf", multi = TRUE, verbose = FALSE))
+                                      output = "pdf", multi = NULL, verbose = FALSE))
 })
 
 test_that("tcplPlotValidate validates 'output'", {
@@ -101,7 +101,7 @@ test_that("tcplPlotValidate validates 'output'", {
 test_that("tcplPlotValidate defaults to TRUE for 'multi' if output = 'pdf'", {
   validated_params <- tcplPlotValidate(output = "pdf")
   expect_equal(validated_params, list(lvl = 5, compare = "m4id", flags = NULL, 
-                                      output = "pdf", multi = TRUE, verbose = FALSE))
+                                      output = "pdf", multi = NULL, verbose = FALSE))
   validated_params <- tcplPlotValidate(multi = FALSE, output = "pdf")
   expect_equal(validated_params, list(lvl = 5, compare = "m4id", flags = NULL, 
                                       output = "pdf", multi = FALSE, verbose = FALSE))
