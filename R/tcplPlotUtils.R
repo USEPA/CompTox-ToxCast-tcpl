@@ -94,8 +94,9 @@ tcplPlotSetYRange <- function(dat, yuniform, yrange, type) {
 #'
 #' @param type string of mc or sc indicating if it is single or multi conc
 #' @param verbose should the plot return a table with parameters
-#' @param multi Boolean, by default TRUE for "pdf". Prints variable number of plots
-#' per page depending on 'verbose' and 'type' settings.
+#' @param multi Boolean, by default TRUE for "pdf" if the number of plots exceeds
+#' one. Prints variable number of plots per page depending on 'verbose' and 'type' 
+#' settings.
 #' @param nrows Integer, number of rows each compare plot uses
 #' @param output How should the plot be presented. To work with the plot in 
 #' environment, use "ggplot"; to interact with the plot in application, use 
@@ -178,8 +179,6 @@ tcplPlotValidate <- function(dat = NULL, type = "mc", compare = "m4id", by = NUL
     }
   }
   
-  # default assign multi=TRUE for output="pdf"
-  if (output == "pdf" && is.null(multi)) multi <- TRUE
   # forced assign multi=FALSE for output = c("console","png","jpg","svg","tiff"), verbose=FALSE for output="console"
   if (output != "pdf") {
     multi <- FALSE

@@ -32,8 +32,9 @@
 #' @param output How should the plot be presented. To work with the plot in 
 #' environment, use "ggplot"; to interact with the plot in application, use 
 #' "console"; or to save as a file type, use "pdf", "jpg", "png", "svg", or "tiff".
-#' @param multi Boolean, by default TRUE for "pdf". Prints variable number of plots
-#' per page depending on 'verbose' and 'type' settings.
+#' @param multi Boolean, by default TRUE for "pdf" if the number of plots exceeds
+#' one. Prints variable number of plots per page depending on 'verbose' and 'type' 
+#' settings.
 #' @param fileprefix Prefix of file when saving.
 #' @param by Parameter to divide files into e.g. "aeid".
 #' @param verbose Boolean, by default TRUE. If TRUE, a table with fitting parameters
@@ -262,6 +263,11 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
     if (output == "console") {
       # tcplPlotlyplot is the user-defined function used to connect tcpl and plotly packages
       return(tcplPlotlyPlot(split_dat[[1]][[1]], lvl, hide_losing_models))
+    }
+    
+    # assign multi=TRUE for output="pdf" if 
+    if (output == "pdf" && is.null(multi)) {
+      multi <- if (n > 1) TRUE else FALSE
     }
     
     aspect_ratio_vars <- tcplPlotCalcAspectRatio(type=type, verbose=verbose, multi = multi, 

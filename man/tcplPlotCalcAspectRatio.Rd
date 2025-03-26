@@ -21,8 +21,9 @@ tcplPlotCalcAspectRatio(
 
 \item{verbose}{should the plot return a table with parameters}
 
-\item{multi}{Boolean, by default TRUE for "pdf". Prints variable number of plots
-per page depending on 'verbose' and 'type' settings.}
+\item{multi}{Boolean, by default TRUE for "pdf" if the number of plots exceeds
+one. Prints variable number of plots per page depending on 'verbose' and 'type' 
+settings.}
 
 \item{nrows}{Integer, number of rows each compare plot uses}
 

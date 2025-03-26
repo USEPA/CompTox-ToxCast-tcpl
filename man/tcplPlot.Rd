@@ -61,8 +61,9 @@ environment, use "ggplot"; to interact with the plot in application, use
 
 \item{fileprefix}{Prefix of file when saving.}
 
-\item{multi}{Boolean, by default TRUE for "pdf". Prints variable number of plots
-per page depending on 'verbose' and 'type' settings.}
+\item{multi}{Boolean, by default TRUE for "pdf" if the number of plots exceeds
+one. Prints variable number of plots per page depending on 'verbose' and 'type' 
+settings.}
 
 \item{verbose}{Boolean, by default TRUE. If TRUE, a table with fitting parameters
 is included with the plot. To return or save simple plot, set to FALSE. In comparison
