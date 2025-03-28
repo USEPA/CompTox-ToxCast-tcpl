@@ -354,12 +354,24 @@ mc5_mthds <- function(ae) {
 
     },
     
-    loec.coff = function() {
+    ow_loec.coff = function() {
       
-      e1 <- bquote(dat[, c("modl", "fitc", "model_type", "hitc") := list("loec", 100L, 1, loec_hitc)])
-      e2 <- bquote(dat <- dat |> melt(measure.vars = c("loec"), variable.name = "hit_param", value.name = "hit_val"))
-      e3 <- bquote(dat <- dat[,c("m4id", "aeid", "modl", "hitc", "fitc", "coff", "model_type", "hit_param", "hit_val")])
-      list(e1, e2, e3)
+      # get all endpoint sample m4ids where the loec param is not na
+      e1 <- bquote(loec.m4ids <- dat[(hit_param == "loec") & !is.na(hit_val), unique(m4id)])
+      # set hitcall and hitc param to 1 if found in m4id list and 0 if not
+      e2 <- bquote(dat[hit_param == "hitcall", hit_val:=ifelse(m4id %in% loec.m4ids, 1, 0)])
+      e3 <- bquote(dat[, hitc:=ifelse(m4id %in% loec.m4ids, 1, 0)])
+      # update modl to loec, fitc to 100, model_type to 1
+      e4 <- bquote(dat[, c("modl", "fitc", "model_type") := list("loec", 100L, 1)])
+      list(e1, e2, e3, e4)
+      
+    },
+    
+    include_loec.coff = function() {
+      
+      e1 <- bquote(dat <- rbind(dat, mc3, fill = TRUE) |> arrange(m4id))
+      e2 <- bquote(dat <- dat |> group_by(m4id) |> tidyr::fill(modl,hitc,fitc,model_type) |> as.data.table())
+      list(e1, e2)
       
     }
 
