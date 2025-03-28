@@ -444,7 +444,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5, hide_losing_models = FALSE){
     
     if (dat$fitc == 100) {
       # loec is stored as modl_acc
-      x_loec <- rep(dat$modl_acc, resolution)
+      x_loec <- rep(dat$loec, resolution)
       l3_resp <- l3_dat_main %>%
         pull(.data$resp) %>%
         range()
@@ -511,11 +511,11 @@ tcplPlotlyPlot <- function(dat, lvl = 5, hide_losing_models = FALSE){
       
       if (compare.dat$fitc == 100) {
         # loec is stored as modl_acc
-        x_loec_compare <- rep(compare.dat$modl_acc, resolution)
+        x_loec_compare <- rep(compare.dat$loec, resolution)
         l3_resp_compare <- l3_dat_compare %>%
           pull(.data$resp) %>%
           range()
-        y_loec_compare <- seq(from = l3_resp[1], to = l3_resp[2], length.out = resolution)
+        y_loec_compare <- seq(from = l3_resp_compare[1], to = l3_resp_compare[2], length.out = resolution)
       }
       
       y_cnst_compare <- x_range * 0
@@ -729,7 +729,7 @@ tcplPlotlyPlot <- function(dat, lvl = 5, hide_losing_models = FALSE){
         )
       )
     }
-    if (compare.dat$fitc == 100) {
+    if (nrow(compare.dat) > 0 && compare.dat$fitc == 100) {
       # add the loec line if hitc == 1.
       fig <- fig %>% add_trace(
         data = tibble(x = x_loec_compare, y = y_loec_compare),
