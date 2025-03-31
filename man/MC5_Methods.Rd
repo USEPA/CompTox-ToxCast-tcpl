@@ -119,8 +119,9 @@ Log Base 2
   biologically relevant.}
   \item{osd_coff_bmr}{Overwrite the osd value so that bmr equals cutoff.}
   \item{ow_loec.coff}{Identify the lowest observed effective concentration (loec) where the values 
-  of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). If loec exists, assume 
-  hit call = 1, fitc = 100, model_type = 1, and if not, assume hit call = 0.}
+  of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside 
+  winning model and potency estimates. If loec exists, assume hit call = 1, fitc = 100, 
+  model_type = 1, and if not, assume hit call = 0.}
   \item{include_loec.coff}{Identify the lowest observed effective concentration (loec) where the 
   values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is 
   stored alongside winning model and potency estimates.}
