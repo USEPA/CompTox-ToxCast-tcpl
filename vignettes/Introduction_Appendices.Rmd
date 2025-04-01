@@ -59,7 +59,7 @@ The <font face="CMTT10"> tcpl </font> package is a flexible analysis pipeline is
 
 <center>
 
-![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline</i></font>](img/Fig1_tcpl_overview.png){width=100%}
+![<font style="font-size:15px"><i>Conceptual overview of the ToxCast Pipeline (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1618dafe-4a50-4b72-bff5-de3194053899">view in full resolution</a>)</i></font>](img/Fig1_tcpl_overview.png){width=100%}
 
 </center>
 
@@ -137,7 +137,7 @@ The following contains reference tables that describe the structure and fields f
 
 <center>
 
-![<font style="font-size:15px"><i>General representation of the invitrodb Schema</i></font>](img/schema.png){width=100%}
+![<font style="font-size:15px"><i>General representation of the invitrodb Schema (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b8705ac2-e1e0-4299-afad-f288a7fe1e47">view in full resolution</a>)</i></font>](img/schema.png){width=100%}
 
 </center>
 
@@ -1217,7 +1217,7 @@ The package also contains a function, <font face="CMTT10"> **tcplPlotPlate** </f
 tcplPlotPlate(dat = m1dat, apid = "4009721")
 ``` 
 
-![<font style="font-size:15px"><i>Design of Assay Plate 4009721</i></font>](img/plotplate.png)
+![<font style="font-size:15px"><i>Design of Assay Plate 4009721 (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6a4250a3-8386-4ee5-a7b6-88c4ccf6adf9">view in full resolution</a>)</i></font>](img/plotplate.png)
 
 *In the generated figure, the row and column indices are printed along the respective edges of the plate, with the raw observed values in each well represented by color. While the plate does not give sample ID information, the letter/number codes in the wells indicate the well type and concentration index, respectively. Wells with poor well quality (`wllq==0` in Level 0) will display with an "X." The title of the plate display lists the assay component/assay endpoint and the assay plate ID ($\mathit{apid}$).*
 
@@ -2172,7 +2172,7 @@ A 90% confidence interval around the BMD, bounded by the benchmark dose lower bo
 
 ## Fit Categories {#fitc}
 
-<center>![<font style="font-size:15px"><i>Fit Category Tree</i></font>](img/Fig5_fitc_tree_10jul2023.png)</center>
+<center>![<font style="font-size:15px"><i>Fit Category Tree (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/d60cecc2-2aa2-4198-b692-33c611195d71">view in full resolution</a>)</i></font>](img/Fig5_fitc_tree_10jul2023.png)</center>
 
 A hierarchical fit category ($\mathit{fitc}$) decision tree is used to bin each fit as shown in Figure 2. Each fit falls into one leaf of the tree using the described logic with the final $\mathit{fitc}$ indicated with gray boxes. Abbreviations are defined as: $\mathit{conc}$ = concentration; $\mathit{hitc}$ = hit call; $\mathit{|top|}$ = absolute value of the modeled curve top; $\mathit{coff}$ = cutoff; $log_c(min)$ = minimum log~10~ concentration tested; $log_c(max)$ = maximum log~10~ concentration tested; AC~50~ = $50 \%$ activity concentration; AC~95~ = $95 \%$ activity concentration.
 
@@ -2263,7 +2263,7 @@ Below is a diagram with various example graphs for some of the above flags. The 
 
 <center>
 
-![<font style="font-size:15px"><i>Representative Graphs of Flags</i></font>](img/example_flag_plots.png){width=650px}
+![<font style="font-size:15px"><i>Representative Graphs of Flags (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/15419b36-7bfc-45da-98ce-e08fe0526d4f">view in full resolution</a>)</i></font>](img/example_flag_plots.jpg){width=650px}
 
 
 
@@ -2335,7 +2335,7 @@ These estimated concentration threshold values have been released in the “cyto
 <center>
 
 ![<font style="font-size:15px">](img/CCD_BPA_Bioactivity_ToxCast_TOP.png)
-![<font style="font-size:15px"><i>Figure 3: ToxCast Summary Plot of BPA on CCD</i></font>](img/CCD_BPA_Bioactivity_ToxCast_BOTTOM.png)
+![<font style="font-size:15px"><i>Figure 3: ToxCast Summary Plot of BPA on CCD (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c249a3f2-3391-4f2a-80ce-c0e01c4d0729">view in full resolution</a>) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cecacf20-f0d8-4d87-82ed-0e371237cbe7">view in full resolution</a>)</i></font>](img/CCD_BPA_Bioactivity_ToxCast_BOTTOM.png)
 
 </center
 
@@ -2354,7 +2354,7 @@ In contrast, for a chemical to be included in a computation of the global median
 ## Assay Description Documents {#add}
 Given ToxCast includes a heterogeneous set of assays across a diverse biological space, annotations in the database help flexibly aggregate and differentiate processed data whereas assay documentation aligned with international standardization efforts can make ToxCast data more useful and interpretable for use in decision-making. The [OECD Guidance Document 211 (GD211)](https://ntp.niehs.nih.gov/sites/default/files/iccvam/suppdocs/feddocs/oecd/oecd-gd211-2014-508.pdf) is a standard for comprehensive assay documentation describing non-guideline in vitro test methods and their interpretation. This template is intended to harmonize non-guideline, *in vitro* method descriptions to allow assessment of the relevance of the test method for biological responses of interest and the quality of the data produced. Unlike the assay element annotations which are often short in a standardized format or use a controlled term list, the assay_descriptions fields have no character limit for text. A compiled report of these assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/comptox-tools/exploring-toxcast-data).
 
-## Adminstered Equivalent Doses (Level 7) {#aed}
+## Administered Equivalent Doses (Level 7) {#aed}
 The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE and httk models for it, please see: [Breen et al, 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
 
 For invitrodb v4.2 onward, a new MC7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. As implemented, this MC7 table provides users with pre-calculated estimates of the *in vivo* human administered dose (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
@@ -2786,192 +2786,7 @@ mc_methods <- function(aeids) {
 mmthds <- mc_methods(aeids)
 ```
 
-## Plotting
-
-<font face="CMTT10">**tcplPlot**</font> is tcpl’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via customizable parameters. The standalone plotting utility is built with the R libraries <font face="CMTT10">plotly</font> and <font face="CMTT10">ggplot2</font> to display the additional curve-fitting models. The <font face="CMTT10">tcplPlot</font> function requires the selection of a field (`fld`), and value (`val`) to load the necessary data and display the associated plots. Level `lvl` selection is no longer required and is replaced by `type`. Customization of output is possible by specifying the following parameters:  
-
-```{r warning = FALSE, echo = FALSE}
-Field <- c("type", "fld", "val", "compare.val", "output", "verbose", "multi", "by",
-           "fileprefix", "'nrow' and 'ncol'", "dpi", "flag", "yuniform", "yrange", "dat")
-Description <- c("'MC' assumed as default. type = 'mc' plots available MC data fit by all models and highlights the winning model with activity hit call presented whereas type = 'sc' plots available SC data including response values, maximum median, and cutoff with activity hit call presented.",
-                 "Required parameter for field to query on",
-                 "Required parameter for values to query on that must be listed for each corresponding 'fld'",
-                 "Parameter is used to generate comparison or dual plots. Using the same field(s) as `val`, supply a list or vector of values for each field to be plot one-to-one alongside val. Since tcplPlot matches ids between val and compare.val, `compare.val` must be the same length as `val` and the order `val` and `compare.val` are given will be maintained in the output. The default value is `compare.val = NULL` where the plots will be individual; if it is set, tcplPlot will attempt to generate comparison plots. For example, if fld = m4id and the user supplies three m4ids to `val`, `compare.val` must also contain three m4ids, where the first element of each `val` parameter are plot together, the second elements together, etc.",
-                 "Parameter indicates how the plots will be presented. In addition to outputs viewable with the R `console`, tcplPlot supports a variety of publication-quality file type options, including raster graphics (`PNG`, `JPG`, and `TIFF`) to retain color quality when printing to photograph and vector graphics (`SVG` and `PDF`) to retain image resolution when scaled to large formats. For a more customizable option, an indivdiual plot can be output in environment as a `ggplot`",
-                 "Parameter results in a plot that includes a table containing potency and model performance metrics; `verbose = FALSE` is default and the only option in console outputs.  When `verbose = TRUE` the model aic values are listed in descending order and generally the winning model will be listed first.",
-                 "Parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `verbose` parameter. The default number of plots per page is either 6 plots per page (`verbose = FALSE`) or 4 plots per page (`verbose = TRUE`).",
-                 "Parameter indicates how files should be divided, typically by $aeid$ or $spid$", 
-                 "Parameter allows the user to set a custom filename prefix. The standard filename is tcplPlot_sysDate().output (example: tcplPlot_2023_08_02.jpg) or, if `by` parameter is set, tcplPlot_sysDate()_by.output (example: tcplPlot_2023_08_02_aeid_80.pdf). When a `fileprefix` is assigned the default _tcplPlot_ prefix is replaced with the new filename.", 
-                 "The 'nrow' parameter specifies the number of rows for the multiple plots per page; this is 2 by default. The `ncol` parameter specifies the number of columns for the multiple plots per page; this is 3 by default. If `verbose = FALSE`, `ncol` is 2. `nrow` and `ncol` can customize the number of plots included per page. Both `nrow` and `ncol` must be greater than 0. While there is no hard coded upper limit to the number of rows and columns, the underlying technology has a dimension limitation of `nrow = 9` and `ncol = 7`.", 
-                 "Parameter specifies image print resolution for image file output types (PNG, JPG, TIFF, SVG); this is 600 by default.", 
-                 "Parameter is used for toggling the output of Level 6 flags. The default option is `flag = FALSE`. If `type = 'sc`, setting `flag = TRUE` will result in warning, since invitrodb does not store flags for single-concentration data.", 
-                 "Parameter is used for toggling automatic uniform y-axis scaling. The default option is `yuniform = FALSE`. If set to `TRUE`, tcplPlot will set each plot's y-axis range to be the minimum and maximum of response values and cutoffs across every requested plot. For example, when plotting a percent activity endpoint if the maximal response was 100% and minimal was -50%, while the cutoff was 20%, the y-axis range for every plot will be set to be from -50% to 100%. This is most useful for across-plot interpretation.", 
-                 "Parameter is used for toggling user-specified uniform y-axis scaling. `yrange` is required to be an integer of length 2: c(min,max). By default, c(NA,NA) will not set any uniform range. For example, when plotting a percent activity endpoint, the user may wish to set the range to c(-100,100) so every plot is contained to -100% and 100%. ",
-                 "Parameter permits the user to supply plot-ready data rather than automatically loading it within tcplPlot. Use cases include plotting across multiple database connections or using tcplPlot to plot other tcplfit2-fit data. See the advanced comparison plotting section and ?tcplPlotLoadData for more information.")
-
-output <- data.frame(Field, Description)
-
-knitr::kable(output) %>% kable_styling("striped")  %>%
-  kableExtra::scroll_box(width="100%", height="400px")
-```
-
-The following examples demonstrate <font face="CMTT10">tcplPlot</font> functionality through available the variety of customization options: 
-
-## - Output PDF of Verbose, Multiple Plots per Page, by AEID and/or SPID
-
-The following two examples produce plots of MC data for the selected $aeids$. A new pdf is generated for each endpoint. Filtering can be applied if only plots for a subset of samples ($spids$) are desired.
-
-```{r mc_plot_pdf_aeid, eval = FALSE}
-# Plot MC data for aeids 3157-3159 and outputs plots separate pdfs by aeid.
-tcplPlot(type = "mc",     # not required; "mc" is default
-         fld = "aeid",    # field to query on
-         val = 3157:3159, # values should match their corresponding 'fld'
-         by = "aeid",     # parameter to divide files
-         multi = TRUE,    # multiple plots per page - output 4 per page
-         verbose = TRUE,  # output all details if TRUE
-         output = "pdf")  # output as pdf
-
-# Loading required mc_vignette data for example below
-data(mc_vignette, package = 'tcpl')
-mc5 <- mc_vignette[["mc5"]]
-
-# Plot MC data from the mc_vignette R data object for a single aeid 80 and
-# spids "TP0001652B01", 01504209", "TP0001652D01", "TP0001652A01", and "1210314466" 
-tcplPlot(fld = c("aeid", "spid"),        # field to query on
-         val = list(mc5$aeid, mc5$spid), # values must be listed for each corresponding 'fld'
-         by = "aeid", multi = TRUE, verbose = TRUE, flags = TRUE,  yrange = c(-0.5, 1.5), 
-         output = "pdf", fileprefix = "output_pdf") 
-```
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and verbose = TRUE for aeid 80 and spids "TP0001652B01", 01504209", "TP0001652D01", "TP0001652A01", and "1210314466"</i></font>](img/output_pdf.png){width=80%}</center>
-
-## - Output Image File (JPG) of Single Verbose Plot, by AEID and SPID
-
-This example illustrates an MC verbose plot for a single endpoint-sample of output type “jpg”. 
-
-```{r mc_plot_jpg, eval = FALSE}
-# Plot a verbose plot of MC data for single aeid 80 and spid 01504209 and 
-# output as jpg.
-tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80,'01504209'), multi = FALSE, 
-         verbose = TRUE, flags = TRUE, output = "jpg", fileprefix = "output_jpg")
-```
-
-<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "jpg" and verbose = TRUE for aeid 80 and spid 01504209</i></font>](img/output_jpg.jpg){width=80%}</center>
-
-## - Output to Console, by M4ID or AEID and SPID
-
-Due to the dynamic nature of _m#_ ids, the first example code chunk does not include a corresponding plot. Here, the $m4id$ value (482273) corresponds with the <font face="CMTT10">mc_vignette</font> R data object. To run test this code, a valid $m4id$ value must be supplied. 
-
-The second example includes a level 5 plot for one endpoint and one sample of output type “console”. Only 1 concentration series can be output in console at a time. 
-```{r mc_plot_console, eval = FALSE}
-# Create MC plot for a single m4id.
-tcplPlot(type = "mc", fld = "m4id", val = 482273, 
-         multi = FALSE, verbose = FALSE, output = "console") 
-
-# Plot of MC data for single aeid (80) and spid (01504209)
-# and output to console.
-tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80, '01504209'), 
-         multi = FALSE, verbose = FALSE, output = "console") 
-```
-<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209</i></font>](img/output_console.png){width=80%}</center>
-
-## - Output PDF of Single Concentration Plots, Multiple Plots per Page, by AEID
-
-Single concentration plotting is enabled by setting `type = "sc"`. The example below plots all samples for one endpoint.
-
-```{r sc_plot_pdf_aeid, eval = FALSE}
-# Plot SC data for aeid 704 and outputs plots separate pdfs by aeid.
-tcplPlot(type = "sc", fld = "aeid", val = 704, multi = TRUE,  
-         verbose = TRUE, output = "pdf", fileprefix = "sc_output")
-```
-<center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", multi = TRUE, and verbose = TRUE for aeid 704  </i></font>](img/sc_output.png){width=80%}</center>
-
-## Comparison Plotting
-
-## - Output PDF of Multiple Comparison Plots per Page, by AEID and SPID
-
-The “compare"/dual-plot feature can be used by supplying a list or vector of the same length to `val` and `compare.val`. In the example below, plots are generated for 4 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
-
-```{r plot_compare, eval = FALSE}
-spids <- c("EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20")
-# default parameters used here: type = "mc"
-tcplPlot(fld = c("spid", "aeid"),         # field(s) to query on
-         val = list(spids, 3074),         # values must be listed for each corresponding `fld`
-         compare.val = list(spids, 3076), # length must equal that of 'val'
-         output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE,          
-         yuniform = TRUE, fileprefix = "plot_compare") 
-```
-
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for spids "EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20" across two different endpoints (aeids 3074 and 3076)</i></font>](img/plot_compare.png){width=80%}</center>
-
-## - Output PDF of Multiple Comparison Plots per Page, by AEID and SPID
-
-The “compare"/dual-plot feature can also be used with single concentration plotting. In the example below, plots are generated for 6 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
-
-```{r sc_plot_compare, eval = FALSE}
-spids <- c("MLS", "DMSO", "Tox21_400088", "Tox21_200265", "Tox21_200001", "Tox21_200266")
-# Plot comparison across two different endpoints with same samples
-tcplPlot(type = "sc", fld = c("spid","aeid"), val = list(spids, 3017), 
-         compare.val = list(spids, 3018), # length must equal that of 'val'
-         output = "pdf", verbose = TRUE,  multi = TRUE, fileprefix = "sc_plot_compare")
-```
-
-<center>![<font style="font-size:15px"><i>Single concentration plots with parameters: type = "sc", output = "pdf", verbose = TRUE, and multi = TRUE for spids "MLS", "DMSO", "Tox21_400088", "Tox21_200265", "Tox21_200001", "Tox21_200266" across two different endpoints (aeids 3017 and 3018)</i></font>](img/sc_plot_compare.png){width=80%}</center>
-
-## Advanced Comparison Plotting
-
-<font face="CMTT10">tcplPlot</font> supports advanced comparison plotting across data connections. If working on a local invitrodb instance, additional dose-response data may be available, data reprocessed, methods adjusted, etc. Users may wish to compare data released in different versions, such as comparing CTX Bioactivity API data or versioned database (invitrodb v4.1 and later) to one's local invitrodb database.
-
-Using the utility function <font face="CMTT10">**tcplPlotLoadData**</font> while connected to one data source, users can switch to a new data configuration and pass along data via <font face="CMTT10">tcplPlot</font>’s `dat` parameter and use `compare.val` for their new connection's data.
-
-```{r plot_standalone, eval = FALSE}
-# tcplConf() configured with some connection like invitrodb v4.1 or CTX APIs
-plot_data <- tcplPlotLoadData(lvl = 5, fld = "aeid", val = 704, type = "mc", flags = TRUE) 
-
-# fill with different database connection information
-tcplConf(user = "", pass = "", db = "invitrodb", drvr = "MySQL", host = "")
-
-# Plot comparisons of aeid 704 from one database version to another and output to pdf
-tcplPlot(dat = plot_data,             # previously loaded data from tcplPlotLoadData()
-         fld = "aeid",  val = 704,    # include as copy of 'val' from tcplPlotLoadData()
-         compare.val = 704,           # length must equal that of 'val', assumes aeid has not gained any samples
-         output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, fileprefix = "plot_compare")
-```
-
-<center>![<font style="font-size:15px"><i>Comparison plots with parameters: dat = plot_data from tcplPlotLoadData(), output = "pdf", verbose = TRUE, multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version</i></font>](img/API_plot_standalone.png){width=80%}</center>
-
-## Additional Examples
-
-Below are some additional example code chunks for retrieving various bits of information from the database.
-
-## - Load Data for a Specific Chemical
-
-In this example, steps for extracting information about the compound *Bisphenol A* found within the database are illustrated. The user will define the chemical of interest, isolate all associated sample ids ($\mathit{spids}$), and then load all data for the given chemical. 
-
-```{r BPA, eval = FALSE}
-# Provide the chemical name and assign to 'chnm'. Synonyms will not be matched, so other chemical identifiers may be more appropriate to query.
-chnm <- 'Bisphenol A'
-# Load the chemical data from the database.
-chem <- tcplLoadChem(field = 'chnm', val = chnm)
-# Load mc5 data from the database for the specified chemical.
-BPA.mc5 <- tcplLoadData(lvl = 5, fld = 'spid', val = chem[, spid], type = 'mc') 
-```
-
-## - Plot Sample Subset 
-
-In this example, plotting by endpoint for a sample subset, as opposed to plotting all samples tested within an endpoint, is illustrated. The user will load data for the select endpoints, isolate the samples of interest, and then plot by endpoint for the sample subset. 
-
-```{r spid_plot, eval=FALSE}
-# Load MC% data summary values for select aeids
-mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = 'aeid', val = tcplLoadAeid(fld = "asid", val = 25)$aeid, type = 'mc', add.fld = TRUE))
-
-# Identify sample subset.
-spid.mc5 <- mc5[spid %in% c("EPAPLT0018N08", "EPAPLT0023A16", "EPAPLT0020C11", "EPAPLT0018B13", "EPAPLT0018B14", "EPAPLT0018B15"),]
-
-# Plot by endpoint for sample subset.
-tcplPlot(fld = c("spid", "aeid"), val = list(spid.mc5$spid, spid.mc5$aeid), by = "aeid", multi = TRUE, verbose = TRUE, output = "pdf", fileprefix = "output/upitt") 
-```
-
-# Data Retrieval via API
+# Data Retrieval via API {#data_retrieval_api}
 
 To support different ToxCast data retrieval needs, there are a number of <font face="CMTT10">tcpl</font> functions that can be used to query the API and return information to a local R environment. Abbreviations may be used to refer to processing steps or data. **Single-concentration "SC" assay data is not currently available via API.** "MC" describes multiple-concentration assay data. A particular data or processing level is indicated by appending the level id/number to the end of the SC or MC designation. For example, multiple concentration data from level 3 processing uses the abbreviation MC3.
 
@@ -3156,63 +2971,293 @@ chem_info <- tcplLoadChem(field = "spid", val = "TP0000904H05")
 print(chem_info)
 ```
 
-## Plotting
+# Plotting {#plotting}
 
-<font face="CMTT10">tcplPlot</font> is tcpl’s single flexible plotting function, allowing for interactive and consistent visualization of concentration-response curves via customizable parameters. For more details on implementation, parameters and specific customization instructions, refer to the main Data Retrieval section. This section will instead focus on the limitations of plotting using the CTX APIs as a data connection.
+<font face="CMTT10">**tcplPlot**</font> is tcpl’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via customizable parameters. The standalone plotting utility is built with the R libraries <font face="CMTT10">plotly</font> and <font face="CMTT10">ggplot2</font> to display the tcplfit2's ten curve-fitting models. The <font face="CMTT10">tcplPlot</font> function requires either pre-loaded data (typically using `tcplPlotLoadData`) supplied to `dat` or the selection of a field (`fld`) and value (`val`) to load the necessary data and display the associated plots. Level `lvl` selection is no longer required and is replaced by `type`. Customization of output is possible by specifying the following parameters:  
 
-As with loading data via <font face="CMTT10">tcplLoadData</font>, the user must indicate the applicable fields and ids which are query-able via the CTX Bioactivity API. These such fields are limited to “aeid”, “m4id”, “spid”, and “dtxsid”, and any other fields input will result in error.
+```{r warning = FALSE, echo = FALSE}
+Field <- c("type", "dat", "fld", "val", "compare", "output", "verbose", "multi", "by",
+           "fileprefix", "'nrow' and 'ncol'", "dpi", "flags", "yuniform", "yrange", 
+           "group.fld","group.threshold","hide_losing_models")
+Description <- c("'mc' assumed as default. `type = 'mc'` plots available MC data fit by all models and highlights the winning model with activity hit call presented whereas `type = 'sc'` plots available SC data including response values, maximum median, and cutoff with activity hit call presented.",
+                 "Parameter permits the user to supply plot-ready data rather than automatically loading it within tcplPlot. Use cases include plotting across multiple database connections or using tcplPlot to plot other tcplfit2-fit data. See the advanced comparison plotting section and ?tcplPlotLoadData for more information.",
+                 "Required parameter for field to query on",
+                 "Required parameter for values to query on that must be listed for each corresponding 'fld'",
+                 "Parameter is used to generate comparison plots joining endpoint-samples by the provided field name contained in the loaded plot data. The default, being $m4id$ or $s2id$ for `type = 'mc'` and `type = 'sc'` respectively, will not generate comparison plots since such ids are unique in nature. To create comparison plots, such as across the same chemicals, use a chemical identifier like $dsstox\\_substance\\_id$. Likewise, to create a comparison plot across the same sample ids, use $spid$. Use $aeid$ to create a comparison plot across the same assay component endpoints, which will likely trigger a simpler plot style for large comparison groups; for more info, see the `group.threshold` parameter. To use a custom field to create comparisons, `dat` should be supplied as a data.table generated from `tcplPlotLoadData` with the custom column included. If `dat` is instead a list of data.tables (for manual control of the comparison groups), the `compare` parameter will be ignored in favor of the list groups.",
+                 "Parameter indicates how the plots will be presented. In addition to outputs viewable with the R `console`, tcplPlot supports a variety of publication-quality file type options, including raster graphics (`PNG`, `JPG`, and `TIFF`) to retain color quality when printing to photograph and vector graphics (`SVG` and `PDF`) to retain image resolution when scaled to large formats. For a more customizable option, an indivdiual plot can be output in environment as a `ggplot`",
+                 "Parameter results in a plot that includes a table containing potency and model performance metrics, and a table of endpoint-sample information for comparison plots; `verbose = TRUE` is default but is `FALSE` when using console output.  When `verbose = TRUE` the model aic values are listed in descending order and generally the winning model will be listed first. It is recommended to leave this toggle on for comparison plots, as endpoint-sample information is made available in table format above the plots.",
+                 "Parameter allows for single or multiple plots per page. `multi = TRUE` is the default option for PDF outputs when there is more than one plot, and `FALSE` if there is just one, whereas `multi = FALSE` is the only option for other outputs. If using the parameter option `multi = TRUE`, the default number of plots per page is set by the `type` parameter. The default number of plots per page is 4 plots per page if `type = 'mc'` and 6 plots per page if `type = 'sc'`. Comparison plots are typically printed 2 plots per page, but large comparisons might take up entire pages individually.",
+                 "Parameter indicates how files should be divided, typically by $aeid$ or $spid$", 
+                 "Parameter allows the user to set a custom filename prefix. The standard filename is tcplPlot_sysDate().output (example: tcplPlot_2023_08_02.jpg) or, if `by` parameter is set, tcplPlot_sysDate()_by.output (example: tcplPlot_2023_08_02_aeid_80.pdf). When a `fileprefix` is assigned the default _tcplPlot_ prefix is replaced with the new filename.", 
+                 "The 'nrow' parameter specifies the number of rows for the multiple plots per page; this is 2 by default. The `ncol` parameter specifies the number of columns for the multiple plots per page; this is 3 by default. If `verbose = FALSE`, `ncol` is 2. `nrow` and `ncol` can customize the number of plots included per page. Both `nrow` and `ncol` must be greater than 0. While there is no hard coded upper limit to the number of rows and columns, the underlying technology has a dimension limitation of `nrow = 9` and `ncol = 7`.", 
+                 "Parameter specifies image print resolution for image file output types (PNG, JPG, TIFF, SVG); this is 600 by default.", 
+                 "Parameter toggles the output of Level 6 flags. The default option is `flag = FALSE`. If `type = 'sc`, setting `flag = TRUE` will result in warning, since invitrodb does not store flags for single-concentration data.", 
+                 "Parameter toggles automatic uniform y-axis scaling. The default option is `yuniform = FALSE`. If set to `TRUE`, tcplPlot will set each plot's y-axis range to be the minimum and maximum of response values and cutoffs across every requested plot. For example, when plotting a percent activity endpoint if the maximal response was 100% and minimal was -50%, while the cutoff was 20%, the y-axis range for every plot will be set to be from -50% to 100%. This is most useful for across-plot interpretation.", 
+                 "Parameter toggles user-specified uniform y-axis scaling. `yrange` is required to be an integer of length 2: c(min,max). By default, c(NA,NA) will not set any uniform range. For example, when plotting a percent activity endpoint, the user may wish to set the range to c(-100,100) so every plot is contained to -100% and 100%. ",
+                 "Parameter groups curve color by a plot-data field when the number of curves on any given comparison plot equals or exceeds `group.threshold`. By default, `group.fld` is 'modl' or 'hitc' for `type = 'mc'` and `type = 'sc'` respectively. Use `dat` as a data.table to set `group.fld` to a custom column.",
+                 "Parameter sets the minimum number of curves which any given comparison plot should delineate curve color by `group.fld`, instead of by endpoint-sample ($m4id$). By default, this number of curves is 9. To effectively disable this behavior (not recommended), set `group.threshold` to a value higher than the number of curves in largest comparison group you expect in the output of `tcplPlot()`.",
+                 "Parameter toggles whether individual MC plot output should hide the losing models, only printing the winning model. By default, this parameter is `FALSE`.")
 
-While supplying multiple ids (through val) is valid, supplying multiple fields is not. For example, if fld = "spid", no aeid can be specified, meaning every matching spid will be plotted. If fld = "aeid", every sample within the given endpoint(s) will be plotted. If fld = "m4id", only one plot will output for every each m4id input. Combinations of fields are currently not supported with tcplPlot using API connections. Therefore, if looking for a specific aeid and spid combo, one should determine the corresponding m4id, like so:
+output <- data.frame(Field, Description)
 
-## - Output Image File (JPG) of Single Verbose Plot, by M4ID
-
-```{r plot_aeid_spid, eval = FALSE}
-# Load all matching spids and then subset using the aeid desired to find m4id
-mc5 <- tcplLoadData(lvl = 5, 
-                    fld = "spid",
-                    val = "TP0000904H05",
-                    type = "mc", 
-                    add.fld = FALSE) # 8 rows of data
-m4id <- mc5[aeid == 714]$m4id # subset to 1 aeid extract m4id
-
-# Default parameters used here: fld = "m4id", type = "mc" (type can never be "sc" when connected to API)
-tcplPlot(val = m4id, output = "jpg", verbose = TRUE, flags = TRUE)
+knitr::kable(output) |> kable_styling("striped")  |>
+  kableExtra::scroll_box(width="100%", height="400px")
 ```
 
-<center>![<font style="font-size:15px"><i>API-sourced plot with parameters: output = "jpg", verbose = TRUE, and flags = TRUE for m4id 1847540</i></font>](img/API_plot_1847540.jpg){#id .class width=75% height=75%}
+## Individual Plotting
 
-</center>
+The following examples demonstrate <font face="CMTT10">tcplPlot</font> functionality through the available variety of customization options: 
 
-## - Output PDF of Multiple Comparison Plots per Page, by M4ID
+### - Output PDF of Verbose, Multiple Plots per Page, by AEID and/or SPID
 
-The “compare"/dual-plot feature can be used by supplying a list of m4ids to `val` and `compare.val`. These lists must be the same length!
+The following two examples produce plots of MC data for the selected $aeids$. A new pdf is generated for each endpoint. Filtering can be applied if only plots for a subset of samples ($spids$) are desired.
 
-```{r plot_m4id_compare, eval = FALSE}
-# Using the data pulled in the previous code chunk 'mc5'
-m4id <- mc5$m4id # create m4id vector length == 8
+```{r mc_plot_pdf_aeid, eval = FALSE}
+# Plot MC data for aeids 3157-3159 and outputs plots separate pdfs by aeid.
+tcplPlot(type = "mc",     # not required; "mc" is default
+         fld = "aeid",    # field to query on
+         val = 3157:3159, # values should match their corresponding 'fld'
+         by = "aeid",     # parameter to divide files
+         multi = TRUE,    # multiple plots per page - output 4 per page
+         output = "pdf")  # output as pdf
 
-# Default parameters used here: fld = "m4id", type = "mc" (type can never be "sc" when connected to API)
-tcplPlot(val = m4id[1:4], compare.val = m4id[5:8], output = "pdf", verbose = TRUE, multi = TRUE, 
-         flags = TRUE, yuniform = TRUE, fileprefix = "API_plot_compare")
+# Loading required mc_vignette data for example below
+data(mc_vignette, package = 'tcpl')
+mc5 <- mc_vignette[["mc5"]]
+
+# Plot MC data from the mc_vignette R data object for a single aeid 80 and
+# spids "TP0001652B01", "01504209", "TP0001652D01", "TP0001652A01", and "1210314466" 
+tcplPlot(fld = c("aeid", "spid"),        # field to query on
+         val = list(mc5$aeid, mc5$spid), # values must be listed for each corresponding 'fld'
+         by = "aeid", multi = TRUE, flags = TRUE,  yrange = c(-0.5, 1.5), 
+         output = "pdf", fileprefix = "output_pdf") 
+```
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", and multi = TRUE for aeid 80 and spids "TP0001652B01", "01504209", "TP0001652D01", "TP0001652A01", and "1210314466" (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5501cb92-d810-49dc-a4b3-a19906b2d3f2">view in full resolution</a>)</i></font>](img/output_pdf.png){width=80%}</center>
+
+### - Output Image File (JPG) of Single Verbose Plot, by AEID and SPID
+
+This example illustrates an MC verbose plot for a single endpoint-sample of output type “jpg”. 
+
+```{r mc_plot_jpg, eval = FALSE}
+# Plot a verbose plot of MC data for single aeid 80 and spid 01504209 and 
+# output as jpg.
+tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80,'01504209'), multi = FALSE, 
+         flags = TRUE, output = "jpg", fileprefix = "output_jpg")
 ```
 
-<center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, flags = TRUE, and yuniform = TRUE for m4ids 1833668, 1834094, 1836233, and 1836494, compared with m4ids 1839401, 1842443, 1847540, and 1850045</i></font>](img/API_plot_compare.png){#id .class width=75% height=75%}</center>
+<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "jpg" for aeid 80 and spid 01504209 (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dee1be8c-5f55-4510-b6b0-7dcd039565c1">view in full resolution</a>)</i></font>](img/output_jpg.jpg){width=80%}</center>
 
-## - Output PDF of Verbose, Multiple Plots per Page, by AEID
+### - Output to Console, by M4ID or AEID and SPID
 
-Supply `fld = "aeid"` to plot every curve available in the API for the given endpoint(s).
+Due to the dynamic nature of _m#_ ids, the first example code chunk does not include a corresponding plot. Here, the $m4id$ value (482273) corresponds with the <font face="CMTT10">mc_vignette</font> R data object. To run test this code, a valid $m4id$ value must be supplied. 
 
-```{r plot_aeid, eval = FALSE}
-# plot all curves across endpoint(s)
-tcplPlot(fld = "aeid", val = 704, output = "pdf", verbose = TRUE, 
-         multi = TRUE, yrange = c(-100,100), fileprefix = "API_plot_704")
+The second example includes a level 5 plot for one endpoint and one sample of output type “console”. Only 1 concentration series can be output in console at a time. 
+```{r mc_plot_console, eval = FALSE}
+# Create MC plot for a single m4id.
+tcplPlot(type = "mc", fld = "m4id", val = 482273, 
+         multi = FALSE, verbose = FALSE, output = "console") 
+
+# Plot of MC data for single aeid (80) and spid (01504209)
+# and output to console.
+tcplPlot(type = "mc", fld = c('aeid','spid'), val = list(80, '01504209'), 
+         multi = FALSE, verbose = FALSE, output = "console") 
+```
+<center>![<font style="font-size:15px"><i>Plot generated with parameters: output = "console" for aeid 80 and spid 01504209 (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6d3a1f92-745a-42c1-95b0-81964b5d75b6">view in full resolution</a>)</i></font>](img/output_console.png){width=80%}</center>
+
+### - Output PDF of Single Concentration Plots, Multiple Plots per Page, by AEID
+
+Single concentration plotting is enabled by setting `type = "sc"`. The example below plots all samples for one endpoint. Though not shown here, `fld = "s2id"` can also be used for single concentration plotting just like `fld = "m4id"`.
+
+```{r sc_plot_pdf_aeid, eval = FALSE}
+# Plot SC data for aeid 704 and outputs plots separate pdfs by aeid.
+tcplPlot(type = "sc", fld = "aeid", val = 704, multi = TRUE,  
+         output = "pdf", fileprefix = "sc_output")
 ```
 
-<center>![<font style="font-size:15px"><i>API-sourced plots with parameters: output = "pdf", verbose = TRUE, multi = TRUE, and yrange = c(-100,100) for aeid 704</i></font>](img/API_plot_704.png){#id .class width=75% height=75%}</center>
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/da8a4fd7-d2bf-40d2-b84a-afbed3cd3ad2">View Example Output</a></center>
+
+## Comparison Plotting
+
+### - Output PDF of Multiple Comparison Plots per Page, by AEID and Compared by SPID
+
+The “compare" feature can be used by supplying a field name to `compare`. In the example below, plots are generated for 4 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
+
+```{r plot_compare, eval = FALSE}
+spids <- c("EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20")
+# default parameters used here: type = "mc", verbose = TRUE
+tcplPlot(fld = c("spid", "aeid"),         # field(s) to query on
+         val = list(spids, c(3074,3076)),         # values must be listed for each corresponding `fld`
+         compare = "spid",
+         output = "pdf", multi = TRUE, flags = TRUE,          
+         yuniform = TRUE, fileprefix = "plot_compare") 
+```
+
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, flags = TRUE, and yuniform = TRUE for spids "EPAPLT0108M13", "EPAPLT0108H01", "EPAPLT0108C17", "EPAPLT0106J20" across two different endpoints (aeids 3074 and 3076) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e8790713-a5bd-4b41-a924-849c795ed69f">view in full resolution</a>)</i></font>](img/plot_compare.jpg){width=80%}</center>
+
+### - Output PDF of Multiple Single Concentration Comparison Plots per Page, by AEID and Compared by SPID
+
+The “compare" feature can also be used with single concentration plotting. In the example below, plots are generated for 6 samples that appear in two different endpoints. These 4 samples are compared one-to-one.
+
+```{r sc_plot_compare, eval = FALSE}
+spids <- c("MLS", "DMSO", "Tox21_400088", "Tox21_200265", "Tox21_200001", "Tox21_200266")
+# Plot comparison across two different endpoints with same samples
+tcplPlot(type = "sc", fld = c("spid","aeid"), val = list(spids, c(3017,3018)),
+          compare = "spid", output = "pdf", multi = TRUE, fileprefix = "sc_plot_compare")
+```
+
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9680ad18-ebf8-44f2-8439-fa2730058538">View Example Output</a></center>
+
+### - Output PDF of Multiple Comparison Plots per Page, By AEID and Compared by Chemical
+
+By default, this standard comparison plot style holds for up to 8 curves in any one plot. In the example below, plots are generated across 5 endpoints and grouped for comparison by chemical id ($dsstox\_substance\_id$).
+
+```{r medium_plot_compare, eval = FALSE}
+# default parameters used here: type = "mc", verbose = TRUE
+tcplPlot(fld = "aeid",
+         val = 2642:2646,
+         compare = "dsstox_substance_id",
+         output = "pdf", multi = TRUE, flags = TRUE,          
+         fileprefix = "medium_plot_compare") 
+```
+
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf", multi = TRUE, and flags = TRUE for a chemical comparison across five different endpoints (aeids 2642-2646) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e99e23b6-4953-4214-8377-0110a7f65789">view in full resolution</a>)</i></font>](img/medium_plot_compare.jpg){width=80%}</center>
+
+### - Output Image File (JPG) of Single Large Comparison Plot, by AEID and Compared By AEID
+
+The large comparison plot style is used when the number of curves in any one plot is at least 9. In the example below, the selected $aeid$ has exactly 24 samples/chemicals tested. This output shows all 24 curves with their cutoff, with fewer information about the individual samples to keep the plot clean. By default, the color grouping field is `"modl"` (`group.fld = "model"`).
+
+```{r large_plot_compare, eval = FALSE}
+# default parameters used here: type = "mc", verbose = TRUE, group.fld = "modl", group.threshold = 9
+tcplPlot(fld = "aeid",
+         val = 3168,
+         compare = "aeid",
+         output = "jpg", flags = TRUE, dpi = 100,         
+         fileprefix = "large_plot_compare") 
+```
+
+<center>![<font style="font-size:15px"><i>Plot with parameters: output = "jpg", dpi= 100, and flags = TRUE for a endpoint level comparison across 24 samples (aeid 3168) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/78bacc18-1a90-4186-8e29-cec60af70e76">view in full resolution</a>)</i></font>](img/large_plot_compare_3168.jpg){width=80%}</center>
 
 ## Advanced Comparison Plotting
 
-<font face="CMTT10">tcplPlot</font> has been updated for advanced comparison plotting across data connections. If working on a local invitrodb instance, additional dose-response data may be available, data reprocessed, methods adjusted, etc. Users may wish to compare data released in different versions, such as comparing API data or versioned database (invitrodb v4.1 and later) to one's local invitrodb database. Using the utility function <font face="CMTT10">tcplPlotLoadData</font> while connected to the API, users can pass along data via <font face="CMTT10">tcplPlot</font>’s `dat` parameter and use `compare.val` for their database data as described above.
+<font face="CMTT10">tcplPlot</font> supports advanced comparison plotting across data connections. If working on a local invitrodb instance, additional dose-response data may be available, data reprocessed, methods adjusted, etc. Users may wish to compare data released in different versions, such as comparing CTX Bioactivity API data or versioned database (invitrodb v4.1 and later) to one's local invitrodb database.
+
+Using the utility function <font face="CMTT10">**tcplPlotLoadData**</font> while connected to one data source, users can switch to a new data configuration, load more data, and pass along combined data via <font face="CMTT10">tcplPlot</font>’s `dat` parameter.
+
+```{r plot_standalone, eval = FALSE}
+# tcplConf() configured with some connection like invitrodb v4.1 or CTX APIs
+plot_data1 <- tcplPlotLoadData(fld = "aeid", val = 704, type = "mc", flags = TRUE) 
+
+# fill with different database connection information
+tcplConf(user = "", pass = "", db = "invitrodb", drvr = "MySQL", host = "")
+
+# load more data
+plot_data2 <- tcplPlotLoadData(fld = "aeid", val = 704, type = "mc", flags = TRUE) 
+
+# bind the data.tables together
+plot_data <- rbind(plot_data1, plot_data2, fill = TRUE)
+
+# Plot comparisons of aeid 704 from one database version to another and output to pdf
+tcplPlot(dat = plot_data, compare = c("aeid", "spid"),
+         output = "pdf", multi = TRUE, flags = TRUE, fileprefix = "version_compare")
+```
+
+<center>![<font style="font-size:15px"><i>Comparison plots with parameters: dat = plot_data from tcplPlotLoadData(), output = "pdf", multi = TRUE, and flags = TRUE for comparison of aeid 704 to current database version (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7b40447b-8db1-4286-ac5b-a1b72964c727">view in full resolution</a>)</i></font>](img/version_compare.jpg){width=80%}</center>
+
+## API Configuration
+
+Most functionality contained in <font face="CMTT10">tcplPlot</font> is still available under an API data connection. Due to the limitations of communicating with the CTX Bioactivity API, the user must indicate the applicable fields and ids which are query-able via the API. These such fields are limited to $aeid$, $m4id$, $spid$, and $dtxsid$, and any other fields input will result in error. `type` must always be "mc".
+
+While supplying multiple ids (through `val`) is valid, supplying multiple fields is not. For example, if `fld = “spid”`, no $aeid$ can be specified, meaning every matching $spid$ will be plotted. If `fld = “aeid”`, every sample within the given endpoint(s) will be plotted. If `fld = “m4id”`, only one plot will output for every each $m4id$ input. Combinations of fields are currently unsupported in <font face="CMTT10">tcplPlot</font> using API connections. Therefore, if looking for a specific $aeid$ and $spid$ combination (endpoint-sample pair), one should determine the corresponding $m4id$ or subset the data, like so:
+
+### - Output Image File (JPG) of Single Verbose Plot, by M4ID
+
+```{r plot_aeid_spid, eval = FALSE}
+# Load all matching spids
+plot_data <- tcplPlotLoadData(fld = "spid", val = "01504209", flags = TRUE) # 81 rows of data
+
+
+# and then subset using the aeid desired to find m4id
+m4id <- plot_data[aeid == 80]$m4id # subset to 1 aeid extract m4id
+# Default parameters used here: fld = "m4id", verbose = TRUE, type = "mc" 
+# (type can never be "sc" when connected to API)
+tcplPlot(val = m4id, flags = TRUE, output = "jpg", fileprefix = "output_jpg")
+
+
+# Alternatively, subset the plot_data object and use it in 'dat'
+plot_data <- plot_data[aeid == 80]
+# Default parameters used here: verbose = TRUE, type = "mc" 
+tcplPlot(dat = plot_data, flags = TRUE, output = "jpg", fileprefix = "output_jpg")
+```
+
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dee1be8c-5f55-4510-b6b0-7dcd039565c1">View Example Output</a></center>
+
+### - Output PDF of Multiple Comparison Plots per Page, By AEID and Compared by Chemical
+
+Comparison plots are still valid under an API configuration, as long as data is only loaded by one of the four valid fields. In the example below, plots are generated across 5 endpoints and grouped for comparison by chemical id ($chnm$). The `compare` parameter here is not required to be one of the four API supported fields -- it can be any field that is present after loading from API -- which is why we use $chnm$ here instead of $dsstox\_substance\_id$.
+
+```{r api_compare, eval = FALSE}
+# default parameters used here: type = "mc", verbose = TRUE
+tcplPlot(fld = "aeid", val = 2642:2646, compare = "chnm", output = "pdf", 
+         multi = TRUE, flags = TRUE, fileprefix = "api_compare") 
+```
+
+<center><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e99e23b6-4953-4214-8377-0110a7f65789">View Example Output</a></center>
+
+## Additional Examples
+
+Below are some additional example code chunks for retrieving various bits of information from the database.
+
+### - Load Data for a Specific Chemical
+
+In this example, steps for extracting information about the compound *Bisphenol A* found within the database are illustrated. The user will define the chemical of interest, isolate all associated sample ids ($\mathit{spids}$), and then load all data for the given chemical. 
+
+```{r BPA, eval = FALSE}
+# Provide the chemical name and assign to 'chnm'. Synonyms will not be matched, so other chemical identifiers may be more appropriate to query.
+chnm <- 'Bisphenol A'
+# Load the chemical data from the database.
+chem <- tcplLoadChem(field = 'chnm', val = chnm)
+# Load mc5 data from the database for the specified chemical.
+BPA.mc5 <- tcplLoadData(lvl = 5, fld = 'spid', val = chem[, spid], type = 'mc') 
+```
+
+### - Plot Sample Subset 
+
+In this example, plotting by endpoint for a sample subset, as opposed to plotting all samples tested within an endpoint, is illustrated. The user will load data for the select endpoints, isolate the samples of interest, and then plot by endpoint for the sample subset. 
+
+```{r spid_plot_1, eval=FALSE}
+# Load MC% data summary values for select aeids
+mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = 'aeid', val = tcplLoadAeid(fld = "asid", val = 25)$aeid, type = 'mc', add.fld = TRUE))
+
+# Identify sample subset.
+spid.mc5 <- mc5[spid %in% c("EPAPLT0018N08", "EPAPLT0023A16", "EPAPLT0020C11", "EPAPLT0018B13", "EPAPLT0018B14", "EPAPLT0018B15"),]
+
+# Plot by endpoint for sample subset.
+tcplPlot(fld = c("spid", "aeid"), val = list(spid.mc5$spid, spid.mc5$aeid), by = "aeid", multi = TRUE, output = "pdf", fileprefix = "upitt") 
+```
+
+A more straightforward method to accomplish the above is now possible with the `dat` parameter.
+
+```{r spid_plot_2, eval=FALSE}
+plot_data <- tcplPlotLoadData(fld = 'aeid', val = tcplLoadAeid(fld = "asid", val = 25)$aeid, type = 'mc')
+
+# Identify sample subset.
+plot_data <- plot_data[spid %in% c("EPAPLT0018N08", "EPAPLT0023A16", "EPAPLT0020C11", "EPAPLT0018B13", "EPAPLT0018B14", "EPAPLT0018B15"),]
+
+# Plot by endpoint for sample subset.
+tcplPlot(dat = plot_data, by = "aeid", multi = TRUE, output = "pdf", fileprefix = "upitt") 
+```
+
+### - Plot LOEC (Lowest Observed Effective Concentration)
+
+<font face="CMTT10">tcplPlot</font> now supports the plotting of vertical "LOEC" lines, automatically detecting when multi-concentration data is hit-called using the new level 5 processing method "loec.coff". Comparison LOEC plotting with other LOEC samples or crossed with traditional hit-called data with winning models is also supported.
+
+```{r plot_loec, eval = FALSE}
+# default parameters used here: type = "mc"
+tcplPlot(fld = "aeid", val = 3211, verbose = FALSE,
+         output = "pdf", multi = TRUE, fileprefix = "loec") 
+```
+
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf" and multi = TRUE for LOEC hit-called-data (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5f4016b9-6d30-4f47-a56c-ce0f29bc164e">view in full resolution</a>)</i></font>](img/loec_plot.jpg){width=80%}</center>
 
 # Example Integrations with Other Computational Toxicology Tools
 
@@ -3426,7 +3471,7 @@ kable(Table)%>%
 ```
 These summary POD-NAM values are calculated using all ToxCast endpoints. Additional inspection of individual endpoints and annotations may be warranted. Utilize the SeqAPASS column to filter to endpoints annotated with SeqAPASS protein targets, i.e. enter “NP_” into SeqAPASS search box.
 
-<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets</i></font>](img/ccd_seqapass_filter.png)</center>
+<center>![<font style="font-size:15px"><i>Filtering CCD’s Bioactivity Summary Grid for SeqAPASS protein targets (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e99e23b6-4953-4214-8377-0110a7f65789">view in full resolution</a>)</i></font>](img/ccd_seqapass_filter.jpg)</center>
 
 ### Consider SeqAPASS
 The [SeqAPASS](https://seqapass.epa.gov/seqapass/) tool has been developed to predict a species relative intrinsic susceptibility to chemicals with known molecular targets (e.g., pharmaceuticals, pesticides) as well as evaluate conservation of molecular targets in high-throughput screening assays (i.e., ToxCast), molecular initiating events (MIEs), and early key events in the adverse outcome pathway (AOP) framework as a means to extrapolate such knowledge across species. After copying the NCBI protein Accession numbers for ToxCast endpoints of interest, visit the SeqAPASS web interface to understand potential for cross-species comparison. Note that new users will need to request a free log-in to access this resource and should review the [SeqAPASS User Guide](https://www.epa.gov/comptox-tools/seqapass-user-guide) for example workflows.
