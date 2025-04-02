@@ -1,5 +1,3 @@
-# tcpl (development version)
-
 # tcpl 3.2.1
 
 ## New features
