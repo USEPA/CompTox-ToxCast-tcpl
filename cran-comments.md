@@ -1,6 +1,3 @@
-* added single quotes to invitrodb and tcpl in DESCRIPTION
-* fixed aeds URI
-
 ## Changes from last version
 * To resolve current cran check results: added package anchors to links
 * Updated docs and vignette
@@ -9,14 +6,14 @@
 
 ## Test environments
 
-* local Windows 10 install, R 4.2.2
-* R Under development (unstable) (2024-10-04 r87208 ucrt)
+* local Windows 10 install, R 4.4.0
+* R version 4.5.0 beta (2025-04-01 r88091 ucrt)
 
 ## winbuilder check results
-Installation time in seconds: 13
-Check time in seconds: 183
-Status: OK
-R Under development (unstable) (2024-10-08 r87214 ucrt)
+Installation time in seconds: 14
+Check time in seconds: 199
+Status: 1 NOTE
+R version 4.5.0 beta (2025-04-01 r88091 ucrt)
 
     
 ## local R CMD check results
@@ -32,7 +29,14 @@ R Under development (unstable) (2024-10-08 r87214 ucrt)
 We checked 3 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
 
  * We saw 0 new problems
- * We failed to check 0 packages
+ * We failed to check 1 packages
+
+Issues with CRAN packages are summarised below.
+
+### Failed to check
+
+* Rcurvep (NA)
+
 
 
 
