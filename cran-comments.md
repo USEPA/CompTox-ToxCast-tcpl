@@ -1,24 +1,34 @@
 ## Changes from last version
-* To resolve current cran check results: added package anchors to links
-* Updated docs and vignette
 * Plotting updates
-* Added API functionality
+* Small features added to a few functions
+* Updated docs and vignette
+* Some method/processing updates
 
 ## Test environments
 
 * local Windows 10 install, R 4.4.0
+* GitHub Actions
+  * MacOS latest, R 4.4.3
+  * Windows latest, R 4.4.3
+  * Ubuntu latest, R devel
+  * Ubuntu latest, R 4.4.3
+  * Ubuntu latest, R 4.3.3
 * R version 4.5.0 beta (2025-04-01 r88091 ucrt)
+    
+## Local R CMD check results
+
+0 errors | 0 warnings | 1 note
+
+* checking for future file timestamps ... NOTE
+  unable to verify current time
+  
+  Note seems to be out of our control, with time API unavailable.
 
 ## winbuilder check results
 Installation time in seconds: 14
-Check time in seconds: 199
-Status: 1 NOTE
+Check time in seconds: 196
+Status: 0 NOTES
 R version 4.5.0 beta (2025-04-01 r88091 ucrt)
-
-    
-## local R CMD check results
-
-0 ERRORs | 0 WARNINGs | 0 NOTES.
 
 ## Downstream dependencies
 
