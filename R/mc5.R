@@ -33,7 +33,7 @@ mc5 <- function(ae, wr = FALSE) {
   modl_prob <- cnst_prob <- hill_er <- modl_tp <- modl_ga <- modl_gw <- NULL
   hill_rmse <- hill_prob <- modl_acb <- modl_acc <- gnls_er <- modl_la <- NULL
   gnls_la <- modl_lw <- gnls_lw <- gnls_rmse <- gnls_prob <- actp <- NULL
-  modl_ac10 <- model_type <- NULL 
+  modl_ac10 <- model_type <- conc <- loec_hitc <- NULL 
   
   overwrite_osd <- FALSE
   
