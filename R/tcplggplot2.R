@@ -23,7 +23,7 @@
 #' @importFrom tidyr unnest_longer
 #' @importFrom ggplot2 ggplot aes geom_function geom_vline geom_hline geom_point scale_x_continuous scale_y_continuous scale_color_viridis_d
 #' @importFrom ggplot2 guide_legend scale_linetype_manual xlab ylab geom_text labs theme element_blank
-#' @importFrom ggplot2 margin unit element_text geom_segment scale_color_manual
+#' @importFrom ggplot2 margin unit element_text geom_segment scale_color_manual theme_bw
 #' @importFrom viridis viridis
 #' @import gridExtra
 #' @import stringr
@@ -97,7 +97,8 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE,
         dat[coff == row$V1]$cutoff_linetype <- if(is.null(linetypes)) "dashed" else linetypes
       }
     }
-    dat$color <- viridis::viridis(nrow(dat), begin = 0.1, end = 0.9, option = "turbo")
+    #dat$color <- viridis::viridis(nrow(dat), begin = 0.1, end = 0.9, option = "turbo")
+    dat$color <- c(rgb(255,27,27, maxColorValue = 255), rgb(145,145,145, maxColorValue = 255))
   }
   
   # function to return a formatted conc_resp table
@@ -115,7 +116,7 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE,
   model_range <- if (nrow(conc_resp_bound) > 0) range(conc_resp_bound$model) else c(NA,NA)
   
   # check if data is outside bounds of yrange. If so, expand yrange bounds
-  if (!all(is.na(yrange))) {
+  if (!all(is.na(yrange)) && nrow(dat) == 1) {
     yrange[1] <- min(unlist(dat$resp), dat$coff, dat$top, model_range[1], yrange[1], na.rm=TRUE)
     yrange[2] <- max(unlist(dat$resp), dat$coff, dat$top, model_range[2], yrange[2], na.rm=TRUE)
   }
@@ -151,7 +152,8 @@ tcplggplot2 <- function(dat, type = "mc", compare = "m4id", verbose = TRUE,
         row <- dat[i]
         geom_point(data = conc_resp[[i]], aes(conc, resp), color = row$color, alpha = 0.5, show.legend = FALSE)
       }) +
-      geom_hline(data = dat, aes(yintercept = coff, linetype = cutoff_string, color = cutoff_string))
+      geom_hline(data = dat, aes(yintercept = coff, linetype = cutoff_string, color = cutoff_string)) +
+      theme_bw()
     
     plot_title <- get_plot_title(dat, type, compare, verbose)
     if (verbose == FALSE && plot_title != "") {
