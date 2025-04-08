@@ -8,6 +8,7 @@
 * R Under development (unstable) (2025-04-04 r88118 ucrt)
 
 ## winbuilder check results
+* The only note is related to a change in maintainer
 Installation time in seconds: 21
 Check time in seconds: 299
 Status: 1 NOTE
