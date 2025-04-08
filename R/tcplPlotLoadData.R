@@ -117,7 +117,6 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
     
     # get chemical and sample information
     dat <- tcplPrepOtpt(dat)
-    dat$chnm <- gsub("\u200b", "", dat$chnm) # remove zero width space if exists
     
     # determine missing chem info and replace with string description of well type(s)
     dat <- tcplPlotLoadWllt(dat, type)
@@ -147,6 +146,9 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
+  
+  # remove zero width space if exists
+  dat$chnm <- gsub("\u200b", "", dat$chnm)
   
   # replace null bmd in dat table
   dat <- dat[is.null(dat$bmd), bmd:=NA]
