@@ -1,3 +1,7 @@
+# tcpl 3.2.1
+* Updating Maintainer
+* Change minimum R version to 4.1.0 to fix NOTES
+
 # tcpl 3.2.0
 
 * Added a `NEWS.md` file to track changes to the package.
