@@ -5,13 +5,14 @@
 ## Test environments
 
 * local Windows 10 install, R 4.3.3
-* R Under development (unstable) (2024-10-04 r87208 ucrt)
+* R Under development (unstable) (2025-04-04 r88118 ucrt)
 
 ## winbuilder check results
-Installation time in seconds: 13
-Check time in seconds: 183
-Status: OK
-R Under development (unstable) (2024-10-08 r87214 ucrt)
+Installation time in seconds: 21
+Check time in seconds: 299
+Status: 1 NOTE
+R version 4.5.0 RC (2025-04-04 r88118 ucrt)
+
 
     
 ## local R CMD check results
