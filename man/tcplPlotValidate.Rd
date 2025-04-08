@@ -5,15 +5,25 @@
 \title{tcplPlotValidate}
 \usage{
 tcplPlotValidate(
+  dat = NULL,
   type = "mc",
+  compare = "m4id",
+  by = NULL,
   flags = NULL,
-  output = "none",
+  output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"),
   multi = NULL,
   verbose = FALSE
 )
 }
 \arguments{
+\item{dat}{data.table containing plot-prepared data}
+
 \item{type}{string of mc or sc indicating if it is single or multi conc}
+
+\item{compare}{Character vector, the field(s) to join samples on to create comparison
+plots}
+
+\item{by}{Parameter to divide files into e.g. "aeid".}
 
 \item{flags}{bool - should we return flags}
 

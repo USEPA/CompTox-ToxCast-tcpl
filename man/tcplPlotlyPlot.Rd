@@ -4,12 +4,15 @@
 \alias{tcplPlotlyPlot}
 \title{tcplPlotlyPlot}
 \usage{
-tcplPlotlyPlot(dat, lvl = 5)
+tcplPlotlyPlot(dat, lvl = 5, hide_losing_models = FALSE)
 }
 \arguments{
 \item{dat}{data table with all required conc/resp data}
 
-\item{lvl}{integer level of data that should be plotted
+\item{lvl}{integer level of data that should be plotted}
+
+\item{hide_losing_models}{Boolean, by default FALSE. For individual mc plots 
+only, should the losing models be hidden?
 level 2 - for 'sc' plotting
 level 5 - for 'mc' plotting, all fit models and winning model with hitcall}
 }
