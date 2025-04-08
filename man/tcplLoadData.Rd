@@ -4,7 +4,14 @@
 \alias{tcplLoadData}
 \title{Load tcpl data}
 \usage{
-tcplLoadData(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE)
+tcplLoadData(
+  lvl,
+  fld = NULL,
+  val = NULL,
+  type = "mc",
+  add.fld = TRUE,
+  exact = TRUE
+)
 }
 \arguments{
 \item{lvl}{Integer of length 1, the level of data to load}
@@ -18,6 +25,9 @@ the same order as 'fld'.}
 
 \item{add.fld}{Boolean if true we want to return 
 the additional parameters fit with tcplfit2}
+
+\item{exact}{Logical, passed to tcplLoadChem -- should chemical names be 
+considered exact?}
 }
 \value{
 A data.table containing data for the given fields.
@@ -81,6 +91,12 @@ tcplListFlds(tbl = "mc1")
 ## Load level 0 data where the well type is "t" and the concentration
 ## index is 3 or 4
 tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
+
+## Load level 4 data using a chemical name
+tcplLoadData(lvl = 4, fld = "chnm", val = "Bisphenol A")
+
+## Load level 3 data using a partial chemical name
+tcplLoadData(lvl = 3, fld = "chnm", val = "phenol", exact = FALSE)
 }
 }
 \seealso{

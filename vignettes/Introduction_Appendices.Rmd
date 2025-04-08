@@ -4,20 +4,23 @@ author: US EPA's Center for Computational Toxicology and Exposure ccte@epa.gov
 output:
   rmdformats::readthedown:
     fig_retina: false
+    code_folding: show
 params:
   my_css: css/rmdformats.css
+
 vignette: >
   %\VignetteIndexEntry{1. Introduction to tcpl and invitrodb}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 
+  
 ---
 
 ```{css, code = readLines(params$my_css), hide=TRUE, echo = FALSE}
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-#devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
+# devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
 library(tcpl)
 library(tcplfit2)
 # Data Formatting Packages #
@@ -72,7 +75,7 @@ Check out the following publications for additional information on the overall [
 * [Feshuk et al., 2023](https://www.frontiersin.org/journals/toxicology/articles/10.3389/ftox.2023.1275980): The ToxCast pipeline: updates to curve-fitting approaches and database structure
 * [Filer et al.,2017](https://pubmed.ncbi.nlm.nih.gov/27797781/): tcpl: the ToxCast pipeline for high-throughput screening data
 * [Sheffield et al., 2021](https://doi.org/10.1093/bioinformatics/btab779): tcplfit2: an R-language general purpose concentration–response modeling package
-* [Judson et al., 2016](https://doi.org/10.1093/toxsci/kfw148):  Analysis of the Effects of Cell Stress and Cytotoxicity on In Vitro Assay Activity Across a Diverse Chemical and Assay Space
+* [Judson et al., 2016](https://doi.org/10.1093/toxsci/kfw092):  Analysis of the Effects of Cell Stress and Cytotoxicity on In Vitro Assay Activity Across a Diverse Chemical and Assay Space
 
 # Connection Configuration 
 
@@ -82,6 +85,7 @@ First, it is highly recommended for users to utilize the <font face="CMTT10"> da
 library(data.table) # recommended for interacting with tcpl data frame-like objects
 library(tcpl)
 ```
+
 
 After loading <font face="CMTT10">tcpl</font>, the function <font face="CMTT10">tcplConf</font> is used to establish connection to a database server or the API. While a typical database connection requires 5 parameters to be provided, using an API connection requires the user to only specify password (`pass`) and driver (`drvr`):
 
@@ -915,7 +919,7 @@ Once the Level 0 data are loaded, data processing occurs via the <font face="CMT
 
 The processing is sequential, and every level of processing requires successful processing at the antecedent level. Any processing changes will trigger a "delete cascade," removing any subsequent data affected by the processing change to ensure complete data fidelity. For example, processing level 3 data will first require data from levels 4 through 6 to be deleted for the corresponding IDs. **Changing method assignments will also trigger a delete cascade for any corresponding data.** 
 
-For tcplRun, the user must supply a starting level (slvl) and ending level (elvl). There are four phases of processing, as reflected by messages printed in console: (1) data for the given IDs are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The 'outfile' parameter can give the user the option of print this output text to a file. If an id fails while processing multiple levels, the function will not attempt to process the failed ids in subsequent levels. When finished processing, a list indicating the processing success of each ID is returned. For each level processed, the list will contain two elements: (1) "l#" a named Boolean vector where <font face="CMTT10">TRUE</font> indicates successful processing, and (2) "l#_failed" containing the names of any ids that failed processing, where "#" is the processing level.
+For tcplRun, the user must supply a starting level (slvl) and ending level (elvl). There are four phases of processing, as reflected by messages printed in console: (1) data for the given IDs are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The 'outfile' parameter can give the user the option of printing this output text to a file. If an id fails while processing multiple levels, the function will not attempt to process the failed ids in subsequent levels. When finished processing, a list indicating the processing success of each ID is returned. For each level processed, the list will contain two elements: (1) "l#" a named Boolean vector where <font face="CMTT10">TRUE</font> indicates successful processing, and (2) "l#_failed" containing the names of any ids that failed processing, where "#" is the processing level.
 
 Processing of multiple assay components or endpoints can be executed simultaneously. This is done with the internal utilization of the <font face="CMTT10">mclapply</font> function from the <font face="CMTT10">parallel</font> package. Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. For processing on a Windows operating system, the default is $mc.cores = 1$, unless otherwise specified. For processing on a Unix-based operating system, the default is $mc.cores = NULL$ i.e. to utilize all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the "mc.cores" parameter to the desired level. **Note, this specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
 
@@ -1264,7 +1268,7 @@ tcplMthdAssign(lvl = 3, # processing level
 mc3_res <- tcplRun(id = 1, slvl = 3, elvl = 3, type = "mc")
 ```
 
-Notice that MC3 processing takes an acid, not an aeid, as the input ID. As mentioned in previous sections, the user must will assign MC3 normalization methods by aeid then process by acid. The MC3 processing will attempt to process all endpoints for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
+Notice that MC3 processing takes an acid, not an aeid, as the input ID. As mentioned in previous sections, the user must assign MC3 normalization methods by aeid then process by acid. The MC3 processing will attempt to process all endpoints for a given component. If one endpoint fails for any reason (e.g., does not have appropriate methods assigned), the processing for the entire component fails.
 
 ::: {.noticebox data-latex=""}
 
@@ -1360,7 +1364,7 @@ mc3 <- tcplPrepOtpt(mc3)
 
 For demonstration purposes, the <font face="CMTT10"> mc_vignette </font> R data object is provided in the package since the vignette is not directly connected to such a database.  The <font face="CMTT10"> mc_vignette </font> object contains a subset of data from levels 3 through 5 from invitrodb  v4.2.  The following code loads the example mc3 data object, then plots the concentration-response series for an example spid with the summary estimates indicated.
 
-```{r fig.align='center',message=FALSE,message=FALSE,fig.dim=c(8,10),eval = FALSE}
+```{r class.source="fold-hide", fig.align='center',message=FALSE,message=FALSE,fig.dim=c(8,10),eval = TRUE}
 # Load the example data from the `tcpl` package.
 data(mc_vignette, package = 'tcpl')
 # Allocate the level 3 example data to `mc3`.
@@ -1370,6 +1374,9 @@ mc3_example[, logc := log10(conc)]
 # Obtain the MC4 example data.
 mc4_example <- mc_vignette[["mc4"]]
 # Obtain the minimum response observed and the 'logc' group - 'resp_min'.
+
+
+
 level3_min <- mc3_example %>%
   dplyr::group_by(spid, chnm) %>% 
   dplyr::filter(resp == min(resp)) %>% 
@@ -1423,11 +1430,12 @@ B <- mc3_example %>%
   theme(legend.position = 'bottom')
 # Plot the maximum mean & median responses at the related log-concentration -
 #   'max_mean' & 'max_mean_conc'.
+
 C <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = .,aes(logc, resp)) +
   geom_point(pch = 1, size = 2) +
-  geom_point(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_point(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(x = log10(max_mean_conc), y = max_mean,
                  col = 'maximum mean response'),
              alpha = 0.75, size = 2)+
@@ -1441,11 +1449,11 @@ C <- mc3_example %>%
   theme(legend.position = 'bottom')
 # Plot the maximum mean & median responses at the related log-concentration -
 #   'max_med' & 'max_med_conc'.
-D <- example %>%
+D <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = ., aes(logc, resp)) +
   geom_point(pch = 1, size = 2) +
-  geom_point(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_point(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(x = log10(max_med_conc), y = max_med,
                  col = "maximum median response"),
              alpha = 0.75, size = 2)+
@@ -1484,11 +1492,11 @@ G <- mc3_example %>%
   dplyr::filter(spid == "01504209") %>% 
   ggplot(data = ., aes(logc, resp)) +
   geom_point(pch = 1, size = 2) +
-  geom_vline(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_vline(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(xintercept = log10(conc_min),
                  col = 'minimum concentration'),
              lty = "dashed") +
-  geom_vline(data = dplyr::filter(mc4, spid == "01504209"),
+  geom_vline(data = dplyr::filter(mc4_example, spid == "01504209"),
              aes(xintercept = log10(conc_max),
                  col = 'maximum concentration'),
              lty = "dashed") +
@@ -1501,10 +1509,13 @@ G <- mc3_example %>%
   theme_bw() +
   theme(legend.position = 'bottom')
 ## Compile Summary Plots in One Figure ##
+
+aenm = "TOX21_ERa_BLA_Agonist_ratio"
+spid = "01504209"
 gridExtra::grid.arrange(
   A,B,C,D,E,G,
   nrow = 3, ncol = 2,
-  top = mc3[which(mc4[,spid] == "01504209"), aenm]
+  top = mc3[which(mc4_example[,spid] == "01504209"), aenm]
 )
 ```
 
@@ -1618,7 +1629,7 @@ where $n$ is the number of observations.
 
 The following plots provide simulated concentration-response curves to illustrate the general curve shapes captured by <font face="CMTT10">tcplFit2</font> models. When fitting 'real-world' experimental data, the resulting curve shapes will minimize the error between the observed data and the concentration-response curve.  Thus, the shape for each model fit may or may not reflect what is illustrated below:
 
-```{r class.source="scroll-100",fig.align='center'}
+```{r class.source="fold-hide", fig.align='center'}
 ## Example Data ##
 # example fit concentration series
 ex_conc <- seq(0.03, 100, length.out = 100)
@@ -1711,7 +1722,7 @@ A subset of MC4 data is available within the <font face="CMTT10"> mc_vignette </
 
 The level 4 data includes fields for each of the ten model fits as well as the ID fields, as defined [here](#mc4). Model fit information are prefaced by the model abbreviations (e.g. $\mathit{cnst}$, $\mathit{hill}$, $\mathit{gnls}$, $\mathit{poly1}$, etc.). The fields ending in $\mathit{success}$ indicate the convergence status of the model, where 1 means the model converged, 0 otherwise. NA values indicate the fitting algorithm did not attempt to fit the model. Smoothed model fits of the concentration-response data from the MC4 data object are displayed below:
 
-```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100", warnings=FALSE, message=FALSE}
+```{r class.source="fold-hide", fig.align='center',fig.dim=c(8,5.5), warnings=FALSE, message=FALSE}
 # Load the example data from the `tcpl` package.
 data(mc_vignette, package = 'tcpl')
 # Allocate the level 3 example data to `mc3`.
@@ -1887,7 +1898,7 @@ mc5_example <- mc_vignette[["mc5"]]
 
 For demonstrative purposes, an alternative visual of the model fits from MC4 and the best model as well as the potency estimates from MC5 data is produced below.{#mc5_plot}
 
-```{r fig.align='center',fig.dim=c(8,5.5),class.source = "scroll-100"}
+```{r class.source="fold-hide", fig.align='center',fig.dim=c(8,5.5)}
 ## Obtain Data ##
 # Load the example data from the `tcpl` package.
 data(mc_vignette,package = 'tcpl')
@@ -2184,10 +2195,10 @@ For example, a curve may be considered a single point hit with activity not at t
 Method <- c(5:11, 13:15, 17:20)
 
 # Second column - Level 6 Flag Names
-FlagNames <- c("modl.directionality.fail", "singlept.hit.high", "singlept.hit.mid",
-               "multipoint.neg", "bmd.high", "noise", "border", "low.nrep", 
-               "low.nconc", "gnls.lowconc", "efficacy.50", "ac50.lowconc", 
-               "viability.gnls", "no.med.gt.3bmad")
+FlagNames <- c("Model directionality questionable", "Active with only highest conc above baseline (3*bmad)", "Active with one conc (not highest) above baseline (3*bmad)",
+               "Inactive with multiple concs above baseline (3*bmad)", "Bmd > ac50, indication of high baseline bariability", "Noisy data", "Borderline", "Average number of replicates per conc < 2", 
+               "Number of concentrations tested < 4", "Gain AC50 < lowest concn & loss AC50 < mean conc", "Efficacy < 50%", "AC50 < lowest concentration tested", 
+               "Cell viability assay fit with gnls winning model", "No median responses above baseline")
 # Third column - Level 6 Flag Descriptions
 FlagDescription <- c("Flag series if model directionality is questionable, i.e. if the winning model
                      direction was opposite, more responses $(resp)$ would have exceeded the cutoff 
@@ -2212,8 +2223,7 @@ FlagDescription <- c("Flag series if model directionality is questionable, i.e. 
                      square error $(rmse)$ for the series is greater than the cutoff $(coff)$; 
                      $rmse > coff$",
                      "Flag series if borderline activity is suspected based on modeled top 
-                     parameter $(top)$ relative to cutoff $(coff)$; $|top| <= 1.2 * coff$ or 
-                     $|top|>= 0.8 * coff$.",
+                     parameter $(top)$ relative to cutoff $(coff)$; $0.8 * coff <= |top| <= 1.2 * coff$",
                      "Flag series if the average number of replicates per concentration is less than
                      2; $nrep < 2$.",
                      "Flag series if 4 concentrations or less were tested; $nconc <= 4$.",
@@ -2234,15 +2244,28 @@ FlagDescription <- c("Flag series if model directionality is questionable, i.e. 
                      "Flag series where no median response values are greater than baseline as 
                      defined by 3 times the baseline median absolute deviation $(bmad)$ or less than baseline as defined by -3 times $bmad$; both $nmed\\_gtbl\\_pos$ and $nmed\\_gtbl\\_neg = 0$, where $nmed\\_gtbl\\_pos$ is the number of median response values $> 3 * bmad$ and $nmed\\_gtbl\\_neg$ is the number of median response values $< -3 * bmad$.")
 
+
 # Consolidate all columns into a table.
-output <- data.frame(Method, FlagNames, FlagDescription)
+output <- data.frame(Method, FlagNames, FlagDescription) 
+colnames(output)<- c("Method", "Flag Name", "Flag Description")
 
 htmlTable(output,
           align = 'l',
           align.header = 'l',
           rnames = FALSE  ,
-          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em '          )
+          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ')
+
+
 ```
+### Example of Flags
+
+Below is a diagram with various example graphs for some of the above flags. The annotations highlight the part(s) of the graph that are concerning and caused that specific flag to be assigned to the data. 
+
+<center>
+
+![<font style="font-size:15px"><i>Representative Graphs of Flags</i></font>](img/example_flag_plots.png){width=650px}
+
+
 
 ## Representative Samples {#chid}
 
@@ -2486,7 +2509,7 @@ tcplLoadChemList(field = "chid", val = 1:2)
 
 The <font face="CMTT10">**tcplMthdList**</font> function returns methods available for processing at a specified level (i.e. step in the <font face="CMTT10">tcpl</font> pipeline). The user defined function in the following code chunk retrieves and outputs all available methods for both the SC and MC data levels.
 
-```{r mthd_list, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
+```{r mthd_list, fig.align='center',message=FALSE, eval=FALSE}
 # Create a function to list all available methods function (SC & MC).
 method_list <- function() {
   # Single Concentration
@@ -2574,7 +2597,7 @@ mc0 <- tcplPrepOtpt(tcplLoadData(lvl = 0, fld = "acid", val = 1, type = "mc"))
 
 The goal of this section is to provide example quantitative metrics, such as z-prime and coefficient of variance, to evaluate assay performance relative to controls.
 
-```{r mc0_aq, fig.align='center', class.source = "scroll-100", message=FALSE, eval=FALSE}
+```{r mc0_aq, fig.align='center',  message=FALSE, eval=FALSE}
 # Create a function to review assay quality metrics using indexed Level 0 data.
 aq <- function(ac){
   # obtain level 1 multiple concentration data for specified acids
@@ -2667,7 +2690,7 @@ sc2 <- tcplPrepOtpt(tcplLoadData(lvl = 2, fld = "aeid", val = aeids$aeid, type =
 
 ## - Load SC Methods
 
-```{r sc2_mthd, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
+```{r sc2_mthd, fig.align='center',message=FALSE, eval=FALSE}
 # Create a function to load methods for single concentration data processing
 # steps for given aeids.
 sc_methods <- function(aeids) {
@@ -2711,7 +2734,7 @@ mc5 <- tcplPrepOtpt(tcplLoadData(lvl = 5, fld = "aeid", val = aeids$aeid, type =
 
 ## - Load MC Methods
 
-```{r mc5_methods, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
+```{r mc5_methods, fig.align='center',message=FALSE, eval=FALSE}
 # Create a function to load methods for MC data processing
 # for select aeids.
 mc_methods <- function(aeids) {

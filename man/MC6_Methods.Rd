@@ -51,8 +51,7 @@ available in the package vignette, "Data_processing."
   \item{noise}{Flag series as noisy if the quality of fit as calculated by the root mean square 
   error (rmse) for the series is greater than the cutoff (coff); \eqn{rmse > coff}{rmse > coff}.}
   \item{border}{Flag series if borderline activity is suspected based on modeled top parameter 
-  (top) relative to cutoff (coff); \eqn{|top|<=1.2*coff~or~|top|>=0.8*coff}{|top| <= 1.2(coff) or
-   |top| >= 0.8(coff)}.}
+  (top) relative to cutoff (coff); \eqn{0.8*coff<=|top|<=1.2*coff}.}
   \item{overfit.hit}{Method not yet updated for tcpl implementation. Flag hit-calls that would 
   get changed after doing the small N correction to the aic values.}
   \item{efficacy.50}{Flag low efficacy hits if series has an active hit call (hitc >= 0.9) and 
