@@ -1,12 +1,12 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 3.2.0.9000
+Version: 3.2.1
 Authors@R: c(
     person("Richard S", "Judson",role = c("ctb","ths"), comment = c(ORCID = "0000-0002-2348-9633")),
     person("Dayne L", "Filer", role = "aut"),
-    person("Jason","Brown", role = "cre", email = "brown.jason@epa.gov", comment = c(ORCID = "0009-0000-2294-641X")),
+    person("Jason","Brown", role = "ctb", comment = c(ORCID = "0009-0000-2294-641X")),
     person("Sarah E","Davidson-Fritz", role = "ctb",email = "davidsonfritz.sarah@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
-    person("Madison","Feshuk",role = "ctb",email = "feshuk.madison@epa.gov", comment = c(ORCID = "0000-0002-1390-6405")),
+    person("Madison","Feshuk",role = "cre",email = "feshuk.madison@epa.gov", comment = c(ORCID = "0000-0002-1390-6405")),
     person("Carter", "Thunes", role = "ctb", email = "thunes.carter@epa.gov"),
     person("Ashley", "Ko", role = "ctb", email = "ko.ashley@epa.gov"),
     person("Kelly", "Carstens", role = "ctb", email = "carstens.kelly@epa.gov", comment = c(ORCID = "0000-0002-1746-5379")),
@@ -21,7 +21,7 @@ Authors@R: c(
 Description: The ToxCast Data Analysis Pipeline ('tcpl') is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, 'invitrodb'. The package was developed for the chemical screening data curated by the US EPA's Toxicity Forecaster (ToxCast) program, but 'tcpl' can be used to support diverse chemical screening efforts.
 URL: https://github.com/USEPA/CompTox-ToxCast-tcpl, https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.1.0)
 Imports:
     data.table (>= 1.15.0),
     DBI,
