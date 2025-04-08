@@ -78,10 +78,10 @@ mc5 <- function(ae, wr = FALSE) {
   
   ## Load cutoff methods
   ms <- tcplMthdLoad(lvl = 5L, id = ae, type = "mc")
-  if ('loec.coff' %in% ms$mthd) {
-    # using the loec method
+  if (any(c("ow_loec.coff", "include_loec.coff") %in% ms$mthd)) {
+    # using a loec method
     loec.mthd = TRUE
-    ms <- ms[!mthd=='loec.coff']
+    ms <- ms[!mthd=='include_loec.coff']
   }
   
   #special case where osd needs to be overwritten
@@ -93,6 +93,9 @@ mc5 <- function(ae, wr = FALSE) {
 
   ## Extract methods that need to overwrite hitc and hit_val
   ms_overwrite <- ms[grepl("ow_",mthd),]
+  if (nrow(ms_overwrite) > 1) {
+    stop(paste0("Only one level 5 hit-call override method may be assigned concurrently. Currently assigned: ", paste0(ms_overwrite$mthd, collapse = ", ")))
+  }
   ## Extract methods that don't overwrite
   ms <- ms[!grepl("ow_",mthd),]
   
@@ -124,7 +127,6 @@ mc5 <- function(ae, wr = FALSE) {
     
     ## Complete the loec calculations
     if (loec.mthd) {
-      
       all_resp_gt_conc <-function(resp) {
         # all resp > coff
         return(as.integer(all(abs(resp) > cutoff))) # All responses must be greater than coff
@@ -137,13 +139,18 @@ mc5 <- function(ae, wr = FALSE) {
       mc3[is.infinite(loec), loec := NA] #convert Inf to NA
       mc3[, loec_hitc := max(loec_coff), by = spid] # is there a loec? used for hitc
       mc3 <- mc3[dat, mult='first', on='spid', nomatch=0L]
-      
-      dat <- dat[mc3[,c("spid","loec", "loec_hitc")],on = "spid"]
-      
-    } else {
-      # if we're using v3 schema and not loec method we want to tcplfit2
-      dat <- tcplHit2(dat, coff = cutoff)
+      mc3 <- mc3[,c("m4id","aeid","coff","loec")] |> melt(measure.vars = c("loec"), variable.name = "hit_param", value.name = "hit_val")
     }
+    
+    # if we're using v3 schema we want to tcplfit2
+    dat <- tcplHit2(dat, coff = cutoff)
+    
+    if (loec.mthd) {
+      exprs <- lapply(mthd_funcs["include_loec.coff"], do.call, args = list())
+      fenv <- environment()
+      invisible(rapply(exprs, eval, envir = fenv))
+    }
+    
   } else {
     # Legacy fitting
 
@@ -381,17 +388,9 @@ mc5 <- function(ae, wr = FALSE) {
     dat <- dat[ , .SD, .SDcols = outcols]
   }
   
-  
-  # apply overwrite methods
+  # apply overwrite method
   if (nrow(ms_overwrite) > 0) {
     exprs <- lapply(mthd_funcs[ms_overwrite$mthd], do.call, args = list())
-    fenv <- environment()
-    invisible(rapply(exprs, eval, envir = fenv))
-  }
-  
-  # apply loec.coff 
-  if (loec.mthd) {
-    exprs <- lapply(mthd_funcs[c("loec.coff")], do.call, args = list())
     fenv <- environment()
     invisible(rapply(exprs, eval, envir = fenv))
   }
@@ -403,8 +402,7 @@ mc5 <- function(ae, wr = FALSE) {
       " rows; ", ttime, ")\n", sep = "")
   
   res <- TRUE
-  
-  
+
   
   ## Load into mc5 table -- else return results
   if (wr) {
