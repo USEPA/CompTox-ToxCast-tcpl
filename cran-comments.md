@@ -1,11 +1,6 @@
-* added single quotes to invitrodb and tcpl in DESCRIPTION
-* fixed aeds URI
-
 ## Changes from last version
-* To resolve current cran check results: added package anchors to links
-* Updated docs and vignette
-* Plotting updates
-* Added API functionality
+* Updating Maintainer
+* Change minimum R version to 4.1.0 to fix NOTES
 
 ## Test environments
 
