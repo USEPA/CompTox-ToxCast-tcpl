@@ -4,7 +4,7 @@
 
 ## Test environments
 
-* local Windows 10 install, R 4.2.2
+* local Windows 10 install, R 4.3.3
 * R Under development (unstable) (2024-10-04 r87208 ucrt)
 
 ## winbuilder check results
@@ -15,8 +15,26 @@ R Under development (unstable) (2024-10-08 r87214 ucrt)
 
     
 ## local R CMD check results
+2 NOTES:
+* We are switching maintainers so this first one is expected.
+* We believe the unable to verify current time is a false positive unrelated to package.
 
-0 ERRORs | 0 WARNINGs | 0 NOTES.
+
+── R CMD check results  tcpl 3.2.1 ────
+Duration: 5m 15.3s
+
+❯ checking CRAN incoming feasibility ... [153s] NOTE
+  Maintainer: 'Madison Feshuk <feshuk.madison@epa.gov>'
+  
+  New maintainer:
+    Madison Feshuk <feshuk.madison@epa.gov>
+  Old maintainer(s):
+    Jason Brown <brown.jason@epa.gov>
+
+❯ checking for future file timestamps ... NOTE
+  unable to verify current time
+
+0 errors ✔ | 0 warnings ✔ | 2 notes ✖
 
 ## Downstream dependencies
 
