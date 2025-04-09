@@ -1172,7 +1172,7 @@ corrected data",
 the \'mc3_aeid\' table to the corrected data to define response",
 "Fit: Model the concentration-response data utilizing ten
 objective curve-fitting functions from tcplfit2: (1) constant, (2) hill, (3) gain-loss, (4) polynomial-linear, (5) polynomial-quadratic, (6) power, (7) exponential-2, (8) exponential-3, (9) exponential-4, (10) exponential-5",
-"Model Selection/Acitivty Call: Select the winning model, define
+"Model Selection/Activity Call: Select the winning model, define
 the response cutoff based on methods in the \'mc5_aeid\' table, and
 determine activity",
 "Flag: Flag potential false positive and false negative fits", 
@@ -1858,6 +1858,27 @@ htmlTable(output,
           rnames = FALSE  ,
           css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
           caption="Table 11: Level 5 overwrite (ow) methods for hitcalls in unintended direction."
+          )
+```
+
+In addition, for certain data, sometimes hitcalling based on model fits alone does not make sense. There are two methods for including a "loec", or the lowest observed effective concentration, within the output of level 5 processing and stored within the mc5_param table. One method stores the "loec" where the other does the same while also overwriting values such as model_type, hitc, fitc (fit category), and modl (winning model). See [Plotting](#additional-examples) for how "loec"-fit data are plot.
+
+```{r warning = FALSE, echo = FALSE}
+Method <- c(15,34)
+Method_Name <- c("ow_loec.coff", "include_loec.coff")
+Description <- c(
+  "Identify the lowest observed effective concentration (loec) where the values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside winning model and potency estimates. If loec exists, assume hit call = 1, fitc = 100, model_type = 1, and if not, assume hit call = 0.",
+  "Identify the lowest observed effective concentration (loec) where the values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside winning model and potency estimates."
+)
+# Compile all of the information for the table.
+output <- data.frame(Method,Method_Name,Description)
+# Export/print the table to an html rendered table.
+htmlTable(output,
+          align = 'l',
+          align.header = 'l',
+          rnames = FALSE  ,
+          css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
+          caption="Table 12: Level 5 methods for including loec values and overwriting others."
           )
 ```
 
@@ -3251,7 +3272,9 @@ tcplPlot(dat = plot_data, by = "aeid", multi = TRUE, output = "pdf", fileprefix 
 
 ### - Plot LOEC (Lowest Observed Effective Concentration)
 
-<font face="CMTT10">tcplPlot</font> now supports the plotting of vertical "LOEC" lines, automatically detecting when multi-concentration data is hit-called using the new level 5 processing method "loec.coff". Comparison LOEC plotting with other LOEC samples or crossed with traditional hit-called data with winning models is also supported.
+<font face="CMTT10">tcplPlot</font> now supports the plotting of vertical "LOEC" lines, automatically detecting when multi-concentration data is hit-called using the new level 5 processing method "ow_loec.coff". Comparison LOEC plotting with other LOEC samples or crossed with traditional hit-called data with winning models is also supported. 
+
+Note - for data processed with the level 5 method "include_loec.coff", <font face="CMTT10">tcplPlot</font> will not automatically generate this kind of plot. A current workaround is to pre-load the plot data using `tcplPlotLoadData` and update the $\mathit{model\_type}$ column to `1` for any or all sample(s). Future <font face="CMTT10">tcpl</font> versions may include additive "LOEC" lines as an option.
 
 ```{r plot_loec, eval = FALSE}
 # default parameters used here: type = "mc"
