@@ -1,6 +1,6 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 3.2.1
+Version: 3.3.0
 Authors@R: c(
     person("Richard S", "Judson",role = c("ctb","ths"), comment = c(ORCID = "0000-0002-2348-9633")),
     person("Dayne L", "Filer", role = "aut"),
