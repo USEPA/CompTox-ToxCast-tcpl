@@ -1,4 +1,4 @@
-# tcpl 3.2.1
+# tcpl 3.3.0
 
 ## New features
 
@@ -19,8 +19,10 @@ with `export_ready = 1` (#263).
 ### Processing method changes
 
 * Level 6 model directionality flag is improved (#323).
-* New level 5 method loec.coff hit-calls using the lowest observed effective 
+* New level 5 method ow_loec.coff hit-calls using the lowest observed effective 
 concentration (#308).
+* New level 5 method include_loec.coff stores the lowest observed effective 
+concentration (#345).
 * New single-concentration method level 2 pc40 (#309).
 * New level 3 method resp.censormed.neg25 (#299).
 
@@ -40,6 +42,10 @@ showcasing new `tcplPlot()` functionality.
 * `tcplSubsetChid()` now preserves the continuous hitcall and the binary hitcall 
 is stored as `actc` (#189).
 
+# tcpl 3.2.1
+
+* Updating Maintainer
+* Change minimum R version to 4.1.0 to fix NOTES
 
 # tcpl 3.2.0
 

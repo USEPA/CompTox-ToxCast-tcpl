@@ -218,14 +218,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     if (length(colnames(dat))) {
       if (lvl == 3 | lvl == "agg") {
-        dat$resp <- lapply(dat$resp, unlist)
-        dat$logc <- lapply(dat$logc, unlist)
         if (lvl == 3) dat <- unnest_longer(dat, c(conc, logc, resp)) %>% as.data.table() 
         else dat <- unnest_longer(dat, c(logc, resp)) %>% as.data.table() 
       }
       
       if (lvl == 6) {
-        dat$flag <- lapply(dat$flag, unlist)
         dat <- unnest_longer(dat, flag) %>% filter(flag != "NULL") %>% as.data.table()
       }
     }

@@ -1,4 +1,5 @@
 ## Changes from last version
+
 * Plotting updates
 * Small features added to a few functions
 * Updated docs and vignette
@@ -22,7 +23,7 @@
 * checking for future file timestamps ... NOTE
   unable to verify current time
   
-  Note seems to be out of our control, with time API unavailable.
+  We believe the unable to verify current time is a false positive unrelated to package.
 
 ## winbuilder check results
 Installation time in seconds: 14
@@ -46,7 +47,3 @@ Issues with CRAN packages are summarised below.
 ### Failed to check
 
 * Rcurvep (NA)
-
-
-
-
