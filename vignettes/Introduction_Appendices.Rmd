@@ -2357,7 +2357,7 @@ In contrast, for a chemical to be included in a computation of the global median
 Given ToxCast includes a heterogeneous set of assays across a diverse biological space, annotations in the database help flexibly aggregate and differentiate processed data whereas assay documentation aligned with international standardization efforts can make ToxCast data more useful and interpretable for use in decision-making. The [OECD Guidance Document 211 (GD211)](https://ntp.niehs.nih.gov/sites/default/files/iccvam/suppdocs/feddocs/oecd/oecd-gd211-2014-508.pdf) is a standard for comprehensive assay documentation describing non-guideline in vitro test methods and their interpretation. This template is intended to harmonize non-guideline, *in vitro* method descriptions to allow assessment of the relevance of the test method for biological responses of interest and the quality of the data produced. Unlike the assay element annotations which are often short in a standardized format or use a controlled term list, the assay_descriptions fields have no character limit for text. A compiled report of these assay description documents are available on the [ToxCast Downloadable Data page](https://www.epa.gov/comptox-tools/exploring-toxcast-data).
 
 ## Administered Equivalent Doses (Level 7) {#aed}
-The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE and httk models for it, please see: [Breen et al, 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
+The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE and httk models for it, please see: [Breen et al., 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
 
 For invitrodb v4.2 onward, a new MC7 table contains pre-generated AED values using several potency metrics from invitrodb and a subset of models from the High-throughput Toxicokinetics R package <font face="CMTT10"> httk </font>. As implemented, this MC7 table provides users with pre-calculated estimates of the *in vivo* human administered dose (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
 
@@ -2399,16 +2399,20 @@ htmlTable(output,
 
 There is high value in understanding the outcomes of solubilization and chemical stability in the vehicle chosen to solubilize the chemical, i.e. a chemical's applicability domain for *in vitro* screening. This informs what chemicals and samples should screened in future experiments. It also helps inform future structural models to understand which chemicals will be stable and detectable in solubilization, and further provide insight into possible degradation products that could be synthesized or purchased. Most critically, this information promotes understanding of uncertainty in estimates of initial experimental concentration of chemicals. 
 
-To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the analytical QC data for the ToxCast/Tox21 chemical library was conducted. This involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. Additional Analytical QC, such as for the PFAS chemical library, and integration efforts are ongoing. 
+To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the analytical QC data for the ToxCast/Tox21 chemical library was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. Visit the [Analytical QC list on AMOS](https://ccte-cced-amos.epa.gov/amos/analytical_qc_list) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
+
+### Descriptions of Fields and Possible Options
 
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("dtxsid", "chnm", "spid", "qc_level", "pass_or_caution", "t0", "t4", 
 "call", "annotation", "flags", "average_mass", "log10_vapor_pressure_OPERA_pred", "logKow_octanol_water_OPERA_pred")
 
 Description <- c("Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database", 
-                 "Chemical name", "Sample ID", "Level of analytical QC: substance or sample", 
-                 "Indication of analytical QC pass or caution. Considered caution unless T0 or T4 in (A, B), or T0 and T4 are I with S call", 
-                 "Grade at T0 (Time zero: Compounds freshly taken out of freezer). Grade options include: </br>
+                 "Chemical name", "Sample ID or ToxCast bioactivity data, connected by bottle lineage", "Level of analytical QC: substance or sample", 
+                 "Indication of analytical QC pass or caution: </br> 
+                 **Pass** = No issues in detection observed </br> 
+                 **Caution** = See additional information. Considered caution unless T0 or T4 in (A, B), or T0 and T4 are I with S call", 
+                 "Grade at T0 (Time zero). Measurements were taken when compound was freshly taken out of freezer. Grade options include: </br>
                  **A**: Molecular Weight (MW) Confirmed, Purity >90% </br> 
                  **B**: MW Confirmed, Purity 75-90% </br> 
                  **C**: MW Confirmed, Purity 50-75% </br> 
@@ -2425,8 +2429,8 @@ Description <- c("Unique identifier from U.S. EPA Distributed Structure-Searchab
                  **U**: Unknown/Inconclusive</br>
                  **ND**: Not Determined</br>
                  **W**: Sample Withdrawn",
-                 "Grade at T4 (Time 4 months: Compounds kept at room temperature for 4 months). Same options at T0.", 
-                 "Call options include:</br> 
+                 "Grade at T4 (Time 4 months). Measurements were taken after compound was kept at room temperature for 4 months). Same options at T0.", 
+                 "Stability in DMSO over time. Call options include:</br> 
                  **S**: Stable</br>
                  **T**: CAUTION Chemical transformation </br>
                  **L**: CAUTION Physical loss</br>
@@ -2443,7 +2447,7 @@ Description <- c("Unique identifier from U.S. EPA Distributed Structure-Searchab
 **Examine physicochemical properties**: Predicted log10-VP >= 1 *OR* logKow >= 6.5</br>
 **Confirmed isomer or mixture**: T0 in (M,I) *AND* T4 in (M,ND,I)</br>
 **Missing purity information**: T0 in (Z) *AND* T4 in (A,Ac,B,C)", 
-"Mass",
+"Average mass of chemical substance",
 "OPERA predicted log10 vapor pressure", 
 "OPERA predicted Octanol-water partition coefficient")
 
@@ -2453,8 +2457,7 @@ htmlTable(output,
         align = 'l',
         align.header = 'l',
         rnames = FALSE  ,
-        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ',
-        caption = "Table 4: Fields in the Chemical_Analytical_QC Table.")
+        css.cell =  ' padding-bottom: 5px;  vertical-align:top; padding-right: 10px;min-width: 5em ')
 
 ```
 
