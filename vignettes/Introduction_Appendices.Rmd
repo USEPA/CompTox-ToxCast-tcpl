@@ -1861,7 +1861,9 @@ htmlTable(output,
           )
 ```
 
-In addition, for certain data, sometimes hitcalling based on model fits alone does not make sense. There are two methods for including a "loec", or the lowest observed effective concentration, within the output of level 5 processing and stored within the mc5_param table. One method stores the "loec" where the other does the same while also overwriting values such as model_type, hitc, fitc (fit category), and modl (winning model). See [Plotting](#additional-examples) for how "loec"-fit data are plot.
+In addition, there may be situations where traditional modeling under tcplfit2 is not totally appropriate. Data which have limited efficacy or limited number of concentrations tested may be candidates for "loec", or the lowest observed effective concentration, potency and hitcalling determinations. A "loec" is defined as the lowest experimental dose where all responses surpass the cutoff.
+
+There are two methods for including a "loec" within the output of level 5 processing and stored within the mc5_param table. The "include" method stores the "loec" alongside regular tcplfit2 winning model fitting, whereas the "ow" (overwrite) method does the same while also overwriting key values, i.e. model_type, hitc, fitc (fit category), and modl (winning model), based on whether a "loec" occurs. See [Plotting](#additional-examples) for how "loec"-fit data are plot.
 
 ```{r warning = FALSE, echo = FALSE}
 Method <- c(15,34)
