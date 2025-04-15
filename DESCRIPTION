@@ -9,7 +9,7 @@ Authors@R: c(
     person("Sarah E","Davidson-Fritz", role = "ctb", email = "davidsonfritz.sarah@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
     person("Kelly", "Carstens", role = "ctb", email = "carstens.kelly@epa.gov", comment = c(ORCID = "0000-0002-1746-5379")),
     person("Elizabeth", "Gilson", role = "ctb", email = "gilson.elizabeth@epa.gov"),
-    person("Lindsay","Knupp",role="ctb")
+    person("Lindsay","Knupp",role="ctb"),
     person("Lori","Kolaczkowski",role = "ctb"),
     person("Ashley", "Ko", role = "ctb"),
     person("Zhihui","Zhao", role="ctb"),
