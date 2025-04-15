@@ -1861,15 +1861,15 @@ htmlTable(output,
           )
 ```
 
-In addition, there may be situations where traditional modeling under tcplfit2 is not totally appropriate. Data which have limited efficacy or limited number of concentrations tested may be candidates for "loec", or the lowest observed effective concentration, potency and hitcalling determinations. A "loec" is defined as the lowest experimental dose where all responses surpass the cutoff.
+In addition, there may be situations where traditional modeling under <font face="CMTT10">tcplFit2</font> is not totally appropriate. For example, data which have limited efficacy, do not have continuous response values, or have a limited number of experimental concentrations tested may be candidates for "loec", or the lowest observed effective concentration, potency and hitcalling determinations. A "loec" in <font face="CMTT10">tcpl</font> is defined as the lowest experimental dose where all responses surpass the cutoff.
 
-There are two methods for including a "loec" within the output of level 5 processing and stored within the mc5_param table. The "include" method stores the "loec" alongside regular tcplfit2 winning model fitting, whereas the "ow" (overwrite) method does the same while also overwriting key values, i.e. model_type, hitc, fitc (fit category), and modl (winning model), based on whether a "loec" occurs. See [Plotting](#additional-examples) for how "loec"-fit data are plot.
+There are two methods for including a "loec" within the output of level 5 processing and stored within the `mc5_param` table. The "include" method stores the "loec" alongside regular <font face="CMTT10">tcplFit2</font> winning model fitting, whereas the "ow" (overwrite) method does the same while also overwriting key values, i.e. $model\_type$, $fitc$ (fit category), $modl$ (winning model), and $hitc$ (1 or 0 based on whether a "loec" occurs). See [Plotting](#additional-examples) for how "loec"-fit data are plot.
 
 ```{r warning = FALSE, echo = FALSE}
 Method <- c(15,34)
 Method_Name <- c("ow_loec.coff", "include_loec.coff")
 Description <- c(
-  "Identify the lowest observed effective concentration (loec) where the values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside winning model and potency estimates. If loec exists, assume hit call = 1, fitc = 100, model_type = 1, and if not, assume hit call = 0.",
+  "Identify the lowest observed effective concentration (loec) where the values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside winning model and potency estimates. Assume <br/>- modl = 'loec'<br/>- fitc = 100<br/>- model_type = 1<br/>- hit call = 1 if loec exists, 0 if not.",
   "Identify the lowest observed effective concentration (loec) where the values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside winning model and potency estimates."
 )
 # Compile all of the information for the table.
@@ -3274,9 +3274,9 @@ tcplPlot(dat = plot_data, by = "aeid", multi = TRUE, output = "pdf", fileprefix 
 
 ### - Plot LOEC (Lowest Observed Effective Concentration)
 
-<font face="CMTT10">tcplPlot</font> now supports the plotting of vertical "LOEC" lines, automatically detecting when multi-concentration data is hit-called using the new level 5 processing method "ow_loec.coff". Comparison LOEC plotting with other LOEC samples or crossed with traditional hit-called data with winning models is also supported. 
+<font face="CMTT10">tcplPlot</font> now supports automatically adding the "loec" to the plot, i.e., a vertical line, when detecting multi-concentration data with hit-calling using the new level 5 processing method "ow_loec.coff". Comparison plotting with "loec" across samples or with traditional hit-calling results using the winning models is also supported.
 
-Note - for data processed with the level 5 method "include_loec.coff", <font face="CMTT10">tcplPlot</font> will not automatically generate this kind of plot. A current workaround is to pre-load the plot data using `tcplPlotLoadData` and update the $\mathit{model\_type}$ column to `1` for any or all sample(s). Future <font face="CMTT10">tcpl</font> versions may include additive "LOEC" lines as an option.
+Note - for data processed with the level 5 method "include_loec.coff", <font face="CMTT10">tcplPlot</font> will not automatically generate this kind of plot. A current workaround is to pre-load the plotting data using `tcplPlotLoadData` and update the $\mathit{model\_type}$ column to `1` for any or all sample(s). Future <font face="CMTT10">tcpl</font> versions may include additive "loec" lines as an option.
 
 ```{r plot_loec, eval = FALSE}
 # default parameters used here: type = "mc"
