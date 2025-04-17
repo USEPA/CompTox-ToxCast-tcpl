@@ -1,21 +1,24 @@
 Package: tcpl
 Title: ToxCast Data Analysis Pipeline
-Version: 3.2.1
+Version: 3.3.0
 Authors@R: c(
-    person("Richard S", "Judson",role = c("ctb","ths"), comment = c(ORCID = "0000-0002-2348-9633")),
     person("Dayne L", "Filer", role = "aut"),
     person("Jason","Brown", role = "ctb", comment = c(ORCID = "0009-0000-2294-641X")),
-    person("Sarah E","Davidson-Fritz", role = "ctb",email = "davidsonfritz.sarah@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
     person("Madison","Feshuk",role = "cre",email = "feshuk.madison@epa.gov", comment = c(ORCID = "0000-0002-1390-6405")),
     person("Carter", "Thunes", role = "ctb", email = "thunes.carter@epa.gov"),
-    person("Ashley", "Ko", role = "ctb", email = "ko.ashley@epa.gov"),
+    person("Sarah E","Davidson-Fritz", role = "ctb", email = "davidsonfritz.sarah@epa.gov", comment = c(ORCID = "0000-0002-2891-9380")),
     person("Kelly", "Carstens", role = "ctb", email = "carstens.kelly@epa.gov", comment = c(ORCID = "0000-0002-1746-5379")),
-    person("Todd", "Zurlinden", role="ctb", comment = c(ORCID = "0000-0003-1372-3913")),
+    person("Elizabeth", "Gilson", role = "ctb", email = "gilson.elizabeth@epa.gov"),
+    person("Lindsay","Knupp",role="ctb"),
     person("Lori","Kolaczkowski",role = "ctb"),
+    person("Ashley", "Ko", role = "ctb"),
+    person("Zhihui","Zhao", role="ctb"),
     person("Kurt", "Dunham", role = "ctb"),
+    person("Todd", "Zurlinden", role="ctb", comment = c(ORCID = "0000-0003-1372-3913")),
     person("Parth", "Kothiya", role = "ctb"),
     person("Woodrow R", "Setzer", role = "ctb"),
     person("Matthew T", "Martin", role = c("ctb", "ths")),
+    person("Richard S", "Judson",role = c("ctb","ths"), comment = c(ORCID = "0000-0002-2348-9633")),
     person("Katie", "Paul Friedman", role=c("ctb"), email = "paul-friedman.katie@epa.gov", comment = c(ORCID = "0000-0002-2710-1691"))
     )
 Description: The ToxCast Data Analysis Pipeline ('tcpl') is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, 'invitrodb'. The package was developed for the chemical screening data curated by the US EPA's Toxicity Forecaster (ToxCast) program, but 'tcpl' can be used to support diverse chemical screening efforts.

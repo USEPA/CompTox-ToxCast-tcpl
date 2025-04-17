@@ -153,7 +153,7 @@
 #' tcplPlot(fld = "aeid", val = 1750, output = "pdf", yrange = c(-1,2))
 #' 
 #' # Two plots created by comparing all curves across one assay endpoint saved to pdf.
-#' # "conc_unit" included since this endpoint contains multiple ("μM" and "CF"), so we 
+#' # "conc_unit" included since this endpoint contains multiple ("uM" and "CF"), so we 
 #' # should split them up.
 #' tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf")
 #' 
