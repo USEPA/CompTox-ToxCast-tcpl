@@ -13,7 +13,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 
-  
 ---
 
 ```{css, code = readLines(params$my_css), hide=TRUE, echo = FALSE}
@@ -36,7 +35,7 @@ This vignette provides an overview of the `tcpl` R package, including set up, [D
 # devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
 ```
 
-```{r, message = FALSE, warning = FALSE, fold=TRUE}
+```{r, message = FALSE, warning = FALSE,  class.source="fold-hide"}
 # Primary Packages #
 library(tcpl)
 library(tcplfit2)
@@ -2145,9 +2144,9 @@ $𝜇(𝑏)+ {\text{onesd}}\times{\text{bmr_scale}} ∗𝑠𝑑(𝑏)=𝐵𝑀�
 
 </center>
 
-The baseline $(𝑏)$ will be consistently defined for $BMR$ and $BMD$. The ${\text{onesd}}\times{\text{bmr_scale}$ defaults to 1.349 [(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387).
+The baseline $(𝑏)$ will be consistently defined for $BMR$ and $BMD$. The ${\text{onesd}}\times{\text{bmr_scale}}$ defaults to 1.349 [(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387).
 
-A 90% confidence interval around the $BMD$, bounded by the benchmark dose lower bound ($BMDL$) and the benchmark dose upper bound $BMDU$, is also computed and provided to reflect the uncertainty in the $BMD$ estimate. The calculation of these confidence intervals will occasionally fail due to a singular matrix inverse, and in these cases, $BMDU$ and $BMDL$ will not be reported. This case occurs when the data are especially noisy and the confidence interval around the $BMD$ approaches infinity. The winning model may return a $BMD$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $BMD$ estimates are $0.1*\text{the lowest test concentration$ and $10*\text{the highest test concentration$, respectively. If the calculated $BMD$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $BMD$ estimate instead.
+A 90% confidence interval around the $BMD$, bounded by the benchmark dose lower bound ($BMDL$) and the benchmark dose upper bound $BMDU$, is also computed and provided to reflect the uncertainty in the $BMD$ estimate. The calculation of these confidence intervals will occasionally fail due to a singular matrix inverse, and in these cases, $BMDU$ and $BMDL$ will not be reported. This case occurs when the data are especially noisy and the confidence interval around the $BMD$ approaches infinity. The winning model may return a $BMD$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $BMD$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the highest test concentration}$, respectively. If the calculated $BMD$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $BMD$ estimate instead.
 
 ## - LOEC
 
@@ -2165,7 +2164,7 @@ Fit category is largely based upon the relative efficacy and, in the case of act
 
 For active curves, efficacy, as represented by the modeled top, is compared to 1.2 times the cutoff (less than or equal to, or greater than), thereby differentiating curves that may represent borderline activity from moderate activity. Active curves also have potency metrics estimated, e.g., AC~50~ and AC~95~ values, that can be compared to the range of concentrations screened to indicate curves for which potency estimates are more quantitatively informative. Curves for which the AC~50~ is less than or equal to the minimum concentration tested ($fitc$ = 36, 40) may indicate AC~50~ values that are less quantitatively informative than AC~50~ values within the concentration range screened. When the AC~50~ is greater than the minimum concentration tested but the AC~95~ is greater than or equal to the maximum concentration tested ($fitc$ = 38, 42), it is possible the maximum activity was not fully observed in the concentration range screened. $Fitc$ for curves where the AC~50~ and AC~95~ are both within the concentration range screened ($fitc$ = 37, 41) represent the most quantitatively informative AC~50~ values.
 
-$Fitc $ 36 describes a curve that is of low efficacy and with a low AC~50~, below the concentration range screened. These are more likely to be noise or less reproducible fits. $Fitc$ 41 and 42 are the ideal $fitc$ for reproducible curves, as demonstrated by these two $fitc$ comprising the majority of positive ($hitc} > 0.9$) curves in `invitrodb` v4.1. $Fitc$ 40 indicates a curve with at least moderate efficacy, but an AC~50~ below the concentration range screened. These chemicals may be positive or reference chemicals screened in the incorrect concentration window to observe their minimum activity. These curves may also represent high-confidence positives for which we have limited understanding of the slope of the concentration-response curve, and as such, the AC~50~ may be associated with more uncertainty.
+$Fitc $ 36 describes a curve that is of low efficacy and with a low AC~50~, below the concentration range screened. These are more likely to be noise or less reproducible fits. $Fitc$ 41 and 42 are the ideal $fitc$ for reproducible curves, as demonstrated by these two $fitc$ comprising the majority of positive ($hitc > 0.9$) curves in `invitrodb` v4.1. $Fitc$ 40 indicates a curve with at least moderate efficacy, but an AC~50~ below the concentration range screened. These chemicals may be positive or reference chemicals screened in the incorrect concentration window to observe their minimum activity. These curves may also represent high-confidence positives for which we have limited understanding of the slope of the concentration-response curve, and as such, the AC~50~ may be associated with more uncertainty.
 
 ## Flags (Level 6) {#flags}
 
@@ -2298,7 +2297,7 @@ varmat <- tcplVarMat(aeid = aeids, dsstox_substance_id = dtxsid)
 varmat <- tcplVarMat(aeid = aeids, add.vars = c("m4id", "resp_max", "max_med"))
 ```
 
-`tcplVarMat()` returns a list of chemical by assay matrices (data.tables) where the rows are given by the dsstox_substance_id and corresponding chemical name ($chnm$) columns and the column names are given by assay endpoint name ($aenm$). To export this list, save to a .xlsx. Each matrix will have its own sheet.
+`tcplVarMat()` returns a list of chemical by assay matrices (data.tables) where the rows are given by the $dsstox_substance_id$ and corresponding chemical name ($chnm$) columns and the column names are given by assay endpoint name ($aenm$). To export this list, save to an Excel file with each matrix as its own sheet.
 
 ```{r varmat_save, eval = FALSE}
 library(writexl)
