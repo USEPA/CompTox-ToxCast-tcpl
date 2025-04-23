@@ -58,7 +58,7 @@ library(kableExtra)
 
 # Overview
 
-The ToxCast Data Analysis Pipeline `tcpl` is an R package that manages, curve-fits, plots, and stores ToxCast data to populate its linked MySQL database, `invitrodb`. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast) includes *in vitro* medium- and high-throughput screening (HTS) assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
+The ToxCast Data Analysis Pipeline `tcpl` is an R package that manages, models, plots, and stores ToxCast data to populate its linked MySQL database, `invitrodb`. The [U.S. Environmental Protection Agency (EPA)'s Toxicity Forecaster (ToxCast^TM^) program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast) includes *in vitro* medium- and high-throughput screening (HTS) assays for the prioritization and hazard characterization of thousands of chemicals of interest. Targeted and confirmatory assays (like ToxCast assays) comprise Tiers 2-3 of the Computational Toxicology Blueprint ([Thomas et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30835285/)), and employ automated chemical screening technologies to evaluate the effects of chemical exposure on living cells and biological macromolecules, such as proteins.
 
 The `tcpl` package is a flexible analysis pipeline capable of efficiently processing and storing large volumes of data. The diverse data, received in heterogeneous formats from numerous vendors, are transformed to a standard computable format via [Level 0 Pre-processing](#lvl0-preprocessing) then loaded into the database by vendor-specific R scripts. Describing the specific transformations is outside the scope of this package, but can be done for virtually any chemical screening effort, provided the data includes the minimum required information. Once data is loaded into the database, generalized processing functions provided in this package process, normalize, model, qualify, and visualize the data.
 
@@ -68,11 +68,11 @@ The `tcpl` package is a flexible analysis pipeline capable of efficiently proces
 
 </center>
 
-The original `tcplFit()` functions performed basic concentration response curve fitting. Processing with `tcpl` v3.0 and beyond depends on the stand-alone [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) package to allow a wider variety of concentration-response models when using `invitrodb` in the 4.0 schema and beyond. Using `tcpl` v3.0+ with the schema from `invitrodb` v2.0-3.5 will still default to `tcplFit()` modeling with constant, Hill, and gain-loss. The main improvement provided by updating to using [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) is inclusion of [concentration-response models](#models) like those contained in the program [BMDExpress2](https://github.com/auerbachs/BMDExpress-2). This include polynomial, exponential, and power functions in addition to the original Hill, gain-loss, and constant models. Similar to the program [BMDExpress](https://www.sciome.com/bmdexpress/), `tcplFit2` curve-fitting uses a defined Benchmark Response ($BMR$) level to estimate a [Benchmark Dose (BMD)](#bmd), which is the concentration where the curve-fit intersects with this $BMR$ threshold. One final addition was to derive the [Activity Hit Call](#hitc) as a continuous estimate, which is in contrast to binary hit call value from `tcplFit()`. While developed primarily for ToxCast, the `tcpl` package is written to be generally applicable to the chemical-screening community.
+The original `tcplFit()` functions performed basic concentration-response curve fitting. Processing with `tcpl` v3.0 and beyond depends on the stand-alone [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) package to allow a wider variety of concentration-response models when using `invitrodb` in the 4.0 schema and beyond. Using `tcpl` v3.0+ with the schema from `invitrodb` v2.0-3.5 will still default to `tcplFit()` modeling with constant, Hill, and gain-loss. The main improvement provided by updating to using [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) is inclusion of [concentration-response models](#models) like those contained in the program [BMDExpress2](https://github.com/auerbachs/BMDExpress-2). This include polynomial, exponential, and power functions in addition to the original Hill, gain-loss, and constant models. Similar to the program [BMDExpress](https://www.sciome.com/bmdexpress/), `tcplFit2` curve fitting uses a defined Benchmark Response ($BMR$) level to estimate a [Benchmark Dose (BMD)](#bmd), which is the concentration where the model intersects with this $BMR$ threshold. One final addition was to derive the [Activity Hit Call](#hitc) as a continuous estimate, which is in contrast to binary hit call value from `tcplFit()`. While developed primarily for ToxCast, the `tcpl` package is written to be generally applicable to the chemical-screening community.
 
 The `tcpl` package includes processing functionality for two screening paradigms: (1) single-concentration (SC) and (2) multiple-concentration (MC) screening. SC screening consists of testing chemicals at one to three concentrations, often for the purpose of identifying potentially active chemicals to test in the multiple-concentration format. MC screening consists of testing chemicals across a concentration range, such that the modeled activity can give an estimate of potency, efficacy, etc. 
 
-In addition to storing the data, the `invitrodb` stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For illustrative purposes of this vignette, a small subset of actual data from the ToxCast program is featured throughout this vignette. `tcplLite` is no longer supported by `tcpl` because [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) can be used to curve-fit data and make hit calls independent of `invitrodb`. `tcplLite` relied on flat files structured like `invitrodb` to produce curve-fitting and summary information like hit calls and AC~50~ values. Functionally [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) replaces `tcplLite` because interested stakeholders can now curve-fit data and reproduce curve-fitting results independent of the `invitrodb` schema. For the ToxCast program, it is still important to use `invitrodb` when curve-fitting as `invitrodb` serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using `tcpl`, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/comptox-tools/exploring-toxcast-data>.
+In addition to storing the data, the `invitrodb` stores every processing and analysis decision at the assay component or assay endpoint level to facilitate transparency and reproducibility. For illustrative purposes of this vignette, a small subset of actual data from the ToxCast program is featured throughout this vignette. `tcplLite` is no longer supported by `tcpl` because [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) can be used to model data and make hit calls independent of `invitrodb`. `tcplLite` relied on flat files structured like `invitrodb` to produce curve fitting and summary information like hitcalling and AC~50~ values. Functionally [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) replaces `tcplLite` because interested stakeholders can now curve fit data and reproduce curve fitting results independent of the `invitrodb` schema. For the ToxCast program, it is still important to use `invitrodb` when curve fitting as `invitrodb` serves as a data resource for tracking pipelining decisions and providing a dataset for many interested stakeholders. Using `tcpl`, the user can upload, process, and retrieve data by connecting to a MySQL database. Additionally, past versions of the ToxCast database, containing all the publicly available ToxCast data, are available for download at: <https://www.epa.gov/comptox-tools/exploring-toxcast-data>.
 
 # ToxCast Publications
 Check out the following publications for additional information on the overall [US EPA's Toxicity Forecaster (ToxCast) Program](https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast). Assay-specific publications describing assay design or results are available in the `assay_references` and `citations` tables.
@@ -149,7 +149,7 @@ In general, the single-concentration data and accompanying methods are found in 
 
 There are two additional tables, `sc2\_agg` and `mc4\_agg`, that link the data in tables `sc2` and `mc4` to the data in tables `sc1` and `mc3`, respectively. This is necessary because each entry in the database before sc2 and mc4 processing represents a single value; subsequent entries represent summary/modeled values that encompass many values. To know what values were used in calculating the summary/modeled values, the user must use the "\_agg" look-up tables.
 
-When using `tcpl` v3.0+ with `invitrodb` schemas v2.0-v3.5, `tcplFit` model data are structured in mc4 and mc5 tables that are in wide format with a fixed number of columns based on 3 curve-fitting models (see documentation associated with `tcpl` v2.1). When using `tcpl` v3.0+ with `invitrodb` schemas v4.0+, `mc4` and `mc5` tables have been updated to reflect having `mc4_param` and `mc5_param` tables. Tables should be reviewed together: `mc4` captures summary values calculated for each concentration series, whereas `mc4_param` includes parameters for all models in long format. `mc5` selects the winning model and activity hit call, whereas `mc5_param` includes model parameters from selected winning (hit) model in long format. These schema changes provide a way to continually expand modeling capabilities in `tcpl`.
+When using `tcpl` v3.0+ with `invitrodb` schemas v2.0-v3.5, `tcplFit` model data are structured in mc4 and mc5 tables that are in wide format with a fixed number of columns based on 3 curve fitting models (see documentation associated with `tcpl` v2.1). When using `tcpl` v3.0+ with `invitrodb` schemas v4.0+, `mc4` and `mc5` tables have been updated to reflect having `mc4_param` and `mc5_param` tables. Tables should be reviewed together: `mc4` captures summary values calculated for each concentration series, whereas `mc4_param` includes parameters for all models in long format. `mc5` selects the winning model and activity hit call, whereas `mc5_param` includes model parameters from selected winning (hit) model in long format. These schema changes provide a way to continually expand modeling capabilities in `tcpl`.
 
 Each of the methods tables have fields analogous to $mc5\_mthd\_id$, $mc5\_mthd$, and $desc$. These fields represent the unique key for the method, the abbreviated method name (used to call the method from the corresponding method function), and a brief description of the method, respectively. The method assignment tables will have fields analogous to $mc5\_mthd\_id$ matching the method ID from the methods tables, an assay component or assay endpoint ID, and possibly an $exec\_ordr$ field indicating the order in which to execute the methods. The method and method assignment tables will not be listed in the tables below to reduce redundancy. 
 
@@ -210,7 +210,7 @@ Description <- c("Level 2 ID",
                  "Baseline median absolute deviation",
                  "Maximum median response value",
                  "Efficacy cutoff value",
-                 "Binary hit call value: 1 if active, 0 if inactive",
+                 "Binary hit call value, 1 if active, 0 if inactive",
                  "Ignore, temporary index used for uploading purposes" )
 
 output <- data.frame(Field, Description)
@@ -379,7 +379,7 @@ Description <- c("Level 5 ID",
                  "Level 4 ID",
                  "Assay endpoint ID",
                  "Winning model",
-                 "Activity hit call" ,
+                 "Continuous activity hit call value ranging from -1 to 1" ,
                  "Fit category",
                  "Efficacy cutoff value",
                 "Activity probability (1 - *const_prob* not used with *tcplFit2*)",
@@ -724,8 +724,8 @@ All processing occurs by assay component or assay endpoint, depending on the pro
 * $assay\_source\_name$ ($asnm$)
 * $assay\_name$ ($anm$)
 * $assay\_footprint$
-* $assay\_component\_name$ ($aenm$)
-* $assay\_component_endpoint\_name$ ($aenm$)
+* $assay\_component\_name$ ($acnm$)
+* $assay\_component\_endpoint\_name$ ($aenm$)
 * $normalized\_data\_type$
 
 ## Assay Source
@@ -766,7 +766,7 @@ tcplRegister(what = "acsn", flds = list(acid = 1, acsn = "TCPL-mc-Demo"))
 
 ## Assay Component Endpoint
 
-[Assay component endpoint](#aeid), or “endpoint” for short, represents the normalized component data. **To register an endpoint and create an $aeid$, an $acid$ must be provided to map the endpoint to the correct component.** In past `tcpl` versions, each component could have up to two endpoints therefore endpoint names would express directionality (*_up/_down*). `tcpl` v3.0+ allows bidirectional fitting to capture both the gain and loss of signal, therefore the endpoint name will usually be the same as the component name.
+[Assay component endpoint](#aeid), or “endpoint” for short, represents the normalized component data. **To register an endpoint and create an $aeid$, an $acid$ must be provided to map the endpoint to the correct component.** In past `tcpl` versions, each component could have up to two endpoints therefore endpoint names would express directionality ($\_up$/$\_down$). `tcpl` v3.0+ allows bidirectional fitting to capture both the gain and loss of signal, therefore the endpoint name will usually be the same as the component name.
 ```{r eval = FALSE, message = FALSE}
 tcplLoadAeid(fld = "asid", val = 1, add.fld = c("aid", "anm", "acid", "acnm"))
 tcplRegister(what = "aeid", flds = list(acid = 1, aenm = "TOX21_ERa_BLA_Agonist_ratio", normalized_data_type = "percent_activity", export_ready = 1, burst_assay = 0))
@@ -905,7 +905,7 @@ Before writing and processing any data to the database, the user must [register 
 * `tcplUpdate()`: To change or add additional information for existing assay or chemical ids
 * `tcplWriteLvl0()`: To load formatted source Level 0 data
 
-The final step in level 0 pre-processing is to load the data into the database. The `tcplWriteLvl0()` function loads data into the database by checking each required field for expected input, such as correct class or registered sample IDs and concentration values for test wells. Assay component source name, if provided, will map to the appropriate acid. The `type` argument is used throughout the package to distinguish the screening paradigm (SC or MC) and therefore processing required. See  [Required Fields](#lvl0-preprocessing) section for format of the Level 0 `mcdat` dataframe.
+The final step in level 0 pre-processing is to load the data into the database. The `tcplWriteLvl0()` function loads data into the database by checking each required field for expected input, such as correct class or registered sample IDs and concentration values for test wells. Assay component source name, if provided, will map to the appropriate $acid$. The `type` argument is used throughout the package to distinguish the screening paradigm (SC or MC) and therefore processing required. See  [Required Fields](#lvl0-preprocessing) section for format of the Level 0 `mcdat` dataframe.
 
 ```{r eval = FALSE, message = FALSE}
 # Write/load the Level 0 into the database. 
@@ -928,11 +928,11 @@ In the loaded Level 0 data, $acsn$ is replaced with correct $acid$ and the $m0id
 
 All processing in the `tcpl` package occurs at the assay component or assay endpoint level. There is no capability in either SC or MC processing to combine data from multiple assay components or assay endpoints. Any combining of data must occur before or after processing. For example, a ratio of two raw values could be processed if the user calculated the ratio during the custom pre-processing and uploaded values as a single "component".
 
-Once the Level 0 data are loaded, data processing occurs via the `tcplRun()` function for both SC and mc multiple-concentration screening. `tcplRun()` can either take a single ID ($acid$ or $aeid$, depending on the processing type and level) or an $asid$. If given an $asid$, the `tcplRun()` function will attempt to process all corresponding components/endpoints. When processing by $acid$ or $aeid$, the user must supply correct [ID for each level](#lvl_ids).
+Once the Level 0 data are loaded, data processing occurs via the `tcplRun()` function for both SC and MC screening. `tcplRun()` can either take a single ID ($acid$ or $aeid$, depending on the processing type and level) or an $asid$. If given an $asid$, the `tcplRun()` function will attempt to process all corresponding components/endpoints. When processing by $acid$ or $aeid$, the user must supply correct [ID for each level](#lvl_ids).
 
 The processing is sequential, and every level of processing requires successful processing at the antecedent level. Any processing changes will trigger a "delete cascade", removing any subsequent data affected by the processing change to ensure complete data fidelity. For example, processing level 3 data will first require data from levels 4 through 6 to be deleted for the corresponding IDs. **Changing method assignments will also trigger a delete cascade for any corresponding data.** 
 
-For `tcplRun()`, the user must supply a starting level ($slvl$) and ending level ($elvl$). There are four phases of processing, as reflected by messages printed in console: (1) data for the given IDs are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The `outfile` parameter can give the user the option of printing this output text to a file. If an id fails while processing multiple levels, the function will not attempt to process the failed ids in subsequent levels. When finished processing, a list indicating the processing success of each ID is returned. For each level processed, the list will contain two elements: (1) "l#" a named Boolean vector where `TRUE` indicates successful processing, and (2) "l#_failed" containing the names of any ids that failed processing, where "#" is the processing level.
+For `tcplRun()`, the user must supply a starting level ($slvl$) and ending level ($elvl$). There are four phases of processing, as reflected by messages printed in console: (1) data for the given IDs are loaded, (2) the data are processed, (3) data for the same ID in subsequent levels are deleted, and (4) the processed data is written to the database. The `outfile` parameter can give the user the option of printing this output text to a file. If an ID fails while processing multiple levels, the function will not attempt to process the failed ID in subsequent levels. When finished processing, a list indicating the processing success of each ID is returned. For each level processed, the list will contain two elements: (1) "l#" a named Boolean vector where `TRUE` indicates successful processing, and (2) "l#_failed" containing the names of any IDs that failed processing, where "#" is the processing level.
 
 Processing of multiple assay components or endpoints can be executed simultaneously. This is done with the internal utilization of the `mclapply` function from the `parallel` R package. Parallel processing is done by id. Depending on the system environment and memory constraints, the user may wish to use more or less processing power. For processing on a Windows operating system, the default is $mc.cores = 1$, unless otherwise specified. For processing on a Unix-based operating system, the default is $mc.cores = NULL$ i.e. to utilize all cores except for one, which is necessary for 'overhead' processes. The user can specify more or less processing power by setting the `mc.cores` parameter to the desired level. **Note, this specification should meet the following criteria $1 \space \leq \space \mathit{mc.cores} \space \leq \space \mathit{detectCores()}-1$.**
 
@@ -1009,7 +1009,7 @@ Normalizing to fold-change also requires the following normalization methods:
 1. One to define the baseline value ($bval$), and
 2. One to calculate the fold-change (`resp.fc`), or using log-transformed values (`resp.logfc`).
 
-($cval$) is the corrected response value for a test well defined in mc2. Methods defining a baseline value ($bval$) have the "bval" prefix, methods defining the positive control value ($pval$) have the "pval" prefix. Pval may be set as 0 if no positive control wells are provided and measuring decreases in signal. Finally, methods that calculate the final response value ($resp$) have the "resp" prefix. For example, `resp.log2` does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response are listed in equations 1 and 2, respectively.  Note that the fold-change calculation divides by the baseline value and thus must have some non-zero values associated with the baseline to successfully calculate fold-change.
+($cval$) is the corrected response value for a test well defined in mc2. Methods defining a baseline value ($bval$) have the "bval" prefix, methods defining the positive control value ($pval$) have the "pval" prefix. $Pval$ may be set as 0 if no positive control wells are provided and measuring decreases in signal. Finally, methods that calculate the final response value ($resp$) have the "resp" prefix. For example, `resp.log2` does a log-transformation of the response value using a base value of 2. The formulae for calculating the percent of control and fold-change response are listed in equations 1 and 2, respectively.  Note that the fold-change calculation divides by the baseline value and thus must have some non-zero values associated with the baseline to successfully calculate fold-change.
 
 $$  resp.pc = \frac{cval - bval}{pval - bval}*100  $$
 
@@ -1063,7 +1063,7 @@ kable(output)%>%
 
 ## > Level 1
 
-Level 1 processing converts the assay component to assay endpoint(s), defines the normalized-response value ($resp$), and optionally, derives the baseline value ($bval$) and positive control value ($pval$). The purpose of level 1 is to normalize the raw values to either the percentage of a control or fold-change from baseline. 
+Level 1 processing converts the assay component to assay endpoint(s), defines the normalized response value ($resp$), and optionally, derives the baseline value ($bval$) and positive control value ($pval$). The purpose of level 1 is to normalize the raw values to either the percentage of a control or fold-change from baseline. 
 
 ## - Methods Assignment
 
@@ -1156,7 +1156,7 @@ tcplRun(id = 1, slvl = 2, elvl = 2, type = "sc")
 
 ## - Overwrite Bidirectionality
 
-Sometimes it is necessary to prevent hitcalling for responses in the biologically irrelevant direction. SC2 contains two methods for overwriting the $max\_med$ value. If applied, negative hitcalls will be given for any $max\_med$ greater or less than cutoff in the biologically unintended direction, by comparing the $max\_med$ to either the positive or negative cutoff instead examining absolute values. 
+Sometimes it is necessary to prevent hitcalling for responses in the biologically irrelevant direction. SC2 contains two methods for overwriting the $max\_med$ value. If applied, negative hitcalling will be given for any $max\_med$ greater or less than cutoff in the biologically unintended direction, by comparing the $max\_med$ to either the positive or negative cutoff instead examining absolute values. 
 
 ```{r warning = FALSE, echo = FALSE}
 Method <- c(25,27)
@@ -1186,7 +1186,7 @@ corrected data",
 "Normalize: Apply assay endpoint (aeid) specifc normalization listed in
 the \'mc3_aeid\' table to the corrected data to define response",
 "Fit: Model the concentration-response data utilizing ten
-objective curve-fitting functions from tcplfit2: (1) constant, (2) hill, (3) gain-loss, (4) polynomial-linear, (5) polynomial-quadratic, (6) power, (7) exponential-2, (8) exponential-3, (9) exponential-4, (10) exponential-5",
+objective curve fitting functions from tcplfit2: (1) constant, (2) hill, (3) gain-loss, (4) polynomial-linear, (5) polynomial-quadratic, (6) power, (7) exponential-2, (8) exponential-3, (9) exponential-4, (10) exponential-5",
 "Model Selection/Activity Call: Select the winning model, define
 the response cutoff based on methods in the \'mc5_aeid\' table, and
 determine activity",
@@ -1260,7 +1260,7 @@ For the complete list of level 2 transformation methods currently available, see
 
 ## > Level 3
 
-Level 3 processing converts the assay component to assay endpoint(s) and defines the normalized-response value field ($resp$); and optionally, the baseline value ($bval$) and positive control value ($pval$) fields. mc3 processing normalizes the corrected values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the [Data Normalization](#data_norm) section. A primary distinction between mc2 and mc3 processing is [ID for each level](#lvl_ids).
+Level 3 processing converts the assay component to assay endpoint(s) and defines the normalized response value field ($resp$); and optionally, the baseline value ($bval$) and positive control value ($pval$) fields. mc3 processing normalizes the corrected values to either the percentage of a control or to fold-change from baseline. The normalization process is discussed in greater detail in the [Data Normalization](#data_norm) section. A primary distinction between mc2 and mc3 processing is [ID for each level](#lvl_ids).
 
 ## - Methods Assignment
 
@@ -1303,7 +1303,7 @@ Level 4 processing establishes a noise-band for the endpoint using the baseline 
 $$ BMAD_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
 Where $y_{i$ is the $i^{th$ baseline observation as defined by the assigned method and $\tilde{y$ is the median of all the baseline observations. The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $BMAD$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for more details.
 
-One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response ($BMR$) in both the curve-fitting and hit-calling functions from  [`tcplfit2`](https://cran.r-project.org/package=tcplfit2), `tcplfit_core()` and `tcplhit2_core()`, respectively.  One standard deviation of the baseline response will be estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on $BMAD$ method selected. **$BMR$, like $BMAD$, may change if additional data is added. Thus, the BMD estimates may also change.** See the [Data Interpretation>Benchmark Dose](#bmd) section for more details.
+One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response ($BMR$) in both the curve fitting and hitcalling functions from  [`tcplfit2`](https://cran.r-project.org/package=tcplfit2), `tcplfit_core()` and `tcplhit2_core()`, respectively.  One standard deviation of the baseline response will be estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on $BMAD$ method selected. **$BMR$, like $BMAD$, may change if additional data is added. Thus, the BMD estimates may also change.** See the [Data Interpretation>Benchmark Dose](#bmd) section for more details.
 
 ```{r warning = FALSE, echo = FALSE}
 # First column with the method assignment index.
@@ -1531,7 +1531,7 @@ gridExtra::grid.arrange(
 )
 ```
 
-*These plots illustrate summary estimates calculated as part of the level 4 processing, which occurs prior to dose-response modeling.  Each plot depicts the observed concentration-response data as white circles, where the x-axis is base 10 log-transformed concentration values. In the upper plots, the mean response values for each concentration group is depicted as turquoise circles (left) where as  median response values for each concentration group are hot-pink circles (right). The middle plots depict mean and median responses, but only shows the maximum mean ($max\_mean$) and median ($max\_med$) response estimates (left and right, respectively). The minimum observed response ($min\_resp$) is depicted with a blue circle and the maximum observed response value ($max\_resp$) with a red circle (left lower).  Finally, the minimum ($min\_logc$) and maximum $max\_logc$ log10-scale concentrations are depicted, respectively, with blue and red vertical dashed lines (right lower).*
+*These plots illustrate summary estimates calculated as part of the level 4 processing, which occurs prior to concentration-response modeling. Each plot depicts the observed concentration-response data as white circles, where the x-axis is base 10 log-transformed concentration values. In the upper plots, the mean response values for each concentration group is depicted as turquoise circles (left) where as  median response values for each concentration group are hot-pink circles (right). The middle plots depict mean and median responses, but only shows the maximum mean ($max\_mean$) and median ($max\_med$) response estimates (left and right, respectively). The minimum observed response ($min\_resp$) is depicted with a blue circle and the maximum observed response value ($max\_resp$) with a red circle (left lower).  Finally, the minimum ($min\_logc$) and maximum $max\_logc$ log10-scale concentrations are depicted, respectively, with blue and red vertical dashed lines (right lower).*
 
 ## - Concentration-Response Modeling Details {#models}
 
@@ -1603,7 +1603,7 @@ htmlTable(output,
 
 ```
 
-Most models in [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) assume the background response is zero and the absolute response (or initial response) is increasing. In other words, these models fit a monotonic curve in either direction. The polynomial 2 ($poly2$) model is an exception with two parameterization options. The biphasic parameterization is what is used in `tcpl`. A biphasic poly2 model fits responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). *If biphasic responses are not reasonable, data can be fit using the monotonic-only parameterization in a standalone application of ` tcplfit2_core ` with the parameter ` biphasic=FALSE` assigned. This argument is not available in tcpl.* All data is fit bidirectionally then responses in unintended direction may be indicated with negative hit calls if ["overwrite" mc5 methods](#mc5) are applied.
+Most models in [`tcplfit2`](https://cran.r-project.org/package=tcplfit2) assume the background response is zero and the absolute response (or initial response) is increasing. In other words, these models fit a monotonic curve in either direction. The polynomial 2 ($poly2$) model is an exception with two parameterization options. The biphasic parameterization is what is used in `tcpl`. A biphasic poly2 model fits responses that are increasing first and then decreasing, and vice versa (assuming the background response is zero). *If biphasic responses are not reasonable, data can be fit using the monotonic-only parameterization in a standalone application of `tcplfit2_core` with the parameter ` biphasic=FALSE` assigned. This argument is not available in `tcpl`.* All data is fit bidirectionally then responses in unintended direction may be indicated with negative hit calls if ["overwrite" mc5 methods](#mc5) are applied.
 
 Upon completion of model fitting, each model gets a $success$ designation: 1 if the model optimization converges, 0 if the optimization fails, and NA if 'nofit' was set to TRUE within `tcplFit2::tcplfit2_core()` function.  Similarly, if the Hessian matrix was successfully inverted then 1 indicates a successful covariance calculation ($cov$); otherwise 0 is returned.  Finally, in cases where 'nofit' was set to TRUE (within `tcplFit2::tcplfit2_core()`) or the model fit failed the Akaike information criterion ($aic$), root mean squared error ($rme$), model estimated responses ($modl$), model parameters, and the standard deviation of model parameters ($sds$) are set to **NA**.  A complete list of model output parameters is provided below:
 
@@ -1716,7 +1716,7 @@ tcplMthdAssign( lvl = 4,
 
 ## - Curve Fitting
 
-With the methods assigned, the mc4 processing can be completed for the desired set of aeids. After mc4 is processed, the user can load the model fit information from database. The subset of mc4 data used is available within the `mc_vignette` object.
+With the methods assigned, the mc4 processing can be completed for the desired set of $aeid$s. After mc4 is processed, the user can load the model fit information from database. The subset of mc4 data used is available within the `mc_vignette` object.
 
 ```{r echo=FALSE, eval=FALSE}
 # mc4 Processing for subset of aeids
@@ -1748,8 +1748,8 @@ X <- seq(
 )
 ## Obtain the Continuous Fit of Level 4 Model Estimates ##
 # Apply each model fit to continous concentration values (X) and estimated
-# dose-response (estDR) parameters from 'tcplfit2'.
-estDR <- mc4_example %>% 
+# concentration-response (estCR) parameters from 'tcplfit2'.
+estCR <- mc4_example %>% 
   filter(spid == "01504209") %>% 
   reframe(
     cnst  = cnst(.[, c(cnst_er)], x = X),
@@ -1763,7 +1763,7 @@ estDR <- mc4_example %>%
     exp4  = exp4(.[,c(exp4_tp, exp4_ga, exp4_er)], x = X),
     exp5  = exp5(.[,c(exp5_tp, exp5_ga, exp5_p, exp5_er)], x = X) )
 # Format data into a data.frame for ease of plotting.
-estDR <- cbind.data.frame(X, estDR) %>%
+estCR <- cbind.data.frame(X, estCR) %>%
   melt(data = .,measure.vars = c(
     "cnst", "poly1", "poly2", "power", "hill", "gnls", "exp2", "exp3", "exp4", "exp5"))
 
@@ -1779,7 +1779,7 @@ mc3_example %>%
   filter(spid == "01504209") %>% 
   ggplot(.,aes(x = logc, y = resp))+
   geom_point(pch = 1, size = 2)+
-  geom_line(data = estDR,
+  geom_line(data = estCR,
             aes(x = log10(X), y = value, colour = variable, lty = variable)) +
   labs(colour = "Models", lty = "Models") +
   scale_colour_manual(values = fit_cols) +
@@ -1845,11 +1845,11 @@ mc4_aic %>%
   )
 ```
 
-The summary values and estimated parameters from the winning model are stored in the respective [mc5](#mc5) and [mc5_param](#mc5_param) tables.  The activity of each concentration-response series is determined by calculating a continuous hit call that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein,  $hitc < 0.9$ are considered inactive. The efficacy cutoff value ($coff$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see `tcplMthdList(lvl = 5)` or `?mc5_Methods`. See the [Data Interpretation](#hitc) section for more details on hit calls and cutoff.
+The summary values and estimated parameters from the winning model are stored in the respective [mc5](#mc5) and [mc5_param](#mc5_param) tables.  The activity of each concentration-response series is determined by calculating a continuous hit call that may be further binarized into active or inactive, depending on the level of stringency required by the user; herein,  $hitc < 0.9$ are considered inactive. The efficacy cutoff value ($coff$) is defined as the maximum of all values given by the methods assigned at level 5.  When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see `tcplMthdList(lvl = 5)` or `?mc5_Methods`. See the [Data Interpretation](#hitc) section for more details on hitcalling and cutoff.
 
 ## -- Overwrite Bidirectionality Methods
 
-While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the activity hit calls of curves fit with responses occurring in a biologically irrelevant direction. There are two methods for overwriting the $hitc$ value, and if applied, these will overwrite the $hitc$ value for any biologically irrelevant curve by flipping the $hitc$ to a negative value. 
+While the ToxCast pipeline supports bidirectional fitting, sometimes it is necessary to censor the hitcalling for curves fit with responses occurring in a biologically irrelevant direction. There are two methods for overwriting the $hitc$ value, and if applied, these will overwrite the $hitc$ value for any biologically irrelevant curve by flipping the $hitc$ to a negative value. 
 
 ```{r warning = FALSE, echo = FALSE}
 Method <- c(27,28)
@@ -1942,8 +1942,8 @@ mc3_ss <- mc3_example %>% dplyr::filter(spid == "01504209") # Level 3 - conc-res
 mc4_ss <- mc4_example %>% dplyr::filter(spid == "01504209") # Level 4 - model fits
 mc5_ss <- mc5_example %>% dplyr::filter(spid == "01504209") # Level 5 - best fit & est.
 
-# Obtain the best model found after curve fitting. See Level 4 for estDR derivation
-estDR <- estDR %>%
+# Obtain the best model found after curve fitting. See Level 4 for estCR derivation
+estCR <- estCR %>%
   mutate(., best_modl = ifelse(variable == mc5_ss[, modl],
                                      yes = "best model", no = NA))
 
@@ -1957,11 +1957,11 @@ basePlot <- mc3_ss %>%
             aes(xmin = log10(conc_min), xmax = log10(conc_max), ymin = -coff, ymax = coff),
             alpha = 0.15, fill = "skyblue") +
   # Best Model Fit
-  geom_line(data = dplyr::filter(estDR, variable == mc5_ss[,modl]),
+  geom_line(data = dplyr::filter(estCR, variable == mc5_ss[,modl]),
             aes(x = log10(X), y = value,color = mc5_ss[,modl])) +
   scale_colour_manual(values = c("royalblue3"), aesthetics = "color") +
   # Other Model Fits
-  geom_line(data = dplyr::filter(estDR,variable != mc5_ss[, modl]),
+  geom_line(data = dplyr::filter(estCR,variable != mc5_ss[, modl]),
             aes(x = log10(X), y = value, lty = variable),
             alpha = 0.3, show.legend = TRUE) +
   # Legend Information
@@ -2039,7 +2039,7 @@ Additional information on derivations on potency estimates is found in [Data Int
 
 ## - Level 6
 
-In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted *in vitro* screening data. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data. See the [Data Interpretation>Flags](#flags) section for more details.
+In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted *in vitro* screening data. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data. See the [Data Interpretation>Flags](#flags) section for more details.
 
 ## - Level 7
 For `invitrodb` v4.2 onward, a new `mc7` table contains pre-generated Administered Equivalent Dose ($AED$) values using several potency metrics from `invitrodb` and a subset of models from the High-throughput Toxicokinetics R package, [`httk`](https://CRAN.R-project.org/package=httk). $AED$s are generated in a separate script due to the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals.  Moreover, this is applied to both the 3-compartment steady state (3compartments) model and the physiologically-based toxicokinetic (pbtk) model for all chemicals included in `invitrodb` v4.2 (generation of the table as configured in the current code took 24h using 40 cores). See the [Administered Equivalent Dose](#aed) section.
@@ -2062,7 +2062,7 @@ tcplRun(id = 1, type = "sc", slvl = 0, elvl = 2)
 
 ## - MC Data
 
-After mc0 is loaded into the database, methods can be assigned. Once assigned, data can be processed. This can be done in two ways: (A) from start to finish (i.e. Level 0 to 5) with the assay component ID (acid) or (B) Level 0 to 3 with the assay component ID ($acid$) and Level 4 to 5 with the assay endpoint ID ($aeid$). Option A may be helpful if data needs to be processed completely, whereas Option B or derivatives of Option B may be helpful when adjusting methods.
+After mc0 is loaded into the database, methods can be assigned. Once assigned, data can be processed. This can be done in two ways: (A) from start to finish (i.e. Level 0 to 5) with the assay component ID ($acid$) or (B) Level 0 to 3 with the assay component ID ($acid$) and Level 4 to 5 with the assay endpoint ID ($aeid$). Option A may be helpful if data needs to be processed completely, whereas Option B or derivatives of Option B may be helpful when adjusting methods.
 
 ```{r eval=FALSE}
 ## Methods Assignment ##
@@ -2108,7 +2108,7 @@ See the Hitcalling section of the [tcplfit2 R package](https://CRAN.R-project.or
 The cutoff is a user-defined level of efficacy that corresponds to statistical and/or biological relevant change from baseline for each assay endpoint. All versions of `tcpl` provide methods for estimation of the baseline sampling variability, or noise around the assay controls, including calculation of the median absolute deviation over all response values given by wells that may represent baseline response (the $BMAD$), such as the neutral or vehicle control or the first two concentrations in the concentration series for all chemicals screened as defined by Level 4 methods. Users define mc5 methods depending on assay and data type, with some common cutoff thresholds used to establish a cutoff including $3*BMAD$, 20% percent change, or 1.2*log10 fold-change.  Operationally in `tcpl`, the efficacy cutoff value ($coff$) is defined as the maximum of all values given by the methods assigned at level 5. When two or more methods (i.e. cutoff values) are applied for processing, the largest cutoff value is always selected as the cutoff for the endpoint. In the event only one method is applied, then that will serve as the efficacy cutoff for the endpoint. Failing to assign a level 5 method will result in every concentration series being called active. For a complete list of level 5 methods, see `tcplMthdList(lvl = 5)` or `?MC5_Methods`.
 
 ## Potency Estimates {#potency}
-Curve-fitting enables determination of various metrics of potency, i.e., concentrations at which some amount of *in vitro* bioactivity is expected to occur, as illustrated [above](#mc5_plot). This includes Activity Concentrations at Specified Response and Benchmark Dose ($BMD$), which vary in the mathematical approach for computing these values, noting that logic for computation of the $BMD$ is controlled in the R package [`tcplfit2`](https://cran.r-project.org/package=tcplfit2).
+Curve fitting enables determination of various metrics of potency, i.e., concentrations at which some amount of *in vitro* bioactivity is expected to occur, as illustrated [above](#mc5_plot). This includes Activity Concentrations at Specified Response and Benchmark Dose ($BMD$), which vary in the mathematical approach for computing these values, noting that logic for computation of the $BMD$ is controlled in the R package [`tcplfit2`](https://cran.r-project.org/package=tcplfit2).
 
 ## - Activity Concentrations at Specified Response
 
@@ -2144,7 +2144,7 @@ $𝜇(𝑏)+ {\text{onesd}}\times{\text{bmr_scale}} ∗𝑠𝑑(𝑏)=𝐵𝑀�
 
 </center>
 
-The baseline $(𝑏)$ will be consistently defined for $BMR$ and $BMD$. The ${\text{onesd}}\times{\text{bmr_scale}}$ defaults to 1.349 [(Yang et al., 2017)](https://doi.org/10.1186/1471-2164-8-387).
+The baseline $(𝑏)$ will be consistently defined for $BMR$ and $BMD$. The ${\text{onesd}}\times{\text{bmr_scale}}$ defaults to 1.349 [(Yang et al., 2007)](https://doi.org/10.1186/1471-2164-8-387).
 
 A 90% confidence interval around the $BMD$, bounded by the benchmark dose lower bound ($BMDL$) and the benchmark dose upper bound $BMDU$, is also computed and provided to reflect the uncertainty in the $BMD$ estimate. The calculation of these confidence intervals will occasionally fail due to a singular matrix inverse, and in these cases, $BMDU$ and $BMDL$ will not be reported. This case occurs when the data are especially noisy and the confidence interval around the $BMD$ approaches infinity. The winning model may return a $BMD$ estimate that falls outside of the tested concentration range, so bounds are placed to censor the estimate values. The lower and upper bounds for $BMD$ estimates are $0.1*\text{the lowest test concentration}$ and $10*\text{the highest test concentration}$, respectively. If the calculated $BMD$ estimate is below or above the lower or the upper bounds, the value at the bound will be returned as the bounded $BMD$ estimate instead.
 
@@ -2158,9 +2158,9 @@ There may be situations where traditional modeling under [`tcplfit2`](https://cr
 
 A hierarchical fit category ($fitc$) decision tree is used to bin each fit as shown in Figure 2. Each fit falls into one leaf of the tree using the described logic with the final $fitc$ indicated with gray boxes. Abbreviations are defined as: $conc$ = concentration; $hitc$ = hit call; $|top|$ = absolute value of the maximal predicted change in response from baseline (i.e. $y=0$); $coff$ = cutoff; $log_c(min)$ = minimum log~10~ concentration tested; $log_c(max)$ = maximum log~10~ concentration tested; AC~50~ = $50 \%$ activity concentration; AC~95~ = $95 \%$ activity concentration.
 
-After curve fitting, all concentration series are assigned a fit category ($fitc$) based on similar characteristics and shape. Logic is based on relative activity, efficacy, and potency comparisons. For continuity purposes, $fitc$ numbering has been conserved from past `tcpl` versions. Grouping all series into $fitc$ enables quality control and can be useful in data cleaning applications, especially when considered with Level 6 flags. In `invitrodb` v3-3.5, a common filtering approach removed the least reproducible curve-fits, i.e. those with very low AC~50~ (below the screened $conc$ range) and low efficacy (within 1.2-fold of the cutoff) as well as 3+ flags. However, preliminary investigation into `invitrodb` v4.1-4.2 has suggested that removing curve fits with 4 or more flags, or possibly filtering based on specific flags in combination with $fitc$, such as $fitc$ 36, may be a more appropriate filtering approach due to changes in curve fitting and flags in `invitrodb` v4.0 and beyond. The stringency of filtering for flags should be explored in a fit-for-purpose way.
+After curve fitting, all concentration series are assigned a fit category ($fitc$) based on similar characteristics and shape. Logic is based on relative activity, efficacy, and potency comparisons. For continuity purposes, $fitc$ numbering has been conserved from past `tcpl` versions. Grouping all series into $fitc$ enables quality control and can be useful in data cleaning applications, especially when considered with Level 6 flags. In `invitrodb` v3-3.5, a common filtering approach removed the least reproducible curve fits, i.e. those with very low AC~50~ (below the screened $conc$ range) and low efficacy (within 1.2-fold of the cutoff) as well as 3+ flags. However, preliminary investigation into `invitrodb` v4.1-4.2 has suggested that removing curve fits with 4 or more flags, or possibly filtering based on specific flags in combination with $fitc$, such as $fitc$ 36, may be a more appropriate filtering approach due to changes in curve fitting and flags in `invitrodb` v4.0 and beyond. The stringency of filtering for flags should be explored in a fit-for-purpose way.
 
-Fit category is largely based upon the relative efficacy and, in the case of actives, the location of the AC~50~ and concentration at $95 \%$ activity (an estimate of maximum activity concentration, AC~95~) compared to the tested concentration range. All concentration response curves are first split into active, inactive, or cannot determine. “Cannot determine” is indicative of exceptions that cannot be curve-fit, e.g. a concentration series with fewer than 4 concentrations. Active designations are determined for $fitc$ based on whether the $hitc$ surpasses the 0.90 threshold. For those series that are designated inactive with a $hitc$ less than 0.90, $fitc$ can be used to indicate to what extent the curve represents borderline inactivity via comparison of top modeled efficacy to the cutoff (i.e, the absolute value of the maximal predicted change from baseline is less than 0.8 times the cutoff).
+Fit category is largely based upon the relative efficacy and, in the case of actives, the location of the AC~50~ and concentration at $95 \%$ activity (an estimate of maximum activity concentration, AC~95~) compared to the tested concentration range. All concentration-response curves are first split into active, inactive, or cannot determine. “Cannot determine” is indicative of exceptions that cannot be modeled, e.g. a concentration series with fewer than 4 concentrations. Active designations are determined for $fitc$ based on whether the $hitc$ surpasses the 0.90 threshold. For those series that are designated inactive with a $hitc$ less than 0.90, $fitc$ can be used to indicate to what extent the curve represents borderline inactivity via comparison of top modeled efficacy to the cutoff (i.e, the absolute value of the maximal predicted change from baseline is less than 0.8 times the cutoff).
 
 For active curves, efficacy, as represented by the modeled top, is compared to 1.2 times the cutoff (less than or equal to, or greater than), thereby differentiating curves that may represent borderline activity from moderate activity. Active curves also have potency metrics estimated, e.g., AC~50~ and AC~95~ values, that can be compared to the range of concentrations screened to indicate curves for which potency estimates are more quantitatively informative. Curves for which the AC~50~ is less than or equal to the minimum concentration tested ($fitc$ = 36, 40) may indicate AC~50~ values that are less quantitatively informative than AC~50~ values within the concentration range screened. When the AC~50~ is greater than the minimum concentration tested but the AC~95~ is greater than or equal to the maximum concentration tested ($fitc$ = 38, 42), it is possible the maximum activity was not fully observed in the concentration range screened. $Fitc$ for curves where the AC~50~ and AC~95~ are both within the concentration range screened ($fitc$ = 37, 41) represent the most quantitatively informative AC~50~ values.
 
@@ -2168,7 +2168,7 @@ $Fitc $ 36 describes a curve that is of low efficacy and with a low AC~50~, belo
 
 ## Flags (Level 6) {#flags}
 
-In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve-fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted *in vitro* screening data. Cautionary flags on fitting were developed in previous versions of `tcpl` and have been stored at Level 6. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data.
+In addition to the continuous $hitc$ and the $fitc$, cautionary flags on curve fitting can provide context to interpret potential false positives (or negatives) in ToxCast data, enabling the user to decide the stringency with which to filter these targeted *in vitro* screening data. Cautionary flags on fitting were developed in previous versions of `tcpl` and have been stored at Level 6. These flags are programmatically generated and indicate characteristics of a curve that need extra attention or potential anomalies in the curve or data.
 
 For example, a curve may be considered a single point hit with activity not at the highest concentration tested, but re-inspection of the flagged curve could indicate a potential false positive. Other flags may suggest borderline activity, over-fitting, or cell viability assays that are fit with gain-loss as the winning model. It is important to note that flags have no effect on the $hitc$ or potency estimates, but they may indicate that a curve requires further examination to aid in data interpretation. A full list of flags implemented and descriptions is presented below:
 
@@ -2278,8 +2278,8 @@ For variable matrices from `tcplVarMat()`, a representative sample is selected u
 
 - Value as reported when the chemical is tested in MC and positive
 - Set to 1e6 when the chemical is tested but negative in MC. In _verbose matrices, these are indicated as "MC neg".
-- Set to 1e7 when the chemical is not tested in MC but was screened in SC with a positive hit call for the same aeid. In _verbose matrices, these are indicated as "SC pos, No MC".
-- Set to 1e8 when the chemical is not tested in MC but was screened in SC with a negative hit call for the same aeid. In _verbose matrices, these are indicated as "SC neg, No MC".
+- Set to 1e7 when the chemical is not tested in MC but was screened in SC with a positive hit call for the same $aeid$. In _verbose matrices, these are indicated as "SC pos, No MC".
+- Set to 1e8 when the chemical is not tested in MC but was screened in SC with a negative hit call for the same $aeid$. In _verbose matrices, these are indicated as "SC neg, No MC".
 - Left as NULL if chemical is not tested in either MC or SC.
 
 Both SC and MC data are required for `tcplVarMat()`. As a result, the "API" driver is not currently supported for `invitrodb` v4.1 since it does not return SC data.
@@ -2384,7 +2384,7 @@ htmlTable(output,
 
 There is high value in understanding the outcomes of solubilization and chemical stability in the vehicle chosen to solubilize the chemical, i.e. a chemical's applicability domain for *in vitro* screening. This informs what chemicals and samples should screened in future experiments. It also helps inform future structural models to understand which chemicals will be stable and detectable in solubilization, and further provide insight into possible degradation products that could be synthesized or purchased. Most critically, this information promotes understanding of uncertainty in estimates of initial experimental concentration of chemicals. 
 
-To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the analytical QC data for the ToxCast/Tox21 chemical library was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. Visit the [Analytical QC list on AMOS](https://ccte-cced-amos.epa.gov/amos/analytical_qc_list) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
+To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the analytical QC data for the ToxCast/Tox21 chemical library was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. The analytical QC results from original NCATS sample ids have been connected to ToxCast sample ids through source bottle lineage. Visit the [Analytical QC list on AMOS](https://ccte-cced-amos.epa.gov/amos/analytical_qc_list) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
 
 ### Descriptions of Fields and Possible Options
 
@@ -2711,7 +2711,7 @@ smthds <- sc_methods(aeids)
 
 ## Retrieving MC Data and Methods
 
-The goal of MC processing is to estimate the hit call, potency, efficacy, and other curve-fitting parameters for sample-assay endpoint pairs. After processing, users can inspect the activity hit calls, model parameters, concentration-response plots, and the applied methods for the MC data. 
+The goal of MC processing is to estimate the hit call, potency, efficacy, and other curve fitting parameters for sample-assay endpoint pairs. After processing, users can inspect the activity hit calls, model parameters, concentration-response plots, and the applied methods for the MC data. 
 
 ## - Load MC5 Data
 
@@ -2807,11 +2807,11 @@ assays <- tcplQueryAPI(resource = "assay")
 
 ## Retrieving Processed MC Data and Annotations
 
-As described in greater detail within the Data Processing sections, a goal of mc processing is to derive the efficacy and potency estimates for for each modeled endpoint-sample dose response. API data is available for levels 3 through 6, herein users can inspect the mc data including efficacy and potency estimates, model parameters, raw concentration response values, cautionary flags, and applied methods.
+As described in greater detail within the Data Processing sections, a goal of MC processing is to derive the efficacy and potency estimates for each modeled endpoint-sample concentration-response. API data is available for levels 3 through 6, herein users can inspect the MC data including efficacy and potency estimates, model parameters, raw concentration-response values, cautionary flags, and applied methods.
 
 ## Data
 
-Loading data is completed for a given endpoint ($aeid$), sample ($spid$), chemical ($dtxsid$), or endpoint-sample ($m4id$) by specifying "fld". Set add.fld = FALSE is the option used to limit fields to those which are defaults for each level when loading from `invitrodb` directly. Leaving $add.fld = TRUE$ (default) will return all available fields, i.e. all information from levels 3 through 6.
+Loading data is completed for a given endpoint ($aeid$), sample ($spid$), chemical ($dtxsid$), or endpoint-sample ($m4id$) by specifying `fld`. Set `add.fld = FALSE` is the option used to limit fields to those which are defaults for each level when loading from `invitrodb` directly. Leaving $add.fld = TRUE$ (default) will return all available fields, i.e. all information from levels 3 through 6.
 
 ## - By id 
 ```{r data_by_aeid}
@@ -2960,7 +2960,7 @@ print(chem_info)
 
 # Plotting {#plotting}
 
-`tcplPlot()` is `tcpl`’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via customizable parameters. The standalone plotting utility is built with the R libraries `plotly` and `ggplot2` to display the [`tcplfit2`](https://cran.r-project.org/package=tcplfit2)'s ten curve-fitting models. The `tcplPlot()` function requires either pre-loaded data (typically using `tcplPlotLoadData()`) supplied to $dat$ or the selection of a field ($fld$) and value ($val$) to load the necessary data and display the associated plots. Level $lvl$ selection is no longer required and is replaced by $type$. Customization of output is possible by specifying the following parameters:  
+`tcplPlot()` is `tcpl`’s single flexible plotting function, allowing for interactive yet consistent visualization of concentration-response curves via customizable parameters. The standalone plotting utility is built with the R libraries `plotly` and `ggplot2` to display the [`tcplfit2`](https://cran.r-project.org/package=tcplfit2)'s ten curve fitting models. The `tcplPlot()` function requires either pre-loaded data (typically using `tcplPlotLoadData()`) supplied to $dat$ or the selection of a field ($fld$) and value ($val$) to load the necessary data and display the associated plots. Level $lvl$ selection is no longer required and is replaced by $type$. Customization of output is possible by specifying the following parameters:  
 
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("type", "dat", "fld", "val", "compare", "output", "verbose", "multi", "by",
@@ -2978,7 +2978,7 @@ Description <- c("'mc' assumed as default. `type = 'mc'` plots available mc data
                  "Parameter allows the user to set a custom filename prefix. The standard filename is tcplPlot_sysDate().output (example: tcplPlot_2023_08_02.jpg) or, if `by` parameter is set, tcplPlot_sysDate()_by.output (example: tcplPlot_2023_08_02_aeid_80.pdf). When a `fileprefix` is assigned the default _tcplPlot_ prefix is replaced with the new filename.", 
                  "The 'nrow' parameter specifies the number of rows for the multiple plots per page; this is 2 by default. The `ncol` parameter specifies the number of columns for the multiple plots per page; this is 3 by default. If `verbose = FALSE`, `ncol` is 2. `nrow` and `ncol` can customize the number of plots included per page. Both `nrow` and `ncol` must be greater than 0. While there is no hard coded upper limit to the number of rows and columns, the underlying technology has a dimension limitation of `nrow = 9` and `ncol = 7`.", 
                  "Parameter specifies image print resolution for image file output types (PNG, JPG, TIFF, SVG); this is 600 by default.", 
-                 "Parameter toggles the output of Level 6 flags. The default option is `flag = FALSE`. If `type = 'sc`, setting `flag = TRUE` will result in warning, since invitrodb does not store flags for single-concentration data.", 
+                 "Parameter toggles the output of Level 6 flags. The default option is `flag = FALSE`. If `type = 'sc`, setting `flag = TRUE` will result in warning, since `invitrodb` does not store flags for single-concentration data.", 
                  "Parameter toggles automatic uniform y-axis scaling. The default option is `yuniform = FALSE`. If set to `TRUE`, tcplPlot will set each plot's y-axis range to be the minimum and maximum of response values and cutoffs across every requested plot. For example, when plotting a percent activity endpoint if the maximal response was 100% and minimal was -50%, while the cutoff was 20%, the y-axis range for every plot will be set to be from -50% to 100%. This is most useful for across-plot interpretation.", 
                  "Parameter toggles user-specified uniform y-axis scaling. `yrange` is required to be an integer of length 2: c(min,max). By default, c(NA,NA) will not set any uniform range. For example, when plotting a percent activity endpoint, the user may wish to set the range to c(-100,100) so every plot is contained to -100% and 100%.",
                  "Parameter groups curve color by a plot-data field when the number of curves on any given comparison plot equals or exceeds `group.threshold`. Any column provided within tcplPlotLoadData can be used, but discretized values, like binarized 'hitc', 'modl', or 'fitc' are suggested. By default, `group.fld` is 'modl' or 'hitc' for `type = 'mc'` and `type = 'sc'` respectively. Use `dat` as a data.table to set `group.fld` to a custom column.",
@@ -3125,7 +3125,7 @@ tcplPlot(fld = "aeid",
 
 ## Advanced Comparison Plotting
 
-`tcplPlot()` supports *advanced* comparison plotting across data connections. If working on a local `invitrodb` instance, additional dose-response data may be available, data reprocessed, methods adjusted, etc. Users may wish to compare data released in different versions, such as comparing CTX Bioactivity API data or versioned database (`invitrodb` v4.1 and later) to one's local `invitrodb` database.
+`tcplPlot()` supports *advanced* comparison plotting across data connections. If working on a local `invitrodb` instance, additional concentration-response data may be available, data reprocessed, methods adjusted, etc. Users may wish to compare data released in different versions, such as comparing CTX Bioactivity API data or versioned database (`invitrodb` v4.1 and later) to one's local `invitrodb` database.
 
 Using the utility function `tcplPlotLoadData()` while connected to one data source, users can switch to a new data configuration, load more data, and pass along combined data via `tcplPlot`’s `dat` parameter.
 
@@ -3233,7 +3233,7 @@ tcplPlot(dat = plot_data, by = "aeid", multi = TRUE, output = "pdf", fileprefix 
 
 ### - Plot LOEC (Lowest Observed Effective Concentration)
 
-`tcplPlot()` now supports the plotting of vertical $LOEC$ lines, automatically detecting when multi-concentration data is hit-called using the Level 5 `ow_loec.coff` processing method. Comparison $LOEC$ plotting with other $LOEC$ samples or crossed with traditional hit-called data with winning models is also supported. For data processed with the Level 5 method `include_loec.coff`, `tcplPlot()` will not automatically generate this kind of plot. A current workaround is to pre-load the plotting data using `tcplPlotLoadData()` and update the $model\_type$ column to `1` for any or all sample(s). Future `tcpl` versions may include additive $LOEC$ lines as an `tcplPlot()` option.
+`tcplPlot()` now supports the plotting of vertical $LOEC$ lines, automatically detecting when multi-concentration data has the Level 5 `ow_loec.coff` processing method applied. Comparison $LOEC$ plotting with other $LOEC$ samples or crossed with traditional `tcplfit2` modeled data also supported. For data processed with the Level 5 method `include_loec.coff`, `tcplPlot()` will not automatically generate this kind of plot. A current workaround is to pre-load the plotting data using `tcplPlotLoadData()` and update the $model\_type$ column to `1` for any or all sample(s). Future `tcpl` versions may include additive $LOEC$ lines as an `tcplPlot()` option.
 
 ```{r plot_loec, eval = FALSE}
 # default parameters used here: type = "mc"
@@ -3241,13 +3241,13 @@ tcplPlot(fld = "aeid", val = 3211, verbose = FALSE,
          output = "pdf", multi = TRUE, fileprefix = "loec") 
 ```
 
-<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf" and multi = TRUE for LOEC hit-called-data (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5f4016b9-6d30-4f47-a56c-ce0f29bc164e">View in Full Resolution</a>)</i>](img/loec_plot.jpg){width=80%}</center>
+<center>![<font style="font-size:15px"><i>Plots with parameters: output = "pdf" and multi = TRUE for LOEC fit data(<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5f4016b9-6d30-4f47-a56c-ce0f29bc164e">View in Full Resolution</a>)</i>](img/loec_plot.jpg){width=80%}</center>
 
 # Example Integrations with Other Computational Toxicology Tools
 
 ## Evaluate ToxCast AEDs for a single chemical and target
 
-This section will explore how one can compare in vivo Points of Departure (PODs) from the [Toxicity Reference Database (ToxRefDB)](https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses (AEDs) from ToxCast *in vitro* bioactivity data from `invitrodb`. The process can be adapted for any given chemical and target depending on available data in either database.
+This section will explore how one can compare *in vivo* Points of Departure (PODs) from the [Toxicity Reference Database (ToxRefDB)](https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses (AEDs) from ToxCast *in vitro* bioactivity data from `invitrodb`. The process can be adapted for any given chemical and target depending on available data in either database.
 
 The following example will consider "[Pentachlorophenol (PCP, DTXSID7021106)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID7021106)" and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
 
