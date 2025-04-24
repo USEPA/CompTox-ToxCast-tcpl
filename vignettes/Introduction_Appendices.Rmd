@@ -2322,7 +2322,7 @@ These estimated concentration threshold values have been released in the “cyto
 ![<font style="font-size:15px">](img/CCD_BPA_Bioactivity_ToxCast_TOP.png)
 ![<font style="font-size:15px"><i>Figure 3: ToxCast Summary Plot of BPA on CCD (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c249a3f2-3391-4f2a-80ce-c0e01c4d0729">view in full resolution</a>) (<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cecacf20-f0d8-4d87-82ed-0e371237cbe7">view in full resolution</a>)</i>](img/CCD_BPA_Bioactivity_ToxCast_BOTTOM.png)
 
-</center
+</center>
 
 ### Burst Endpoints
 
