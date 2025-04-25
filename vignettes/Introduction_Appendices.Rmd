@@ -1803,7 +1803,7 @@ $$\mathrm{AIC} = -2\log(\mathcal{L}(\hat{\theta}, y)) + 2K\mathrm{.} $$
 
 The RMSE is given by
 
-$$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,$$
+$$\mathrm{RMSE} = \sqrt{\frac{\sum_{i=1}^{N} (y_{i} - \mu_{i})^2}{N}}\mathrm{,} $$
 
 where $N$ is the number of observations, and $\mu_{i}$ and $y_{i}$ are the estimated and observed values at the $i^{th}$ observation, respectively. 
 
