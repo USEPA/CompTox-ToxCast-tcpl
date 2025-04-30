@@ -38,7 +38,8 @@ rounded concentrations (#324).
 
 * Vignette now uses flag descriptions in place of flag names to be more clear, 
 includes an image detailing visual examples of flags, and contains examples
-showcasing new `tcplPlot()` functionality.
+showcasing new `tcplPlot()` functionality, among many other small, general 
+improvements.
 * `tcplSubsetChid()` now preserves the continuous hitcall and the binary hitcall 
 is stored as `actc` (#189).
 
