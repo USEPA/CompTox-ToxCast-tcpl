@@ -50,7 +50,7 @@ tcplRun <- function(asid = NULL, slvl, elvl, id = NULL, type = "mc", mc.cores = 
                     outfile = NULL, runname = NULL, ready_only = FALSE) {
   
   ## Variable-binding to pass R CMD Check
-  # acid <- aeid <- NULL
+  export_ready <- NULL
   
   owarn <- getOption("warn")
   options(warn = 1)

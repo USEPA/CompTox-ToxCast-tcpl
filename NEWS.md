@@ -1,4 +1,50 @@
+# tcpl 3.3.0
+
+## New features
+
+* `tcplPlot()` gains a `compare` parameter, which replaces the `compare.val` 
+parameter, for selecting a plot-data field by which samples are grouped into 
+comparison plots. `tcplPlot()` also gains `group.fld`, `group.threshold`, and 
+`hide_losing_models` parameters, providing more customizability to comparison
+and individual concentration-response plots alike.
+* `tcplLoadData()`, and by extension `tcplPlot()` and `tcplPlotLoadData()`, now 
+support chemical queries via the `fld` parameter (#162).
+* `tcplVarMat()` now produces a z-score matrix by default, customizable via the
+`std_vars` parameter (#326).
+* `tcplRun()` gains a `ready_only` parameter to only process endpoints annotated
+with `export_ready = 1` (#263).
+
+## Minor improvements and fixes
+
+### Processing method changes
+
+* Level 6 model directionality flag is improved (#323).
+* New level 5 method ow_loec.coff hit-calls using the lowest observed effective 
+concentration (#308).
+* New level 5 method include_loec.coff stores the lowest observed effective 
+concentration (#345).
+* New single-concentration method level 2 pc40 (#309).
+* New level 3 method resp.censormed.neg25 (#299).
+
+### General processing changes
+
+* Level 4 fields nmed_gtbl_neg (number of median responses greater than baseline 
+in the negative direction) and nmed_gtbl_pos (same in the positive direction) 
+are now correctly calculated (#339).
+* Level 3 multi- and level 1 single-concentration processing now retains un-
+rounded concentrations (#324).
+
+### Other
+
+* Vignette now uses flag descriptions in place of flag names to be more clear, 
+includes an image detailing visual examples of flags, and contains examples
+showcasing new `tcplPlot()` functionality, among many other small, general 
+improvements.
+* `tcplSubsetChid()` now preserves the continuous hitcall and the binary hitcall 
+is stored as `actc` (#189).
+
 # tcpl 3.2.1
+
 * Updating Maintainer
 * Change minimum R version to 4.1.0 to fix NOTES
 
@@ -7,7 +53,8 @@
 * Added a `NEWS.md` file to track changes to the package.
 * updated vignettes
 * Updated plotting including standalone and comparisons
-* Added bidirectional summary stats and updated functions to work with newest version of invitrodb
+* Added bidirectional summary stats and updated functions to work with newest 
+version of invitrodb
 * Added level 6 flags
 * Implemented API functionality
 * Removed tcplLite
