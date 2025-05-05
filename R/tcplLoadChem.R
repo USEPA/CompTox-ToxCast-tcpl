@@ -49,8 +49,10 @@
 tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
                          include.spid = TRUE) {
   
+  if (length(field) > 1) stop("'field' must be of length 1.")
+  
   if (getOption("TCPL_DRVR") == "API") {
-    if (tolower(field) != "spid") stop("When drvr option is set to 'API', only 'spid' is a valid 'field' value.")
+    if (is.null(field) || tolower(field) != "spid") stop("When drvr option is set to 'API', only 'spid' is a valid 'field' value.")
     if (!exact) exact <- TRUE
     dat <- tcplQueryAPI(resource = "data", fld = "spid", val = val, return_flds = c("spid", "chid", "casn", "chnm", "dsstox_substance_id"))
     if (!length(colnames(dat))) {
@@ -65,8 +67,8 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
     if (!is.null(field)) {
       vfield <- c("chid", "spid", "chnm", "casn", "code", "chem.only","dsstox_substance_id")
       if (!field %in% vfield) stop("Invalid 'field' value.")
+      if (field == "chem.only") include.spid <- FALSE
     }
-    
     
     qstring <- .ChemQ(field = field, val = val, exact = exact)
     
@@ -86,9 +88,7 @@ tcplLoadChem <- function(field = NULL, val = NULL, exact = TRUE,
   
   if (include.spid) return(unique(dat, by = c("spid", "chid")))
   
-  dat <- unique(dat[ , list(chid, chnm, casn, code, dsstox_substance_id)])
-
-  unique(dat, by = c("spid", "chid"))[]
+  unique(dat[ , list(chid, chnm, casn, code, dsstox_substance_id)])
   
 }
 

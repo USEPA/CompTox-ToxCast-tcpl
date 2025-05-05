@@ -59,10 +59,14 @@
 #' @seealso \code{\link{tcplPlot}}
 #'
 #' @import data.table
+#' @importFrom dplyr mutate group_by summarize rowwise
+#' @importFrom stringr str_count
 #' @export
 tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
-  #variable binding
-  lvl <- m4id <- conc <- resp <- conc_unit <- NULL
+  
+  # variable binding for R CMD check
+  lvl <- m4id <- s2id <- conc <- resp <- conc_unit <- flag_count <- NULL
+  bmd <- top <- bmr <- model_type <- coff <- max_med <- hitc <- NULL
   
   # Validate vars based on some assumed properties
   validated_vars <- tcplPlotValidate(type = type,flags = flags)
@@ -72,13 +76,6 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   # check that input combination is unique
   dat <- tcplLoadData(lvl = lvl, fld = fld, val = val, type = type)
   if (nrow(dat) == 0) stop("No data for fld/val provided")
-  
-  # set order to given order
-  dat <- dat[order(match(get(fld[1]), if(is.list(val)) val[[1]] else val))]
-  if (getOption("TCPL_DRVR") == "API" && tolower(fld) == "aeid") {
-    dat <- dat %>% arrange(m4id)
-  }
-  dat$order <- 1:nrow(dat)
   
   mcLoadDat <- function(m4id = NULL,flags) {
     l4 <- tcplLoadData(lvl = 4, fld = "m4id", val = m4id, add.fld = T)
@@ -103,8 +100,10 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   if (getOption("TCPL_DRVR") != "API") {
     if (type == "mc") {
       dat <- mcLoadDat(dat$m4id,flags = flags)
+      setorder(dat, m4id)
       agg <- tcplLoadData(lvl = "agg", fld = "m4id", val = dat$m4id)
     } else { # type == 'sc'
+      setorder(dat, s2id)
       agg <- tcplLoadData(lvl = "agg", fld = "s2id", val = dat$s2id, type = "sc")
     }
     
@@ -113,10 +112,14 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
     
     #determine if we're single conc or multiconc based on dat
     join_condition <- c("m4id","s2id")[c("m4id","s2id") %in% colnames(dat)]
-    conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarise(conc = list(conc), resp = list(resp)) %>% as.data.table()
+    conc_resp_table <- agg %>% group_by(.data[[join_condition]]) %>% summarize(conc = list(conc), resp = list(resp)) %>% as.data.table()
     dat <- dat[conc_resp_table, on = join_condition]
     
+    # get chemical and sample information
     dat <- tcplPrepOtpt(dat)
+    
+    # determine missing chem info and replace with string description of well type(s)
+    dat <- tcplPlotLoadWllt(dat, type)
     
   } else {
     # fix flags from API for plotting
@@ -129,6 +132,12 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
     dat$conc_unit <- dat$tested_conc_unit
   }
   
+  # add flag_count
+  if (flags == TRUE) {
+    dat$flag_count <- 0
+    dat[flag != "None", flag_count := stringr::str_count(flag, "\n") + 1]
+  }
+  
   # add normalized data type for y axis
   ndt <- tcplLoadAeid(fld = "aeid", val = dat$aeid, add.fld = "normalized_data_type")
   dat <- dat[ndt, on = "aeid"]
@@ -137,6 +146,32 @@ tcplPlotLoadData <- function(type = "mc", fld = "m4id", val, flags = FALSE){
   dat <- dat[is.na(conc_unit), conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="uM", conc_unit:="\u03BCM"]
   dat <- dat[conc_unit=="mg/l", conc_unit:="mg/L"]
+  
+  # remove zero width space if exists
+  dat$chnm <- gsub("\u200b", "", dat$chnm)
+  
+  # replace null bmd in dat table
+  dat <- dat[is.null(dat$bmd), bmd:=NA]
+  
+  #replace null top with 0
+  dat[is.null(dat$top), top := 0]
+  dat[is.na(top), top := 0]
+  
+  # correct bmr and coff direction
+  if (type == "mc") {
+    # if top if less than 0, flip bmr no matter what
+    dat[top < 0, bmr := bmr * -1]
+    # if model type is loss, flip cut off
+    dat[model_type == 4, coff := coff * -1]
+    # if model type is bidirectional, flip cut off if top is less than 0
+    dat[model_type == 2 & top < 0, coff := coff * -1]
+  } else { # sc
+    # if max median is less than 0, flip cut off to align with it
+    dat[max_med < 0, coff := coff * -1]
+    # if hitc is less than 0, max median is in the opposite of intended direction, 
+    # so flip cut off (possibly again)
+    dat[hitc < 0, coff := coff * -1]
+  }
   
   dat
 }

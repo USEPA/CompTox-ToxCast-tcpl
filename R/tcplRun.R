@@ -19,6 +19,8 @@
 #' @param outfile Character of length 1, the name of the log file (optional)
 #' @param runname Character of length 1, the name of the run to be used in the 
 #' outfile (optional)
+#' @param ready_only Boolean, whether to only process endpoints marked as 
+#' export_ready = 1.
 #'                
 #' @details
 #' The \code{tcplRun} function is the core processing function within the 
@@ -44,11 +46,11 @@
 #' @importFrom parallel detectCores
 #' @export
 
-tcplRun <- function(asid = NULL, slvl, elvl, id = NULL, type = "mc", 
-                    mc.cores = NULL, outfile = NULL, runname = NULL) {
+tcplRun <- function(asid = NULL, slvl, elvl, id = NULL, type = "mc", mc.cores = NULL, 
+                    outfile = NULL, runname = NULL, ready_only = FALSE) {
   
   ## Variable-binding to pass R CMD Check
-  # acid <- aeid <- NULL
+  export_ready <- NULL
   
   owarn <- getOption("warn")
   options(warn = 1)
@@ -75,8 +77,17 @@ tcplRun <- function(asid = NULL, slvl, elvl, id = NULL, type = "mc",
     stop ("Invalid 'type' value.")
   }
   
-  if (!is.null(asid)) id <- tcplLoadAcid("asid", asid)$acid
-  if (length(id) == 0) stop("No asid or id given.")
+  if (!is.null(asid)) {
+    acid_tbl <- tcplLoadAcid("asid", asid, add.fld = "export_ready")
+    id <- if (ready_only) acid_tbl[export_ready == 1]$acid else acid_tbl$acid
+  } else if (ready_only) {
+    if (slvl < 4L) {
+      id <- tcplLoadAcid("acid", id, add.fld = "export_ready")[export_ready == 1]$acid
+    } else {
+      id <- tcplLoadAeid("aeid", id, add.fld = "export_ready")[export_ready == 1]$aeid
+    }
+  }
+  if (length(id) == 0) stop("No asid or id(s) given, or given id(s) do not exist. Check if 'ready_only = TRUE'.")
   id <- unique(id)
   
   if (!is.null(outfile)) {
@@ -185,7 +196,10 @@ tcplRun <- function(asid = NULL, slvl, elvl, id = NULL, type = "mc",
     }
     
     ## Change ids from acid to aeid, if necessary
-    if (slvl <  4L | !is.null(asid)) id <- tcplLoadAeid("acid", id)$aeid  
+    if (slvl <  4L | !is.null(asid)) {
+      aeid_tbl <- tcplLoadAeid("acid", id, add.fld = "export_ready")
+      id <- if (ready_only) aeid_tbl[export_ready == 1]$aeid else aeid_tbl$aeid
+    } 
     names(id) <- paste0("AEID", id)
     if (is.null(mc.cores)) ncores <- min(length(id), detectCores() - 1)
         
@@ -300,7 +314,10 @@ tcplRun <- function(asid = NULL, slvl, elvl, id = NULL, type = "mc",
     }
     
     ## Change ids from acid to aeid, if necessary
-    if (slvl <  2L | !is.null(asid)) id <- tcplLoadAeid("acid", id)$aeid  
+    if (slvl <  2L | !is.null(asid)) {
+      aeid_tbl <- tcplLoadAeid("acid", id, add.fld = "export_ready")
+      id <- if (ready_only) aeid_tbl[export_ready == 1]$aeid else aeid_tbl$aeid
+    }
     names(id) <- paste0("AEID", id)
     if (is.null(mc.cores)) ncores <- min(length(id), detectCores() - 1)
     

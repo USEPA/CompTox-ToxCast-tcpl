@@ -2,45 +2,56 @@
 % Please edit documentation in R/tcplPlot.R
 \name{tcplPlot}
 \alias{tcplPlot}
-\title{#-------------------------------------------------------------------------------
- Generic Plotting Function for tcpl}
+\title{Generic Plotting Function for tcpl}
 \usage{
 tcplPlot(
   dat = NULL,
   type = "mc",
   fld = "m4id",
   val = NULL,
-  compare.val = NULL,
+  compare = "m4id",
   by = NULL,
-  output = c("console", "pdf", "png", "jpg", "svg", "tiff"),
+  output = c("ggplot", "console", "pdf", "png", "jpg", "svg", "tiff"),
   fileprefix = paste0("tcplPlot_", Sys.Date()),
   multi = NULL,
-  verbose = FALSE,
+  verbose = TRUE,
   nrow = NULL,
   ncol = NULL,
   dpi = 600,
   flags = FALSE,
   yuniform = FALSE,
-  yrange = c(NA, NA)
+  yrange = c(NA, NA),
+  group.fld = NULL,
+  group.threshold = 9,
+  hide_losing_models = FALSE
 )
 }
 \arguments{
-\item{dat}{data.table containing plot-prepared data, used for stand-alone 
-(non-ToxCast data like other tcplfit2-fit data) or advanced plotting 
-(generating comparison plots across multiple database configurations) and not
-required. See \code{tcplPlotLoadData}.}
+\item{dat}{data.table or list of data.tables containing plot-prepared data, not
+required. Used for stand-alone (ToxCast or other tcplfit2-fit data) plotting or 
+advanced plotting (generating comparison plots across multiple database configurations). 
+Pass a data.table for default behavior, which will split data by 'compare'. Pass 
+a list of data.tables to directly specify the groupings for comparison plots 
+where each list item (data.table) will be printed on a single plot. See \code{tcplPlotLoadData}.}
 
 \item{type}{Character of length 1, the data type, "sc" or "mc".}
 
-\item{fld}{Character, the field(s) to query on.}
+\item{fld}{Character vector, the field(s) to query on.}
 
-\item{val}{List, vectors of values for each field to query on. Must be in
-the same order as 'fld'.}
+\item{val}{List containing vectors of values for each field to query on. Must 
+be in the same order as 'fld'.}
 
-\item{compare.val}{List, vectors of values for each field to query on to 
-compare with val. Must be in the same order as 'fld'. Must have the same
-length as val (1:1 comparison). Must be set to compare plots; otherwise leave
-NULL}
+\item{compare}{Character vector, the field(s) to join samples on to create comparison
+plots. By default "m4id", "s2id" if 'type' = "sc". As every endpoint-sample will 
+always have its own m4id, this will create individual plots. To create a comparison 
+plot across the same chemicals, use a chemical identifier like "dsstox_substance_id". 
+Likewise, to create a comparison plot across the same sample ids, use "spid". 
+Use "aeid" to create a comparison plot across the same assay component endpoints, 
+which will likely trigger the large compare plot style; for more info see 'group.threshold'. 
+To use a custom field to create comparison, 'dat' should be supplied as a data.table 
+generated from tcplPlotLoadData with the custom column added. If 'dat' is instead 
+a list of data.tables, setting 'compare' will be ignored in favor of the list 
+groups.}
 
 \item{by}{Parameter to divide files into e.g. "aeid".}
 
@@ -50,42 +61,170 @@ environment, use "ggplot"; to interact with the plot in application, use
 
 \item{fileprefix}{Prefix of file when saving.}
 
-\item{multi}{Boolean, by default TRUE for "pdf". If multi is TRUE, output
-by  default 4 plots per page for 'verbose' = TRUE and 6 plots per page for
-'verbose' = FALSE.}
+\item{multi}{Boolean, by default TRUE for "pdf" if the number of plots exceeds
+one. Prints variable number of plots per page depending on 'verbose' and 'type' 
+settings.}
 
-\item{verbose}{Boolean, by default FALSE. If TRUE, a table with fitting parameters
-is included with the plot.}
+\item{verbose}{Boolean, by default TRUE. If TRUE, a table with fitting parameters
+is included with the plot. To return or save simple plot, set to FALSE. In comparison
+plotting, verbose as TRUE will also return annotation information in a table,
+which is hidden using verbose = FALSE.}
 
 \item{nrow}{Integer, number of rows in multiplot. By default 2.}
 
-\item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose.}
+\item{ncol}{Integer, number of columns in multiplot. By default 3, 2 if verbose, 
+1 for verbose compare plots.}
 
 \item{dpi}{Integer, image print resolution. By default 600.}
 
 \item{flags}{Boolean, by default FALSE. If TRUE, level 6 flags are displayed
-below annotations on plot}
+within output.}
 
 \item{yuniform}{Boolean, by default FALSE. If TRUE, all plots will have uniform
 y axis scaling, automatically determined.}
 
 \item{yrange}{Integer of length 2, for directly setting the y-axis range, 
-c(<min>,<max>). By default, c(NA,NA).}
+c(<min>,<max>). By default, c(NA,NA). Plots containing points or curves outside
+this range will be expanded to fit.}
+
+\item{group.fld}{Character, column name to group curves by when number of comparison 
+curves exceeds group.threshold. By default 'modl' for MC and 'hitc' for SC.}
+
+\item{group.threshold}{Integer of length 1, minimum number of samples in a 
+given plot where comparison plots, instead of coloring models by sample, should
+delineate curve color by a given group.fld. By default 9.}
+
+\item{hide_losing_models}{Boolean, by default FALSE. For individual mc plots 
+only, should the losing models be hidden?}
 }
 \description{
-\code{tcplPlot} queries the tcpl databases and returns a plot
-for the given level and data type.
+\code{tcplPlot} queries the tcpl databases and returns or saves customizable 
+plots for the given data type, field(s), and value(s).
 }
 \details{
-The data type can be either 'mc' for multiple concentration data, or 'sc'
-for single concentration data. Multiple concentration data will be loaded
-into the 'mc' tables, whereas the single concentration will be loaded into
-the 'sc' tables.
+The data 'type' can be either "mc" for multiple concentration data, or "sc"
+for single concentration data. 'fld' can be any field(s) available at or before
+level 5 for 'mc' or level 2 for 'sc'. 'val' must be contain values for each
+'fld'. If 'fld' is just length 1, 'val' can be a regular number or character
+vector of any length. If 'fld' is greater than length 1, 'val' must be a list
+where each item matches each 'fld'.
 
-Leaving \code{fld} NULL will return all data.
+Use 'dat' to supply custom \code{tcplfit2} data or pre-loaded (and manipulated) 
+tcpl pipe-lined data from \code{tcplPlotLoadData} for more flexibility. 'dat'
+must contain all columns required by \code{tcplPlot} by the specified type, 
+such as sample info, chemical info, assay endpoint info, all conc/resp data, 
+all level 4 model fitting parameters, all level 5 hitcall and potency values, 
+and level 6 cautionary flags if 'flags' = TRUE. 'dat' can be used to add custom 
+columns for use with the 'compare', 'by', or 'group.fld' parameters.
+
+There are three plotting styles \code{tcplPlot} provides. First, individual 
+concentration response plots, by sample (more specifically, the distinct "m4id"), 
+which contain response points, winning and losing models, cut-off lines, AC50
+lines, BMD/BMR lines, and a potency table. Second are traditional compare plots, 
+by default generated when the number of samples on one plot is between 2 and 
+8 inclusive. These plots contain response points, winning models, and cut-offs, 
+all color-delineated by sample ("m4id"). It also contains tables for viewing
+similar and differing annotation info as well as hit-calls, BMDs, and AC50s.
+Finally are \code{tcplPlot}'s comparison plots for large comparisons, greater
+than 8 curves by default. These plots strip the annotation tables, response 
+points, and curve color grouping by sample in favor of a more holistic view
+which emphasizes the winning models altogether grouped for color by 'group.fld'.
+Setting 'flags' = TRUE here provides a view of the flag counts across the entire
+plot's samples.
 }
 \examples{
 \dontrun{
-tcplPlot(fld = "m4id", val = c(18609966)) ## Create a level 4 plot
+# Requires a database or API connection
+tcplConfDefault()
+
+# Simple plot returned as ggplot object for viewing or manipulating
+tcplPlot(fld = "m4id", val = 10000000)
+
+# Simple single conc plot returned as ggplot object for viewing or manipulating
+# Every example below works for single conc, as long as type = "sc" and any use 
+# of "m4id" is replaced with "s2id". Single conc not supported under API connection.
+tcplPlot(type = "sc", fld = "s2id", val = 6500000)
+
+# Simple plot returned to console using plotly package
+tcplPlot(fld = "m4id", val = 10000000, output = "console")
+
+# Simple plot saved to image file
+tcplPlot(fld = "m4id", val = 10000000, output = "png")
+
+# Simple plot saved to pdf
+tcplPlot(fld = "m4id", val = 10000000, output = "pdf", multi = FALSE)
+
+# Multiple plots saved to pdf, by assay endpoint
+tcplPlot(fld = "aeid", val = 1750, output = "pdf")
+
+# Multiple plots by assay endpoint saved to pdf, specifying a file name prefix
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", fileprefix = "example")
+
+# Multiple plots by assay endpoint saved to pdf, adjusting the number of rows and columns
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", nrow = 3, ncol = 4)
+
+# Multiple plots saved to pdf, split into files by aeid
+tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), by = "aeid", output = "pdf")
+
+# To use more than one field, be sure 'val' is given as a list with an element for each 'fld'.
+# Note - using more than one field is not supported under an API connection.
+tcplPlot(fld = c("aeid", "spid"), val = list(1750, c("WaterSample3", "WaterSample20")), 
+         output = "pdf")
+
+# Simple plot saved to image file, without verbose table
+tcplPlot(fld = "m4id", val = 10000000, output = "png", verbose = FALSE)
+
+# Simple plot saved to image file, with level 6 cautionary flags
+tcplPlot(fld = "m4id", val = 10000000, output = "png", flags = TRUE)
+
+# Simple plot saved to image file, with decreased dpi
+tcplPlot(fld = "m4id", val = 10000000, output = "png", dpi = 200)
+
+# Multiple plots by assay endpoint saved to pdf, with uniform y-range across all plots
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", yuniform = TRUE)
+
+# Multiple plots by assay endpoint saved to pdf, with specific uniform y-range across 
+# all plots. Any plots with elements outside this range will be expanded to fit.
+tcplPlot(fld = "aeid", val = 1750, output = "pdf", yrange = c(-1,2))
+
+# Two plots created by comparing all curves across one assay endpoint saved to pdf.
+# "conc_unit" included since this endpoint contains multiple ("uM" and "CF"), so we 
+# should split them up.
+tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf")
+
+# Change group.fld to alter the binning field for curve color in this large comparison plot
+tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", 
+         group.fld = "fitc")
+
+# If you'd rather not have curves binned by 'group.fld', set group.threshold to a 
+# value greater than the greatest number of curves contained on one plot.
+# NOTE - it is not recommended to do this for plots with more than 10-12 curves.
+tcplPlot(fld = "aeid", val = 1750, compare = c("aeid", "conc_unit"), output = "pdf", 
+         group.threshold = 25)
+
+# Multiple plots created by comparing all spids across five assay endpoints saved to pdf
+tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", output = "pdf")
+
+# Multiple plots created by comparing all spids across five assay endpoints saved to pdf,
+# split into files by "conc_unit"
+tcplPlot(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), compare = "spid", 
+         by = "conc_unit", output = "pdf")
+
+# Multiple plots created by using a custom field to compare across five assay 
+# endpoints saved to pdf. 
+dat <- tcplPlotLoadData(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), flags = TRUE)
+dat$cmp.fld <- rep("",nrow(dat)) # some logic for setting column data
+tcplPlot(dat = dat, compare = "cmp.fld", output = "pdf")
+
+# Multiple plots created by using a custom binning field to compare across five 
+# assay endpoints saved to pdf. 
+dat <- tcplPlotLoadData(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), flags = TRUE)
+dat$grp.fld <- rep("",nrow(dat)) # some logic for setting column data
+tcplPlot(dat = dat, compare = c("aeid", "conc_unit"), output = "pdf", group.fld = "grp.fld")
+
+# Multiple plots created by supplying dat as a list of data.tables.
+dat <- tcplPlotLoadData(fld = "aeid", val = c(1746, 1748, 1750, 1752, 1754), flags = TRUE)
+dat <- split(dat, by = "conc_unit") # or likely some more complex logic for splitting
+tcplPlot(dat = dat, output = "pdf")
 }
 }

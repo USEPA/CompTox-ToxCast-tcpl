@@ -111,8 +111,6 @@ Log Base 2
   \item{maxmed20pct}{Add a cutoff value of 20 percent of the maximum of all endpoint maximal 
   average response values (max_med).}
   \item{coff_2.32}{Add a cutoff value of 2.32.}
-  \item{loec.coff}{Method not yet updated for tcpl implementation. Identify the lowest observed 
-  effective concentration (loec) compared to baseline.}
   \item{ow_bidirectional_loss}{Multiply winning model hitcall (hitc) by -1 for models fit in the 
   positive analysis direction. Typically used for endpoints where only negative responses are 
   biologically relevant.}
@@ -120,6 +118,13 @@ Log Base 2
   negative analysis direction. Typically used for endpoints where only positive responses are 
   biologically relevant.}
   \item{osd_coff_bmr}{Overwrite the osd value so that bmr equals cutoff.}
+  \item{ow_loec.coff}{Identify the lowest observed effective concentration (loec) where the values 
+  of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is stored alongside 
+  winning model and potency estimates. If loec exists, assume hit call = 1, fitc = 100, 
+  model_type = 1, and if not, assume hit call = 0.}
+  \item{include_loec.coff}{Identify the lowest observed effective concentration (loec) where the 
+  values of all responses are outside the cutoff band (i.e. abs(resp) > cutoff). loec is 
+  stored alongside winning model and potency estimates.}
  }
 }
 }

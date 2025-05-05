@@ -44,8 +44,14 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
     
     dat$dsstox_substance_id <- dat$dtxsid
     
-    # unlist logc to conc
-    dat <- dat %>% rowwise() %>% mutate(conc = list(10^unlist(logc))) %>% as.data.table()
+    # unlist logc, resp, flag, mc6mthdid
+    unlist_cols <- c("logc", "resp", "flag", "mc6MthdId")
+    for (c in unlist_cols) {
+      dat[[c]] <- lapply(dat[[c]], unlist)
+    }
+    
+    # unlog logc to conc
+    dat <- dat %>% rowwise() %>% mutate(conc = list(10^logc)) %>% as.data.table()
     
   } else if (resource == "assay") {
     

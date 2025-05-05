@@ -47,8 +47,7 @@
 #'   \item{noise}{Flag series as noisy if the quality of fit as calculated by the root mean square 
 #'   error (rmse) for the series is greater than the cutoff (coff); \eqn{rmse > coff}{rmse > coff}.}
 #'   \item{border}{Flag series if borderline activity is suspected based on modeled top parameter 
-#'   (top) relative to cutoff (coff); \eqn{|top|<=1.2*coff~or~|top|>=0.8*coff}{|top| <= 1.2(coff) or
-#'    |top| >= 0.8(coff)}.}
+#'   (top) relative to cutoff (coff); \eqn{0.8*coff<=|top|<=1.2*coff}.}
 #'   \item{overfit.hit}{Method not yet updated for tcpl implementation. Flag hit-calls that would 
 #'   get changed after doing the small N correction to the aic values.}
 #'   \item{efficacy.50}{Flag low efficacy hits if series has an active hit call (hitc >= 0.9) and 
@@ -90,7 +89,7 @@ mc6_mthds <- function() {
       e6 <- bquote(dr[ , ltcoff := resp < coffsign])
       e7 <- bquote(dr[ , nrsp_gtcoff := sum(gtcoff), by = m4id])
       e8 <- bquote(dr[ , nrsp_ltcoff := sum(ltcoff), by = m4id])
-      e9 <- bquote(dr[ , test := ifelse(coffsign > 0, nrsp_gtabscoff > 2*nrsp_gtcoff, nrsp_gtabscoff > 2*nrsp_ltcoff)])
+      e9 <- bquote(dr[ , test := (hitc >= 0.9) & ifelse(coffsign > 0, nrsp_gtcoff > 1, nrsp_ltcoff > 1) & ifelse(coffsign > 0, nrsp_gtabscoff > 2*nrsp_gtcoff, nrsp_gtabscoff > 2*nrsp_ltcoff)])
       e10 <- bquote(f[[.(mthd)]] <- unique(dr[which(test), .SD, .SDcols = .(out)], by = NULL))
       cr <- c("mc6_mthd_id", "flag", "test", "coffsign", "gtabscoff", "nrsp_gtabscoff", "gtcoff", "ltcoff", "nrsp_gtcoff", "nrsp_ltcoff")
       e11 <- bquote(dr[ , .(cr) := NULL])

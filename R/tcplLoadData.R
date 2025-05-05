@@ -15,6 +15,8 @@
 #' the same order as 'fld'.
 #' @param add.fld Boolean if true we want to return 
 #' the additional parameters fit with tcplfit2
+#' @param exact Logical, passed to tcplLoadChem -- should chemical names be 
+#' considered exact?
 #' 
 #' @details
 #' The data type can be either 'mc' for mutliple concentration data, or 'sc'
@@ -71,6 +73,12 @@
 #' ## Load level 0 data where the well type is "t" and the concentration
 #' ## index is 3 or 4
 #' tcplLoadData(lvl = 1, fld = c("wllt", "cndx"), val = list("t", c(3:4)))
+#'
+#' ## Load level 4 data using a chemical name
+#' tcplLoadData(lvl = 4, fld = "chnm", val = "Bisphenol A")
+#'
+#' ## Load level 3 data using a partial chemical name
+#' tcplLoadData(lvl = 3, fld = "chnm", val = "phenol", exact = FALSE)
 #' }
 #' @return A data.table containing data for the given fields.
 #'
@@ -82,7 +90,7 @@
 #' @importFrom rlang exec sym
 #' @export
 
-tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE) {
+tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRUE, exact = TRUE) {
   #variable binding
   model <- model_param <- model_val <- NULL
   hit_param <- hit_val <- sc_vignette <- mc_vignette <- NULL
@@ -210,14 +218,11 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     if (length(colnames(dat))) {
       if (lvl == 3 | lvl == "agg") {
-        dat$resp <- lapply(dat$resp, unlist)
-        dat$logc <- lapply(dat$logc, unlist)
         if (lvl == 3) dat <- unnest_longer(dat, c(conc, logc, resp)) %>% as.data.table() 
         else dat <- unnest_longer(dat, c(logc, resp)) %>% as.data.table() 
       }
       
       if (lvl == 6) {
-        dat$flag <- lapply(dat$flag, unlist)
         dat <- unnest_longer(dat, flag) %>% filter(flag != "NULL") %>% as.data.table()
       }
     }
@@ -229,6 +234,12 @@ tcplLoadData <- function(lvl, fld = NULL, val = NULL, type = "mc", add.fld = TRU
     
     # add.fld is not possible if invitrodb version less than 4
     if (!check_tcpl_db_schema()) add.fld <- FALSE
+    
+    if (any(fld %in% c("chid", "casn", "chnm", "dsstox_substance_id", "code"))) {
+      chem <- tcplLoadChem(field = fld, val = val, exact = exact)
+      fld <- "spid"
+      val <- chem$spid
+    }
     
     table <- paste0(type, lvl)
     tbls_joins <- case_when(

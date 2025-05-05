@@ -189,6 +189,8 @@ available in the package vignette, "Data_processing."
      \eqn{resp=cval/bval-1}{resp = cval/bval - 1}. Typically used for increasing responses.}
     \item{resp.mult100}{Multiply the normalized response value (resp) by 100; 
      \eqn{100*resp}{100*resp}.}
+   `\item{resp.censormed.neg25}{Censor (remove) response values from 
+     concentrations which median falls below -25.}
   }
 }
 }
