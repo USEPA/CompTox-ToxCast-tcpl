@@ -9,6 +9,8 @@
 [![Active](http://img.shields.io/badge/Status-Active-green.svg)](https://cran.r-project.org/package=tcpl)
 [![Monthly
 Downloads](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)](https://cranlogs.r-pkg.org/badges/last-month/tcpl?color=7BAFD4)
+[![Total
+Downloads](https://cranlogs.r-pkg.org/badges/grand-total/tcpl)](https://cran.r-project.org/package=tcpl)
 [![DOI](https://zenodo.org/badge/doi/%2010.32614/CRAN.package.tcpl.svg)](http://dx.doi.org/10.32614/CRAN.package.tcpl)
 [![R-CMD-check](https://github.com/USEPA/CompTox-ToxCast-tcpl/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/USEPA/CompTox-ToxCast-tcpl/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
