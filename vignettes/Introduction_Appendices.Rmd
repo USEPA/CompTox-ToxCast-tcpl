@@ -32,7 +32,7 @@ This vignette provides an overview of the `tcpl` R package, including set up, [D
 ## Suggested packages for use with this vignette
 
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
-# devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
+#devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
 ```
 
 ```{r, message = FALSE, warning = FALSE,  class.source="fold-hide"}
@@ -2328,7 +2328,7 @@ These estimated concentration threshold values have been released in the “cyto
 
 Recognizing the substantial impact of cytotoxicity in confounding screening results, assays will often include parallel screens to try to capture non-specific activation of many targets as cells approach death. 
 
-The `tcplCytoPt()` function uses the assay endpoints listed in the $burst\_assay$ field of the `assay\_component\_endpoint` table, where 1 indicates including the assay endpoint in the calculation. The "burst" assay endpoints can be identified by running  ` tcplLoadAeid(fld = "burst\_assay", val = 1) `. 
+The `tcplCytoPt()` function uses the assay endpoints listed in the $burst\_assay$ field of the `assay_component_endpoint` table, where 1 indicates including the assay endpoint in the calculation. The "burst" assay endpoints can be identified by running  ` tcplLoadAeid(fld = "burst_assay", val = 1) `. 
 
 ### Implementation
 
@@ -2346,11 +2346,11 @@ Given ToxCast includes a heterogeneous set of assays across a diverse biological
 
 The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE, please see: [Breen et al., 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
 
-For `invitrodb` v4.2 onward, a new `mc7` table contains pre-generated administered equivalent dose ($AED$) values using several potency metrics from `invitrodb` and a subset of models from the High-throughput Toxicokinetics R package, [`httk`](https://CRAN.R-project.org/package=httk). As implemented, this `mc7` table provides users with pre-calculated estimates of the *in vivo* human $AED$ (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
+For `invitrodb` v4.2 onward, the `mc7` table contains pre-generated administered equivalent dose ($AED$) values using several potency metrics from `invitrodb` and a subset of models from the High-throughput Toxicokinetics R package, [`httk`](https://CRAN.R-project.org/package=httk). As implemented, this `mc7` table provides users with pre-calculated estimates of the *in vivo* human $AED$ (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
 
 ### Implementation
 
-AEDs are generated in a separate .R script using the [httk R package](https://CRAN.R-project.org/package=httk) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state ($3compartmentss$) model and the physiologically-based toxicokinetic ($pbtk$) model. Given the large number of chemicals and endpoints included in `invitrodb` v4.2, generation of the `mc7` table as configured with the options below took 24 hours using 40 cores.
+AEDs are generated in a separate .R script using the [httk R package](https://CRAN.R-project.org/package=httk) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals. invitrodb v4.2 leveraged calculated AEDs for both the 3-compartment steady state ($3compartmentss$) model and the physiologically-based toxicokinetic ($pbtk$) model. The invitrodb v4.3 `mc7` table was generated using httk v2.6.1, which includes the new "sumclearances" model, as described in [Wambaugh et al. (2025)](https://pubs.acs.org/doi/10.1021/acs.estlett.4c00967). The "sumclearances" model includes exhalation and assumes steady state, therefore using the "pbtk" and "3compartmentss" model was deemed duplicative since it also runs at steady-state and lacks exhalation component for semi-volatiles. Given the large number of chemicals and endpoints included in `invitrodb`, generation of the `mc7` table as configured with the options below took 24 hours using 40 cores.
 
 Using the ToxCast endpoint-sample-specific potency estimates (i.e. $BMD$, $ACC$, AC~50~), human administered equivalent doses are extrapolated using the simplified derivation below:
 
@@ -2395,13 +2395,13 @@ htmlTable(output,
 
 There is high value in understanding the outcomes of solubilization and chemical stability in the vehicle chosen to solubilize the chemical, i.e. a chemical's applicability domain for *in vitro* screening. This informs what chemicals and samples should screened in future experiments. It also helps inform future structural models to understand which chemicals will be stable and detectable in solubilization, and further provide insight into possible degradation products that could be synthesized or purchased. Most critically, this information promotes understanding of uncertainty in estimates of initial experimental concentration of chemicals. 
 
-To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the analytical QC data for the ToxCast/Tox21 chemical library was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. The analytical QC results from original NCATS sample ids have been connected to ToxCast sample ids through source bottle lineage. Visit the [Analytical QC list on AMOS](https://www.epa.gov/comptox-tools/analytical-methods-and-open-spectral-amos-database-user-guide#AnalyticalQC) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
+To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the [analytical QC data for the ToxCast/Tox21 chemical library](https://tripod.nih.gov/tox/samples) was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. The analytical QC results from original NCATS sample ids have been connected to ToxCast sample ids through source bottle lineage. Visit the [Analytical QC list on AMOS](https://www.epa.gov/comptox-tools/analytical-methods-and-open-spectral-amos-database-user-guide#AnalyticalQC) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
 
 ### Descriptions of Fields and Possible Options
 
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("dtxsid", "chnm", "spid", "qc_level", "pass_or_caution", "t0", "t4", 
-"call", "annotation", "flags", "average_mass", "log10_vapor_pressure_OPERA_pred", "logKow_octanol_water_OPERA_pred")
+"stability_call", "annotation", "flags", "average_mass", "log10_vapor_pressure_OPERA_pred", "logKow_octanol_water_OPERA_pred")
 
 Description <- c("Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database", 
                  "Chemical name", "Sample ID or ToxCast bioactivity data, connected by bottle lineage", "Level of analytical QC: substance or sample", 
