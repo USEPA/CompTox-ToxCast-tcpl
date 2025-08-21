@@ -3329,7 +3329,7 @@ toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
 
 [Administered Equivalent Doses](#Administered-Equivalent-Dose) can be accessed from Level 7, or calculated *ad hoc* using the [High-throughput Toxicokinetics R package (httk)](https://CRAN.R-project.org/package=httk). Potency estimates and model options can be adjusted based on use case. In this example, modeling assumptions when estimating the AEDs with httk were: 
 
-- Species options include ‘Rat’, ‘Rabbit’, ’Dog’, ’Mouse’ or default ‘Human'
+- Species options include 'Rat', 'Rabbit', 'Dog', 'Mouse' or default 'Human'
 - Which quantile from Monte Carlo steady-state simulation (for Css)? The scaling factor is the inverse of the steady state plasma concentration (Css) predicted for a 1 mg/kg/day exposure dose rate. This simulates variability and propagates uncertainty to calculate an upper 95th percentile Css,95 for individuals who get higher plasma concentrations from the same exposure, i.e. 95th concentration quantile produces the 5th dose quantile (most sensitive measure).;
 - Restrictive clearance indicates the chemical is protein-bound such that it is relatively unavailable for hepatic metabolism or renal excretion; whereas, non-restrictive clearance assumes the chemical rapidly disassociates from the protein for metabolism and excretion 
 
