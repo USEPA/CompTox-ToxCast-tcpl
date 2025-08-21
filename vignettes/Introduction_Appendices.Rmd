@@ -1692,7 +1692,7 @@ fits %>%
 
 ## - Methods Assignment
 
-For demonstrating the assignment of mc4 methods, method '1' will be specified to calculate that the $BMAD$ and estimate one standard deviation of baseline using the two lowest concentration groups of treatment wells ($wllt = "t"$). 
+For demonstrating the assignment of mc4 methods, method '1' will be specified to calculate that the $BMAD$ and estimate one standard deviation of baseline using the two lowest concentration groups of treatment wells ($wllt$ = "t"). 
 
 Two examples of mc4 method assignments are provided below: (1) for a single assay endpoint and (2) all assay endpoints in containing string using `tcplGetAeid()`. The assignment in the second approach can adapted for any subset of $aeid$s.
 
