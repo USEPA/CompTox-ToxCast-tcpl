@@ -56,7 +56,6 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
         return(unlisted)
       }
     })
-  }
     
     dat <- dat %>% rowwise() %>% as.data.table()
     
