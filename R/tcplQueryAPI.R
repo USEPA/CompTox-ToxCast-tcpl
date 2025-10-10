@@ -46,9 +46,17 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
     
     # unlist conc, resp, flag, mc6mthdid
     unlist_cols <- c("conc", "resp", "flag", "mc6MthdId")
-    for (c in unlist_cols) {
-      dat[[c]] <- lapply(dat[[c]], unlist)
-    }
+    dat[[c]] <- lapply(dat[[c]], function(x) {
+      # Unlist the element
+      unlisted <- unlist(x)
+      # Check if the result is character(0), replace with NA if true
+      if (length(unlisted) == 0) {
+        return(NA)
+      } else {
+        return(unlisted)
+      }
+    })
+  }
     
     dat <- dat %>% rowwise() %>% as.data.table()
     
