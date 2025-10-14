@@ -8,7 +8,6 @@
 
 tcplConf <- function (drvr = NULL, user = NULL, pass = NULL, host = NULL, 
                       db = NULL,...) {
-  #tcplConf(user='_dataminer', pass='pass', host='au.epa.gov', drvr = 'MySQL',db = 'invitrodb')
   
   # Notes for example
   # ==================
