@@ -660,7 +660,7 @@ httptest::with_mock_dir("ctx", {
   #apikey <- "01cb8858-904f-11ee-8bc6-325096b39f47"
   tcplConf(pass = apikey,
            drvr = "API")
-  data("test_api")
+  data(test_api)
   test_that("level 3 API data loads by m4id", {
     expect_no_error(dat <- tcplLoadData(lvl = 3, fld = "m4id", val = test_api$m4id, add.fld = FALSE))
     expect_true(is.data.table(dat))
