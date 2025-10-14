@@ -32,14 +32,14 @@ This vignette provides an overview of the `tcpl` R package, including set up, [D
 
 ## Suggested packages for use with this vignette
 
-```{r, echo=FALSE, include=FALSE, eval=TRUE}
+```{r, echo=FALSE, include=FALSE, eval=FALSE}
 #set to eval=TRUE and comment out lbrary(tcpl) when dev versions are installed locally
 devtools::load_all()
 ```
 
 ```{r, message = FALSE, warning = FALSE,  class.source="fold-hide"}
 # Primary Packages #
-#library(tcpl)
+library(tcpl)
 library(tcplfit2)
 # Data Formatting Packages #
 library(data.table)
