@@ -56,9 +56,9 @@ tcplQueryAPI <- function(resource = "data", fld = NULL, val = NULL, return_flds 
       } else {
         return(unlisted)
       }
-    })
+    }) }
     
-    dat <- dat %>% rowwise() %>% as.data.table()
+    dat <- dat %>% rowwise() %>% as.data.table() 
     
   } else if (resource == "assay") {
     
