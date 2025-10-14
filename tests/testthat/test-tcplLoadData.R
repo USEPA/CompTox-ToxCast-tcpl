@@ -656,10 +656,11 @@ test_that("missing val error message", {
 # sure every test has its necessary data still available.
 #-------------------------------------------------------------------------------
 httptest::with_mock_dir("ctx", {
-  apikey <- "apikey"
+  apikey <- "apikey" 
+  #apikey <- "01cb8858-904f-11ee-8bc6-325096b39f47"
   tcplConf(pass = apikey,
            drvr = "API")
-  data(test_api)
+  data("test_api")
   test_that("level 3 API data loads by m4id", {
     expect_no_error(dat <- tcplLoadData(lvl = 3, fld = "m4id", val = test_api$m4id, add.fld = FALSE))
     expect_true(is.data.table(dat))
@@ -776,28 +777,28 @@ httptest::with_mock_dir("ctx", {
     expect_no_error(dat <- tcplLoadData(lvl = "agg", fld = "m4id", val = test_api$m4id, add.fld = FALSE))
     expect_true(is.data.table(dat))
     expect_true(nrow(dat) > 1)
-    expect_true(all(c("m4id", "aeid", "spid", "bmad", "logc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
+    expect_true(all(c("m4id", "aeid", "spid", "bmad", "conc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
     expect_true(test_api$m4id %in% dat$m4id)
   })
   test_that("agg level API data loads by aeid", {
     expect_no_error(dat <- tcplLoadData(lvl = "agg", fld = "aeid", val = test_api$aeid, add.fld = FALSE))
     expect_true(is.data.table(dat))
     expect_true(nrow(dat) > 1)
-    expect_true(all(c("m4id", "aeid", "spid", "bmad", "logc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
+    expect_true(all(c("m4id", "aeid", "spid", "bmad", "conc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
     expect_true(test_api$aeid %in% dat$aeid)
   })
   test_that("agg level API data loads by dtxsid", {
     expect_no_error(dat <- tcplLoadData(lvl = "agg", fld = "dtxsid", val = test_api$dtxsid, add.fld = FALSE))
     expect_true(is.data.table(dat))
     expect_true(nrow(dat) > 1)
-    expect_true(all(c("dtxsid", "m4id", "aeid", "spid", "bmad", "logc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
+    expect_true(all(c("dtxsid", "m4id", "aeid", "spid", "bmad", "conc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
     expect_true(test_api$dtxsid %in% dat$dtxsid)
   })
   test_that("agg level API data loads by spid", {
     expect_no_error(dat <- tcplLoadData(lvl = "agg", fld = "spid", val = test_api$spid, add.fld = FALSE))
     expect_true(is.data.table(dat))
     expect_true(nrow(dat) > 1)
-    expect_true(all(c("m4id", "aeid", "spid", "bmad", "logc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
+    expect_true(all(c("m4id", "aeid", "spid", "bmad", "conc", "resp", "max_med", "nconc", "nrep") %in% colnames(dat)))
     expect_true(test_api$spid %in% dat$spid)
   })
   # error cases

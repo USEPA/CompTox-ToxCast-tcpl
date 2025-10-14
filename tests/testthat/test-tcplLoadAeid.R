@@ -6,7 +6,7 @@
 # tcplLoadData test file. 
 #-------------------------------------------------------------------------------
 httptest::with_mock_dir("ctx", {
-  apikey <- "apikey"
+  apikey <- "apikey" 
   tcplConf(pass = apikey,
            drvr = "API")
   data(test_api)

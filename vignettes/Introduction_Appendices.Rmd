@@ -19,6 +19,7 @@ vignette: >
 ```
 
 ```{r setup, include = FALSE}
+# if you need to regenerate jsons, set to include = TRUE before devtools::build_vignette. Consider just running the specific codes you need
 library(httptest)
 start_vignette("api")
 ```
@@ -31,13 +32,14 @@ This vignette provides an overview of the `tcpl` R package, including set up, [D
 
 ## Suggested packages for use with this vignette
 
-```{r, echo=FALSE, include=FALSE, eval=FALSE}
-#devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
+```{r, echo=FALSE, include=FALSE, eval=TRUE}
+#set to eval=TRUE and comment out lbrary(tcpl) when dev versions are installed locally
+devtools::load_all()
 ```
 
 ```{r, message = FALSE, warning = FALSE,  class.source="fold-hide"}
 # Primary Packages #
-library(tcpl)
+#library(tcpl)
 library(tcplfit2)
 # Data Formatting Packages #
 library(data.table)
@@ -2953,9 +2955,16 @@ unit <- tcplLoadUnit(aeid = c(663, 891))
 
 `tcplLoadConcUnit()` is used to load the concentration unit for a specific $spid$ or multiple $spid$s. This is typically used as an internal function for plotting.
 
-```{r load_conc_unit}
+```{r load_conc_unit, eval=FALSE}
 # Load conc_unit for given spid
 conc_unit <- tcplLoadConcUnit(spid = "TP0000904H05")
+```
+
+```{r echo=FALSE}
+conc_unit <- data.frame(
+  spid = "TP0000904H05",
+  conc_unit = c("uM")
+)
 print(conc_unit)
 ```
 
@@ -2963,9 +2972,19 @@ print(conc_unit)
 
 `tcplLoadChem()` is used to load the chemical information for a specific $spid$ or multiple $spid$s. Notice `tcplLoadChem()` uses `field` instead of `fld`.
 
-```{r load_chem}
+```{r load_chem, eval=FALSE}
 # Load chem_info for given spid
 chem_info <- tcplLoadChem(field = "spid", val = "TP0000904H05")
+```
+
+```{r echo=FALSE}
+chem_info <- data.frame(
+  spid = "TP0000904H05",
+  chid = 45232,
+  casn = "51-24-1",
+  dsstox_substance_id = "DTXSID2045232",
+  code = "C51241"
+)
 print(chem_info)
 ```
 
