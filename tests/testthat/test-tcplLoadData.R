@@ -657,7 +657,6 @@ test_that("missing val error message", {
 #-------------------------------------------------------------------------------
 httptest::with_mock_dir("ctx", {
   apikey <- "apikey" 
-  #apikey <- "01cb8858-904f-11ee-8bc6-325096b39f47"
   tcplConf(pass = apikey,
            drvr = "API")
   data(test_api)
