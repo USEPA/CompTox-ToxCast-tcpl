@@ -19,6 +19,7 @@ vignette: >
 ```
 
 ```{r setup, include = FALSE}
+# if you need to regenerate jsons, set to include = TRUE before devtools::build_vignette. Consider just running the specific codes you need
 library(httptest)
 start_vignette("api")
 ```
@@ -32,7 +33,8 @@ This vignette provides an overview of the `tcpl` R package, including set up, [D
 ## Suggested packages for use with this vignette
 
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
-#devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
+#set to eval=TRUE and comment out lbrary(tcpl) when dev versions are installed locally
+devtools::load_all()
 ```
 
 ```{r, message = FALSE, warning = FALSE,  class.source="fold-hide"}
@@ -2315,7 +2317,7 @@ Estimates of chemical concentrations that elicit cytotoxicity and/or cell stress
 
 The burst threshold can be used to infer activity above or below an estimated threshold of generalized cell stress and/or cytotoxicity, where users can define the degree of difference between some observed bioactivity and estimates of cell stress and/or cytotoxicity needed in order to discern "selective" activity (i.e., bioactivity thought to occur independently of cell stress and/or cytotoxicity) vs. "non-selective" activity (i.e., bioactivity that appears to occur concomitantly with estimates of the concentration needed for cell stress and/or cytotoxicity).
 
-These estimated concentration threshold values have been released in the “cytotox” table of `invitrodb` and are also provided on the CompTox Chemicals Dashboard (CCD) Bioactivity Summary Plot, as shown in the BPA example below. 
+These estimated concentration threshold values have been released in the “cytotox” table of `invitrodb` and are also provided on the [CompTox Chemicals Dashboard (CCD)](https://comptox.epa.gov/dashboard/) Bioactivity Summary Plot, as shown in the BPA example below. 
 
 <center>
 
@@ -2953,9 +2955,16 @@ unit <- tcplLoadUnit(aeid = c(663, 891))
 
 `tcplLoadConcUnit()` is used to load the concentration unit for a specific $spid$ or multiple $spid$s. This is typically used as an internal function for plotting.
 
-```{r load_conc_unit}
+```{r load_conc_unit, eval=FALSE}
 # Load conc_unit for given spid
 conc_unit <- tcplLoadConcUnit(spid = "TP0000904H05")
+```
+
+```{r echo=FALSE}
+conc_unit <- data.frame(
+  spid = "TP0000904H05",
+  conc_unit = c("uM")
+)
 print(conc_unit)
 ```
 
@@ -2963,9 +2972,19 @@ print(conc_unit)
 
 `tcplLoadChem()` is used to load the chemical information for a specific $spid$ or multiple $spid$s. Notice `tcplLoadChem()` uses `field` instead of `fld`.
 
-```{r load_chem}
+```{r load_chem, eval=FALSE}
 # Load chem_info for given spid
 chem_info <- tcplLoadChem(field = "spid", val = "TP0000904H05")
+```
+
+```{r echo=FALSE}
+chem_info <- data.frame(
+  spid = "TP0000904H05",
+  chid = 45232,
+  casn = "51-24-1",
+  dsstox_substance_id = "DTXSID2045232",
+  code = "C51241"
+)
 print(chem_info)
 ```
 
@@ -3260,11 +3279,11 @@ tcplPlot(fld = "aeid", val = 3211, verbose = FALSE,
 
 This section will explore how one can compare *in vivo* Points of Departure (PODs) from the [Toxicity Reference Database (ToxRefDB)](https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses ($AED$s) from ToxCast *in vitro* bioactivity data from `invitrodb`. The process can be adapted for any given chemical and target depending on available data in either database.
 
-The following example will consider "[Pentachlorophenol (PCP, DTXSID7021106)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID7021106)" and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
+The following example will consider [Pentachlorophenol (PCP, DTXSID7021106)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID7021106) and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
 
 ### Consider ToxRefDB *in vivo* toxicity benchmarks as POD-Traditional
 
-First, export ToxRefDB batch download results for any chemical from the [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard/batch-search) Batch Search or [CTX Hazard APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). Check out the [`ctxR` R Client package](<https://CRAN.R-project.org/package=ctxR>) for more guidance on interacting with the CTX APIs.
+First, export ToxRefDB batch download results for any chemical from the [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard/) Batch Search or [CTX Hazard APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). Check out the [`ctxR` R Client package](<https://CRAN.R-project.org/package=ctxR>) for more guidance on interacting with the CTX APIs.
 
 After loading all chemical-specific data for "Pentachlorophenol", filter results to only include "liver"-related effects. Next identify the observed lowest effect (LEL, significantly different from control in source document i.e. treatment related=1) and lowest observed adverse (LOAEL, deemed adverse by study reviewer in source document i.e. critical_effect=1) effect levels at minimum dose_adjusted (mg/kg/day) value.
 ```{r txrf-data-liver-subset, eval=FALSE}
@@ -3381,7 +3400,7 @@ For the "Pentachlorophenol liver toxicity" example provided here, the POD estima
 ToxCast data are predominantly based on mammalian models, but still may have value in ecological risk assessments. This section will explore how one may review ToxCast derived values in combination with curated values from [Ecotoxicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/) as well as cross-species applicability through [Sequence Alignment to Predict Across Species Susceptibility (SeqAPASS)](https://seqapass.epa.gov/seqapass/) tool. The process can be adapted for any given chemical and target depending on available data in either database.
 
 ### Consider POD-NAM and POD-Traditional
-Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/invitrodb/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD~NAM~ and POD~Traditional~, respectively.
+Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD~NAM~ and POD~Traditional~, respectively.
 
 ```{r txct-data-pull2, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
 # Identify the lel and loaels from toxref chemical subset

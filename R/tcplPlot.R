@@ -93,7 +93,7 @@
 #'
 #' @import data.table
 #' @importFrom gridExtra marrangeGrob
-#' @importFrom ggplot2 ggsave is.ggplot
+#' @importFrom ggplot2 ggsave is_ggplot
 #' @importFrom grDevices pdf.options
 #' @export
 #'
@@ -281,7 +281,7 @@ tcplPlot <- function(dat = NULL, type = "mc", fld = "m4id", val = NULL, compare 
                           group.fld = group.fld, group.threshold = group.threshold, 
                           hide_losing_models = hide_losing_models)
       if (output == "ggplot") {
-        if (!is.ggplot(plot_list[[1]])) message("ggplot and verbose table arranged into one grob. To work with a simple ggplot object, set `verbose = FALSE` and 'flags = FALSE'.")
+        if (!is_ggplot(plot_list[[1]])) message("ggplot and verbose table arranged into one grob. To work with a simple ggplot object, set `verbose = FALSE` and 'flags = FALSE'.")
         return(plot_list[[1]])
       }
       m1 <- marrangeGrob(plot_list, nrow = nrow, ncol = ncol)
