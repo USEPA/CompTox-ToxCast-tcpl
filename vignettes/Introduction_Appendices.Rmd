@@ -3400,7 +3400,7 @@ For the "Pentachlorophenol liver toxicity" example provided here, the POD estima
 ToxCast data are predominantly based on mammalian models, but still may have value in ecological risk assessments. This section will explore how one may review ToxCast derived values in combination with curated values from [Ecotoxicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/) as well as cross-species applicability through [Sequence Alignment to Predict Across Species Susceptibility (SeqAPASS)](https://seqapass.epa.gov/seqapass/) tool. The process can be adapted for any given chemical and target depending on available data in either database.
 
 ### Consider POD-NAM and POD-Traditional
-Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/invitrodb/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD~NAM~ and POD~Traditional~, respectively.
+Repeat steps outlined above. This example will utilize a new chemical of interest: 17alpha-Ethinylestradiol (EE2, DTXSID5020576). Consider ToxCast and ToxRefDB to set POD~NAM~ and POD~Traditional~, respectively.
 
 ```{r txct-data-pull2, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
 # Identify the lel and loaels from toxref chemical subset
