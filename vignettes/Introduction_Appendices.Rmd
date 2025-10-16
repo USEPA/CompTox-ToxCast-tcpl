@@ -3279,11 +3279,11 @@ tcplPlot(fld = "aeid", val = 3211, verbose = FALSE,
 
 This section will explore how one can compare *in vivo* Points of Departure (PODs) from the [Toxicity Reference Database (ToxRefDB)](https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses ($AED$s) from ToxCast *in vitro* bioactivity data from `invitrodb`. The process can be adapted for any given chemical and target depending on available data in either database.
 
-The following example will consider "[Pentachlorophenol (PCP, DTXSID7021106)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID7021106)" and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
+The following example will consider "Pentachlorophenol" (PCP, DTXSID7021106) and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
 
 ### Consider ToxRefDB *in vivo* toxicity benchmarks as POD-Traditional
 
-First, export ToxRefDB batch download results for any chemical from the [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard/batch-search) Batch Search or [CTX Hazard APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). Check out the [`ctxR` R Client package](<https://CRAN.R-project.org/package=ctxR>) for more guidance on interacting with the CTX APIs.
+First, export ToxRefDB batch download results for any chemical from the [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard/) Batch Search or [CTX Hazard APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). Check out the [`ctxR` R Client package](<https://CRAN.R-project.org/package=ctxR>) for more guidance on interacting with the CTX APIs.
 
 After loading all chemical-specific data for "Pentachlorophenol", filter results to only include "liver"-related effects. Next identify the observed lowest effect (LEL, significantly different from control in source document i.e. treatment related=1) and lowest observed adverse (LOAEL, deemed adverse by study reviewer in source document i.e. critical_effect=1) effect levels at minimum dose_adjusted (mg/kg/day) value.
 ```{r txrf-data-liver-subset, eval=FALSE}
