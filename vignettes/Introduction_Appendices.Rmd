@@ -19,6 +19,7 @@ vignette: >
 ```
 
 ```{r setup, include = FALSE}
+# if you need to regenerate jsons, set to include = TRUE before devtools::build_vignette. Consider just running the specific codes you need
 library(httptest)
 start_vignette("api")
 ```
@@ -32,7 +33,8 @@ This vignette provides an overview of the `tcpl` R package, including set up, [D
 ## Suggested packages for use with this vignette
 
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
-# devtools::load_all() #use this instead of lbrary(tcpl) when dev versions are installed locally
+#set to eval=TRUE and comment out lbrary(tcpl) when dev versions are installed locally
+devtools::load_all()
 ```
 
 ```{r, message = FALSE, warning = FALSE,  class.source="fold-hide"}
@@ -1302,7 +1304,7 @@ Level 4 processing models the activity of each concentration-response series. Ea
 Level 4 processing establishes a noise-band for the endpoint using the baseline median absolute deviation ($BMAD$).  Here, the  $BMAD$ is calculated by the baseline response values, either untreated control wells (e.g. $wllt = n$; neutral solvent wells like DMSO) *or* test samples from the two lowest concentrations (i.e. $wllt = t$ & cndx %in% 1:2). The $BMAD$ calculation is done across the entire endpoint. **If additional data is added, the $BMAD$ values for all associated assay endpoints is recalculated.**
 
 $$ BMAD_{mc} = 1.4826*median(\big | y_{i} - \tilde{y} \big |)$$
-Where $y_{i$ is the $i^{th$ baseline observation as defined by the assigned method and $\tilde{y$ is the median of all the baseline observations. The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $BMAD$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for more details.
+Where $y_{i}$ is the $i^{\text{th}}$ baseline observation as defined by the assigned method and $\tilde{y}$ is the median of all the baseline observations. The constant value, $1.4826$, is the default adjustment value used in the underlying R function to ensure $BMAD$ is a consistent estimator of the standard deviation ($\sigma$) assuming the sample size ($N$) of the baseline observations is large and they are normally distributed (i.e. Gaussian), see [mad() in R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/mad) and [unbiased mad](https://aakinshin.net/posts/unbiased-mad/#references) for more details.
 
 One standard deviation of baseline response is also calculated, since it is necessary for the calculation of the benchmark response ($BMR$) in both the curve fitting and hitcalling functions from  [`tcplfit2`](https://cran.r-project.org/package=tcplfit2), `tcplfit_core()` and `tcplhit2_core()`, respectively.  One standard deviation of the baseline response will be estimated using the two lowest concentration groups of test samples or neutral control wells across all chemicals, depending on $BMAD$ method selected. **$BMR$, like $BMAD$, may change if additional data is added. Thus, the $BMD$ estimates may also change.** See the [Data Interpretation>Benchmark Dose](#bmd) section for more details.
 
@@ -1692,7 +1694,7 @@ fits %>%
 
 ## - Methods Assignment
 
-For demonstrating the assignment of mc4 methods, method '1' will be specified to calculate that the $BMAD$ and estimate one standard deviation of baseline using the two lowest concentration groups of treatment wells ($wllt = "t"$). 
+For demonstrating the assignment of mc4 methods, method '1' will be specified to calculate that the $BMAD$ and estimate one standard deviation of baseline using the two lowest concentration groups of treatment wells ($wllt$ = "t"). 
 
 Two examples of mc4 method assignments are provided below: (1) for a single assay endpoint and (2) all assay endpoints in containing string using `tcplGetAeid()`. The assignment in the second approach can adapted for any subset of $aeid$s.
 
@@ -2315,7 +2317,7 @@ Estimates of chemical concentrations that elicit cytotoxicity and/or cell stress
 
 The burst threshold can be used to infer activity above or below an estimated threshold of generalized cell stress and/or cytotoxicity, where users can define the degree of difference between some observed bioactivity and estimates of cell stress and/or cytotoxicity needed in order to discern "selective" activity (i.e., bioactivity thought to occur independently of cell stress and/or cytotoxicity) vs. "non-selective" activity (i.e., bioactivity that appears to occur concomitantly with estimates of the concentration needed for cell stress and/or cytotoxicity).
 
-These estimated concentration threshold values have been released in the “cytotox” table of `invitrodb` and are also provided on the CompTox Chemicals Dashboard (CCD) Bioactivity Summary Plot, as shown in the BPA example below. 
+These estimated concentration threshold values have been released in the “cytotox” table of `invitrodb` and are also provided on the [CompTox Chemicals Dashboard (CCD)](https://comptox.epa.gov/dashboard/) Bioactivity Summary Plot, as shown in the BPA example below. 
 
 <center>
 
@@ -2328,7 +2330,7 @@ These estimated concentration threshold values have been released in the “cyto
 
 Recognizing the substantial impact of cytotoxicity in confounding screening results, assays will often include parallel screens to try to capture non-specific activation of many targets as cells approach death. 
 
-The `tcplCytoPt()` function uses the assay endpoints listed in the $burst\_assay$ field of the `assay\_component\_endpoint` table, where 1 indicates including the assay endpoint in the calculation. The "burst" assay endpoints can be identified by running  ` tcplLoadAeid(fld = "burst\_assay", val = 1) `. 
+The `tcplCytoPt()` function uses the assay endpoints listed in the $burst\_assay$ field of the `assay_component_endpoint` table, where 1 indicates including the assay endpoint in the calculation. The "burst" assay endpoints can be identified by running  ` tcplLoadAeid(fld = "burst_assay", val = 1) `. 
 
 ### Implementation
 
@@ -2346,11 +2348,11 @@ Given ToxCast includes a heterogeneous set of assays across a diverse biological
 
 The highest level assumption in the *in vitro* to *in vivo* extrapolation (IVIVE) approach employed here is that the *in vitro* bioactive concentration in a ToxCast assay endpoint is roughly equivalent to a human plasma concentration *in vivo*. For a review of IVIVE, please see: [Breen et al., 2021](https://pubmed.ncbi.nlm.nih.gov/34056988/)
 
-For `invitrodb` v4.2 onward, a new `mc7` table contains pre-generated administered equivalent dose ($AED$) values using several potency metrics from `invitrodb` and a subset of models from the High-throughput Toxicokinetics R package, [`httk`](https://CRAN.R-project.org/package=httk). As implemented, this `mc7` table provides users with pre-calculated estimates of the *in vivo* human $AED$ (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
+For `invitrodb` v4.2 onward, the `mc7` table contains pre-generated administered equivalent dose ($AED$) values using several potency metrics from `invitrodb` and a subset of models from the High-throughput Toxicokinetics R package, [`httk`](https://CRAN.R-project.org/package=httk). As implemented, this `mc7` table provides users with pre-calculated estimates of the *in vivo* human $AED$ (mg/kg/day) based on the *in vitro* bioactive concentrations as seen in ToxCast screening data.
 
 ### Implementation
 
-AEDs are generated in a separate .R script using the [httk R package](https://CRAN.R-project.org/package=httk) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals for both the 3-compartment steady state ($3compartmentss$) model and the physiologically-based toxicokinetic ($pbtk$) model. Given the large number of chemicals and endpoints included in `invitrodb` v4.2, generation of the `mc7` table as configured with the options below took 24 hours using 40 cores.
+AEDs are generated in a separate .R script using the [httk R package](https://CRAN.R-project.org/package=httk) because of the resource-intensive nature of running the Monte Carlo simulations to get estimates of plasma concentration for the median (50th %-ile) and most sensitive (95th %-ile) toxicokinetic individuals. invitrodb v4.2 leveraged calculated AEDs for both the 3-compartment steady state ($3compartmentss$) model and the physiologically-based toxicokinetic ($pbtk$) model. The invitrodb v4.3 `mc7` table was generated using httk v2.6.1, which includes the new "sumclearances" model, as described in [Wambaugh et al. (2025)](https://pubs.acs.org/doi/10.1021/acs.estlett.4c00967). The "sumclearances" model includes exhalation and assumes steady state, therefore using the "pbtk" and "3compartmentss" model was deemed duplicative since it also runs at steady-state and lacks exhalation component for semi-volatiles. Given the large number of chemicals and endpoints included in `invitrodb`, generation of the `mc7` table as configured with the options below took 24 hours using 40 cores.
 
 Using the ToxCast endpoint-sample-specific potency estimates (i.e. $BMD$, $ACC$, AC~50~), human administered equivalent doses are extrapolated using the simplified derivation below:
 
@@ -2395,13 +2397,13 @@ htmlTable(output,
 
 There is high value in understanding the outcomes of solubilization and chemical stability in the vehicle chosen to solubilize the chemical, i.e. a chemical's applicability domain for *in vitro* screening. This informs what chemicals and samples should screened in future experiments. It also helps inform future structural models to understand which chemicals will be stable and detectable in solubilization, and further provide insight into possible degradation products that could be synthesized or purchased. Most critically, this information promotes understanding of uncertainty in estimates of initial experimental concentration of chemicals. 
 
-To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the analytical QC data for the ToxCast/Tox21 chemical library was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. The analytical QC results from original NCATS sample ids have been connected to ToxCast sample ids through source bottle lineage. Visit the [Analytical QC list on AMOS](https://www.epa.gov/comptox-tools/analytical-methods-and-open-spectral-amos-database-user-guide#AnalyticalQC) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
+To establish a resource of applicability domain information at the substance and sample level, a retrospective analysis of the [analytical QC data for the ToxCast/Tox21 chemical library](https://tripod.nih.gov/tox/samples) was conducted. For details regarding the measurement of data, please see: [Richard et al., 2024](https://pubs.acs.org/doi/10.1021/acs.chemrestox.4c00330). The retrospective analysis involved reviewing legacy reports from gas chromatography-mass spectrometry (GCMS), liquid chromatography-mass spectrometry (LCMS), and Nuclear Magnetic Resonance (NMR) experiments. The analytical QC results from original NCATS sample ids have been connected to ToxCast sample ids through source bottle lineage. Visit the [Analytical QC list on AMOS](https://www.epa.gov/comptox-tools/analytical-methods-and-open-spectral-amos-database-user-guide#AnalyticalQC) (Analytical Methods & Open Spectra) for access to the complete repository of source documents. Additional Analytical QC experiments, such as for the PFAS chemical library, and integration efforts are ongoing. 
 
 ### Descriptions of Fields and Possible Options
 
 ```{r warning = FALSE, echo = FALSE}
 Field <- c("dtxsid", "chnm", "spid", "qc_level", "pass_or_caution", "t0", "t4", 
-"call", "annotation", "flags", "average_mass", "log10_vapor_pressure_OPERA_pred", "logKow_octanol_water_OPERA_pred")
+"stability_call", "annotation", "flags", "average_mass", "log10_vapor_pressure_OPERA_pred", "logKow_octanol_water_OPERA_pred")
 
 Description <- c("Unique identifier from U.S. EPA Distributed Structure-Searchable Toxicity (DSSTox) Database", 
                  "Chemical name", "Sample ID or ToxCast bioactivity data, connected by bottle lineage", "Level of analytical QC: substance or sample", 
@@ -2953,9 +2955,16 @@ unit <- tcplLoadUnit(aeid = c(663, 891))
 
 `tcplLoadConcUnit()` is used to load the concentration unit for a specific $spid$ or multiple $spid$s. This is typically used as an internal function for plotting.
 
-```{r load_conc_unit}
+```{r load_conc_unit, eval=FALSE}
 # Load conc_unit for given spid
 conc_unit <- tcplLoadConcUnit(spid = "TP0000904H05")
+```
+
+```{r echo=FALSE}
+conc_unit <- data.frame(
+  spid = "TP0000904H05",
+  conc_unit = c("uM")
+)
 print(conc_unit)
 ```
 
@@ -2963,9 +2972,19 @@ print(conc_unit)
 
 `tcplLoadChem()` is used to load the chemical information for a specific $spid$ or multiple $spid$s. Notice `tcplLoadChem()` uses `field` instead of `fld`.
 
-```{r load_chem}
+```{r load_chem, eval=FALSE}
 # Load chem_info for given spid
 chem_info <- tcplLoadChem(field = "spid", val = "TP0000904H05")
+```
+
+```{r echo=FALSE}
+chem_info <- data.frame(
+  spid = "TP0000904H05",
+  chid = 45232,
+  casn = "51-24-1",
+  dsstox_substance_id = "DTXSID2045232",
+  code = "C51241"
+)
 print(chem_info)
 ```
 
@@ -3260,11 +3279,11 @@ tcplPlot(fld = "aeid", val = 3211, verbose = FALSE,
 
 This section will explore how one can compare *in vivo* Points of Departure (PODs) from the [Toxicity Reference Database (ToxRefDB)](https://www.epa.gov/comptox-tools/downloadable-computational-toxicology-data#AT) with administered equivalent doses ($AED$s) from ToxCast *in vitro* bioactivity data from `invitrodb`. The process can be adapted for any given chemical and target depending on available data in either database.
 
-The following example will consider "[Pentachlorophenol (PCP, DTXSID7021106)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID7021106)" and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
+The following example will consider [Pentachlorophenol (PCP, DTXSID7021106)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID7021106) and "liver toxicity". This pesticide was selected at random to showcase workflow, but the process can be adapted for any given chemical and target depending on available data in either database.
 
 ### Consider ToxRefDB *in vivo* toxicity benchmarks as POD-Traditional
 
-First, export ToxRefDB batch download results for any chemical from the [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard/batch-search) Batch Search or [CTX Hazard APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). Check out the [`ctxR` R Client package](<https://CRAN.R-project.org/package=ctxR>) for more guidance on interacting with the CTX APIs.
+First, export ToxRefDB batch download results for any chemical from the [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard/) Batch Search or [CTX Hazard APIs](https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis). Check out the [`ctxR` R Client package](<https://CRAN.R-project.org/package=ctxR>) for more guidance on interacting with the CTX APIs.
 
 After loading all chemical-specific data for "Pentachlorophenol", filter results to only include "liver"-related effects. Next identify the observed lowest effect (LEL, significantly different from control in source document i.e. treatment related=1) and lowest observed adverse (LOAEL, deemed adverse by study reviewer in source document i.e. critical_effect=1) effect levels at minimum dose_adjusted (mg/kg/day) value.
 ```{r txrf-data-liver-subset, eval=FALSE}
@@ -3329,7 +3348,7 @@ toxcast_mc5_liver_summary <- toxcast_mc5_liver[,list(
 
 [Administered Equivalent Doses](#Administered-Equivalent-Dose) can be accessed from Level 7, or calculated *ad hoc* using the [High-throughput Toxicokinetics R package (httk)](https://CRAN.R-project.org/package=httk). Potency estimates and model options can be adjusted based on use case. In this example, modeling assumptions when estimating the AEDs with httk were: 
 
-- Species options include ‘Rat’, ‘Rabbit’, ’Dog’, ’Mouse’ or default ‘Human'
+- Species options include 'Rat', 'Rabbit', 'Dog', 'Mouse' or default 'Human'
 - Which quantile from Monte Carlo steady-state simulation (for Css)? The scaling factor is the inverse of the steady state plasma concentration (Css) predicted for a 1 mg/kg/day exposure dose rate. This simulates variability and propagates uncertainty to calculate an upper 95th percentile Css,95 for individuals who get higher plasma concentrations from the same exposure, i.e. 95th concentration quantile produces the 5th dose quantile (most sensitive measure).;
 - Restrictive clearance indicates the chemical is protein-bound such that it is relatively unavailable for hepatic metabolism or renal excretion; whereas, non-restrictive clearance assumes the chemical rapidly disassociates from the protein for metabolism and excretion 
 
@@ -3381,7 +3400,7 @@ For the "Pentachlorophenol liver toxicity" example provided here, the POD estima
 ToxCast data are predominantly based on mammalian models, but still may have value in ecological risk assessments. This section will explore how one may review ToxCast derived values in combination with curated values from [Ecotoxicology (ECOTOX) Knowledgebase](https://cfpub.epa.gov/ecotox/) as well as cross-species applicability through [Sequence Alignment to Predict Across Species Susceptibility (SeqAPASS)](https://seqapass.epa.gov/seqapass/) tool. The process can be adapted for any given chemical and target depending on available data in either database.
 
 ### Consider POD-NAM and POD-Traditional
-Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/invitrodb/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD~NAM~ and POD~Traditional~, respectively.
+Repeat steps outlined above. This example will utilize a new chemical of interest: [17alpha-Ethinylestradiol (EE2, DTXSID5020576)](https://comptox.epa.gov/dashboard/chemical/details/DTXSID5020576). Consider ToxCast and ToxRefDB to set POD~NAM~ and POD~Traditional~, respectively.
 
 ```{r txct-data-pull2, fig.align='center',class.source="scroll-100",message=FALSE, eval=FALSE}
 # Identify the lel and loaels from toxref chemical subset

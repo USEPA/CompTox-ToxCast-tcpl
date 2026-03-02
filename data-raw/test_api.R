@@ -33,16 +33,26 @@ asid <- tcplLoadAsid(fld = "aeid", val = aeid)$asid
 dat <- tcplLoadData(lvl = 5, fld = "aeid", val = aeid)
 sample <- dat[sample(1:nrow(dat), 1),]
 
-# to add more tests with new/different data to test-tcplLoadData.R, add lines below and run script
+# to add more tests with new/different data to test-tcplLoadData.R, add lines below and run script. Or replace manually
+# test_api <- list(
+#   aeid = aeid,
+#   acid = acid,
+#   aid = aid,
+#   asid = asid,
+#   dtxsid = sample$dtxsid,
+#   spid = sample$spid,
+#   m4id = sample$m4id
+# )
 test_api <- list(
-  aeid = aeid,
-  acid = acid,
-  aid = aid,
-  asid = asid,
-  dtxsid = sample$dtxsid,
-  spid = sample$spid,
-  m4id = sample$m4id
+  aeid = as.integer(1390),
+  acid = as.integer(957),
+  aid = as.integer(371),
+  asid = as.integer(9),
+  dtxsid = 'DTXSID7024827',
+  spid = 'TX007998',
+  m4id = as.integer(11847245)
 )
+
 #---------------------------#
 ## save the data
 usethis::use_data(test_api, overwrite = TRUE)

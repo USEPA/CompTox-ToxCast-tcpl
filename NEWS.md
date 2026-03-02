@@ -1,3 +1,9 @@
+# tcpl 3.3.1
+
+## Minor improvements and fixes
+
+* Update ctxR and API host server connection for invitrodb v4.2 access (#374)
+
 # tcpl 3.3.0
 
 ## New features

@@ -687,7 +687,7 @@ test_that("ggplot output works in mc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot1"))
-  expect_true(ggplot2::is.ggplot(otpt))
+  expect_true(ggplot2::is_ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
 })
@@ -703,7 +703,7 @@ test_that("ggplot output comparison plotting works in mc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(otpt <- tcplPlot(type = "mc", fld = "m4id", val = mocked$m4id, compare = "chnm", verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot1"))
-  expect_true(ggplot2::is.ggplot(otpt))
+  expect_true(ggplot2::is_ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
 })
@@ -719,7 +719,7 @@ test_that("ggplot output works in sc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot1"))
-  expect_true(ggplot2::is.ggplot(otpt))
+  expect_true(ggplot2::is_ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
 })
@@ -735,7 +735,7 @@ test_that("ggplot output comparison plotting works in sc", {
   )
   tcplConf(drvr = "MySQL", db = "invitrodb") # must include both
   expect_no_error(otpt <- tcplPlot(type = "sc", fld = "s2id", val = mocked$s2id, compare = "spid", verbose = FALSE, output = "ggplot", fileprefix = "temp_tcplPlot1"))
-  expect_true(ggplot2::is.ggplot(otpt))
+  expect_true(ggplot2::is_ggplot(otpt))
   fn <- stringr::str_subset(list.files(), "^temp_tcplPlot")
   expect_length(fn, 0) # no files should be generated
 })

@@ -24,6 +24,6 @@ test_that("API driver no key error message", {
 test_that("API driver properly sets URL", {
   tcplConf(drvr = "API", pass = "api_key")
   expect_equal(getOption("TCPL_HOST"), 
-               "https://api-ccte.epa.gov/bioactivity"
+               "https://comptox.epa.gov/ctx-api/bioactivity"
   )
 })
