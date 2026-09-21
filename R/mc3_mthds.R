@@ -62,6 +62,9 @@
 #'     \item{bval.aeid.nwlls.med}{Calculate the baseline value (bval) as the endpoint-wise median, 
 #'     by assay component endpoint ID (aeid), corrected value (cval) for neutral control wells 
 #'     (wllt = n).}
+#'     \item{ bval.apid.spid.lowconc.med}{Calculate the baseline value (bval) as the chemical
+#'     plate-wise median, by assay plate ID (apid) and sample id (spid), of the corrected values (cval) for wells with a 
+#'     concentration index (cndx) of 1 or 2 and well type of test compound (wllt = t).}
 #'      
 #'   }
 #' } 
@@ -252,6 +255,16 @@ mc3_mthds <- function() {
                        bval := median(cval[cndx %in% 1:3 & wllt == "t"],
                                       na.rm = TRUE),
                        by = list(aeid, spid, repi)])
+      list(e1)
+      
+    },
+    
+    bval.apid.spid.lowconc.med = function(aeids) {
+      
+      e1 <- bquote(dat[J(.(aeids)), 
+                       bval := median(cval[cndx %in% 1:2 & wllt == "t"],
+                                      na.rm = TRUE),
+                       by = list(aeid, spid, apid)])
       list(e1)
       
     },

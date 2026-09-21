@@ -1,3 +1,11 @@
+# dev
+
+## Minor improvements and fixes
+
+### Processing method changes
+
+* New level 3 method  bval.apid.spid.lowconc.med (#381).
+
 # tcpl 3.3.1
 
 ## Minor improvements and fixes
